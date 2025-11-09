@@ -18,6 +18,10 @@
 - **3 cấp độ**: Beginner, Intermediate, Advanced
 - **20+ chủ đề**: Cuộc sống, du lịch, công việc, công nghệ...
 
+## 🌐 Demo
+
+Ứng dụng đã được deploy tại: **https://hnp180493.github.io/daily-english/**
+
 ## 🚀 Cài Đặt & Chạy Ứng Dụng
 
 ### Yêu Cầu Hệ Thống
@@ -30,6 +34,15 @@
 ```bash
 npm install
 ```
+
+### Cấu Hình Environment
+
+1. Copy file environment mẫu:
+```bash
+cp src/environments/environment.example.ts src/environments/environment.ts
+```
+
+2. Mở `src/environments/environment.ts` và điền thông tin API keys của bạn
 
 ### Chạy Development Server
 
@@ -146,5 +159,22 @@ npm run watch          # Development build with watch mode
 npm test               # Run unit tests
 npm run deploy:rules   # Deploy Firestore rules
 ```
+
+## 🚀 Deployment
+
+Ứng dụng tự động deploy lên GitHub Pages khi push code lên branch `main`.
+
+### GitHub Actions Workflow
+
+- **Trigger**: Tự động chạy khi push lên `main` hoặc chạy thủ công
+- **Build**: Compile Angular app với production configuration
+- **Deploy**: Tự động deploy lên GitHub Pages
+
+### Cấu Hình GitHub Pages
+
+1. Vào repository trên GitHub
+2. Settings > Pages
+3. Source: chọn "GitHub Actions"
+4. Workflow sẽ tự động chạy và deploy
 
 **Made with ❤️ using Angular 20, Supabase & AI**
