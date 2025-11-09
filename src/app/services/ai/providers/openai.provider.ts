@@ -18,6 +18,15 @@ export class OpenAIProvider extends BaseAIProvider {
     return !!(config?.openai?.apiKey && config?.openai?.modelName);
   }
 
+  private getTemperature(modelName: string, defaultTemp: number = 0.3): number | undefined {
+    // O1 series models (GPT-5) only support temperature = 1
+    if (modelName.includes('o1') || modelName.includes('gpt-5')) {
+      return 1;
+    }
+    // For other models, use the specified temperature
+    return defaultTemp;
+  }
+
   generateText(request: AIRequest, config: any): Observable<string> {
     return new Observable(observer => {
       const headers = {
@@ -25,10 +34,13 @@ export class OpenAIProvider extends BaseAIProvider {
         'Authorization': `Bearer ${config.openai.apiKey}`
       };
 
+      const modelName = config.openai.modelName || 'gpt-4';
+      const temperature = this.getTemperature(modelName, request.temperature ?? 0.3);
+
       const body = {
-        model: config.openai.modelName || 'gpt-4',
+        model: modelName,
         messages: request.messages,
-        temperature: 1,
+        temperature,
         // max_tokens: request.maxTokens ?? 800
       };
 
@@ -96,14 +108,16 @@ export class OpenAIProvider extends BaseAIProvider {
   ): Observable<AIStreamChunk> {
     return new Observable(observer => {
       const prompt = this.promptService.buildAnalysisPrompt(userInput, sourceText, context, context.fullContext);
+      const modelName = config.openai.modelName || 'gpt-4';
+      const temperature = this.getTemperature(modelName, 0.3);
 
       const body = JSON.stringify({
-        model: config.openai.modelName || 'gpt-4',
+        model: modelName,
         messages: [
           { role: 'system', content: this.promptService.buildSystemPrompt() },
           { role: 'user', content: prompt }
         ],
-        temperature: 1,
+        temperature,
         // max_tokens: 1000,
         stream: true
       });
@@ -190,7 +204,7 @@ export class OpenAIProvider extends BaseAIProvider {
         { role: 'user', content: prompt }
       ];
 
-      this.generateText({ messages, temperature: 1 }, config).subscribe({
+      this.generateText({ messages, temperature: 0.3 }, config).subscribe({
         next: (content) => {
           observer.next(content.trim());
           observer.complete();
