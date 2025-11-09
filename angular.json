@@ -3,7 +3,7 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "english-practice": {
+    "daily-english": {
       "projectType": "application",
       "schematics": {
         "@schematics/angular:component": {
@@ -61,10 +61,10 @@
           "builder": "@angular/build:dev-server",
           "configurations": {
             "production": {
-              "buildTarget": "english-practice:build:production"
+              "buildTarget": "daily-english:build:production"
             },
             "development": {
-              "buildTarget": "english-practice:build:development"
+              "buildTarget": "daily-english:build:development"
             }
           },
           "defaultConfiguration": "development"

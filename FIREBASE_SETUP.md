@@ -4,7 +4,7 @@
 
 1. Truy cập [Firebase Console](https://console.firebase.google.com/)
 2. Click "Add project" hoặc "Thêm dự án"
-3. Đặt tên project (ví dụ: "english-practice")
+3. Đặt tên project (ví dụ: "daily-english")
 4. Tắt Google Analytics (không bắt buộc cho app này)
 5. Click "Create project"
 

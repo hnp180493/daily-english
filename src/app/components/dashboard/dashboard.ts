@@ -49,7 +49,7 @@ export class DashboardComponent {
     const link = document.createElement('a');
     link.href = url;
     const date = new Date().toISOString().split('T')[0];
-    link.download = `english-practice-stats-${date}.json`;
+    link.download = `daily-english-stats-${date}.json`;
     link.click();
     URL.revokeObjectURL(url);
   }

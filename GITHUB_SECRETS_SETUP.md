@@ -100,5 +100,5 @@ npm run build
 npm run build -- --configuration=production
 
 # Xem output
-ls dist/english-practice/browser
+ls dist/daily-english/browser
 ```

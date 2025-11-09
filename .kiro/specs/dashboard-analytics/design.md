@@ -844,7 +844,7 @@ exportData(): void {
   const url = URL.createObjectURL(blob);
   const link = document.createElement('a');
   link.href = url;
-  link.download = `english-practice-stats-${format(new Date(), 'yyyy-MM-dd')}.json`;
+  link.download = `daily-english-stats-${format(new Date(), 'yyyy-MM-dd')}.json`;
   link.click();
   URL.revokeObjectURL(url);
 }

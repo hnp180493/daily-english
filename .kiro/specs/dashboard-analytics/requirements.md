@@ -132,7 +132,7 @@ The Dashboard & Analytics feature provides users with comprehensive insights int
 #### Acceptance Criteria
 
 1. WHEN the user clicks the export button on the dashboard, THE Dashboard Component SHALL generate a JSON file containing all computed statistics and raw exercise data
-2. THE Dashboard Component SHALL trigger a browser download of the exported file with a filename format of "english-practice-stats-YYYY-MM-DD.json"
+2. THE Dashboard Component SHALL trigger a browser download of the exported file with a filename format of "daily-english-stats-YYYY-MM-DD.json"
 3. WHERE the user selects the "Print Report" option, THE Dashboard Component SHALL generate a print-friendly HTML view of all dashboard statistics
 4. THE Dashboard Component SHALL include a timestamp and total exercise count in the exported data
 5. THE exported JSON file SHALL be structured to allow re-import into the application for data portability

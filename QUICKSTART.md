@@ -78,7 +78,7 @@ Then open your browser to `http://localhost:4200/`
 npm run build
 ```
 
-Output will be in `dist/english-practice/`
+Output will be in `dist/daily-english/`
 
 ## ⚠️ Important Notes
 

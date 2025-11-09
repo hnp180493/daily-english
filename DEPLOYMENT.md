@@ -7,7 +7,7 @@ This guide covers deploying your application to popular hosting platforms.
 ## Prerequisites
 
 - Build the application: `npm run build`
-- Output will be in `dist/english-practice/browser/`
+- Output will be in `dist/daily-english/browser/`
 - Configure your production API keys in `src/environments/environment.prod.ts`
 
 ## Option 1: Vercel (Recommended)
@@ -22,7 +22,7 @@ This guide covers deploying your application to popular hosting platforms.
 2. Import your Git repository
 3. Framework Preset: Angular
 4. Build Command: `npm run build`
-5. Output Directory: `dist/english-practice/browser`
+5. Output Directory: `dist/daily-english/browser`
 6. Add environment variables in Vercel dashboard
 
 ## Option 2: Netlify
@@ -30,14 +30,14 @@ This guide covers deploying your application to popular hosting platforms.
 ### Quick Deploy
 1. Install Netlify CLI: `npm i -g netlify-cli`
 2. Run: `netlify deploy --prod`
-3. Publish directory: `dist/english-practice/browser`
+3. Publish directory: `dist/daily-english/browser`
 
 ### Manual Deploy
 1. Go to [netlify.com](https://netlify.com)
-2. Drag and drop `dist/english-practice/browser` folder
+2. Drag and drop `dist/daily-english/browser` folder
 3. Or connect your Git repository
 4. Build command: `npm run build`
-5. Publish directory: `dist/english-practice/browser`
+5. Publish directory: `dist/daily-english/browser`
 
 ## Option 3: Firebase Hosting
 
@@ -50,7 +50,7 @@ firebase init hosting
 
 ### Configuration
 Select:
-- Public directory: `dist/english-practice/browser`
+- Public directory: `dist/daily-english/browser`
 - Single-page app: Yes
 - Automatic builds: Optional
 
@@ -92,20 +92,20 @@ Your app will be available at: `https://your-username.github.io/your-repo-name/`
 ### Manual Deploy (Alternative)
 1. Install: `npm install -g angular-cli-ghpages`
 2. Build: `npm run build -- --base-href=/your-repo-name/`
-3. Deploy: `npx angular-cli-ghpages --dir=dist/english-practice/browser`
+3. Deploy: `npx angular-cli-ghpages --dir=dist/daily-english/browser`
 
 ## Option 5: AWS S3 + CloudFront
 
 ### Setup
 1. Create S3 bucket
 2. Enable static website hosting
-3. Upload `dist/english-practice/browser` contents
+3. Upload `dist/daily-english/browser` contents
 4. Create CloudFront distribution
 5. Point to S3 bucket
 
 ### Using AWS CLI
 ```bash
-aws s3 sync dist/english-practice/browser s3://your-bucket-name
+aws s3 sync dist/daily-english/browser s3://your-bucket-name
 aws cloudfront create-invalidation --distribution-id YOUR_ID --paths "/*"
 ```
 

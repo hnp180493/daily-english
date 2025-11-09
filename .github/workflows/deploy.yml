@@ -47,10 +47,13 @@ jobs:
       - name: Build Angular app
         run: npm run build -- --base-href=/
 
+      - name: Copy CNAME to dist
+        run: cp CNAME ./dist/daily-english/browser/
+
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: ./dist/english-practice/browser
+          path: ./dist/daily-english/browser
 
   deploy:
     environment:
