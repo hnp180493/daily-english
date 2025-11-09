@@ -20,7 +20,7 @@
 
 ## 🌐 Demo
 
-Ứng dụng đã được deploy tại: **https://hnp180493.github.io/daily-english/**
+Ứng dụng đã được deploy tại: **https://dailyenglish.qzz.io/**
 
 ### Cấu Hình trong Ứng Dụng
 
