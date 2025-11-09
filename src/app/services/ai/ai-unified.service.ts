@@ -179,9 +179,9 @@ export class AIUnifiedService implements AIProvider {
     // Return environment as fallback with proper structure
     return {
       provider: environment.aiProvider,
-      azure: environment.azure,
-      gemini: environment.gemini,
-      openai: environment.openai
+      // azure: environment.azure,
+      // gemini: environment.gemini,
+      // openai: environment.openai
     };
   }
 }
