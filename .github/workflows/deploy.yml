@@ -32,14 +32,17 @@ jobs:
         run: npm ci
 
       - name: Create production environment file
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
         run: |
-          cat > src/environments/environment.prod.ts << 'EOF'
+          cat > src/environments/environment.prod.ts << EOF
           export const environment = {
             production: true,
             aiProvider: 'azure' as 'azure' | 'gemini' | 'openai',
             supabase: {
-              url: '${{ secrets.SUPABASE_URL }}',
-              anonKey: '${{ secrets.SUPABASE_ANON_KEY }}'
+              url: '${SUPABASE_URL}',
+              anonKey: '${SUPABASE_ANON_KEY}'
             }
           };
           EOF
