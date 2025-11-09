@@ -1,5 +1,3 @@
-// This file will be generated during GitHub Actions deployment
-// For local production builds, copy environment.example.ts and fill in your values
 export const environment = {
   production: true,
   aiProvider: 'azure' as 'azure' | 'gemini' | 'openai',
@@ -8,7 +6,7 @@ export const environment = {
     anonKey: ''
   },
   seo: {
-    googleSiteVerification: '', // Add your Google Search Console verification code here
-    bingWebmasterVerification: '', // Add your Bing Webmaster Tools verification code here
+    googleSiteVerification: '7JzL97lfcCS6JB8NHzOdxfhO20y2H8tkScCfogsuMbY', // Add your Google Search Console verification code here
+    bingWebmasterVerification: 'BA4A095D9E10222EBB9CEE67833C52BB', // Add your Bing Webmaster Tools verification code here
   }
 };
