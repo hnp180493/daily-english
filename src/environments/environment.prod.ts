@@ -1,22 +1,10 @@
+// This file will be generated during GitHub Actions deployment
+// For local production builds, copy environment.example.ts and fill in your values
 export const environment = {
-  production: false,
+  production: true,
   aiProvider: 'azure' as 'azure' | 'gemini' | 'openai',
-  azure: {
-    endpoint: '',
-    apiKey: '',
-    apiVersion: '',
-    deploymentName: 'gpt-4'
-  },
-  gemini: {
-    apiKey: '',
-    modelName: 'gemini-2.5-pro'
-  },
-  openai: {
-    apiKey: '',
-    modelName: 'gpt-5'
-  },
   supabase: {
-    url: '', // Paste URL từ Supabase dashboard
-    anonKey: '' // Paste anon key từ Supabase dashboard
+    url: '',
+    anonKey: ''
   }
 };

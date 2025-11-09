@@ -60,9 +60,36 @@ npm run build
 firebase deploy
 ```
 
-## Option 4: GitHub Pages
+## Option 4: GitHub Pages (Automated with GitHub Actions)
 
-### Setup
+### Automatic Deployment Setup
+
+This project includes automated deployment to GitHub Pages using GitHub Actions. Every push to the `main` branch will automatically build and deploy your app.
+
+### Step 1: Configure GitHub Secrets
+
+Go to your repository settings: `Settings > Secrets and variables > Actions`
+
+#### Required Secrets (Click "New repository secret"):
+- `SUPABASE_URL` - Your Supabase project URL (e.g., https://xxxxx.supabase.co)
+- `SUPABASE_ANON_KEY` - Your Supabase anonymous key
+
+### Step 2: Enable GitHub Pages
+
+1. Go to `Settings > Pages`
+2. Source: "GitHub Actions"
+3. Save
+
+### Step 3: Deploy
+
+Push to main branch or manually trigger:
+1. Go to `Actions` tab
+2. Select "Deploy to GitHub Pages"
+3. Click "Run workflow"
+
+Your app will be available at: `https://your-username.github.io/your-repo-name/`
+
+### Manual Deploy (Alternative)
 1. Install: `npm install -g angular-cli-ghpages`
 2. Build: `npm run build -- --base-href=/your-repo-name/`
 3. Deploy: `npx angular-cli-ghpages --dir=dist/english-practice/browser`
@@ -84,29 +111,23 @@ aws cloudfront create-invalidation --distribution-id YOUR_ID --paths "/*"
 
 ## Environment Variables
 
+### For GitHub Pages
+See "Option 4: GitHub Pages" section above for detailed setup instructions.
+
 ### For Vercel/Netlify
 Add these in the dashboard:
-- `AZURE_OPENAI_ENDPOINT`
-- `AZURE_OPENAI_KEY`
-- `AZURE_DEPLOYMENT_NAME`
+- `SUPABASE_URL`
+- `SUPABASE_ANON_KEY`
+- `AZURE_ENDPOINT`
+- `AZURE_API_KEY`
+- `AZURE_API_VERSION`
 - `GEMINI_API_KEY`
+- `OPENAI_API_KEY`
 
-### Update environment.prod.ts
-```typescript
-export const environment = {
-  production: true,
-  aiProvider: 'azure',
-  azure: {
-    endpoint: process.env['AZURE_OPENAI_ENDPOINT'] || '',
-    apiKey: process.env['AZURE_OPENAI_KEY'] || '',
-    deploymentName: process.env['AZURE_DEPLOYMENT_NAME'] || 'gpt-4'
-  },
-  gemini: {
-    apiKey: process.env['GEMINI_API_KEY'] || '',
-    modelName: 'gemini-pro'
-  }
-};
-```
+### Local Development
+Copy `src/environments/environment.example.ts` to `src/environments/environment.ts` and fill in your values.
+
+**Note**: `environment.prod.ts` is automatically generated during GitHub Actions deployment. For local production builds, use `environment.example.ts` as a template.
 
 ## Security Considerations
 
