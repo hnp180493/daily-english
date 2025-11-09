@@ -28,8 +28,8 @@ export class OpenAIProvider extends BaseAIProvider {
       const body = {
         model: config.openai.modelName || 'gpt-4',
         messages: request.messages,
-        temperature: request.temperature ?? 0.7,
-        max_tokens: request.maxTokens ?? 800
+        temperature: 1,
+        // max_tokens: request.maxTokens ?? 800
       };
 
       fetch('https://api.openai.com/v1/chat/completions', {
