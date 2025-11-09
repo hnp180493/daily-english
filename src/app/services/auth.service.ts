@@ -31,23 +31,55 @@ export class AuthService {
   }
 
   private async initializeAuth(): Promise<void> {
-    // Get initial session
-    const { data: { session } } = await this.supabase.auth.getSession();
-    this.updateUserState(session?.user || null);
-    this.authInitialized.set(true);
-
-    // Subscribe to auth changes
+    console.log('[Auth] 🚀 Initializing auth service...');
+    console.log('[Auth] Current URL:', window.location.href);
+    console.log('[Auth] Has hash fragment:', window.location.hash ? 'YES' : 'NO');
+    
+    // Subscribe to auth changes FIRST (before getSession)
+    // This ensures we catch the SIGNED_IN event from URL hash processing
     this.supabase.auth.onAuthStateChange(async (event, session) => {
-      console.log('[Auth] Auth state changed:', event, session?.user?.id);
+      console.log('[Auth] 🔔 Auth state changed:', event);
+      console.log('[Auth] Session user:', session?.user?.id);
+      console.log('[Auth] Session expires at:', session?.expires_at);
+      
       this.updateUserState(session?.user || null);
       
       // Save user profile on successful login
       if (event === 'SIGNED_IN' && session?.user) {
+        console.log('[Auth] ✅ User signed in, saving profile...');
         // Small delay to ensure auth context is fully set
         await new Promise(resolve => setTimeout(resolve, 100));
         this.saveUserProfile(session.user);
       }
+      
+      // Mark as initialized after first auth event
+      if (!this.authInitialized()) {
+        console.log('[Auth] ✓ Auth initialized via state change');
+        this.authInitialized.set(true);
+      }
     });
+
+    // Now get initial session (this will trigger onAuthStateChange if URL has tokens)
+    console.log('[Auth] 📡 Getting initial session...');
+    const { data: { session }, error } = await this.supabase.auth.getSession();
+    
+    if (error) {
+      console.error('[Auth] ❌ Error getting session:', error);
+    }
+    
+    // Only update state if we got a session (otherwise wait for onAuthStateChange)
+    if (session?.user) {
+      console.log('[Auth] ✓ Found existing session for user:', session.user.id);
+      this.updateUserState(session.user);
+    } else {
+      console.log('[Auth] ℹ️ No existing session found');
+    }
+    
+    // Mark as initialized if no session (user not logged in)
+    if (!session) {
+      console.log('[Auth] ✓ Auth initialized (no session)');
+      this.authInitialized.set(true);
+    }
   }
 
   async waitForAuth(): Promise<void> {
