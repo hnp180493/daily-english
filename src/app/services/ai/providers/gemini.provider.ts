@@ -79,7 +79,7 @@ export class GeminiProvider extends BaseAIProvider {
     config: any
   ): Observable<AIResponse> {
     return new Observable(observer => {
-      const prompt = this.promptService.buildAnalysisPrompt(userInput, sourceText, context, context.fullContext);
+      const prompt = this.promptService.buildAnalysisPrompt(userInput, sourceText, context, context.fullContext, context.translatedContext);
       const messages: AIMessage[] = [
         { role: 'system', content: this.promptService.buildSystemPrompt() },
         { role: 'user', content: prompt }
@@ -103,7 +103,7 @@ export class GeminiProvider extends BaseAIProvider {
     config: any
   ): Observable<AIStreamChunk> {
     return new Observable(observer => {
-      const prompt = this.promptService.buildAnalysisPrompt(userInput, sourceText, context, context.fullContext);
+      const prompt = this.promptService.buildAnalysisPrompt(userInput, sourceText, context, context.fullContext, context.translatedContext);
       const url = `https://generativelanguage.googleapis.com/v1beta/models/${config.gemini.modelName}:generateContent?key=${config.gemini.apiKey}`;
 
       const body = JSON.stringify({

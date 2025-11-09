@@ -44,10 +44,18 @@ export class ExerciseSubmissionService {
     const currentSentence = sents[currentIdx];
     input = this.validationService.addSmartPunctuation(input, currentSentence.original);
 
+    // Collect previous translations as a single paragraph for context
+    const translatedContext = sents
+      .slice(0, currentIdx)
+      .filter(s => s.isCompleted && s.translation)
+      .map(s => s.translation)
+      .join(' ');
+
     const tempExercise = {
       ...exercise,
       sourceText: currentSentence.original,
-      fullContext: exercise.sourceText
+      fullContext: exercise.sourceText,
+      translatedContext: translatedContext || undefined
     };
 
     return new Observable(observer => {

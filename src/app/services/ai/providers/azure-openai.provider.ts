@@ -76,7 +76,7 @@ export class AzureOpenAIProvider extends BaseAIProvider {
     config: any
   ): Observable<AIResponse> {
     return new Observable(observer => {
-      const prompt = this.promptService.buildAnalysisPrompt(userInput, sourceText, context, context.fullContext);
+      const prompt = this.promptService.buildAnalysisPrompt(userInput, sourceText, context, context.fullContext, context.translatedContext);
       const messages: AIMessage[] = [
         { role: 'system', content: this.promptService.buildSystemPrompt() },
         { role: 'user', content: prompt }
@@ -100,7 +100,7 @@ export class AzureOpenAIProvider extends BaseAIProvider {
     config: any
   ): Observable<AIStreamChunk> {
     return new Observable(observer => {
-      const prompt = this.promptService.buildAnalysisPrompt(userInput, sourceText, context, context.fullContext);
+      const prompt = this.promptService.buildAnalysisPrompt(userInput, sourceText, context, context.fullContext, context.translatedContext);
       const url = `${config.azure.endpoint}/openai/deployments/${config.azure.deploymentName}/chat/completions?api-version=2024-02-15-preview`;
 
       const body = JSON.stringify({

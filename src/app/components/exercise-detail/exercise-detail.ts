@@ -393,10 +393,21 @@ export class ExerciseDetailComponent implements OnInit {
 
     this.isLoadingHint.set(true);
 
+    const currentIdx = this.currentSentenceIndex();
+    const sents = this.sentences();
+
+    // Collect previous translations as a single paragraph for context
+    const translatedContext = sents
+      .slice(0, currentIdx)
+      .filter(s => s.isCompleted && s.translation)
+      .map(s => s.translation)
+      .join(' ');
+
     const tempExercise = {
       ...ex,
       sourceText: currentSentence.original,
-      fullContext: ex.sourceText
+      fullContext: ex.sourceText,
+      translatedContext: translatedContext || undefined
     };
 
     this.aiService.generateHint(

@@ -5,122 +5,80 @@ import { ExerciseContext } from '../../models/ai.model';
   providedIn: 'root'
 })
 export class PromptService {
-  buildAnalysisPrompt(userInput: string, sourceText: string, context: ExerciseContext, fullContext?: string): string {
-    const contextSection = fullContext ? `
-Full Paragraph Context (for understanding):
-${fullContext}
+  buildAnalysisPrompt(
+    userInput: string,
+    sourceText: string,
+    context: ExerciseContext,
+    fullContext?: string,
+    translatedContext?: string
+  ): string {
 
-Sentence to Translate (highlighted):
-${sourceText}
-` : `Source Text (Original Language):
-${sourceText}`;
-
-    return `**ROLE:**
-You are an **EXTREMELY strict English teacher** grading a **Vietnamese → English** translation.
-Your evaluation priorities:
-1️⃣ Meaning accuracy
-2️⃣ Tense and context consistency
-3️⃣ Grammar and naturalness
+    return `**ROLE:**  
+You are a **STRICT English teacher** grading a **Vietnamese → English** translation.  
+Priorities:  
+1️⃣ Meaning accuracy  
+2️⃣ Tense and context consistency  
+3️⃣ Grammar and naturalness  
 
 ---
 
-### 🟥 RULE 1 — MEANING FIRST
-
-If the meaning differs from the source or changes the topic → **FAIL (≤50 points)**.
-Examples:
-
-* "Today is a good day." → "I cooked food." ❌
-* "I lost my wallet." → "I found my wallet." ❌
-  Only check grammar/style **if meaning is fully correct**.
+## 🟥 RULE 1 — MEANING FIRST
+If meaning is wrong or changed → **FAIL (≤50 pts)**.  
+Only evaluate grammar/style **after meaning is correct**.  
 
 ---
 
-### 🟨 RULE 2 — CONTEXT MATTERS
-
-You are given the **Full Paragraph Context**, not an isolated sentence.
-Before scoring, you MUST:
-
-* Read the entire paragraph to understand **timeline**, **tone**, and **flow**.
-* Ensure the translated sentence fits the **overall narrative**.
-* If tense or tone doesn't match the story → deduct heavily.
+## 🟨 RULE 2 — CONTEXT & CONSISTENCY
+You are given:
+- **Full paragraph** (to infer tense, tone, flow)  
+- **Student’s previous translation** (for consistency)
 
 ---
 
-### 🟦 RULE 3 — TENSE (STRICT + CONTEXTUAL)
+## 🟩 SCORING
 
-Tense mismatch = **SERIOUS ERROR (-15 to -20 points)**.
+1️⃣ **Meaning check first**  
+Wrong meaning → max 50 pts.  
 
-* **No "-ing"** unless source has "đang".
-  ❌ "tôi nấu" → "I am cooking"
-  ✅ "I cook" / "I cooked"
+2️⃣ **Apply deductions:**
 
-* **Infer tense logically from the whole paragraph**, not just one sentence.
-  Read the ENTIRE paragraph first to determine the overall timeline:
-  - If the story describes completed actions → use **past tense** throughout
-  - If most sentences use "đã" → the whole story is **past tense**
-  - Even sentences without "đã" must match the paragraph's tense
-  
-  Example: In a past-tense narrative:
-  ❌ "Hôm nay tôi nấu..." → "Today I cook..." (inconsistent)
-  ✅ "Hôm nay tôi nấu..." → "Today I cooked..." (matches narrative)
-
-* **CRITICAL**: Vietnamese often omits tense markers. You MUST infer from context.
-  - Look at surrounding sentences
-  - Check if actions are completed or ongoing
-  - Ensure ALL sentences in the translation use the same tense
-
-* If tense inconsistency makes the story sound unnatural → treat as serious.
+| Error Type | Penalty | Severity |
+|-------------|----------|-----------|
+| Wrong/inconsistent tense | -15 → -20 | Serious |
+| Wrong nuance / partial meaning | -15 | Major |
+| Awkward phrasing | -10 → -15 | Major |
+| Missing key idea | -5 → -10 | Moderate |
+| Grammar / structure | -5 → -10 | Minor |
+| Word choice | -5 | Minor |
+| Spelling | -15 | Major |
 
 ---
 
-### 🟩 SCORING LOGIC
-
-#### Step 1 — Check meaning
-
-* Wrong or opposite meaning → max **50 points** (FAIL).
-
-#### Step 2 — Deduct points based on issues:
-
-| Error Type                                     | Penalty       | Severity |
-| ---------------------------------------------- | ------------- | -------- |
-| Wrong tense / inconsistent with context        | **-15 → -20** | Serious  |
-| Wrong nuance / partially wrong meaning         | -15           | Major    |
-| Awkward / unnatural phrasing                   | -10 → -15     | Major    |
-| Missing key words or emphasis                  | -5 → -10      | Moderate |
-| Grammar (articles, prepositions, plural, etc.) | -5 → -10      | Minor    |
-| Wrong word choice (slight mismatch)            | -5            | Minor    |
-| Spelling                                       | -15           | Major    |
+## 🟧 SCORE GUIDE
+| Range | Description |
+|--------|--------------|
+| 100 | Perfect |
+| 90–99 | Minor issue |
+| 80–89 | Some issues |
+| 70–79 | One serious issue |
+| 60–69 | Many serious |
+| ≤50 | Wrong meaning |
 
 ---
 
-### 🟧 SCORE GUIDE
+## 🟫 INPUT FORMAT
 
-| Score Range | Description                            |
-| ----------- | -------------------------------------- |
-| 100         | Perfect — accurate, natural, no errors |
-| 90–99       | 1 minor issue                          |
-| 80–89       | 2–3 issues                             |
-| 70–79       | several or 1 serious issue             |
-| 60–69       | many serious issues                    |
-| ≤50         | wrong meaning or off-topic             |
-
----
-
-### 🟫 DATA INPUT
-
-Full Paragraph Context:
-${contextSection}
-
-Student Translation:
-${userInput}
-
-Level:
-${context.level}
-
+**Full Paragraph (VN):** ${fullContext}  
+${translatedContext ? `
+Student's Translation So Far (English):
+${translatedContext}
+` : ''}
+**Current Sentence (VN):** ${sourceText}  
+**Student Translation:** ${userInput}
 
 ---
 
-### 🟪 OUTPUT FORMAT (JSON)
+## 🟪 OUTPUT FORMAT (JSON)
 {
   "accuracyScore": number,
   "feedback": [
@@ -136,26 +94,16 @@ ${context.level}
   ]
 }
 
-
 Rules:
 
-* Score **90–99** → must include at least 1 feedback item.
-* Score **100** → feedback optional.
-* If tense inconsistency is found, mark severity = **"serious"** and deduct ≥15 points.
+	90–99 → must include ≥1 feedback item.
 
----
-
-### 🧩 FEEDBACK CONSISTENCY RULE
-
-All feedback and suggestions must strictly follow grading logic.
-
-* ❌ Do NOT justify errors (e.g., "also acceptable" or "slightly less impactful").
-* ❌ Do NOT offer alternatives that break tense or context rules.
-* ✅ The suggested correction must be the **highest-scoring** version (contextually correct).
-* ✅ Once you determine the correct tense from context, ALWAYS suggest that tense consistently.
-* Tone = strict, authoritative, objective.
-* If the answer is wrong, explain *why*, not *how it could also be fine*.`;
+	100 → feedback optional.
+`;
   }
+
+
+  
 
   buildHintPrompt(
     sourceText: string,

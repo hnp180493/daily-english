@@ -90,12 +90,13 @@ export class AIUnifiedService implements AIProvider {
    * Analyze translation with Exercise object (convenience method)
    * This is a wrapper around analyzeText() for easier usage
    */
-  analyzeTranslation(userInput: string, exercise: Exercise): Observable<AIResponse> {
+  analyzeTranslation(userInput: string, exercise: Exercise & { translatedContext?: string }): Observable<AIResponse> {
     const context: ExerciseContext = {
       level: exercise.level,
       category: exercise.category,
       hints: exercise.hints,
-      fullContext: exercise.fullContext
+      fullContext: exercise.fullContext,
+      translatedContext: exercise.translatedContext
     };
 
     return this.analyzeText(userInput, exercise.sourceText, context).pipe(
@@ -111,12 +112,13 @@ export class AIUnifiedService implements AIProvider {
    * Analyze translation with streaming (convenience method)
    * This is a wrapper around analyzeTextStream() for easier usage
    */
-  analyzeTranslationStream(userInput: string, exercise: Exercise): Observable<AIStreamChunk> {
+  analyzeTranslationStream(userInput: string, exercise: Exercise & { translatedContext?: string }): Observable<AIStreamChunk> {
     const context: ExerciseContext = {
       level: exercise.level,
       category: exercise.category,
       hints: exercise.hints,
-      fullContext: exercise.fullContext
+      fullContext: exercise.fullContext,
+      translatedContext: exercise.translatedContext
     };
 
     return this.analyzeTextStream(userInput, exercise.sourceText, context).pipe(
@@ -136,13 +138,14 @@ export class AIUnifiedService implements AIProvider {
     sourceText: string,
     userInput: string,
     previousHints: string[],
-    exercise: Exercise
+    exercise: Exercise & { translatedContext?: string }
   ): Observable<string> {
     const context: ExerciseContext = {
       level: exercise.level,
       category: exercise.category,
       hints: exercise.hints,
-      fullContext: exercise.fullContext
+      fullContext: exercise.fullContext,
+      translatedContext: exercise.translatedContext
     };
 
     return this.generateHint(sourceText, userInput, previousHints, context).pipe(

@@ -18,7 +18,7 @@ export class OpenAIProvider extends BaseAIProvider {
     return !!(config?.openai?.apiKey && config?.openai?.modelName);
   }
 
-  private getTemperature(modelName: string, defaultTemp: number = 0.3): number | undefined {
+  private getTemperature(modelName: string, defaultTemp: number = 0.7): number | undefined {
     // O1 series models (GPT-5) only support temperature = 1
     if (modelName.includes('o1') || modelName.includes('gpt-5')) {
       return 1;
@@ -35,12 +35,13 @@ export class OpenAIProvider extends BaseAIProvider {
       };
 
       const modelName = config.openai.modelName || 'gpt-4';
-      const temperature = this.getTemperature(modelName, request.temperature ?? 0.3);
+      const temperature = this.getTemperature(modelName, request.temperature ?? 0.7);
 
       const body = {
         model: modelName,
         messages: request.messages,
         temperature,
+        seed: 12345, // Fixed seed for consistent responses
         // max_tokens: request.maxTokens ?? 800
       };
 
@@ -83,7 +84,7 @@ export class OpenAIProvider extends BaseAIProvider {
     config: any
   ): Observable<AIResponse> {
     return new Observable(observer => {
-      const prompt = this.promptService.buildAnalysisPrompt(userInput, sourceText, context, context.fullContext);
+      const prompt = this.promptService.buildAnalysisPrompt(userInput, sourceText, context, context.fullContext, context.translatedContext);
       const messages: AIMessage[] = [
         { role: 'system', content: this.promptService.buildSystemPrompt() },
         { role: 'user', content: prompt }
@@ -107,9 +108,9 @@ export class OpenAIProvider extends BaseAIProvider {
     config: any
   ): Observable<AIStreamChunk> {
     return new Observable(observer => {
-      const prompt = this.promptService.buildAnalysisPrompt(userInput, sourceText, context, context.fullContext);
+      const prompt = this.promptService.buildAnalysisPrompt(userInput, sourceText, context, context.fullContext, context.translatedContext);
       const modelName = config.openai.modelName || 'gpt-4';
-      const temperature = this.getTemperature(modelName, 0.3);
+      const temperature = this.getTemperature(modelName, 0.7);
 
       const body = JSON.stringify({
         model: modelName,
@@ -118,6 +119,7 @@ export class OpenAIProvider extends BaseAIProvider {
           { role: 'user', content: prompt }
         ],
         temperature,
+        seed: 12345, // Fixed seed for consistent responses
         // max_tokens: 1000,
         stream: true
       });
@@ -204,7 +206,7 @@ export class OpenAIProvider extends BaseAIProvider {
         { role: 'user', content: prompt }
       ];
 
-      this.generateText({ messages, temperature: 0.3 }, config).subscribe({
+      this.generateText({ messages, temperature: 0.7 }, config).subscribe({
         next: (content) => {
           observer.next(content.trim());
           observer.complete();
