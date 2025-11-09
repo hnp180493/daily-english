@@ -103,8 +103,8 @@ export class OpenAIProvider extends BaseAIProvider {
           { role: 'system', content: this.promptService.buildSystemPrompt() },
           { role: 'user', content: prompt }
         ],
-        temperature: 0.7,
-        max_tokens: 1000,
+        temperature: 1,
+        // max_tokens: 1000,
         stream: true
       });
 
@@ -190,7 +190,7 @@ export class OpenAIProvider extends BaseAIProvider {
         { role: 'user', content: prompt }
       ];
 
-      this.generateText({ messages, temperature: 0.7, maxTokens: 150 }, config).subscribe({
+      this.generateText({ messages, temperature: 1 }, config).subscribe({
         next: (content) => {
           observer.next(content.trim());
           observer.complete();
