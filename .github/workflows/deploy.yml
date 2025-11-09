@@ -49,6 +49,8 @@ jobs:
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+          GOOGLE_VERIFICATION: ${{ secrets.GOOGLE_SITE_VERIFICATION }}
+          BING_VERIFICATION: ${{ secrets.BING_WEBMASTER_VERIFICATION }}
         run: |
           cat > src/environments/environment.prod.ts << EOF
           export const environment = {
@@ -57,6 +59,10 @@ jobs:
             supabase: {
               url: '${SUPABASE_URL}',
               anonKey: '${SUPABASE_ANON_KEY}'
+            },
+            seo: {
+              googleSiteVerification: '${GOOGLE_VERIFICATION}',
+              bingWebmasterVerification: '${BING_VERIFICATION}',
             }
           };
           EOF

@@ -1,0 +1,12 @@
+User-agent: *
+Allow: /
+Allow: /home
+Allow: /exercises
+Allow: /guide
+Disallow: /login
+Disallow: /profile
+Disallow: /dashboard
+Disallow: /favorites
+Disallow: /achievements
+
+Sitemap: https://dailyenglish.qzz.io/sitemap.xml

@@ -1,3 +1,4 @@
+import { DifficultyLevel } from './../../models/exercise.model';
 import { Component, ChangeDetectionStrategy, OnInit, viewChild, inject, signal, computed, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -22,6 +23,7 @@ import { ExercisePersistenceService } from '../../services/exercise-persistence.
 import { ExerciseValidationService } from '../../services/exercise-validation.service';
 import { PointsAnimationService } from '../../services/points-animation.service';
 import { SettingsService } from '../../services/settings.service';
+import { SeoService } from '../../services/seo.service';
 
 @Component({
   selector: 'app-exercise-detail',
@@ -50,6 +52,7 @@ export class ExerciseDetailComponent implements OnInit {
   private validationService = inject(ExerciseValidationService);
   private pointsAnimationService = inject(PointsAnimationService);
   private settingsService = inject(SettingsService);
+  private seoService = inject(SeoService);
 
   // Extracted services
   stateService = inject(ExerciseStateService);
@@ -195,6 +198,9 @@ export class ExerciseDetailComponent implements OnInit {
     this.isCustomExercise.set(isCustom);
     this.stateService.initializeSentences(exercise.sourceText);
 
+    // Update SEO meta tags for this exercise
+    this.updateExerciseSeo(exercise);
+
     if (this.isReviewMode()) {
       this.loadBestAttempt(id);
     } else {
@@ -204,6 +210,32 @@ export class ExerciseDetailComponent implements OnInit {
         this.stateService.currentSentenceIndex.set(0);
       }
     }
+  }
+
+  private updateExerciseSeo(exercise: Exercise): void {
+    // Generate title from exercise title or first sentence
+    const title = exercise.title || exercise.sourceText.split('.')[0].substring(0, 50);
+    
+    // Generate description from exercise description or source text
+    const description = exercise.description || 
+      `Luyện tập dịch tiếng Anh: ${exercise.sourceText.substring(0, 120)}...`;
+    
+    // Update meta tags
+    this.seoService.updateTags({
+      title: `${title} - Daily English`,
+      description,
+      keywords: ['bài tập tiếng anh', 'luyện dịch', exercise.category],
+      type: 'article',
+    });
+
+    // Add LearningResource structured data
+    const difficultyLevel = exercise.level || 'Beginner';
+    const learningResourceSchema = this.seoService.generateLearningResourceSchema(
+      title,
+      description,
+      difficultyLevel
+    );
+    this.seoService.setStructuredData(learningResourceSchema);
   }
 
   private loadProgress(exerciseId: string): boolean {

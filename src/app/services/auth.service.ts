@@ -113,7 +113,8 @@ export class AuthService {
       this.supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: `${window.location.origin}/home`
+          redirectTo: `${window.location.origin}/home`,
+          skipBrowserRedirect: false
         }
       }).then(({ error }) => {
         if (error) throw error;
