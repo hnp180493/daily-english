@@ -25,42 +25,52 @@ export class AuthService {
   isAuthenticated = signal(false);
   private authInitialized = signal(false);
   private initPromise: Promise<void>;
+  private profileSavedForSession = new Set<string>(); // Track saved profiles by session
 
   constructor() {
     this.initPromise = this.initializeAuth();
   }
 
   private async initializeAuth(): Promise<void> {
+    if (this.authInitialized()) {
+      return;
+    }
+
     console.log('[Auth] 🚀 Initializing auth service...');
-    console.log('[Auth] Current URL:', window.location.href);
-    console.log('[Auth] Has hash fragment:', window.location.hash ? 'YES' : 'NO');
     
     // Subscribe to auth changes FIRST (before getSession)
     // This ensures we catch the SIGNED_IN event from URL hash processing
     this.supabase.auth.onAuthStateChange(async (event, session) => {
-      console.log('[Auth] 🔔 Auth state changed:', event);
-      console.log('[Auth] Session user:', session?.user?.id);
-      console.log('[Auth] Session expires at:', session?.expires_at);
+      // Only log important events to reduce console noise
+      if (event === 'SIGNED_IN' || event === 'SIGNED_OUT' || event === 'TOKEN_REFRESHED') {
+        console.log('[Auth] 🔔 Auth state:', event);
+      }
       
       this.updateUserState(session?.user || null);
       
-      // Save user profile on successful login
-      if (event === 'SIGNED_IN' && session?.user) {
-        console.log('[Auth] ✅ User signed in, saving profile...');
-        // Small delay to ensure auth context is fully set
-        await new Promise(resolve => setTimeout(resolve, 100));
-        this.saveUserProfile(session.user);
+      // Only save profile on INITIAL_SESSION (first load) or actual SIGNED_IN from OAuth
+      // Don't save on TOKEN_REFRESHED or visibility change SIGNED_IN events
+      if (event === 'INITIAL_SESSION' && session?.user) {
+        const sessionKey = `${session.user.id}-${session.access_token.substring(0, 20)}`;
+        if (!this.profileSavedForSession.has(sessionKey)) {
+          console.log('[Auth] ✅ Initial session, updating profile...');
+          this.saveUserProfile(session.user);
+          this.profileSavedForSession.add(sessionKey);
+        }
+      }
+      
+      // Clear saved sessions on sign out
+      if (event === 'SIGNED_OUT') {
+        this.profileSavedForSession.clear();
       }
       
       // Mark as initialized after first auth event
       if (!this.authInitialized()) {
-        console.log('[Auth] ✓ Auth initialized via state change');
         this.authInitialized.set(true);
       }
     });
 
     // Now get initial session (this will trigger onAuthStateChange if URL has tokens)
-    console.log('[Auth] 📡 Getting initial session...');
     const { data: { session }, error } = await this.supabase.auth.getSession();
     
     if (error) {
@@ -69,17 +79,11 @@ export class AuthService {
     
     // Only update state if we got a session (otherwise wait for onAuthStateChange)
     if (session?.user) {
-      console.log('[Auth] ✓ Found existing session for user:', session.user.id);
       this.updateUserState(session.user);
-    } else {
-      console.log('[Auth] ℹ️ No existing session found');
     }
     
-    // Mark as initialized if no session (user not logged in)
-    if (!session) {
-      console.log('[Auth] ✓ Auth initialized (no session)');
-      this.authInitialized.set(true);
-    }
+    // Mark as initialized
+    this.authInitialized.set(true);
   }
 
   async waitForAuth(): Promise<void> {
@@ -95,11 +99,9 @@ export class AuthService {
       const user: User = this.mapSupabaseUserToAppUser(supabaseUser);
       this.currentUser.set(user);
       this.isAuthenticated.set(true);
-      console.log('[Auth] User authenticated:', user.uid);
     } else {
       this.currentUser.set(null);
       this.isAuthenticated.set(false);
-      console.log('[Auth] User signed out');
     }
   }
 
@@ -122,15 +124,10 @@ export class AuthService {
       createdAt: new Date(),
       lastLogin: new Date()
     };
-
-    console.log('[Auth] Saving user profile:', { userId, profile });
     
     this.databaseService.saveUserProfile(userId, profile).subscribe({
-      next: () => console.log('[Auth] User profile saved successfully'),
-      error: (error) => {
-        console.error('[Auth] Failed to save user profile:', error);
-        console.error('[Auth] Error details:', JSON.stringify(error, null, 2));
-      }
+      next: () => console.log('[Auth] ✓ Profile saved'),
+      error: (error) => console.error('[Auth] ❌ Profile save failed:', error.message)
     });
   }
 

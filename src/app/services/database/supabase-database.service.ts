@@ -36,7 +36,6 @@ export class SupabaseDatabase implements IDatabase {
         })
         .then(({ error }) => {
           if (error) throw error;
-          console.log('[SupabaseDatabase] Successfully saved user profile');
         })
     ).pipe(catchError(this.handleError));
   }
@@ -75,7 +74,6 @@ export class SupabaseDatabase implements IDatabase {
         })
         .then(({ error }) => {
           if (error) throw error;
-          console.log('[SupabaseDatabase] Successfully saved progress');
         })
     ).pipe(catchError(this.handleError));
   }
@@ -109,7 +107,6 @@ export class SupabaseDatabase implements IDatabase {
           filter: `user_id=eq.${userId}`
         },
         (payload) => {
-          console.log('[SupabaseDatabase] Progress changed:', payload);
           if (payload.new && 'data' in payload.new) {
             callback(payload.new['data'] as UserProgress);
           } else {
@@ -139,7 +136,6 @@ export class SupabaseDatabase implements IDatabase {
         })
         .then(({ error }) => {
           if (error) throw error;
-          console.log('[SupabaseDatabase] Successfully saved favorites');
         })
     ).pipe(catchError(this.handleError));
   }
@@ -178,7 +174,6 @@ export class SupabaseDatabase implements IDatabase {
           filter: `user_id=eq.${userId}`
         },
         async () => {
-          console.log('[SupabaseDatabase] Favorites changed');
           // Reload favorites
           const { data, error } = await this.supabase
             .from('user_favorites')
@@ -226,7 +221,6 @@ export class SupabaseDatabase implements IDatabase {
         })
         .then(({ error }) => {
           if (error) throw error;
-          console.log('[SupabaseDatabase] Successfully saved custom exercise');
         })
     ).pipe(catchError(this.handleError));
   }
@@ -263,7 +257,6 @@ export class SupabaseDatabase implements IDatabase {
         .eq('user_id', userId)
         .then(({ error }) => {
           if (error) throw error;
-          console.log('[SupabaseDatabase] Successfully deleted custom exercise');
         })
     ).pipe(catchError(this.handleError));
   }
@@ -283,7 +276,6 @@ export class SupabaseDatabase implements IDatabase {
           filter: `user_id=eq.${userId}`
         },
         async () => {
-          console.log('[SupabaseDatabase] Custom exercises changed');
           // Reload all exercises
           const { data, error } = await this.supabase
             .from('custom_exercises')
@@ -333,7 +325,6 @@ export class SupabaseDatabase implements IDatabase {
         })
         .then(({ error }) => {
           if (error) throw error;
-          console.log('[SupabaseDatabase] Successfully saved achievements');
         })
     ).pipe(catchError(this.handleError));
   }
@@ -387,7 +378,6 @@ export class SupabaseDatabase implements IDatabase {
         })
         .then(({ error }) => {
           if (error) throw error;
-          console.log('[SupabaseDatabase] Successfully saved rewards');
         })
     ).pipe(catchError(this.handleError));
   }
