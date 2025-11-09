@@ -15,10 +15,11 @@ export class LoginComponent {
   private router = inject(Router);
 
   signInWithGoogle(): void {
+    console.log('[Login] Starting Google OAuth flow...');
     this.authService.signInWithGoogle().subscribe({
       next: () => {
-        console.log('[Login] Signed in with Google successfully');
-        this.router.navigate(['/home']);
+        console.log('[Login] OAuth redirect initiated');
+        // Don't navigate manually - OAuth will redirect automatically
       },
       error: (error) => {
         console.error('[Login] Google sign in failed:', error);
