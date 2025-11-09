@@ -1,0 +1,49 @@
+<div class="progress-charts">
+  <h2>Progress Charts</h2>
+
+  <div class="charts-grid">
+    <!-- Score Trend Chart -->
+    <div class="chart-card">
+      <h3>Score Trend</h3>
+      @if (analytics().scoreTrends.dates.length > 0) {
+        <div class="chart-container" role="img" [attr.aria-label]="'Score trend chart showing your progress over time'">
+          <canvas #scoreTrendCanvas></canvas>
+        </div>
+      } @else {
+        <div class="empty-chart">
+          <p>No score data available yet</p>
+        </div>
+      }
+    </div>
+
+    <!-- Category Distribution Chart -->
+    <div class="chart-card">
+      <h3>Category Distribution</h3>
+      @if (analytics().categoryDistribution.length > 0) {
+        <div class="chart-container" role="img" [attr.aria-label]="'Category distribution chart showing exercises by category'">
+          <canvas #categoryCanvas></canvas>
+        </div>
+        <p class="chart-hint">Click on a bar to view exercises in that category</p>
+      } @else {
+        <div class="empty-chart">
+          <p>No category data available yet</p>
+        </div>
+      }
+    </div>
+
+    <!-- Difficulty Breakdown Chart -->
+    <div class="chart-card">
+      <h3>Difficulty Breakdown</h3>
+      @if (analytics().difficultyBreakdown.length > 0) {
+        <div class="chart-container" role="img" [attr.aria-label]="'Difficulty breakdown chart showing exercises by difficulty level'">
+          <canvas #difficultyCanvas></canvas>
+        </div>
+        <p class="chart-hint">Click on a segment to view exercises at that difficulty</p>
+      } @else {
+        <div class="empty-chart">
+          <p>No difficulty data available yet</p>
+        </div>
+      }
+    </div>
+  </div>
+</div>

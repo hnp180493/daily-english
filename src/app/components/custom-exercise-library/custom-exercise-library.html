@@ -1,0 +1,251 @@
+<div class="min-h-screen py-8">
+  <div class="max-w-7xl mx-auto px-4">
+    <!-- Header -->
+    <div class="flex justify-between items-center mb-6">
+      <div>
+        <h1 class="text-3xl font-bold text-white">My Custom Exercises</h1>
+        <p class="text-gray-400 mt-2">
+          {{ exercises().length }} exercise{{ exercises().length !== 1 ? 's' : '' }} created
+        </p>
+      </div>
+      <button
+        (click)="createNew()"
+        class="px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-500 transition-all font-medium flex items-center gap-2 shadow-lg shadow-purple-500/30"
+      >
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+        </svg>
+        Create New Exercise
+      </button>
+    </div>
+
+    <!-- Search and Filters -->
+    <div class="bg-gray-800/50 rounded-lg border border-purple-500/20 p-6 mb-6">
+      <!-- Search Bar -->
+      <div class="mb-4">
+        <div class="relative">
+          <input
+            type="text"
+            [(ngModel)]="searchQuery"
+            placeholder="Search exercises by title, content, categories, or tags..."
+            class="w-full pl-10 pr-4 py-3 bg-gray-900/50 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+          />
+          <svg class="absolute left-3 top-3.5 w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+          </svg>
+        </div>
+      </div>
+
+      <!-- Filter Chips -->
+      <div class="space-y-3">
+        <!-- Difficulty Filter -->
+        @if (difficultyLevels.length > 0) {
+          <div>
+            <label class="text-sm font-medium text-gray-300 mb-2 block">Difficulty</label>
+            <div class="flex gap-2 flex-wrap">
+              @for (level of difficultyLevels; track level) {
+                <button
+                  (click)="toggleDifficultyFilter(level)"
+                  [class.bg-purple-600]="selectedDifficulty() === level"
+                  [class.text-white]="selectedDifficulty() === level"
+                  [class.shadow-lg]="selectedDifficulty() === level"
+                  [class.shadow-purple-500/30]="selectedDifficulty() === level"
+                  [class.bg-gray-700]="selectedDifficulty() !== level"
+                  [class.text-gray-300]="selectedDifficulty() !== level"
+                  class="px-4 py-2 rounded-full text-sm font-medium hover:opacity-80 transition-all"
+                >
+                  {{ level }}
+                </button>
+              }
+            </div>
+          </div>
+        }
+
+        <!-- Tag Filter -->
+        @if (allTags().length > 0) {
+          <div>
+            <label class="text-sm font-medium text-gray-300 mb-2 block">Tags</label>
+            <div class="flex gap-2 flex-wrap">
+              @for (tag of allTags(); track tag) {
+                <button
+                  (click)="toggleTagFilter(tag)"
+                  [class.bg-purple-600]="selectedTags().includes(tag)"
+                  [class.text-white]="selectedTags().includes(tag)"
+                  [class.shadow-lg]="selectedTags().includes(tag)"
+                  [class.shadow-purple-500/30]="selectedTags().includes(tag)"
+                  [class.bg-gray-700]="!selectedTags().includes(tag)"
+                  [class.text-purple-400]="!selectedTags().includes(tag)"
+                  class="px-4 py-2 rounded-full text-sm font-medium hover:opacity-80 transition-all"
+                >
+                  #{{ tag }}
+                </button>
+              }
+            </div>
+          </div>
+        }
+
+        <!-- Clear Filters -->
+        @if (hasActiveFilters()) {
+          <button
+            (click)="clearFilters()"
+            class="text-sm text-purple-400 hover:text-purple-300 font-medium"
+          >
+            Clear all filters
+          </button>
+        }
+      </div>
+    </div>
+
+    <!-- Exercise Grid -->
+    @if (filteredExercises().length > 0) {
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        @for (exercise of filteredExercises(); track exercise.id) {
+          <div class="bg-gray-800/50 border border-purple-500/20 rounded-lg hover:border-purple-500/40 transition-all overflow-hidden">
+            <!-- Card Header -->
+            <div class="p-6">
+              <div class="flex justify-between items-start mb-3">
+                <h3 class="text-lg font-semibold text-white flex-1">
+                  {{ exercise.title }}
+                </h3>
+                <span
+                  [class.bg-green-600]="exercise.level === DifficultyLevel.BEGINNER"
+                  [class.text-white]="exercise.level === DifficultyLevel.BEGINNER"
+                  [class.bg-yellow-600]="exercise.level === DifficultyLevel.INTERMEDIATE"
+                  [class.text-white]="exercise.level === DifficultyLevel.INTERMEDIATE"
+                  [class.bg-red-600]="exercise.level === DifficultyLevel.ADVANCED"
+                  [class.text-white]="exercise.level === DifficultyLevel.ADVANCED"
+                  class="px-2 py-1 rounded text-xs font-medium ml-2"
+                >
+                  {{ exercise.level }}
+                </span>
+              </div>
+
+              <p class="text-gray-400 text-sm mb-4">
+                {{ truncateText(exercise.sourceText, 100) }}
+              </p>
+
+              <!-- Metadata -->
+              <div class="space-y-2 mb-4">
+                <div class="flex items-center text-sm text-gray-500">
+                  <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                  </svg>
+                  Created {{ formatDate(exercise.createdAt) }}
+                </div>
+                <div class="flex items-center text-sm text-gray-500">
+                  <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                  </svg>
+                  {{ exercise.highlightedSentences.length }} sentence{{ exercise.highlightedSentences.length !== 1 ? 's' : '' }}
+                </div>
+              </div>
+
+              <!-- Category Badge -->
+              <div class="mb-3">
+                <span class="bg-green-600/20 text-green-400 px-3 py-1 rounded-full text-xs border border-green-500/30">
+                  Custom
+                </span>
+              </div>
+
+              <!-- Tags -->
+              @if (exercise.tags && exercise.tags.length > 0) {
+                <div class="flex gap-2 flex-wrap">
+                  @for (tag of exercise.tags; track tag) {
+                    <span class="bg-purple-600/20 text-purple-400 px-2 py-1 rounded text-xs border border-purple-500/30">
+                      #{{ tag }}
+                    </span>
+                  }
+                </div>
+              }
+            </div>
+
+            <!-- Card Actions -->
+            <div class="border-t border-gray-700 px-6 py-4 bg-gray-900/30 flex gap-2">
+              <button
+                (click)="practiceExercise(exercise.id)"
+                class="flex-1 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-500 transition-all text-sm font-medium shadow-lg shadow-purple-500/20"
+              >
+                Practice
+              </button>
+              <button
+                (click)="editExercise(exercise.id)"
+                class="px-4 py-2 border border-gray-600 text-gray-300 rounded-lg hover:bg-gray-700 transition-colors text-sm font-medium"
+              >
+                Edit
+              </button>
+              <button
+                (click)="confirmDelete(exercise.id)"
+                class="px-4 py-2 border border-red-500/50 text-red-400 rounded-lg hover:bg-red-500/10 transition-colors text-sm font-medium"
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+        }
+      </div>
+    } @else if (exercises().length === 0) {
+      <!-- Empty State - No Exercises -->
+      <div class="bg-gray-800/50 border border-purple-500/20 rounded-lg p-12 text-center">
+        <svg class="w-24 h-24 mx-auto text-gray-600 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+        </svg>
+        <h3 class="text-xl font-semibold text-white mb-2">No exercises yet</h3>
+        <p class="text-gray-400 mb-6">
+          Create your first custom exercise to start practicing
+        </p>
+        <button
+          (click)="createNew()"
+          class="px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-500 transition-all font-medium inline-flex items-center gap-2 shadow-lg shadow-purple-500/30"
+        >
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+          </svg>
+          Create Your First Exercise
+        </button>
+      </div>
+    } @else {
+      <!-- Empty State - No Results -->
+      <div class="bg-gray-800/50 border border-purple-500/20 rounded-lg p-12 text-center">
+        <svg class="w-24 h-24 mx-auto text-gray-600 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+        </svg>
+        <h3 class="text-xl font-semibold text-white mb-2">No exercises found</h3>
+        <p class="text-gray-400 mb-6">
+          Try adjusting your search or filters
+        </p>
+        <button
+          (click)="clearFilters()"
+          class="px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-500 transition-all font-medium shadow-lg shadow-purple-500/30"
+        >
+          Clear Filters
+        </button>
+      </div>
+    }
+  </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+@if (deleteConfirmId()) {
+  <div class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 p-4">
+    <div class="bg-gray-800 border border-purple-500/30 rounded-lg shadow-xl max-w-md w-full p-6">
+      <h3 class="text-xl font-semibold text-white mb-4">Delete Exercise?</h3>
+      <p class="text-gray-400 mb-6">
+        Are you sure you want to delete this exercise? This action cannot be undone.
+      </p>
+      <div class="flex gap-4 justify-end">
+        <button
+          (click)="cancelDelete()"
+          class="px-4 py-2 border border-gray-600 text-gray-300 rounded-lg hover:bg-gray-700 transition-colors font-medium"
+        >
+          Cancel
+        </button>
+        <button
+          (click)="deleteExercise(deleteConfirmId()!)"
+          class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors font-medium shadow-lg shadow-red-500/30"
+        >
+          Delete
+        </button>
+      </div>
+    </div>
+  </div>
+}

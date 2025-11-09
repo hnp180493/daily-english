@@ -1,0 +1,35 @@
+.source-text-container {
+  background-color: #1e2139;
+  border: 2px solid #2a2d4a;
+  border-radius: 12px;
+  padding: 1.5rem;
+}
+
+.section-title {
+  color: #f5b800;
+  font-size: 1.25rem;
+  margin: 0 0 1rem 0;
+  font-weight: 600;
+}
+
+.source-text {
+  color: #ffffff;
+  font-size: 1rem;
+  line-height: 1.8;
+  margin-bottom: 1rem;
+
+  ::ng-deep mark {
+    background-color: #f5b800;
+    color: #1a1a2e;
+    padding: 0.2rem 0.4rem;
+    border-radius: 4px;
+    font-weight: 600;
+  }
+}
+
+.instruction {
+  color: #b0b0b0;
+  font-size: 0.9rem;
+  font-style: italic;
+  margin: 0;
+}

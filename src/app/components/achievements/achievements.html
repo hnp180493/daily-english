@@ -1,0 +1,65 @@
+<div class="achievements-container">
+  <header class="achievements-header">
+    <div class="header-top">
+      <h1>Achievements</h1>
+      <button 
+        class="export-button" 
+        (click)="exportAchievements()"
+        type="button"
+        aria-label="Export achievements data">
+        📥 Export Data
+      </button>
+    </div>
+    <div class="achievement-summary">
+      <span class="summary-item">
+        <span class="summary-value">{{ unlockedAchievements().length }}</span>
+        <span class="summary-label">/ {{ achievements().length }} Unlocked</span>
+      </span>
+      <span class="summary-item">
+        <span class="summary-value">{{ completionPercentage() }}%</span>
+        <span class="summary-label">Complete</span>
+      </span>
+      @if (unclaimedCount() > 0) {
+        <span class="summary-item unclaimed">
+          <span class="summary-value">{{ unclaimedCount() }}</span>
+          <span class="summary-label">🎁 To Claim</span>
+        </span>
+      }
+    </div>
+  </header>
+
+  <app-achievement-filters
+    [selectedType]="selectedType()"
+    [selectedStatus]="selectedStatus()"
+    [selectedRarity]="selectedRarity()"
+    (typeChange)="onTypeChange($event)"
+    (statusChange)="onStatusChange($event)"
+    (rarityChange)="onRarityChange($event)" />
+
+  @if (filteredAchievements().length > 0) {
+    <div class="achievements-grid">
+      @for (achievement of filteredAchievements(); track achievement.id) {
+        <app-achievement-card
+          [achievement]="achievement"
+          [progress]="getProgress(achievement)"
+          (cardClick)="showDetails($event)"
+          (claimClick)="claimRewards($event)" />
+      }
+    </div>
+  } @else {
+    <div class="empty-state">
+      <div class="empty-icon">🏆</div>
+      <h2>No achievements found</h2>
+      <p>Try adjusting your filters to see more achievements.</p>
+    </div>
+  }
+
+  @if (selectedAchievement()) {
+    <app-achievement-detail-modal
+      [achievement]="selectedAchievement()!"
+      [progress]="getProgress(selectedAchievement()!)"
+      (close)="closeModal()"
+      (share)="shareAchievement($event)"
+      (claim)="claimRewards($event)" />
+  }
+</div>

@@ -1,0 +1,22 @@
+<div class="progress-stats">
+  <h3 class="section-title">Today's Achievements</h3>
+  
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-icon">🔥</div>
+      <div class="stat-value">{{ streak() }}</div>
+      <div class="stat-label">Day Streak</div>
+    </div>
+
+    @if (achievementBadges().length > 0) {
+      <div class="achievements-section">
+        @for (badge of achievementBadges(); track badge.label) {
+          <div class="achievement-badge">
+            <span class="badge-icon">{{ badge.icon }}</span>
+            <span class="badge-label">{{ badge.label }}</span>
+          </div>
+        }
+      </div>
+    }
+  </div>
+</div>

@@ -1,0 +1,37 @@
+<div class="settings-container">
+  <h2 class="settings-title">⚙️ Cài đặt ứng dụng</h2>
+
+  <!-- Exercise Settings Section -->
+  <div class="settings-section">
+    <h3 class="section-title">🎯 Bài tập</h3>
+    
+    <div class="setting-item">
+      <div class="setting-info">
+        <label class="setting-label" for="autoPlayTTS">
+          🔊 Tự động phát âm sau khi dịch
+        </label>
+        <p class="setting-description">
+          Tự động phát âm bản dịch của bạn sau khi hoàn thành mỗi câu
+        </p>
+      </div>
+      <div class="setting-control">
+        <label class="toggle-switch">
+          <input
+            type="checkbox"
+            id="autoPlayTTS"
+            [checked]="autoPlayTTS()"
+            (change)="toggleAutoPlayTTS()"
+          />
+          <span class="toggle-slider"></span>
+        </label>
+      </div>
+    </div>
+  </div>
+
+  <!-- Reset Settings -->
+  <div class="settings-actions">
+    <button class="btn-reset" (click)="resetSettings()" type="button">
+      🔄 Đặt lại cài đặt mặc định
+    </button>
+  </div>
+</div>

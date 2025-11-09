@@ -1,0 +1,326 @@
+[
+  {
+    "id": "ex-051",
+    "title": "Morning Routine Optimization",
+    "level": "intermediate",
+    "category": "daily-life",
+    "description": "Discuss efficient daily habits",
+    "sourceText": "Gần đây tôi đã thay đổi thói quen buổi sáng của mình. Thay vì lướt điện thoại ngay khi vừa thức dậy, tôi dành 10 phút để thiền định. Sau đó, tôi tập thể dục nhẹ nhàng trong 20 phút. Tôi chuẩn bị bữa sáng bổ dưỡng với trứng, rau xanh và trái cây tươi. Tôi nhận thấy rằng những thay đổi nhỏ này đã cải thiện đáng kể năng lượng của tôi trong suốt cả ngày.",
+    "highlightedSentences": [
+      "I have changed my morning routine recently"
+    ],
+    "hints": [
+      "Use present perfect for recent change"
+    ],
+    "expectedKeywords": [
+      "have",
+      "changed",
+      "morning",
+      "routine"
+    ]
+  },
+  {
+    "id": "ex-052",
+    "title": "Neighborhood Community",
+    "level": "intermediate",
+    "category": "daily-life",
+    "description": "Describe community relationships",
+    "sourceText": "Khu phố của tôi có một cộng đồng rất gắn bó. Hàng xóm thường xuyên giúp đỡ lẫn nhau. Tuần trước, tôi đã tổ chức một bữa tiệc BBQ ngoài trời. Mọi người đều mang theo món ăn và chia sẻ những câu chuyện thú vị. Chúng tôi còn có một khu vườn cộng đồng nơi mọi người cùng nhau trồng rau sạch.",
+    "highlightedSentences": [
+      "My neighborhood has a close-knit community"
+    ],
+    "hints": [
+      "Use 'has' with singular subject"
+    ],
+    "expectedKeywords": [
+      "neighborhood",
+      "has",
+      "close-knit",
+      "community"
+    ]
+  },
+  {
+    "id": "ex-053",
+    "title": "Digital Detox Weekend",
+    "level": "intermediate",
+    "category": "daily-life",
+    "description": "Reflect on technology balance",
+    "sourceText": "Cuối tuần này, tôi quyết định thử nghiệm một cuộc 'digital detox'. Tôi tắt hẳn điện thoại và máy tính trong hai ngày. Ban đầu, tôi cảm thấy lo lắng và bồn chồn không yên. Nhưng dần dần, tôi bắt đầu tận hưởng sự yên tĩnh hiếm có đó. Tôi đọc sách, nấu những món ăn yêu thích và đi dạo thư thái trong công viên.",
+    "highlightedSentences": [
+      "I decided to try a digital detox this weekend"
+    ],
+    "hints": [
+      "Use past tense for completed decision"
+    ],
+    "expectedKeywords": [
+      "decided",
+      "to",
+      "try",
+      "digital",
+      "detox"
+    ]
+  },
+  {
+    "id": "ex-054",
+    "title": "Family Dinner Traditions",
+    "level": "intermediate",
+    "category": "daily-life",
+    "description": "Share about family customs",
+    "sourceText": "Gia đình tôi có truyền thống ăn tối cùng nhau mỗi tối Chủ nhật. Mọi người đều tham gia vào việc nấu nướng. Bố tôi nấu món chính, mẹ tôi chuẩn bị salad, còn tôi làm món tráng miệng. Trong bữa ăn, chúng tôi chia sẻ về những chuyện trong tuần. Chúng tôi có quy định không được phép dùng điện thoại trên bàn ăn.",
+    "highlightedSentences": [
+      "My family has a tradition of eating dinner together every Sunday"
+    ],
+    "hints": [
+      "Use 'has a tradition of' + gerund"
+    ],
+    "expectedKeywords": [
+      "family",
+      "has",
+      "tradition",
+      "eating",
+      "dinner"
+    ]
+  },
+  {
+    "id": "ex-163",
+    "title": "Work-Life Balance Struggle",
+    "level": "intermediate",
+    "category": "daily-life",
+    "description": "Discuss balancing career and personal life",
+    "sourceText": "Trong những năm gần đây, tôi đã phải vật lộn để cân bằng giữa công việc và cuộc sống cá nhân. Công việc của tôi đòi hỏi nhiều thời gian và công sức, khiến tôi thường xuyên phải làm thêm giờ. Tôi nhận ra rằng mình đang bỏ lỡ những khoảnh khắc quan trọng với gia đình. Vì vậy, tôi đã quyết định đặt ra ranh giới rõ ràng hơn. Bây giờ tôi không kiểm tra email công việc sau 7 giờ tối và dành trọn vẹn cuối tuần cho gia đình.",
+    "highlightedSentences": [
+      "I have been struggling to balance work and personal life"
+    ],
+    "hints": [
+      "Use present perfect continuous for ongoing struggle",
+      "Consider 'to balance' structure"
+    ],
+    "expectedKeywords": [
+      "have",
+      "been",
+      "struggling",
+      "to",
+      "balance",
+      "work",
+      "personal",
+      "life"
+    ]
+  },
+  {
+    "id": "ex-164",
+    "title": "Minimalist Lifestyle Journey",
+    "level": "intermediate",
+    "category": "daily-life",
+    "description": "Describe lifestyle change",
+    "sourceText": "Hai năm trước, tôi bắt đầu hành trình sống tối giản. Tôi nhận thấy rằng mình sở hữu quá nhiều đồ đạc không cần thiết. Tôi quyết định dọn dẹp và chỉ giữ lại những thứ thực sự có giá trị. Tôi đã quyên góp hơn một nửa số quần áo và đồ dùng của mình. Cuộc sống tối giản không chỉ giúp nhà cửa gọn gàng hơn mà còn mang lại sự thanh thản trong tâm hồn. Tôi cảm thấy tự do hơn khi không bị vật chất ràng buộc.",
+    "highlightedSentences": [
+      "I started my minimalist journey two years ago"
+    ],
+    "hints": [
+      "Use past simple for specific past time",
+      "Consider possessive adjective"
+    ],
+    "expectedKeywords": [
+      "started",
+      "minimalist",
+      "journey",
+      "two",
+      "years",
+      "ago"
+    ]
+  },
+  {
+    "id": "ex-165",
+    "title": "Managing Household Finances",
+    "level": "intermediate",
+    "category": "daily-life",
+    "description": "Discuss financial planning",
+    "sourceText": "Vợ chồng tôi đã học cách quản lý tài chính gia đình một cách hiệu quả. Chúng tôi lập ngân sách chi tiết cho mỗi tháng và theo dõi mọi khoản chi tiêu. Chúng tôi ưu tiên tiết kiệm ít nhất 20% thu nhập cho quỹ dự phòng. Chúng tôi cũng đầu tư một phần vào các kênh sinh lời dài hạn. Nhờ có kế hoạch tài chính rõ ràng, chúng tôi đã giảm bớt căng thẳng về tiền bạc và có thể thực hiện những mục tiêu lớn hơn.",
+    "highlightedSentences": [
+      "My spouse and I have learned to manage household finances effectively"
+    ],
+    "hints": [
+      "Use present perfect for acquired skill",
+      "Consider 'to manage' infinitive"
+    ],
+    "expectedKeywords": [
+      "spouse",
+      "and",
+      "I",
+      "have",
+      "learned",
+      "to",
+      "manage",
+      "finances"
+    ]
+  },
+  {
+    "id": "ex-166",
+    "title": "Home Renovation Project",
+    "level": "intermediate",
+    "category": "daily-life",
+    "description": "Describe home improvement",
+    "sourceText": "Chúng tôi vừa hoàn thành dự án cải tạo nhà bếp sau ba tháng thi công. Quá trình này vừa thú vị vừa đầy thách thức. Chúng tôi phải đưa ra nhiều quyết định về thiết kế, vật liệu và màu sắc. Có lúc chúng tôi gặp phải những vấn đề không lường trước được, như phát hiện ống nước bị hỏng. Tuy nhiên, kết quả cuối cùng thật đáng giá. Căn bếp mới không chỉ đẹp mắt mà còn tiện nghi và hiện đại hơn rất nhiều.",
+    "highlightedSentences": [
+      "We have just completed our kitchen renovation after three months"
+    ],
+    "hints": [
+      "Use present perfect with 'just'",
+      "Consider time expression with 'after'"
+    ],
+    "expectedKeywords": [
+      "have",
+      "just",
+      "completed",
+      "kitchen",
+      "renovation",
+      "after",
+      "months"
+    ]
+  },
+  {
+    "id": "ex-167",
+    "title": "Social Media Boundaries",
+    "level": "intermediate",
+    "category": "daily-life",
+    "description": "Reflect on digital habits",
+    "sourceText": "Tôi đã nhận ra rằng mình dành quá nhiều thời gian trên mạng xã hội. Việc liên tục cuộn xem các bài đăng khiến tôi cảm thấy mệt mỏi và so sánh bản thân với người khác. Tôi quyết định đặt ra giới hạn rõ ràng: chỉ kiểm tra mạng xã hội hai lần mỗi ngày, mỗi lần không quá 30 phút. Tôi cũng xóa các ứng dụng khỏi màn hình chính để giảm cám dỗ. Kể từ đó, tôi có nhiều thời gian hơn cho những hoạt động ý nghĩa và cảm thấy hạnh phúc hơn.",
+    "highlightedSentences": [
+      "I realized that I was spending too much time on social media"
+    ],
+    "hints": [
+      "Use past simple for realization",
+      "Consider past continuous in 'that' clause"
+    ],
+    "expectedKeywords": [
+      "realized",
+      "that",
+      "was",
+      "spending",
+      "too",
+      "much",
+      "time",
+      "social",
+      "media"
+    ]
+  },
+  {
+    "id": "ex-168",
+    "title": "Building New Habits",
+    "level": "intermediate",
+    "category": "daily-life",
+    "description": "Discuss personal development",
+    "sourceText": "Tôi đang cố gắng xây dựng một số thói quen tích cực mới. Mỗi sáng, tôi dành 15 phút để viết nhật ký và suy ngẫm về ngày hôm trước. Tôi cũng cam kết đọc ít nhất 20 trang sách mỗi ngày. Ban đầu, việc duy trì những thói quen này khá khó khăn, nhưng sau vài tuần, chúng đã trở thành phần tự nhiên trong cuộc sống của tôi. Tôi nhận thấy rằng những thói quen nhỏ này đã tạo ra sự khác biệt lớn trong cách tôi sống và suy nghĩ.",
+    "highlightedSentences": [
+      "I am trying to build some new positive habits"
+    ],
+    "hints": [
+      "Use present continuous for ongoing effort",
+      "Consider 'to build' infinitive"
+    ],
+    "expectedKeywords": [
+      "am",
+      "trying",
+      "to",
+      "build",
+      "new",
+      "positive",
+      "habits"
+    ]
+  },
+  {
+    "id": "ex-169",
+    "title": "Dealing with Stress",
+    "level": "intermediate",
+    "category": "daily-life",
+    "description": "Discuss stress management",
+    "sourceText": "Cuộc sống hiện đại đầy rẫy những áp lực và căng thẳng. Tôi đã học được nhiều cách để đối phó với stress một cách lành mạnh. Khi cảm thấy quá tải, tôi thường đi bộ trong công viên hoặc luyện tập yoga. Tôi cũng duy trì thói quen ghi chép cảm xúc để xử lý những suy nghĩ tiêu cực. Ngoài ra, tôi không ngần ngại tìm kiếm sự hỗ trợ từ bạn bè và gia đình khi cần thiết. Những phương pháp này đã giúp tôi duy trì sức khỏe tinh thần tốt hơn.",
+    "highlightedSentences": [
+      "I have learned many ways to deal with stress healthily"
+    ],
+    "hints": [
+      "Use present perfect for acquired knowledge",
+      "Consider 'to deal with' structure"
+    ],
+    "expectedKeywords": [
+      "have",
+      "learned",
+      "many",
+      "ways",
+      "to",
+      "deal",
+      "with",
+      "stress"
+    ]
+  },
+  {
+    "id": "ex-170",
+    "title": "Time Management Skills",
+    "level": "intermediate",
+    "category": "daily-life",
+    "description": "Describe productivity strategies",
+    "sourceText": "Tôi đã cải thiện đáng kể kỹ năng quản lý thời gian của mình trong năm qua. Tôi sử dụng kỹ thuật Pomodoro để tập trung làm việc trong các khoảng thời gian ngắn. Tôi cũng lập danh sách công việc ưu tiên mỗi buổi sáng và tập trung vào ba nhiệm vụ quan trọng nhất. Tôi đã học cách nói không với những yêu cầu không cần thiết để bảo vệ thời gian của mình. Nhờ những thay đổi này, tôi hoàn thành được nhiều việc hơn mà vẫn cảm thấy ít căng thẳng hơn.",
+    "highlightedSentences": [
+      "I have significantly improved my time management skills"
+    ],
+    "hints": [
+      "Use present perfect for improvement over time",
+      "Consider adverb placement"
+    ],
+    "expectedKeywords": [
+      "have",
+      "significantly",
+      "improved",
+      "time",
+      "management",
+      "skills"
+    ]
+  },
+  {
+    "id": "ex-171",
+    "title": "Maintaining Long-Distance Friendships",
+    "level": "intermediate",
+    "category": "daily-life",
+    "description": "Discuss relationships",
+    "sourceText": "Khi bạn bè chuyển đi các thành phố khác nhau, việc duy trì tình bạn trở nên khó khăn hơn. Tuy nhiên, tôi đã tìm ra những cách để giữ liên lạc với những người bạn thân. Chúng tôi thường xuyên gọi video call vào cuối tuần để trò chuyện và cập nhật cuộc sống. Chúng tôi cũng lên kế hoạch gặp mặt trực tiếp ít nhất một lần mỗi năm. Mặc dù khoảng cách địa lý, tình bạn của chúng tôi vẫn bền chặt nhờ sự nỗ lực và quan tâm lẫn nhau.",
+    "highlightedSentences": [
+      "Maintaining friendships has become more difficult when friends move away"
+    ],
+    "hints": [
+      "Use present perfect for change",
+      "Consider gerund as subject"
+    ],
+    "expectedKeywords": [
+      "maintaining",
+      "friendships",
+      "has",
+      "become",
+      "more",
+      "difficult"
+    ]
+  },
+  {
+    "id": "ex-172",
+    "title": "Sustainable Living Choices",
+    "level": "intermediate",
+    "category": "daily-life",
+    "description": "Describe eco-friendly lifestyle",
+    "sourceText": "Gia đình tôi đang dần chuyển sang lối sống bền vững và thân thiện với môi trường. Chúng tôi đã thay thế đồ nhựa dùng một lần bằng các sản phẩm tái sử dụng. Chúng tôi mua thực phẩm hữu cơ từ chợ nông sản địa phương và giảm thiểu rác thải thực phẩm. Chúng tôi cũng sử dụng phương tiện công cộng hoặc xe đạp thay vì lái xe riêng khi có thể. Những thay đổi nhỏ này không chỉ tốt cho hành tinh mà còn giúp chúng tôi sống có ý thức hơn.",
+    "highlightedSentences": [
+      "My family is gradually transitioning to a sustainable lifestyle"
+    ],
+    "hints": [
+      "Use present continuous for ongoing change",
+      "Consider 'transitioning to' structure"
+    ],
+    "expectedKeywords": [
+      "family",
+      "is",
+      "gradually",
+      "transitioning",
+      "to",
+      "sustainable",
+      "lifestyle"
+    ]
+  }
+]

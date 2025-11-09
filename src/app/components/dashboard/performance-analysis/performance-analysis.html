@@ -1,0 +1,105 @@
+<div class="performance-section">
+  <h2>Performance Analysis</h2>
+
+  <!-- Top Errors -->
+  <div class="analysis-card">
+    <h3>Top 5 Common Errors</h3>
+    @if (analytics().topErrors.length > 0) {
+      <ul class="error-list">
+        @for (error of analytics().topErrors; track error.type) {
+          <li class="error-item">
+            <span class="error-icon">{{ getErrorIcon(error.type) }}</span>
+            <div class="error-details">
+              <strong>{{ error.type }}</strong>
+              <p>{{ error.description }}</p>
+              <span class="error-count">{{ error.count }} occurrences ({{ error.percentage }}%)</span>
+            </div>
+          </li>
+        }
+      </ul>
+    } @else {
+      <p class="empty-message">No errors detected yet - keep practicing!</p>
+    }
+  </div>
+
+  <!-- Category Accuracy -->
+  <div class="analysis-card">
+    <h3>Accuracy by Category</h3>
+    @if (analytics().categoryAccuracy.length > 0) {
+      <div class="table-container">
+        <table class="accuracy-table" role="table" [attr.aria-label]="'Category accuracy statistics'">
+          <thead>
+            <tr>
+              <th>Category</th>
+              <th>Exercises</th>
+              <th>Avg Score</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (cat of analytics().categoryAccuracy; track cat.category) {
+              <tr [class]="getAccuracyClass(cat.avgScore)">
+                <td>{{ cat.categoryName }}</td>
+                <td>{{ cat.exerciseCount }}</td>
+                <td>{{ cat.avgScore }}%</td>
+                <td>
+                  <span class="status-badge" [class]="getAccuracyClass(cat.avgScore)">
+                    {{ getPerformanceLabel(cat.avgScore) }}
+                  </span>
+                  @if (cat.exerciseCount === 1) {
+                    <span class="limited-data-badge">Limited data</span>
+                  }
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    } @else {
+      <p class="empty-message">No category data available yet</p>
+    }
+  </div>
+
+  <!-- Difficulty Comparison -->
+  <div class="analysis-card">
+    <h3>Performance by Difficulty</h3>
+    @if (analytics().difficultyComparison.length > 0) {
+      <div class="comparison-grid">
+        @for (diff of analytics().difficultyComparison; track diff.level) {
+          <div class="difficulty-card" [class.recommended]="diff.readyToAdvance" [class.current]="diff.isCurrentLevel">
+            <h4>{{ diff.levelName }}</h4>
+            <div class="stat">
+              <label>Average Score</label>
+              <span class="value">{{ diff.avgScore }}%</span>
+            </div>
+            <div class="stat">
+              <label>Exercises Completed</label>
+              <span class="value">{{ diff.exerciseCount }}</span>
+            </div>
+            <div class="stat">
+              <label>Completion Rate</label>
+              <span class="value">{{ diff.completionRate }}%</span>
+            </div>
+            @if (diff.readyToAdvance) {
+              <div class="advancement-notice">
+                <span class="icon">🎓</span>
+                <p>Ready for next level!</p>
+              </div>
+            }
+            @if (diff.isCurrentLevel) {
+              <div class="progress-indicator">
+                <label>Progress to advancement</label>
+                <div class="progress-bar">
+                  <div class="progress-fill" [style.width.%]="diff.advancementProgress"></div>
+                </div>
+                <span class="progress-text">{{ diff.advancementProgress }}%</span>
+              </div>
+            }
+          </div>
+        }
+      </div>
+    } @else {
+      <p class="empty-message">No difficulty data available yet</p>
+    }
+  </div>
+</div>

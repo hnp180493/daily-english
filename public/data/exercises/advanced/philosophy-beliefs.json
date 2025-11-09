@@ -1,0 +1,118 @@
+[
+  {
+    "id": "ex-041",
+    "title": "The Future of Democracy",
+    "level": "advanced",
+    "category": "philosophy-beliefs",
+    "description": "Analyze political systems",
+    "sourceText": "Dân chủ đang đối mặt với những thách thức nghiêm trọng trên toàn thế giới. Chủ nghĩa dân túy đang gia tăng. Tin giả lan truyền nhanh chóng. Sự phân cực chính trị đang tăng lên. Niềm tin vào các thể chế đang suy giảm. Một số người đặt câu hỏi liệu dân chủ có thể tồn tại. Tuy nhiên, dân chủ đã vượt qua khủng hoảng trước đây. Nó có khả năng tự sửa chữa. Chúng ta cần củng cố các thể chế dân chủ. Chúng ta cần giáo dục công dân. Chúng ta cần chống lại thông tin sai lệch. Chúng ta cần khuyến khích sự tham gia. Tương lai của dân chủ phụ thuộc vào cam kết của chúng ta với các giá trị của nó.",
+    "highlightedSentences": [
+      "Democracy is facing serious challenges worldwide"
+    ],
+    "hints": [
+      "Use present continuous for current situation",
+      "Consider the adjective before 'challenges'"
+    ],
+    "expectedKeywords": [
+      "democracy",
+      "is",
+      "facing",
+      "serious",
+      "challenges",
+      "worldwide"
+    ]
+  },
+  {
+    "id": "ex-042",
+    "title": "Lessons from History",
+    "level": "advanced",
+    "category": "philosophy-beliefs",
+    "description": "Reflect on historical patterns",
+    "sourceText": "Lịch sử có xu hướng lặp lại. Các nền văn minh trỗi dậy và sụp đổ. Chiến tranh xảy ra vì những lý do tương tự. Các phong trào xã hội theo chu kỳ. Nghiên cứu lịch sử giúp chúng ta hiểu hiện tại. Nó cho thấy hậu quả của các quyết định. Nó tiết lộ các mô hình hành vi con người. Những người không học lịch sử bị lặp lại nó. Chúng ta có thể học được từ thành công và thất bại của quá khứ. Chúng ta có thể tránh những sai lầm cũ. Chúng ta có thể xây dựng một tương lai tốt hơn. Lịch sử không chỉ về quá khứ, nó về tương lai.",
+    "highlightedSentences": [
+      "History tends to repeat itself"
+    ],
+    "hints": [
+      "Use 'tends to' for general tendency",
+      "Consider the reflexive pronoun"
+    ],
+    "expectedKeywords": [
+      "history",
+      "tends",
+      "to",
+      "repeat",
+      "itself"
+    ]
+  },
+  {
+    "id": "ex-045",
+    "title": "Comparative Religion Studies",
+    "level": "advanced",
+    "category": "philosophy-beliefs",
+    "description": "Compare religious traditions",
+    "sourceText": "Các tôn giáo thế giới có nhiều điểm chung đáng ngạc nhiên. Tất cả đều dạy về lòng trắc ẩn và tình yêu. Tất cả đều có quy tắc đạo đức. Tất cả đều cung cấp ý nghĩa và mục đích. Tuy nhiên, chúng cũng có sự khác biệt quan trọng. Chúng có niềm tin khác nhau về thần thánh. Chúng có nghi lễ và thực hành khác nhau. Chúng có cách tiếp cận khác nhau về cứu rỗi. Nghiên cứu tôn giáo so sánh khám phá những điểm tương đồng và khác biệt này. Nó thúc đẩy sự hiểu biết và tôn trọng. Nó giúp chúng ta đánh giá cao sự đa dạng tôn giáo. Nó cho thấy rằng có nhiều con đường đến sự thật.",
+    "highlightedSentences": [
+      "World religions have many surprising similarities"
+    ],
+    "hints": [
+      "Use 'have' with plural subject",
+      "Consider the adjective before 'similarities'"
+    ],
+    "expectedKeywords": [
+      "world",
+      "religions",
+      "have",
+      "many",
+      "surprising",
+      "similarities"
+    ]
+  },
+  {
+    "id": "ex-046",
+    "title": "Constitutional Law Principles",
+    "level": "advanced",
+    "category": "philosophy-beliefs",
+    "description": "Understand legal foundations",
+    "sourceText": "Hiến pháp là luật tối cao của đất nước. Nó thiết lập cấu trúc chính phủ. Nó xác định quyền hạn của các nhánh. Nó bảo vệ quyền cơ bản. Hiến pháp giới hạn quyền lực chính phủ. Nó đảm bảo rằng không ai có quyền lực tuyệt đối. Tòa án giải thích hiến pháp. Họ quyết định liệu luật pháp có vi hiến không. Quá trình này được gọi là xem xét tư pháp. Hiến pháp có thể được sửa đổi, nhưng quá trình khó khăn. Điều này đảm bảo sự ổn định trong khi cho phép thay đổi. Luật hiến pháp là nền tảng của dân chủ.",
+    "highlightedSentences": [
+      "The constitution is the supreme law of the land"
+    ],
+    "hints": [
+      "Use 'is' with singular subject",
+      "Consider the article before 'supreme law'"
+    ],
+    "expectedKeywords": [
+      "constitution",
+      "is",
+      "the",
+      "supreme",
+      "law",
+      "of",
+      "the",
+      "land"
+    ]
+  },
+  {
+    "id": "ex-047",
+    "title": "Ethical Dilemmas in Modern Society",
+    "level": "advanced",
+    "category": "philosophy-beliefs",
+    "description": "Analyze moral complexity",
+    "sourceText": "Xã hội hiện đại đối mặt với những vấn đề đạo đức phức tạp. Công nghệ tạo ra những câu hỏi mới. Liệu chúng ta có nên chỉnh sửa gen con người không? Liệu chúng ta có nên tạo ra trí tuệ nhân tạo có ý thức không? Y học đặt ra những lựa chọn khó khăn. Khi nào nên kết thúc điều trị duy trì sự sống? Ai quyết định phân bổ nguồn lực khan hiếm? Kinh doanh phải đối mặt với những vấn đề đạo đức. Lợi nhuận có quan trọng hơn con người không? Trách nhiệm của công ty đối với xã hội là gì? Những câu hỏi này không có câu trả lời dễ dàng. Chúng đòi hỏi suy nghĩ cẩn thận và tranh luận. Chúng ta phải cân nhắc các giá trị cạnh tranh. Chúng ta phải xem xét hậu quả. Đạo đức giúp chúng ta điều hướng những lựa chọn khó khăn này.",
+    "highlightedSentences": [
+      "Modern society faces complex ethical issues"
+    ],
+    "hints": [
+      "Use present simple for general truth",
+      "Consider the adjective before 'ethical issues'"
+    ],
+    "expectedKeywords": [
+      "modern",
+      "society",
+      "faces",
+      "complex",
+      "ethical",
+      "issues"
+    ]
+  }
+]

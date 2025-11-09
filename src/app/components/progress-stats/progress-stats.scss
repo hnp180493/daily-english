@@ -1,0 +1,98 @@
+.progress-stats {
+  background-color: #1e2139;
+  border: 2px solid #2a2d4a;
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin: 2rem 0;
+}
+
+.section-title {
+  color: #f5b800;
+  font-size: 1.25rem;
+  margin: 0 0 1.5rem 0;
+  font-weight: 600;
+  text-align: center;
+}
+
+.stats-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.stat-card {
+  background-color: #252842;
+  border-radius: 8px;
+  padding: 1.5rem;
+  text-align: center;
+}
+
+.stat-icon {
+  font-size: 3rem;
+  margin-bottom: 0.5rem;
+}
+
+.stat-value {
+  color: #f5b800;
+  font-size: 2.5rem;
+  font-weight: bold;
+  margin: 0.5rem 0;
+}
+
+.stat-label {
+  color: #b0b0b0;
+  font-size: 1rem;
+}
+
+.achievements-section {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  justify-content: center;
+}
+
+.achievement-badge {
+  background-color: #252842;
+  border: 2px solid #f5b800;
+  border-radius: 20px;
+  padding: 0.75rem 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.badge-icon {
+  font-size: 1.5rem;
+}
+
+.badge-label {
+  color: #ffffff;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+@media (max-width: 767px) {
+  .progress-stats {
+    padding: 1rem;
+  }
+
+  .stat-icon {
+    font-size: 2.5rem;
+  }
+
+  .stat-value {
+    font-size: 2rem;
+  }
+
+  .achievement-badge {
+    padding: 0.5rem 1rem;
+  }
+
+  .badge-icon {
+    font-size: 1.25rem;
+  }
+
+  .badge-label {
+    font-size: 0.85rem;
+  }
+}

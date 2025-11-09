@@ -1,0 +1,63 @@
+<header class="app-header">
+  <div class="header-container">
+    <div class="logo-section">
+      <a routerLink="/home" class="logo-link">
+        <h1 class="logo-text">{{ appTitle }}</h1>
+      </a>
+    </div>
+    
+    <nav class="nav-links">
+      <a routerLink="/home" routerLinkActive="active" class="nav-link">WRITING</a>
+      <a routerLink="/dashboard" routerLinkActive="active" class="nav-link">DASHBOARD</a>
+      <a routerLink="/exercises/custom" routerLinkActive="active" class="nav-link">MY EXERCISES</a>
+      <a routerLink="/guide" routerLinkActive="active" class="nav-link">📚 GUIDE</a>
+      <!-- <a class="nav-link">SPEAKING <span class="beta-badge">BETA</span></a>
+      <a class="nav-link">VOCABULARY</a>
+      <a class="nav-link">RANK</a> -->
+    </nav>
+    
+    <div class="profile-section">
+      <app-auth-status />
+      <div class="stats-group">
+        @if (streak() >= 0) {
+          <div class="streak-display" title="Số ngày học liên tục">
+            <span class="streak-icon">🔥</span>
+            <span class="streak-count">{{ streak() }}</span>
+          </div>
+        }
+        <div class="points-display" title="Tổng điểm tích lũy">
+          <span class="points-icon">⭐</span>
+          <span class="points-count">{{ displayPoints() }}</span>
+          
+          @for (point of flyingPoints(); track point.id) {
+            <div class="flying-point"
+                 [style.left.px]="point.startX"
+                 [style.top.px]="point.startY"
+                 [style.--end-x]="(point.endX - point.startX) + 'px'"
+                 [style.--end-y]="(point.endY - point.startY) + 'px'">
+              +{{ point.points }}
+            </div>
+          }
+        </div>
+      </div>
+      <a routerLink="/achievements" routerLinkActive="active" class="achievement-btn" title="Achievements">
+        <span class="achievement-icon">🏆</span>
+        @if (displayAchievementCount() > 0) {
+          <span class="achievement-badge">{{ displayAchievementCount() }}</span>
+        }
+      </a>
+      <a routerLink="/favorites" routerLinkActive="active" class="favorite-btn" title="Bài tập yêu thích">
+        <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+          <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+        </svg>
+        @if (favoriteCount() > 0) {
+          <span class="favorite-badge">{{ favoriteCount() }}</span>
+        }
+      </a>
+      <a routerLink="/profile" class="profile-btn">
+        <span class="profile-icon">👤</span>
+        <span class="profile-text">MY PROFILE</span>
+      </a>
+    </div>
+  </div>
+</header>

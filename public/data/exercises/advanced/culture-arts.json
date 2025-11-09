@@ -1,0 +1,101 @@
+[
+  {
+    "id": "ex-040",
+    "title": "Globalization and Identity",
+    "level": "advanced",
+    "category": "culture-arts",
+    "description": "Examine cultural transformation",
+    "sourceText": "Toàn cầu hóa đã kết nối thế giới theo những cách chưa từng có. Chúng ta có thể giao tiếp tức thì với mọi người ở bất kỳ đâu. Chúng ta có thể tiếp cận văn hóa và ý tưởng từ khắp nơi. Tuy nhiên, toàn cầu hóa cũng đe dọa bản sắc địa phương. Ngôn ngữ và truyền thống đang biến mất. Văn hóa đại chúng đang đồng nhất hóa xã hội. Một số người lo lắng về mất đi tính độc đáo. Nhưng toàn cầu hóa cũng tạo ra cơ hội mới. Nó cho phép trao đổi văn hóa và hiểu biết. Thách thức là cân bằng giữa toàn cầu và địa phương. Chúng ta có thể kết nối toàn cầu trong khi vẫn giữ gìn bản sắc của mình.",
+    "highlightedSentences": [
+      "Globalization has connected the world in unprecedented ways"
+    ],
+    "hints": [
+      "Use present perfect for change over time",
+      "Consider the preposition before 'unprecedented ways'"
+    ],
+    "expectedKeywords": [
+      "globalization",
+      "has",
+      "connected",
+      "the",
+      "world",
+      "in",
+      "unprecedented",
+      "ways"
+    ]
+  },
+  {
+    "id": "ex-044",
+    "title": "Literary Criticism and Analysis",
+    "level": "advanced",
+    "category": "culture-arts",
+    "description": "Examine literary techniques",
+    "sourceText": "Phê bình văn học là nghệ thuật phân tích văn bản. Nó xem xét chủ đề, biểu tượng và kỹ thuật. Nó khám phá ý định của tác giả. Nó xem xét bối cảnh lịch sử và văn hóa. Các nhà phê bình sử dụng nhiều lý thuyết khác nhau. Một số tập trung vào cấu trúc văn bản. Một số xem xét vai trò của người đọc. Một số phân tích quyền lực và chính trị. Phê bình văn học làm sâu sắc sự hiểu biết của chúng ta. Nó tiết lộ các lớp ý nghĩa. Nó kết nối văn học với các vấn đề lớn hơn. Nó giúp chúng ta đánh giá cao nghệ thuật viết lách.",
+    "highlightedSentences": [
+      "Literary criticism is the art of analyzing texts"
+    ],
+    "hints": [
+      "Use 'is' with singular subject",
+      "Consider the gerund form after 'of'"
+    ],
+    "expectedKeywords": [
+      "literary",
+      "criticism",
+      "is",
+      "the",
+      "art",
+      "of",
+      "analyzing",
+      "texts"
+    ]
+  },
+  {
+    "id": "ex-097",
+    "title": "Cultural Appropriation Debate",
+    "level": "advanced",
+    "category": "culture-arts",
+    "description": "Examine cultural sensitivity",
+    "sourceText": "Chiếm đoạt văn hóa là một chủ đề gây tranh cãi trong nghệ thuật và thời trang. Nó xảy ra khi một nền văn hóa chiếm lấy các yếu tố từ nền văn hóa khác mà không có sự tôn trọng hoặc hiểu biết. Một số người cho rằng đây là hình thức đánh giá cao văn hóa. Những người khác coi đó là sự thiếu tôn trọng, đặc biệt khi liên quan đến các nền văn hóa bị áp bức. Ranh giới giữa đánh giá cao và chiếm đoạt có thể mờ nhạt. Chúng ta cần có cuộc đối thoại cởi mở về vấn đề này.",
+    "highlightedSentences": [
+      "Cultural appropriation is a controversial topic in art and fashion"
+    ],
+    "hints": [
+      "Use 'is' with singular subject"
+    ],
+    "expectedKeywords": [
+      "cultural",
+      "appropriation",
+      "is",
+      "controversial",
+      "topic",
+      "in",
+      "art",
+      "and",
+      "fashion"
+    ]
+  },
+  {
+    "id": "ex-098",
+    "title": "Digital Art Revolution",
+    "level": "advanced",
+    "category": "culture-arts",
+    "description": "Explore modern art forms",
+    "sourceText": "Nghệ thuật kỹ thuật số đã mở ra những khả năng sáng tạo mới. NFT (non-fungible tokens) đã tạo ra một thị trường mới cho nghệ thuật kỹ thuật số. Nghệ sĩ có thể tiếp cận khán giả toàn cầu qua internet. Tuy nhiên, điều này cũng đặt ra câu hỏi về giá trị và tính xác thực của nghệ thuật. Một số người cho rằng nghệ thuật kỹ thuật số thiếu tính vật chất của nghệ thuật truyền thống. Ranh giới giữa nghệ thuật và công nghệ đang trở nên mờ nhạt.",
+    "highlightedSentences": [
+      "Digital art has opened up new creative possibilities"
+    ],
+    "hints": [
+      "Use present perfect for recent development"
+    ],
+    "expectedKeywords": [
+      "digital",
+      "art",
+      "has",
+      "opened",
+      "up",
+      "new",
+      "creative",
+      "possibilities"
+    ]
+  }
+]

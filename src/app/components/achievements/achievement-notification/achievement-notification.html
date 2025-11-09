@@ -1,0 +1,45 @@
+@if (isVisible() && currentNotification()) {
+  <div 
+    class="achievement-notification"
+    [class]="currentNotification()!.rarity"
+    [@slideIn]
+    role="alert"
+    aria-live="polite"
+    aria-atomic="true">
+    
+    <div class="notification-content">
+      <div class="notification-icon">
+        <img 
+          [src]="currentNotification()!.iconUrl" 
+          [alt]="currentNotification()!.name"
+          loading="lazy" />
+      </div>
+      
+      <div class="notification-text">
+        <h4>Achievement Unlocked!</h4>
+        <p class="achievement-name">{{ currentNotification()!.name }}</p>
+        <p class="achievement-rarity">{{ currentNotification()!.rarity | titlecase }}</p>
+      </div>
+
+      <button 
+        class="view-button" 
+        (click)="viewAchievement()"
+        aria-label="View achievement details"
+        type="button">
+        View
+      </button>
+
+      <button 
+        class="close-button" 
+        (click)="dismiss()"
+        aria-label="Dismiss notification"
+        type="button">
+        ×
+      </button>
+    </div>
+
+    <div class="notification-progress">
+      <div class="progress-bar"></div>
+    </div>
+  </div>
+}

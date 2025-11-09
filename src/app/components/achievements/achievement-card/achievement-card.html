@@ -1,0 +1,70 @@
+<div 
+  class="achievement-card"
+  [class.locked]="!achievement().unlocked"
+  [class.common]="achievement().rarity === 'common'"
+  [class.rare]="achievement().rarity === 'rare'"
+  [class.epic]="achievement().rarity === 'epic'"
+  [class.legendary]="achievement().rarity === 'legendary'"
+  [attr.data-achievement-id]="achievement().id"
+  [attr.aria-label]="getAriaLabel()"
+  role="button"
+  tabindex="0"
+  (click)="handleClick()"
+  (keydown)="handleKeydown($event)">
+  
+  @if (!achievement().unlocked) {
+    <div class="lock-overlay">
+      <span class="lock-icon">🔒</span>
+    </div>
+  }
+
+  <div class="achievement-icon">
+    <img 
+      [src]="achievement().iconUrl" 
+      [alt]="achievement().name"
+      loading="lazy" />
+  </div>
+
+  <div class="achievement-content">
+    <h3>{{ achievement().name }}</h3>
+    <p class="achievement-description">{{ achievement().description }}</p>
+    
+    <div class="rarity-badge" [class]="achievement().rarity">
+      {{ achievement().rarity | titlecase }}
+    </div>
+
+    @if (!achievement().unlocked && progress() && progress()!.percentage < 100) {
+      <div class="progress-container">
+        <div class="progress-bar">
+          <div 
+            class="progress-fill" 
+            [style.width.%]="progress()!.percentage">
+          </div>
+        </div>
+        <span class="progress-text">{{ progress()!.current }} / {{ progress()!.required }}</span>
+      </div>
+    }
+
+    @if (achievement().unlocked) {
+      <div class="unlock-date">
+        <span class="icon">✓</span>
+        <span>Unlocked {{ formatDate(achievement().unlockedAt!) }}</span>
+      </div>
+      
+      @if (canClaim()) {
+        <button 
+          class="claim-button"
+          type="button"
+          (click)="handleClaimClick($event)"
+          aria-label="Claim rewards for {{ achievement().name }}">
+          🎁 Claim Rewards
+        </button>
+      } @else if (achievement().rewardsClaimed) {
+        <div class="claimed-badge">
+          <span class="icon">✓</span>
+          <span>Rewards Claimed</span>
+        </div>
+      }
+    }
+  </div>
+</div>

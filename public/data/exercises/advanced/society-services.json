@@ -1,0 +1,101 @@
+[
+  {
+    "id": "ex-049",
+    "title": "Public Health and Pandemic Response",
+    "level": "advanced",
+    "category": "society-services",
+    "description": "Analyze health crisis management",
+    "sourceText": "Đại dịch COVID-19 đã thử thách các hệ thống y tế công cộng trên toàn thế giới. Nó đã tiết lộ điểm mạnh và điểm yếu. Một số quốc gia phản ứng nhanh chóng và hiệu quả. Họ kiểm tra rộng rãi và theo dõi tiếp xúc. Họ thực hiện các biện pháp y tế công cộng. Các quốc gia khác chậm trễ và gặp khó khăn. Đại dịch đã cho thấy tầm quan trọng của chuẩn bị. Nó đã nhấn mạnh nhu cầu hợp tác quốc tế. Nó đã làm nổi bật bất bình đẳng trong chăm sóc sức khỏe. Chúng ta đã học được những bài học quý giá. Chúng ta phải đầu tư vào y tế công cộng. Chúng ta phải xây dựng hệ thống kiên cường. Chúng ta phải chuẩn bị cho các đại dịch trong tương lai.",
+    "highlightedSentences": [
+      "The COVID-19 pandemic has tested public health systems worldwide"
+    ],
+    "hints": [
+      "Use present perfect for recent impact",
+      "Consider the adjective before 'health systems'"
+    ],
+    "expectedKeywords": [
+      "covid-19",
+      "pandemic",
+      "has",
+      "tested",
+      "public",
+      "health",
+      "systems",
+      "worldwide"
+    ]
+  },
+  {
+    "id": "ex-094",
+    "title": "Universal Basic Income Debate",
+    "level": "advanced",
+    "category": "society-services",
+    "description": "Analyze economic policy",
+    "sourceText": "Thu nhập cơ bản toàn dân là một ý tưởng gây tranh cãi. Nó đề xuất cung cấp một khoản tiền định kỳ cho tất cả công dân mà không có điều kiện. Những người ủng hộ cho rằng nó sẽ giảm nghèo đói và cung cấp an ninh kinh tế. Nó cũng có thể giúp mọi người theo đuổi giáo dục hoặc khởi nghiệp. Những người phản đối lo ngại về chi phí và tác động đến động lực làm việc. Một số quốc gia đang thử nghiệm các chương trình thí điểm.",
+    "highlightedSentences": [
+      "Universal basic income is a controversial idea"
+    ],
+    "hints": [
+      "Use 'is' with singular subject"
+    ],
+    "expectedKeywords": [
+      "universal",
+      "basic",
+      "income",
+      "is",
+      "controversial",
+      "idea"
+    ]
+  },
+  {
+    "id": "ex-095",
+    "title": "Smart City Development",
+    "level": "advanced",
+    "category": "society-services",
+    "description": "Explore urban innovation",
+    "sourceText": "Thành phố thông minh sử dụng công nghệ để cải thiện chất lượng cuộc sống đô thị. Cảm biến và dữ liệu giúp tối ưu hóa giao thông, năng lượng và dịch vụ công cộng. Công dân có thể tương tác với chính quyền qua ứng dụng di động. Tuy nhiên, thành phố thông minh cũng đặt ra câu hỏi về quyền riêng tư và giám sát. Chúng ta cần cân bằng giữa hiệu quả và quyền tự do cá nhân. Phát triển thành phố thông minh phải bao gồm tất cả công dân.",
+    "highlightedSentences": [
+      "Smart cities use technology to improve urban quality of life"
+    ],
+    "hints": [
+      "Use present simple for general description"
+    ],
+    "expectedKeywords": [
+      "smart",
+      "cities",
+      "use",
+      "technology",
+      "to",
+      "improve",
+      "urban",
+      "quality",
+      "of",
+      "life"
+    ]
+  },
+  {
+    "id": "ex-096",
+    "title": "Social Media Impact on Society",
+    "level": "advanced",
+    "category": "society-services",
+    "description": "Analyze digital social effects",
+    "sourceText": "Mạng xã hội đã thay đổi cách chúng ta giao tiếp và tương tác. Nó kết nối mọi người trên toàn thế giới và tạo điều kiện cho các phong trào xã hội. Tuy nhiên, nó cũng có mặt tối. Tin giả lan truyền nhanh chóng. Bắt nạt trực tuyến là một vấn đề nghiêm trọng. Mạng xã hội có thể tạo ra buồng vang và phân cực xã hội. Chúng ta cần sử dụng mạng xã hội một cách có trách nhiệm và phê phán.",
+    "highlightedSentences": [
+      "Social media has changed the way we communicate and interact"
+    ],
+    "hints": [
+      "Use present perfect for change over time"
+    ],
+    "expectedKeywords": [
+      "social",
+      "media",
+      "has",
+      "changed",
+      "the",
+      "way",
+      "we",
+      "communicate",
+      "and",
+      "interact"
+    ]
+  }
+]

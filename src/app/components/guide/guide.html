@@ -1,0 +1,33 @@
+<div class="guide-container">
+  <aside class="guide-sidebar">
+    <h2 class="sidebar-title">📚 Mục Lục</h2>
+    <nav class="sidebar-nav">
+      @for (section of sections(); track section.id) {
+        <button
+          class="nav-item"
+          [class.active]="activeSection() === section.id"
+          (click)="scrollToSection(section.id)">
+          {{ section.title }}
+        </button>
+      }
+    </nav>
+  </aside>
+  
+  <main class="guide-content">
+    @if (isLoading()) {
+      <div class="loading-state">
+        <div class="spinner"></div>
+        <p>Đang tải hướng dẫn...</p>
+      </div>
+    } @else {
+      <div class="content-wrapper">
+        @for (section of sections(); track section.id) {
+          <section [id]="section.id" class="content-section">
+            <h2 class="section-title">{{ section.title }}</h2>
+            <div class="section-content" [innerHTML]="section.content"></div>
+          </section>
+        }
+      </div>
+    }
+  </main>
+</div>

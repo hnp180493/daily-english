@@ -1,0 +1,209 @@
+[
+  {
+    "id": "ex-013",
+    "title": "Shopping for Groceries",
+    "level": "beginner",
+    "category": "society-services",
+    "description": "Describe a shopping trip",
+    "sourceText": "Hôm nay tôi đi siêu thị mua đồ. Tôi cần mua rau củ, trái cây và thịt. Tôi mang theo danh sách mua sắm để khỏi quên. Siêu thị đông người lắm. Tôi tìm được tất cả những thứ mình cần. Tôi xếp hàng chờ thanh toán. Tổng cộng là 500.000 đồng. Tôi thanh toán bằng thẻ tín dụng. Sau đó tôi mang đồ về nhà.",
+    "highlightedSentences": [
+      "I need to buy vegetables, fruits and meat"
+    ],
+    "hints": [
+      "Use 'need to' for necessity",
+      "Consider the correct verb form"
+    ],
+    "expectedKeywords": [
+      "need",
+      "to",
+      "buy"
+    ]
+  },
+  {
+    "id": "ex-073",
+    "title": "Post Office Visit",
+    "level": "beginner",
+    "category": "society-services",
+    "description": "Describe postal service",
+    "sourceText": "Hôm nay tôi đến bưu điện. Tôi cần gửi một kiện hàng cho bạn. Tôi xếp hàng và chờ đến lượt. Nhân viên bưu điện giúp tôi đóng gói cẩn thận. Tôi thanh toán phí dịch vụ. Họ nói kiện hàng sẽ đến nơi trong ba ngày. Tôi nhận được biên lai để theo dõi.",
+    "highlightedSentences": [
+      "I need to send a package"
+    ],
+    "hints": [
+      "Use 'need to' for necessity"
+    ],
+    "expectedKeywords": [
+      "need",
+      "to",
+      "send",
+      "package"
+    ]
+  },
+  {
+    "id": "ex-074",
+    "title": "Bank Account",
+    "level": "beginner",
+    "category": "society-services",
+    "description": "Learn banking vocabulary",
+    "sourceText": "Tôi có một tài khoản ngân hàng. Mỗi tháng tôi gửi tiền vào tài khoản tiết kiệm. Tôi dùng thẻ ATM để rút tiền khi cần. Tôi thường xuyên kiểm tra số dư qua ứng dụng ngân hàng. Tôi thanh toán hóa đơn điện nước qua dịch vụ ngân hàng trực tuyến. Ngân hàng giúp tôi bảo quản tiền một cách an toàn.",
+    "highlightedSentences": [
+      "I have a bank account"
+    ],
+    "hints": [
+      "Use 'have' for possession"
+    ],
+    "expectedKeywords": [
+      "have",
+      "bank",
+      "account"
+    ]
+  },
+  {
+    "id": "ex-075",
+    "title": "Library Services",
+    "level": "beginner",
+    "category": "society-services",
+    "description": "Describe library visit",
+    "sourceText": "Tôi thường xuyên đến thư viện. Tôi mượn sách và đĩa DVD về xem. Tôi có thẻ thành viên thư viện. Tôi hay sử dụng máy tính ở khu vực công cộng. Thư viện có phòng đọc yên tĩnh rất thoải mái. Thủ thư luôn nhiệt tình giúp tôi tìm sách. Thư viện thực sự là một nguồn tài nguyên quý giá.",
+    "highlightedSentences": [
+      "I often go to the library"
+    ],
+    "hints": [
+      "Use present simple for frequency"
+    ],
+    "expectedKeywords": [
+      "often",
+      "go",
+      "to",
+      "library"
+    ]
+  },
+  {
+    "id": "ex-147",
+    "title": "Community Clean-Up Day",
+    "level": "beginner",
+    "category": "society-services",
+    "description": "Describe volunteer activity",
+    "sourceText": "Hôm nay là ngày dọn dẹp cộng đồng. Tôi tham gia cùng hàng xóm. Chúng tôi nhặt rác ở công viên. Chúng tôi quét lá và cắt cỏ. Mọi người làm việc chăm chỉ. Công viên trở nên sạch sẽ và đẹp đẽ. Tôi vui vì giúp đỡ cộng đồng.",
+    "highlightedSentences": [
+      "Today is community clean-up day"
+    ],
+    "hints": [
+      "Use 'is' for singular subject",
+      "Consider compound noun"
+    ],
+    "expectedKeywords": [
+      "today",
+      "is",
+      "community",
+      "clean-up",
+      "day"
+    ]
+  },
+  {
+    "id": "ex-148",
+    "title": "Calling Emergency Services",
+    "level": "beginner",
+    "category": "society-services",
+    "description": "Learn emergency procedures",
+    "sourceText": "Tôi biết số điện thoại khẩn cấp. Số 113 là công an. Số 114 là cứu hỏa. Số 115 là cấp cứu y tế. Trong tình huống khẩn cấp, tôi giữ bình tĩnh. Tôi gọi số phù hợp và nói rõ địa chỉ. Biết số khẩn cấp rất quan trọng.",
+    "highlightedSentences": [
+      "I know the emergency phone numbers"
+    ],
+    "hints": [
+      "Use present simple for knowledge",
+      "Consider plural form"
+    ],
+    "expectedKeywords": [
+      "know",
+      "emergency",
+      "phone",
+      "numbers"
+    ]
+  },
+  {
+    "id": "ex-149",
+    "title": "Paying Bills Online",
+    "level": "beginner",
+    "category": "society-services",
+    "description": "Describe online services",
+    "sourceText": "Tôi thanh toán hóa đơn qua mạng. Tôi đăng nhập vào tài khoản ngân hàng. Tôi chọn hóa đơn cần thanh toán. Tôi nhập số tiền và xác nhận. Thanh toán trực tuyến rất tiện lợi. Tôi không cần đến ngân hàng. Tôi tiết kiệm được nhiều thời gian.",
+    "highlightedSentences": [
+      "I pay bills online"
+    ],
+    "hints": [
+      "Use present simple for routine",
+      "Consider adverb placement"
+    ],
+    "expectedKeywords": [
+      "pay",
+      "bills",
+      "online"
+    ]
+  },
+  {
+    "id": "ex-150",
+    "title": "Visiting the Police Station",
+    "level": "beginner",
+    "category": "society-services",
+    "description": "Describe public service",
+    "sourceText": "Hôm nay tôi đến đồn công an. Tôi cần làm giấy tờ cá nhân. Công an viên rất lịch sự và hữu ích. Họ hướng dẫn tôi điền đơn. Tôi nộp hồ sơ và chờ đợi. Họ nói tôi quay lại sau một tuần. Dịch vụ công rất chuyên nghiệp.",
+    "highlightedSentences": [
+      "I go to the police station today"
+    ],
+    "hints": [
+      "Use present simple for current event",
+      "Consider article"
+    ],
+    "expectedKeywords": [
+      "go",
+      "to",
+      "police",
+      "station",
+      "today"
+    ]
+  },
+  {
+    "id": "ex-151",
+    "title": "Using Public Wi-Fi",
+    "level": "beginner",
+    "category": "society-services",
+    "description": "Learn about public services",
+    "sourceText": "Công viên có Wi-Fi miễn phí. Tôi kết nối điện thoại với mạng. Tôi lướt web và kiểm tra email. Wi-Fi công cộng rất hữu ích. Tôi có thể làm việc ở ngoài trời. Tôi tiết kiệm được dung lượng 3G. Dịch vụ này rất tiện lợi.",
+    "highlightedSentences": [
+      "The park has free Wi-Fi"
+    ],
+    "hints": [
+      "Use 'has' with singular subject",
+      "Consider adjective placement"
+    ],
+    "expectedKeywords": [
+      "park",
+      "has",
+      "free",
+      "Wi-Fi"
+    ]
+  },
+  {
+    "id": "ex-152",
+    "title": "Neighborhood Watch",
+    "level": "beginner",
+    "category": "society-services",
+    "description": "Describe community safety",
+    "sourceText": "Khu phố tôi có nhóm tuần tra an ninh. Hàng xóm thay phiên nhau canh gác. Chúng tôi giúp nhau giữ an toàn. Chúng tôi báo cáo hoạt động đáng ngờ. Tội phạm giảm rất nhiều. Mọi người cảm thấy an tâm hơn. Đoàn kết làm khu phố an toàn.",
+    "highlightedSentences": [
+      "My neighborhood has a security patrol group"
+    ],
+    "hints": [
+      "Use 'has' with singular subject",
+      "Consider article"
+    ],
+    "expectedKeywords": [
+      "neighborhood",
+      "has",
+      "security",
+      "patrol",
+      "group"
+    ]
+  }
+]

@@ -1,0 +1,129 @@
+.level-card {
+  background: rgba(26, 31, 58, 0.6);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 2px solid rgba(167, 139, 250, 0.2);
+  border-radius: 24px;
+  padding: 2.5rem 2rem;
+  cursor: pointer;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  text-align: center;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(167, 139, 250, 0.15) 0%, transparent 70%);
+    opacity: 0;
+    transition: opacity 0.4s ease;
+  }
+
+  &:hover {
+    border-color: rgba(167, 139, 250, 0.5);
+    transform: translateY(-8px) scale(1.02);
+    box-shadow: 0 0 40px rgba(167, 139, 250, 0.4), 0 16px 32px rgba(0, 0, 0, 0.4);
+    background: rgba(37, 43, 72, 0.8);
+
+    &::before {
+      opacity: 1;
+    }
+  }
+
+  &:focus {
+    outline: 2px solid #A78BFA;
+    outline-offset: 3px;
+  }
+
+  &.selected {
+    border-color: #A78BFA;
+    background: rgba(139, 92, 246, 0.25);
+    box-shadow: 0 0 40px rgba(167, 139, 250, 0.5), 0 8px 24px rgba(0, 0, 0, 0.4);
+    
+    &::after {
+      content: '✓';
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      width: 36px;
+      height: 36px;
+      background: #8B5CF6;
+      color: white;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      font-size: 1.1rem;
+      box-shadow: 0 0 20px rgba(139, 92, 246, 0.6);
+      animation: checkPulse 2s ease-in-out infinite;
+    }
+  }
+}
+
+@keyframes checkPulse {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 0 20px rgba(139, 92, 246, 0.6);
+  }
+  50% {
+    transform: scale(1.05);
+    box-shadow: 0 0 30px rgba(139, 92, 246, 0.8);
+  }
+}
+
+.level-icon {
+  font-size: 3.5rem;
+  margin-bottom: 1.25rem;
+  filter: grayscale(0.3) brightness(0.9);
+  transition: all 0.3s ease;
+
+  .level-card:hover & {
+    transform: scale(1.15) rotate(5deg);
+    filter: grayscale(0) brightness(1.1) drop-shadow(0 0 10px rgba(167, 139, 250, 0.5));
+  }
+
+  .level-card.selected & {
+    filter: grayscale(0) brightness(1.1);
+  }
+}
+
+.level-name {
+  color: #E2E8F0;
+  font-size: 1.625rem;
+  margin: 0 0 1rem 0;
+  font-weight: 700;
+  font-family: 'Poppins', sans-serif;
+  letter-spacing: -0.5px;
+}
+
+.level-description {
+  color: #94A3B8;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  margin: 0;
+  font-weight: 400;
+}
+
+@media (max-width: 767px) {
+  .level-card {
+    padding: 1.5rem;
+  }
+
+  .level-icon {
+    font-size: 2.5rem;
+  }
+
+  .level-name {
+    font-size: 1.25rem;
+  }
+
+  .level-description {
+    font-size: 0.85rem;
+  }
+}

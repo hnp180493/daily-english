@@ -1,0 +1,222 @@
+[
+  {
+    "id": "ex-019",
+    "title": "Understanding Democracy",
+    "level": "beginner",
+    "category": "philosophy-beliefs",
+    "description": "Learn about civic participation",
+    "sourceText": "Hôm nay tôi đi bỏ phiếu lần đầu tiên trong đời. Tôi cảm thấy rất tự hào. Đây vừa là quyền lợi vừa là trách nhiệm của tôi. Tôi đã tìm hiểu kỹ về các ứng cử viên. Tôi chọn người mà tôi tin tưởng nhất. Bỏ phiếu là cách để tiếng nói của tôi được lắng nghe. Tôi hy vọng sự lựa chọn của mình sẽ góp phần tạo ra những thay đổi tích cực.",
+    "highlightedSentences": [
+      "Today I vote for the first time"
+    ],
+    "hints": [
+      "Use present tense for current action",
+      "Consider the correct preposition"
+    ],
+    "expectedKeywords": [
+      "today",
+      "vote",
+      "first",
+      "time"
+    ]
+  },
+  {
+    "id": "ex-020",
+    "title": "A Journey Through History",
+    "level": "beginner",
+    "category": "philosophy-beliefs",
+    "description": "Visit a historical site",
+    "sourceText": "Tôi đến thăm một di tích lịch sử. Nơi đây rất cổ kính và trang nghiêm. Tôi thấy những bức tường đá cũ kỹ. Hướng dẫn viên kể về lịch sử lâu đời của nơi này. Tôi học được rất nhiều điều mới mẻ. Tôi chụp nhiều bức ảnh làm kỷ niệm. Tôi cảm thấy được kết nối với quá khứ. Đây thực sự là một trải nghiệm giáo dục ý nghĩa.",
+    "highlightedSentences": [
+      "I visit a historical site"
+    ],
+    "hints": [
+      "Use present tense for current visit",
+      "Consider the article before 'historical site'"
+    ],
+    "expectedKeywords": [
+      "visit",
+      "a",
+      "historical",
+      "site"
+    ]
+  },
+  {
+    "id": "ex-023",
+    "title": "Finding Inner Peace",
+    "level": "beginner",
+    "category": "philosophy-beliefs",
+    "description": "Reflect on spiritual practice",
+    "sourceText": "Mỗi sáng tôi dành thời gian để thiền định. Tôi ngồi yên lặng và tập trung vào hơi thở của mình. Tôi cảm thấy bình an sâu thẳm trong tâm hồn. Thiền giúp tôi giảm bớt căng thẳng rất nhiều. Tôi trở nên tỉnh táo và minh mẫn hơn. Tôi có thể đối mặt với thử thách tốt hơn. Đây là thói quen vô cùng quan trọng trong cuộc sống của tôi.",
+    "highlightedSentences": [
+      "Every morning I spend time meditating"
+    ],
+    "hints": [
+      "Use present simple for daily routine",
+      "Consider the gerund form after 'spend time'"
+    ],
+    "expectedKeywords": [
+      "every",
+      "morning",
+      "spend",
+      "time",
+      "meditating"
+    ]
+  },
+  {
+    "id": "ex-024",
+    "title": "Understanding My Rights",
+    "level": "beginner",
+    "category": "philosophy-beliefs",
+    "description": "Learn about legal rights",
+    "sourceText": "Hôm nay tôi học về quyền công dân. Tôi có quyền tự do ngôn luận và bày tỏ ý kiến. Tôi có quyền được tiếp cận giáo dục. Tôi có quyền được pháp luật bảo vệ. Những quyền này vô cùng quan trọng. Tôi cũng có trách nhiệm tôn trọng quyền của người khác. Hiểu biết về quyền lợi giúp tôi trở thành một công dân có trách nhiệm hơn.",
+    "highlightedSentences": [
+      "I have the right to freedom of speech"
+    ],
+    "hints": [
+      "Use 'have the right to' structure",
+      "Consider the correct noun form"
+    ],
+    "expectedKeywords": [
+      "have",
+      "right",
+      "to",
+      "freedom",
+      "speech"
+    ]
+  },
+  {
+    "id": "ex-025",
+    "title": "Making Ethical Choices",
+    "level": "beginner",
+    "category": "philosophy-beliefs",
+    "description": "Reflect on moral decisions",
+    "sourceText": "Tôi luôn cố gắng làm điều đúng đắn. Đôi khi thật khó để biết điều gì là đúng. Tôi suy nghĩ kỹ về hậu quả của mỗi hành động. Tôi tự hỏi bản thân: Điều này có làm tổn thương ai không? Tôi cố gắng sống trung thực và tử tế với mọi người. Tôi tin rằng những lựa chọn nhỏ hàng ngày tạo nên con người chúng ta. Đạo đức chính là la bàn dẫn đường cho cuộc đời tôi.",
+    "highlightedSentences": [
+      "I always try to do the right thing"
+    ],
+    "hints": [
+      "Use 'try to' with infinitive",
+      "Consider the correct article"
+    ],
+    "expectedKeywords": [
+      "always",
+      "try",
+      "to",
+      "do",
+      "right",
+      "thing"
+    ]
+  },
+  {
+    "id": "ex-158",
+    "title": "Respecting Elders",
+    "level": "beginner",
+    "category": "philosophy-beliefs",
+    "description": "Discuss cultural values",
+    "sourceText": "Trong văn hóa Việt Nam, chúng tôi tôn trọng người lớn tuổi. Tôi luôn chào hỏi ông bà và người già. Tôi nhường ghế cho người cao tuổi trên xe buýt. Tôi lắng nghe lời khuyên của họ. Người già có nhiều kinh nghiệm và trí tuệ. Tôn trọng người lớn tuổi là truyền thống tốt đẹp. Tôi dạy con tôi giá trị này.",
+    "highlightedSentences": [
+      "We respect elderly people in Vietnamese culture"
+    ],
+    "hints": [
+      "Use present simple for cultural practice",
+      "Consider preposition with 'culture'"
+    ],
+    "expectedKeywords": [
+      "respect",
+      "elderly",
+      "people",
+      "in",
+      "Vietnamese",
+      "culture"
+    ]
+  },
+  {
+    "id": "ex-159",
+    "title": "Being Honest",
+    "level": "beginner",
+    "category": "philosophy-beliefs",
+    "description": "Discuss honesty value",
+    "sourceText": "Tôi tin rằng trung thực rất quan trọng. Tôi luôn nói sự thật. Đôi khi nói thật khó khăn nhưng đó là điều đúng. Tôi không nói dối bố mẹ và bạn bè. Trung thực xây dựng lòng tin. Mọi người tin tưởng tôi. Tôi cảm thấy tự hào về bản thân.",
+    "highlightedSentences": [
+      "I believe that honesty is very important"
+    ],
+    "hints": [
+      "Use 'believe that' clause",
+      "Consider 'is' with singular subject"
+    ],
+    "expectedKeywords": [
+      "believe",
+      "that",
+      "honesty",
+      "is",
+      "very",
+      "important"
+    ]
+  },
+  {
+    "id": "ex-160",
+    "title": "Helping Others",
+    "level": "beginner",
+    "category": "philosophy-beliefs",
+    "description": "Discuss kindness",
+    "sourceText": "Tôi thích giúp đỡ người khác. Tôi giúp bạn làm bài tập. Tôi giúp mẹ làm việc nhà. Tôi giúp người già qua đường. Giúp đỡ người khác khiến tôi vui. Tôi tin rằng lòng tốt lan tỏa. Một hành động nhỏ có thể thay đổi ngày của ai đó.",
+    "highlightedSentences": [
+      "I like helping other people"
+    ],
+    "hints": [
+      "Use 'like' + gerund",
+      "Consider adjective 'other'"
+    ],
+    "expectedKeywords": [
+      "like",
+      "helping",
+      "other",
+      "people"
+    ]
+  },
+  {
+    "id": "ex-161",
+    "title": "Family Values",
+    "level": "beginner",
+    "category": "philosophy-beliefs",
+    "description": "Discuss family importance",
+    "sourceText": "Gia đình là điều quan trọng nhất với tôi. Tôi yêu bố mẹ và anh em. Chúng tôi luôn ở bên nhau. Chúng tôi chia sẻ vui buồn. Gia đình hỗ trợ tôi trong mọi hoàn cảnh. Tôi biết ơn gia đình mình. Tôi sẽ luôn chăm sóc họ.",
+    "highlightedSentences": [
+      "Family is the most important thing to me"
+    ],
+    "hints": [
+      "Use 'is' with singular subject",
+      "Consider superlative form"
+    ],
+    "expectedKeywords": [
+      "family",
+      "is",
+      "most",
+      "important",
+      "thing",
+      "to",
+      "me"
+    ]
+  },
+  {
+    "id": "ex-162",
+    "title": "Learning from Mistakes",
+    "level": "beginner",
+    "category": "philosophy-beliefs",
+    "description": "Reflect on personal growth",
+    "sourceText": "Mọi người đều mắc lỗi. Tôi cũng thường mắc lỗi. Nhưng tôi học hỏi từ sai lầm. Tôi không lặp lại lỗi cũ. Sai lầm giúp tôi trưởng thành. Tôi không sợ thất bại. Thất bại là cơ hội để học hỏi. Tôi trở nên mạnh mẽ hơn.",
+    "highlightedSentences": [
+      "Everyone makes mistakes"
+    ],
+    "hints": [
+      "Use present simple for general truth",
+      "Consider plural verb"
+    ],
+    "expectedKeywords": [
+      "everyone",
+      "makes",
+      "mistakes"
+    ]
+  }
+]

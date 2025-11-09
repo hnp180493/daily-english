@@ -1,0 +1,131 @@
+<div class="modal-overlay" (click)="handleOverlayClick()">
+  <div 
+    class="modal-content" 
+    (click)="handleContentClick($event)"
+    role="dialog"
+    aria-modal="true"
+    [attr.aria-labelledby]="'modal-title-' + achievement().id">
+    
+    <button 
+      class="close-button" 
+      (click)="close.emit()" 
+      aria-label="Close modal"
+      type="button">
+      ×
+    </button>
+
+    <div class="modal-header" [class]="achievement().rarity">
+      <div class="achievement-icon-large">
+        <img 
+          [src]="achievement().iconUrl" 
+          [alt]="achievement().name"
+          loading="lazy" />
+      </div>
+      <h2 [id]="'modal-title-' + achievement().id">{{ achievement().name }}</h2>
+      <div class="rarity-badge" [class]="achievement().rarity">
+        {{ achievement().rarity | titlecase }}
+      </div>
+    </div>
+
+    <div class="modal-body">
+      <section class="description-section">
+        <h3>Description</h3>
+        <p>{{ achievement().description }}</p>
+      </section>
+
+      <section class="criteria-section">
+        <h3>How to Unlock</h3>
+        <ul class="criteria-list">
+          @for (criterion of achievement().criteria; track criterion) {
+            <li>{{ criterion }}</li>
+          }
+        </ul>
+      </section>
+
+      @if (!achievement().unlocked) {
+        <section class="progress-section">
+          <h3>Your Progress</h3>
+          @if (progress()) {
+            <div class="progress-details">
+              <div class="progress-bar-large">
+                <div 
+                  class="progress-fill" 
+                  [style.width.%]="progress()!.percentage">
+                </div>
+              </div>
+              <p class="progress-text">
+                {{ progress()!.current }} / {{ progress()!.required }} 
+                ({{ progress()!.percentage }}%)
+              </p>
+              <p class="progress-description">{{ progress()!.description }}</p>
+            </div>
+          } @else {
+            <p class="progress-description">Start working towards this achievement!</p>
+          }
+        </section>
+
+        @if (achievement().tips && achievement().tips!.length > 0) {
+          <section class="tips-section">
+            <h3>💡 Tips</h3>
+            <ul class="tips-list">
+              @for (tip of achievement().tips!; track tip) {
+                <li>{{ tip }}</li>
+              }
+            </ul>
+          </section>
+        }
+      }
+
+      @if (achievement().unlocked) {
+        <section class="unlock-section">
+          <div class="unlock-info">
+            <span class="icon">🎉</span>
+            <p>Unlocked on {{ formatDate(achievement().unlockedAt!) }}</p>
+          </div>
+        </section>
+      }
+
+      <section class="rewards-section">
+        <h3>Rewards</h3>
+        <div class="rewards-grid">
+          @for (reward of achievement().rewards; track reward.type) {
+            <div class="reward-item">
+              <span class="reward-icon">{{ getRewardIcon(reward.type) }}</span>
+              <span class="reward-text">{{ reward.description }}</span>
+            </div>
+          }
+        </div>
+      </section>
+    </div>
+
+    <div class="modal-footer">
+      @if (achievement().unlocked) {
+        <!-- @if (canClaim()) {
+          <button 
+            class="claim-button-modal" 
+            (click)="handleClaim()"
+            type="button">
+            🎁 Claim Rewards
+          </button>
+        } @else if (achievement().rewardsClaimed) {
+          <div class="claimed-badge-modal">
+            <span class="icon">✓</span>
+            <span>Rewards Claimed</span>
+          </div>
+        } -->
+        <button 
+          class="share-button" 
+          (click)="handleShare()"
+          type="button">
+          Share Achievement
+        </button>
+      }
+      <button 
+        class="close-button-text" 
+        (click)="close.emit()"
+        type="button">
+        Close
+      </button>
+    </div>
+  </div>
+</div>

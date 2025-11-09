@@ -1,0 +1,386 @@
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 1rem;
+  overflow-y: auto;
+}
+
+.modal-content {
+  background: rgba(26, 31, 58, 0.95);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(167, 139, 250, 0.2);
+  border-radius: 16px;
+  max-width: 600px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  position: relative;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 10px 10px -5px rgba(0, 0, 0, 0.4);
+
+  .close-button {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: none;
+    border: none;
+    font-size: 2rem;
+    line-height: 1;
+    cursor: pointer;
+    color: #D1D5DB;
+    padding: 0.25rem;
+    width: 2.5rem;
+    height: 2.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    transition: background 0.2s ease, color 0.2s ease;
+    z-index: 10;
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.1);
+      color: #F3F4F6;
+    }
+
+    &:focus {
+      outline: 2px solid #4F46E5;
+      outline-offset: 2px;
+    }
+  }
+}
+
+.modal-header {
+  padding: 2rem;
+  text-align: center;
+  border-bottom: 1px solid rgba(167, 139, 250, 0.2);
+  position: relative;
+
+  &.common {
+    background: linear-gradient(135deg, #F3F4F6 0%, #E5E7EB 100%);
+  }
+
+  &.rare {
+    background: linear-gradient(135deg, #DBEAFE 0%, #BFDBFE 100%);
+  }
+
+  &.epic {
+    background: linear-gradient(135deg, #EDE9FE 0%, #DDD6FE 100%);
+  }
+
+  &.legendary {
+    background: linear-gradient(135deg, #FEF3C7 0%, #FDE68A 100%);
+  }
+
+  .achievement-icon-large {
+    width: 120px;
+    height: 120px;
+    margin: 0 auto 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+  }
+
+  h2 {
+    font-size: 1.875rem;
+    font-weight: 700;
+    color: #F3F4F6;
+    margin: 0 0 1rem;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  }
+
+  .rarity-badge {
+    display: inline-block;
+    padding: 0.5rem 1rem;
+    border-radius: 9999px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+
+    &.common {
+      background: #6B7280;
+      color: white;
+    }
+
+    &.rare {
+      background: #3B82F6;
+      color: white;
+    }
+
+    &.epic {
+      background: #8B5CF6;
+      color: white;
+    }
+
+    &.legendary {
+      background: #F59E0B;
+      color: white;
+    }
+  }
+}
+
+.modal-body {
+  padding: 2rem;
+
+  section {
+    margin-bottom: 2rem;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+
+    h3 {
+      font-size: 1.125rem;
+      font-weight: 600;
+      color: #F3F4F6;
+      margin: 0 0 1rem;
+    }
+
+    p {
+      color: #D1D5DB;
+      line-height: 1.6;
+      margin: 0;
+    }
+  }
+
+  .criteria-list,
+  .tips-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+
+    li {
+      padding: 0.75rem 1rem;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(167, 139, 250, 0.1);
+      border-radius: 8px;
+      margin-bottom: 0.5rem;
+      color: #D1D5DB;
+      line-height: 1.5;
+
+      &:last-child {
+        margin-bottom: 0;
+      }
+    }
+  }
+
+  .tips-list li {
+    background: rgba(251, 191, 36, 0.1);
+    border-color: rgba(251, 191, 36, 0.3);
+    color: #FCD34D;
+  }
+
+  .progress-details {
+    .progress-bar-large {
+      width: 100%;
+      height: 12px;
+      background: #E5E7EB;
+      border-radius: 9999px;
+      overflow: hidden;
+      margin-bottom: 1rem;
+
+      .progress-fill {
+        height: 100%;
+        background: linear-gradient(90deg, #4F46E5, #10B981);
+        border-radius: 9999px;
+        transition: width 0.3s ease;
+      }
+    }
+
+    .progress-text {
+      font-size: 1rem;
+      font-weight: 600;
+      color: #F3F4F6;
+      margin-bottom: 0.5rem;
+      display: block;
+    }
+
+    .progress-description {
+      font-size: 0.875rem;
+      color: #D1D5DB;
+    }
+  }
+
+  .unlock-info {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    padding: 1rem;
+    background: #D1FAE5;
+    border-radius: 8px;
+
+    .icon {
+      font-size: 1.5rem;
+    }
+
+    p {
+      font-size: 1rem;
+      font-weight: 600;
+      color: #065F46;
+      margin: 0;
+    }
+  }
+
+  .rewards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+
+    .reward-item {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 1rem;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 8px;
+      border: 1px solid rgba(167, 139, 250, 0.2);
+
+      .reward-icon {
+        font-size: 1.5rem;
+      }
+
+      .reward-text {
+        font-size: 0.875rem;
+        font-weight: 500;
+        color: #D1D5DB;
+      }
+    }
+  }
+}
+
+.modal-footer {
+  padding: 1.5rem 2rem;
+  border-top: 1px solid rgba(167, 139, 250, 0.2);
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+
+  button {
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: none;
+
+    &:focus {
+      outline: 2px solid #4F46E5;
+      outline-offset: 2px;
+    }
+  }
+
+  .claim-button-modal {
+    background: linear-gradient(135deg, #10B981, #059669);
+    color: white;
+    box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
+
+    &:hover {
+      background: linear-gradient(135deg, #059669, #047857);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
+    }
+
+    &:active {
+      transform: translateY(0);
+    }
+  }
+
+  .claimed-badge-modal {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    background: rgba(16, 185, 129, 0.1);
+    border: 1px solid rgba(16, 185, 129, 0.3);
+    border-radius: 8px;
+    font-size: 0.875rem;
+    color: #10B981;
+    font-weight: 600;
+
+    .icon {
+      font-size: 1rem;
+    }
+  }
+
+  .share-button {
+    background: #4F46E5;
+    color: white;
+
+    &:hover {
+      background: #4338CA;
+    }
+  }
+
+  .close-button-text {
+    background: rgba(255, 255, 255, 0.1);
+    color: #D1D5DB;
+    border: 1px solid rgba(167, 139, 250, 0.2);
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.15);
+    }
+  }
+}
+
+@media (max-width: 640px) {
+  .modal-content {
+    max-height: 95vh;
+  }
+
+  .modal-header {
+    padding: 1.5rem;
+
+    .achievement-icon-large {
+      width: 100px;
+      height: 100px;
+    }
+
+    h2 {
+      font-size: 1.5rem;
+    }
+  }
+
+  .modal-body {
+    padding: 1.5rem;
+
+    .rewards-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .modal-footer {
+    flex-direction: column;
+
+    button {
+      width: 100%;
+    }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .progress-fill {
+    transition: none;
+  }
+
+  button {
+    transition: none;
+  }
+}

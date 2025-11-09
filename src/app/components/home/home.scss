@@ -1,0 +1,128 @@
+.home-container {
+  min-height: calc(100vh - 200px);
+  padding: 4rem 2rem;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.level-selection,
+.category-selection {
+  margin-bottom: 4rem;
+  animation: fadeInUp 0.6s ease-out;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.section-title {
+  font-family: 'Poppins', sans-serif;
+  color: #A78BFA;
+  font-size: 3rem;
+  text-align: center;
+  margin: 0 0 0.5rem 0;
+  font-weight: 800;
+  letter-spacing: -1px;
+  line-height: 1.2;
+  text-shadow: 0 0 30px rgba(167, 139, 250, 0.6);
+}
+
+.section-subtitle {
+  color: #94A3B8;
+  font-size: 1.5rem;
+  margin: 0 0 2.5rem 0;
+  font-weight: 600;
+  font-family: 'Poppins', sans-serif;
+  letter-spacing: -0.5px;
+}
+
+.level-cards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2rem;
+}
+
+.category-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.5rem;
+}
+
+.start-btn {
+  display: block;
+  margin: 4rem auto 0;
+  padding: 1.125rem 3.5rem;
+  background: #8B5CF6;
+  color: #FFFFFF;
+  border: 2px solid rgba(167, 139, 250, 0.3);
+  border-radius: 16px;
+  font-size: 1.125rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 0 30px rgba(139, 92, 246, 0.5), 0 8px 24px rgba(0, 0, 0, 0.3);
+  font-family: 'Poppins', sans-serif;
+  letter-spacing: -0.3px;
+
+  &:hover {
+    transform: translateY(-3px);
+    background: #A78BFA;
+    border-color: rgba(167, 139, 250, 0.5);
+    box-shadow: 0 0 40px rgba(167, 139, 250, 0.7), 0 12px 32px rgba(0, 0, 0, 0.4);
+  }
+
+  &:focus {
+    outline: 2px solid #A78BFA;
+    outline-offset: 3px;
+  }
+
+  &:active {
+    transform: translateY(-1px);
+  }
+}
+
+@media (max-width: 1023px) {
+  .level-cards {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .category-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 767px) {
+  .home-container {
+    padding: 2rem 1rem;
+  }
+
+  .section-title {
+    font-size: 2rem;
+  }
+
+  .section-subtitle {
+    font-size: 1.25rem;
+  }
+
+  .level-cards {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+
+  .category-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+  }
+
+  .start-btn {
+    padding: 0.875rem 2.5rem;
+    font-size: 1rem;
+  }
+}

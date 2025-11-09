@@ -1,0 +1,36 @@
+<div class="modal-overlay" (click)="onClose()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <div class="icon-container">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path
+            d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
+          />
+        </svg>
+      </div>
+      <h2 class="modal-title">API Key Required</h2>
+    </div>
+
+    <div class="modal-body">
+      <p class="message">
+        To use AI-powered translation feedback, you need to configure your API key first.
+      </p>
+
+      <div class="info-box">
+        <h3 class="info-title">📝 What you need:</h3>
+        <ul class="info-list">
+          <li><strong>OpenAI:</strong> API Key and Model Name</li>
+          <li><strong>Google Gemini:</strong> API Key and Model Name</li>
+          <li><strong>Azure OpenAI:</strong> Endpoint, API Key, and Deployment Name</li>
+        </ul>
+      </div>
+
+      <p class="hint">Choose one provider and enter your credentials in the Profile settings.</p>
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn btn-secondary" (click)="onClose()">Cancel</button>
+      <button class="btn btn-primary" (click)="onGoToSettings()">Go to Profile Settings</button>
+    </div>
+  </div>
+</div>

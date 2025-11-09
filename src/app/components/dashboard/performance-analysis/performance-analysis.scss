@@ -1,0 +1,372 @@
+.performance-section {
+  h2 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #1f2937;
+    margin: 0 0 1.5rem 0;
+
+    @media (prefers-color-scheme: dark) {
+      color: #f9fafb;
+    }
+  }
+}
+
+.analysis-card {
+  background-color: white;
+  border-radius: 0.75rem;
+  padding: 1.5rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  margin-bottom: 1.5rem;
+
+  h3 {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: #1f2937;
+    margin: 0 0 1rem 0;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    background-color: #1f2937;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+
+    h3 {
+      color: #f9fafb;
+    }
+  }
+}
+
+.empty-message {
+  text-align: center;
+  color: #9ca3af;
+  font-size: 0.875rem;
+  padding: 2rem;
+  margin: 0;
+}
+
+// Top Errors
+.error-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.error-item {
+  display: flex;
+  gap: 1rem;
+  padding: 1rem;
+  border-bottom: 1px solid #e5e7eb;
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  .error-icon {
+    font-size: 1.5rem;
+    flex-shrink: 0;
+  }
+
+  .error-details {
+    flex: 1;
+
+    strong {
+      display: block;
+      font-size: 1rem;
+      color: #1f2937;
+      margin-bottom: 0.25rem;
+      text-transform: capitalize;
+    }
+
+    p {
+      font-size: 0.875rem;
+      color: #6b7280;
+      margin: 0 0 0.5rem 0;
+    }
+
+    .error-count {
+      font-size: 0.75rem;
+      color: #9ca3af;
+    }
+  }
+
+  @media (prefers-color-scheme: dark) {
+    border-bottom-color: #374151;
+
+    .error-details {
+      strong {
+        color: #f9fafb;
+      }
+
+      p {
+        color: #9ca3af;
+      }
+
+      .error-count {
+        color: #6b7280;
+      }
+    }
+  }
+}
+
+// Category Accuracy Table
+.table-container {
+  overflow-x: auto;
+}
+
+.accuracy-table {
+  width: 100%;
+  border-collapse: collapse;
+
+  th {
+    text-align: left;
+    padding: 0.75rem;
+    background-color: #f9fafb;
+    font-weight: 600;
+    font-size: 0.875rem;
+    color: #6b7280;
+    border-bottom: 2px solid #e5e7eb;
+  }
+
+  td {
+    padding: 0.75rem;
+    border-bottom: 1px solid #e5e7eb;
+    font-size: 0.875rem;
+    color: #1f2937;
+  }
+
+  tr {
+    &.high {
+      background-color: rgba(16, 185, 129, 0.05);
+    }
+
+    &.medium {
+      background-color: rgba(245, 158, 11, 0.05);
+    }
+
+    &.low {
+      background-color: rgba(239, 68, 68, 0.05);
+    }
+  }
+
+  @media (prefers-color-scheme: dark) {
+    th {
+      background-color: #111827;
+      color: #9ca3af;
+      border-bottom-color: #374151;
+    }
+
+    td {
+      border-bottom-color: #374151;
+      color: #f9fafb;
+    }
+
+    tr {
+      &.high {
+        background-color: rgba(16, 185, 129, 0.1);
+      }
+
+      &.medium {
+        background-color: rgba(245, 158, 11, 0.1);
+      }
+
+      &.low {
+        background-color: rgba(239, 68, 68, 0.1);
+      }
+    }
+  }
+}
+
+.status-badge {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 500;
+
+  &.high {
+    background-color: #d1fae5;
+    color: #065f46;
+  }
+
+  &.medium {
+    background-color: #fef3c7;
+    color: #92400e;
+  }
+
+  &.low {
+    background-color: #fee2e2;
+    color: #991b1b;
+  }
+}
+
+.limited-data-badge {
+  display: inline-block;
+  margin-left: 0.5rem;
+  padding: 0.25rem 0.5rem;
+  background-color: #e5e7eb;
+  color: #6b7280;
+  border-radius: 0.25rem;
+  font-size: 0.625rem;
+  font-weight: 500;
+}
+
+// Difficulty Comparison
+.comparison-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1rem;
+}
+
+.difficulty-card {
+  background-color: #f9fafb;
+  border: 2px solid #e5e7eb;
+  border-radius: 0.75rem;
+  padding: 1.25rem;
+  transition: all 0.2s;
+
+  &.current {
+    border-color: #4f46e5;
+    background-color: #f5f3ff;
+  }
+
+  &.recommended {
+    border-color: #10b981;
+    background-color: #ecfdf5;
+  }
+
+  h4 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #1f2937;
+    margin: 0 0 1rem 0;
+  }
+
+  .stat {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.75rem;
+
+    label {
+      font-size: 0.875rem;
+      color: #6b7280;
+    }
+
+    .value {
+      font-size: 1rem;
+      font-weight: 600;
+      color: #1f2937;
+    }
+  }
+
+  @media (prefers-color-scheme: dark) {
+    background-color: #111827;
+    border-color: #374151;
+
+    &.current {
+      border-color: #818cf8;
+      background-color: #1e1b4b;
+    }
+
+    &.recommended {
+      border-color: #34d399;
+      background-color: #064e3b;
+    }
+
+    h4 {
+      color: #f9fafb;
+    }
+
+    .stat {
+      label {
+        color: #9ca3af;
+      }
+
+      .value {
+        color: #f9fafb;
+      }
+    }
+  }
+
+  .advancement-notice {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 1rem;
+    padding: 0.75rem;
+    background-color: white;
+    border-radius: 0.5rem;
+    border: 1px solid #10b981;
+
+    .icon {
+      font-size: 1.25rem;
+    }
+
+    p {
+      margin: 0;
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: #065f46;
+    }
+  }
+
+  .progress-indicator {
+    margin-top: 1rem;
+
+    label {
+      display: block;
+      font-size: 0.75rem;
+      color: #6b7280;
+      margin-bottom: 0.5rem;
+    }
+
+    .progress-bar {
+      height: 0.5rem;
+      background-color: #e5e7eb;
+      border-radius: 9999px;
+      overflow: hidden;
+
+      .progress-fill {
+        height: 100%;
+        background-color: #4f46e5;
+        transition: width 0.3s;
+      }
+    }
+
+    .progress-text {
+      display: block;
+      font-size: 0.75rem;
+      color: #6b7280;
+      margin-top: 0.25rem;
+      text-align: right;
+    }
+  }
+}
+
+// Print styles
+@media print {
+  .analysis-card {
+    page-break-inside: avoid;
+    box-shadow: none;
+    border: 1px solid #e5e7eb;
+  }
+}
+
+// Responsive design
+@media (max-width: 768px) {
+  .comparison-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .table-container {
+    overflow-x: scroll;
+  }
+
+  .accuracy-table {
+    font-size: 0.75rem;
+
+    th,
+    td {
+      padding: 0.5rem;
+    }
+  }
+}

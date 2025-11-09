@@ -1,0 +1,51 @@
+<div class="exercise-list-container">
+  <header class="list-header">
+    <h2 class="page-title">Available Exercises</h2>
+    <p class="exercise-count">Displaying {{ paginatedExercises().length }} of {{ totalExercises() }} exercises</p>
+  </header>
+
+  @if (paginatedExercises().length > 0) {
+    <div class="exercises-grid">
+      @for (exercise of paginatedExercises(); track exercise.id) {
+        <app-exercise-card
+          [exercise]="exercise"
+          [status]="getExerciseStatus()(exercise.id)"
+          (startExercise)="onStartExercise($event)" />
+      }
+    </div>
+  } @else {
+    <div class="no-exercises">
+      <p>No exercises found for the selected level and category.</p>
+      <p>Please select a different combination.</p>
+    </div>
+  }
+
+  @if (totalPages() > 1) {
+    <div class="pagination">
+      <button 
+        class="page-btn"
+        (click)="previousPage()"
+        [disabled]="currentPage() === 0">
+        ← Previous
+      </button>
+
+      <div class="page-numbers">
+        @for (page of pages(); track page) {
+          <button
+            class="page-number"
+            [class.active]="page === currentPage()"
+            (click)="goToPage(page)">
+            {{ page + 1 }}
+          </button>
+        }
+      </div>
+
+      <button 
+        class="page-btn"
+        (click)="nextPage()"
+        [disabled]="currentPage() === totalPages() - 1">
+        Next →
+      </button>
+    </div>
+  }
+</div>

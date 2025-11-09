@@ -1,0 +1,37 @@
+<div class="home-container">
+  <section class="level-selection">
+    <h2 class="section-title">SENTENCE WRITING</h2>
+    <h3 class="section-subtitle">Choose Your Level</h3>
+    <div class="level-cards">
+      @for (level of levels; track level) {
+        <app-level-card 
+          [level]="level"
+          [selected]="selectedLevel() === level"
+          (select)="onLevelSelect($event)">
+        </app-level-card>
+      }
+    </div>
+  </section>
+  
+  @if (selectedLevel()) {
+    <section class="category-selection">
+      <h3 class="section-subtitle">Select Category</h3>
+      <div class="category-grid">
+        @for (category of displayCategories(); track category) {
+          <app-category-card
+            [category]="category"
+            (select)="onCategorySelect($event)">
+          </app-category-card>
+        }
+      </div>
+    </section>
+  }
+  
+  @if (selectedLevel() && selectedCategory()) {
+    <button 
+      class="start-btn"
+      (click)="navigateToExercises()">
+      Start Practice →
+    </button>
+  }
+</div>

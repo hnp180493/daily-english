@@ -1,0 +1,312 @@
+[
+  {
+    "id": "ex-009",
+    "title": "The First Day at School",
+    "level": "beginner",
+    "category": "education-work",
+    "description": "Describe the experience of starting school",
+    "sourceText": "Hôm nay là ngày đầu tiên tôi đến trường. Tôi cảm thấy vừa hồi hộp vừa lo lắng. Tôi được gặp nhiều bạn mới. Các bạn ấy rất thân thiện và vui vẻ. Giáo viên chủ nhiệm của tôi tên là cô Mai. Cô ấy rất tốt bụng và dễ thương. Chúng tôi học về bảng chữ cái và các con số. Tôi thích lớp học mới của mình lắm. Tôi rất mong chờ ngày mai được đến trường.",
+    "highlightedSentences": [
+      "Today is my first day at school"
+    ],
+    "hints": [
+      "Use possessive adjective correctly",
+      "Consider the correct word order"
+    ],
+    "expectedKeywords": [
+      "today",
+      "is",
+      "my",
+      "first",
+      "day"
+    ]
+  },
+  {
+    "id": "ex-064",
+    "title": "First Day at New Job",
+    "level": "beginner",
+    "category": "education-work",
+    "description": "Describe workplace introduction",
+    "sourceText": "Hôm nay là ngày đầu tiên tôi đi làm ở công ty mới. Tôi cảm thấy rất hồi hộp. Sếp của tôi giới thiệu tôi với các đồng nghiệp. Mọi người đều rất thân thiện và nhiệt tình chào đón. Tôi được hướng dẫn chi tiết về công việc của mình. Tôi có bàn làm việc riêng và một chiếc máy tính mới. Tôi học được rất nhiều điều mới trong ngày đầu tiên.",
+    "highlightedSentences": [
+      "Today is my first day at my new job"
+    ],
+    "hints": [
+      "Use possessive adjectives correctly"
+    ],
+    "expectedKeywords": [
+      "today",
+      "is",
+      "my",
+      "first",
+      "day",
+      "at",
+      "new",
+      "job"
+    ]
+  },
+  {
+    "id": "ex-065",
+    "title": "Homework Routine",
+    "level": "beginner",
+    "category": "education-work",
+    "description": "Describe study habits",
+    "sourceText": "Mỗi ngày sau giờ học, tôi về nhà và làm bài tập về nhà. Tôi ngồi ở bàn học trong phòng riêng của mình. Tôi thường làm bài tập toán trước tiên. Sau đó, tôi học tiếng Anh và các môn khác. Nếu có bài nào không hiểu, tôi sẽ hỏi bố mẹ. Tôi thường mất khoảng hai tiếng để hoàn thành hết bài tập.",
+    "highlightedSentences": [
+      "Every day after school, I go home and do my homework"
+    ],
+    "hints": [
+      "Use present simple for routine"
+    ],
+    "expectedKeywords": [
+      "every",
+      "day",
+      "after",
+      "school",
+      "go",
+      "home",
+      "do",
+      "homework"
+    ]
+  },
+  {
+    "id": "ex-066",
+    "title": "Office Supplies",
+    "level": "beginner",
+    "category": "education-work",
+    "description": "Learn workplace vocabulary",
+    "sourceText": "Văn phòng của tôi có đầy đủ đồ dùng cần thiết. Tôi có bút viết, giấy A4 và kẹp giấy. Tôi sử dụng máy tính để làm việc hàng ngày. Tôi có máy in riêng để in các tài liệu quan trọng. Tôi luôn giữ mọi thứ gọn gàng và ngăn nắp trên bàn làm việc. Tôi dùng lịch để theo dõi các cuộc họp và deadline.",
+    "highlightedSentences": [
+      "My office has many supplies"
+    ],
+    "hints": [
+      "Use 'has' with singular subject"
+    ],
+    "expectedKeywords": [
+      "my",
+      "office",
+      "has",
+      "many",
+      "supplies"
+    ]
+  },
+  {
+    "id": "ex-111",
+    "title": "Learning English Online",
+    "level": "beginner",
+    "category": "education-work",
+    "description": "Describe online learning",
+    "sourceText": "Tôi học tiếng Anh trực tuyến mỗi tối. Tôi tham gia lớp học qua video call. Giáo viên của tôi đến từ Mỹ. Cô ấy dạy rất nhiệt tình và dễ hiểu. Tôi luyện phát âm và ngữ pháp. Tôi làm bài tập về nhà sau mỗi buổi học. Tiếng Anh của tôi tiến bộ từng ngày.",
+    "highlightedSentences": [
+      "I learn English online every evening"
+    ],
+    "hints": [
+      "Use present simple for routine",
+      "Consider frequency adverb"
+    ],
+    "expectedKeywords": [
+      "learn",
+      "English",
+      "online",
+      "every",
+      "evening"
+    ]
+  },
+  {
+    "id": "ex-112",
+    "title": "Group Project at School",
+    "level": "beginner",
+    "category": "education-work",
+    "description": "Describe teamwork",
+    "sourceText": "Tuần này tôi làm dự án nhóm ở trường. Nhóm tôi có 4 người. Chúng tôi nghiên cứu về môi trường. Mỗi người có nhiệm vụ riêng. Tôi phụ trách làm slide thuyết trình. Bạn tôi thu thập thông tin. Chúng tôi họp mỗi ngày sau giờ học. Chúng tôi làm việc rất chăm chỉ.",
+    "highlightedSentences": [
+      "I do a group project at school"
+    ],
+    "hints": [
+      "Use present simple for current activity",
+      "Consider article usage"
+    ],
+    "expectedKeywords": [
+      "do",
+      "group",
+      "project",
+      "at",
+      "school"
+    ]
+  },
+  {
+    "id": "ex-113",
+    "title": "Library Study Session",
+    "level": "beginner",
+    "category": "education-work",
+    "description": "Describe studying at library",
+    "sourceText": "Tôi thường đến thư viện để học bài. Thư viện rất yên tĩnh và thoáng mát. Tôi mượn sách và tài liệu tham khảo. Tôi ngồi ở bàn gần cửa sổ. Tôi đọc sách và ghi chép cẩn thận. Tôi học được nhiều kiến thức mới. Thư viện là nơi học tập lý tưởng.",
+    "highlightedSentences": [
+      "I often go to the library to study"
+    ],
+    "hints": [
+      "Use frequency adverb",
+      "Consider 'to' + infinitive for purpose"
+    ],
+    "expectedKeywords": [
+      "often",
+      "go",
+      "to",
+      "library",
+      "study"
+    ]
+  },
+  {
+    "id": "ex-114",
+    "title": "Preparing for Exam",
+    "level": "beginner",
+    "category": "education-work",
+    "description": "Describe exam preparation",
+    "sourceText": "Tuần sau tôi có kỳ thi quan trọng. Tôi ôn tập mỗi ngày. Tôi đọc lại ghi chú và sách giáo khoa. Tôi làm bài tập mẫu để luyện tập. Tôi hỏi giáo viên khi không hiểu. Tôi ngủ đủ giấc để tỉnh táo. Tôi cảm thấy tự tin và sẵn sàng.",
+    "highlightedSentences": [
+      "I have an important exam next week"
+    ],
+    "hints": [
+      "Use present simple with future time",
+      "Consider article before 'exam'"
+    ],
+    "expectedKeywords": [
+      "have",
+      "an",
+      "important",
+      "exam",
+      "next",
+      "week"
+    ]
+  },
+  {
+    "id": "ex-115",
+    "title": "Meeting with Boss",
+    "level": "beginner",
+    "category": "education-work",
+    "description": "Describe workplace meeting",
+    "sourceText": "Hôm nay tôi có cuộc họp với sếp. Tôi chuẩn bị báo cáo công việc. Tôi đến phòng họp đúng giờ. Sếp hỏi về tiến độ dự án. Tôi trình bày kết quả làm việc. Sếp khen tôi làm việc tốt. Tôi cảm thấy vui mừng và tự hào.",
+    "highlightedSentences": [
+      "I have a meeting with my boss today"
+    ],
+    "hints": [
+      "Use present simple for scheduled event",
+      "Consider possessive adjective"
+    ],
+    "expectedKeywords": [
+      "have",
+      "meeting",
+      "with",
+      "boss",
+      "today"
+    ]
+  },
+  {
+    "id": "ex-116",
+    "title": "Lunch Break at Work",
+    "level": "beginner",
+    "category": "education-work",
+    "description": "Describe work break",
+    "sourceText": "Giờ nghỉ trưa tôi ăn cơm với đồng nghiệp. Chúng tôi đi đến quán ăn gần công ty. Chúng tôi gọi cơm và canh. Chúng tôi trò chuyện về công việc và cuộc sống. Giờ nghỉ trưa kéo dài một tiếng. Sau đó chúng tôi quay lại văn phòng. Nghỉ trưa giúp tôi thư giãn.",
+    "highlightedSentences": [
+      "I eat lunch with my colleagues"
+    ],
+    "hints": [
+      "Use present simple for routine",
+      "Consider preposition with 'colleagues'"
+    ],
+    "expectedKeywords": [
+      "eat",
+      "lunch",
+      "with",
+      "colleagues"
+    ]
+  },
+  {
+    "id": "ex-117",
+    "title": "Computer Skills Class",
+    "level": "beginner",
+    "category": "education-work",
+    "description": "Describe learning new skills",
+    "sourceText": "Tôi tham gia lớp học tin học buổi tối. Tôi học cách sử dụng Excel và Word. Giáo viên hướng dẫn từng bước chi tiết. Tôi thực hành trên máy tính. Tôi học cách tạo bảng tính và văn bản. Kỹ năng tin học rất hữu ích cho công việc. Tôi rất vui khi học được điều mới.",
+    "highlightedSentences": [
+      "I attend a computer class in the evening"
+    ],
+    "hints": [
+      "Use present simple for routine",
+      "Consider time expression"
+    ],
+    "expectedKeywords": [
+      "attend",
+      "computer",
+      "class",
+      "evening"
+    ]
+  },
+  {
+    "id": "ex-118",
+    "title": "School Field Trip",
+    "level": "beginner",
+    "category": "education-work",
+    "description": "Describe educational trip",
+    "sourceText": "Hôm nay lớp tôi đi tham quan bảo tàng. Chúng tôi đi bằng xe buýt. Bảo tàng có nhiều hiện vật lịch sử. Hướng dẫn viên giải thích rất hay. Chúng tôi xem tranh và tượng cổ. Chúng tôi chụp ảnh lưu niệm. Chuyến đi rất bổ ích và thú vị.",
+    "highlightedSentences": [
+      "My class visits the museum today"
+    ],
+    "hints": [
+      "Use present simple for current event",
+      "Consider article before 'museum'"
+    ],
+    "expectedKeywords": [
+      "class",
+      "visits",
+      "museum",
+      "today"
+    ]
+  },
+  {
+    "id": "ex-119",
+    "title": "Job Interview Experience",
+    "level": "beginner",
+    "category": "education-work",
+    "description": "Describe interview",
+    "sourceText": "Tuần trước tôi đi phỏng vấn xin việc. Tôi mặc vest lịch sự. Tôi đến công ty sớm 10 phút. Người phỏng vấn hỏi về kinh nghiệm của tôi. Tôi trả lời các câu hỏi một cách tự tin. Tôi giới thiệu về bản thân và kỹ năng. Họ nói sẽ liên lạc lại với tôi.",
+    "highlightedSentences": [
+      "I went to a job interview last week"
+    ],
+    "hints": [
+      "Use past simple for completed action",
+      "Consider article before 'job interview'"
+    ],
+    "expectedKeywords": [
+      "went",
+      "to",
+      "job",
+      "interview",
+      "last",
+      "week"
+    ]
+  },
+  {
+    "id": "ex-120",
+    "title": "Classroom Presentation",
+    "level": "beginner",
+    "category": "education-work",
+    "description": "Describe giving presentation",
+    "sourceText": "Hôm nay tôi thuyết trình trước lớp. Tôi chuẩn bị slide và nội dung kỹ lưỡng. Tôi đứng trước bảng và bắt đầu nói. Tôi giải thích chủ đề một cách rõ ràng. Bạn học lắng nghe chăm chú. Giáo viên đặt câu hỏi và tôi trả lời. Tôi hoàn thành bài thuyết trình tốt.",
+    "highlightedSentences": [
+      "I give a presentation in class today"
+    ],
+    "hints": [
+      "Use present simple for current action",
+      "Consider preposition with 'class'"
+    ],
+    "expectedKeywords": [
+      "give",
+      "presentation",
+      "in",
+      "class",
+      "today"
+    ]
+  }
+]

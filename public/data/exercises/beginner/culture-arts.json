@@ -1,0 +1,303 @@
+[
+  {
+    "id": "ex-010",
+    "title": "Weekend at the Park",
+    "level": "beginner",
+    "category": "culture-arts",
+    "description": "Describe leisure activities in the park",
+    "sourceText": "Cuối tuần này, tôi đi công viên cùng gia đình. Chúng tôi mang theo đồ ăn để dã ngoại. Trời nắng đẹp và ấm áp. Con tôi chơi xích đu rất vui. Vợ tôi đọc sách dưới bóng cây mát rượi. Tôi chơi bóng với con trai. Chúng tôi đã có một ngày thật tuyệt vời. Tôi yêu những khoảnh khắc gia đình như thế này.",
+    "highlightedSentences": [
+      "We had a wonderful day"
+    ],
+    "hints": [
+      "Use past tense for completed actions",
+      "Consider the correct adjective"
+    ],
+    "expectedKeywords": [
+      "had",
+      "wonderful",
+      "day"
+    ]
+  },
+  {
+    "id": "ex-015",
+    "title": "Movie Night with Friends",
+    "level": "beginner",
+    "category": "culture-arts",
+    "description": "Describe an evening at the cinema",
+    "sourceText": "Tối nay tôi đi xem phim cùng bạn bè. Chúng tôi xem một bộ phim hành động. Phim rất hấp dẫn và kịch tính. Chúng tôi mua bỏng ngô và nước ngọt. Rạp chiếu phim đông nghẹt người. Sau khi xem phim, chúng tôi đi ăn tối cùng nhau. Chúng tôi bàn luận sôi nổi về bộ phim. Đó thực sự là một buổi tối tuyệt vời.",
+    "highlightedSentences": [
+      "We watch an action movie"
+    ],
+    "hints": [
+      "Use present tense for current activity",
+      "Consider the article before 'action movie'"
+    ],
+    "expectedKeywords": [
+      "watch",
+      "an",
+      "action",
+      "movie"
+    ]
+  },
+  {
+    "id": "ex-018",
+    "title": "Family Traditions",
+    "level": "beginner",
+    "category": "culture-arts",
+    "description": "Share about family customs",
+    "sourceText": "Gia đình tôi có nhiều truyền thống đẹp. Mỗi năm, chúng tôi sum họp vào dịp Tết. Chúng tôi cùng nhau gói bánh chưng truyền thống. Trẻ em được nhận lì xì từ người lớn. Chúng tôi đi thăm ông bà và họ hàng. Chúng tôi cầu chúc cho năm mới an khang thịnh vượng. Đây là khoảng thời gian quý giá nhất trong năm.",
+    "highlightedSentences": [
+      "My family has many beautiful traditions"
+    ],
+    "hints": [
+      "Use 'has' for singular subject",
+      "Consider plural form of 'tradition'"
+    ],
+    "expectedKeywords": [
+      "family",
+      "has",
+      "many",
+      "traditions"
+    ]
+  },
+  {
+    "id": "ex-022",
+    "title": "Reading My Favorite Novel",
+    "level": "beginner",
+    "category": "culture-arts",
+    "description": "Share about reading experience",
+    "sourceText": "Tôi đang đọc một cuốn tiểu thuyết rất hay. Câu chuyện vô cùng hấp dẫn. Nhân vật chính rất dũng cảm và quyết đoán. Tôi không thể ngừng đọc được. Mỗi tối tôi đều đọc trước khi đi ngủ. Tôi đã đọc được nửa cuốn rồi. Tôi rất muốn biết cái kết sẽ như thế nào. Đọc sách là sở thích lớn nhất của tôi.",
+    "highlightedSentences": [
+      "I am reading an interesting novel"
+    ],
+    "hints": [
+      "Use present continuous for current activity",
+      "Consider the article before 'interesting novel'"
+    ],
+    "expectedKeywords": [
+      "am",
+      "reading",
+      "an",
+      "interesting",
+      "novel"
+    ]
+  },
+  {
+    "id": "ex-121",
+    "title": "Learning to Play Guitar",
+    "level": "beginner",
+    "category": "culture-arts",
+    "description": "Describe learning music",
+    "sourceText": "Tôi đang học chơi đàn guitar. Tôi tham gia lớp học mỗi tuần. Giáo viên dạy tôi các hợp âm cơ bản. Tôi luyện tập ở nhà mỗi ngày. Ngón tay tôi đau nhưng tôi không bỏ cuộc. Tôi đã học được vài bài hát đơn giản. Tôi mơ ước chơi guitar thành thạo.",
+    "highlightedSentences": [
+      "I am learning to play guitar"
+    ],
+    "hints": [
+      "Use present continuous for ongoing learning",
+      "Consider 'to' + infinitive"
+    ],
+    "expectedKeywords": [
+      "am",
+      "learning",
+      "to",
+      "play",
+      "guitar"
+    ]
+  },
+  {
+    "id": "ex-122",
+    "title": "Visiting Art Museum",
+    "level": "beginner",
+    "category": "culture-arts",
+    "description": "Describe museum visit",
+    "sourceText": "Hôm qua tôi đi thăm bảo tàng nghệ thuật. Tôi xem nhiều bức tranh đẹp. Có tranh sơn dầu và tranh màu nước. Tôi thích nhất bức tranh phong cảnh. Màu sắc rất sống động và tươi sáng. Tôi chụp ảnh một vài bức tranh. Tôi mua vài tấm bưu thiếp làm quà. Đó là một trải nghiệm tuyệt vời.",
+    "highlightedSentences": [
+      "I visited the art museum yesterday"
+    ],
+    "hints": [
+      "Use past simple for completed action",
+      "Consider article before 'art museum'"
+    ],
+    "expectedKeywords": [
+      "visited",
+      "art",
+      "museum",
+      "yesterday"
+    ]
+  },
+  {
+    "id": "ex-123",
+    "title": "Traditional Dance Performance",
+    "level": "beginner",
+    "category": "culture-arts",
+    "description": "Describe cultural show",
+    "sourceText": "Tối nay tôi xem biểu diễn múa truyền thống. Các vũ công mặc trang phục rực rỡ. Họ nhảy theo điệu nhạc dân gian. Động tác uyển chuyển và đẹp mắt. Khán giả vỗ tay nhiệt liệt. Tôi rất ấn tượng với màn trình diễn. Tôi tự hào về văn hóa dân tộc mình.",
+    "highlightedSentences": [
+      "I watch a traditional dance performance tonight"
+    ],
+    "hints": [
+      "Use present simple for current event",
+      "Consider article before 'performance'"
+    ],
+    "expectedKeywords": [
+      "watch",
+      "traditional",
+      "dance",
+      "performance",
+      "tonight"
+    ]
+  },
+  {
+    "id": "ex-124",
+    "title": "Singing in Choir",
+    "level": "beginner",
+    "category": "culture-arts",
+    "description": "Describe music activity",
+    "sourceText": "Tôi tham gia đội hợp xướng ở trường. Chúng tôi tập luyện hai lần mỗi tuần. Chúng tôi hát các bài hát tiếng Việt và tiếng Anh. Giáo viên chỉ huy dàn nhạc rất tài năng. Chúng tôi sẽ biểu diễn vào cuối tháng. Tôi rất háo hức và hồi hộp. Hát hợp xướng rất vui và ý nghĩa.",
+    "highlightedSentences": [
+      "I join the school choir"
+    ],
+    "hints": [
+      "Use present simple for membership",
+      "Consider article before 'choir'"
+    ],
+    "expectedKeywords": [
+      "join",
+      "school",
+      "choir"
+    ]
+  },
+  {
+    "id": "ex-125",
+    "title": "Drawing Class",
+    "level": "beginner",
+    "category": "culture-arts",
+    "description": "Describe art lesson",
+    "sourceText": "Tôi học lớp vẽ vào cuối tuần. Giáo viên dạy chúng tôi vẽ chân dung. Tôi dùng bút chì và giấy vẽ. Tôi học cách vẽ mắt, mũi và miệng. Tôi vẽ chân dung của bạn tôi. Bức tranh chưa hoàn hảo nhưng tôi cố gắng. Vẽ tranh giúp tôi thư giãn.",
+    "highlightedSentences": [
+      "I take a drawing class on weekends"
+    ],
+    "hints": [
+      "Use present simple for routine",
+      "Consider preposition with 'weekends'"
+    ],
+    "expectedKeywords": [
+      "take",
+      "drawing",
+      "class",
+      "on",
+      "weekends"
+    ]
+  },
+  {
+    "id": "ex-126",
+    "title": "Festival Celebration",
+    "level": "beginner",
+    "category": "culture-arts",
+    "description": "Describe cultural festival",
+    "sourceText": "Hôm nay là ngày hội làng tôi. Có nhiều hoạt động vui chơi. Người dân mặc áo dài truyền thống. Có hát quan họ và múa lân. Trẻ em chơi các trò chơi dân gian. Có nhiều món ăn đặc sản ngon. Không khí rất sôi động và vui tươi. Tôi yêu lễ hội quê hương mình.",
+    "highlightedSentences": [
+      "Today is my village festival"
+    ],
+    "hints": [
+      "Use 'is' for singular subject",
+      "Consider possessive adjective"
+    ],
+    "expectedKeywords": [
+      "today",
+      "is",
+      "my",
+      "village",
+      "festival"
+    ]
+  },
+  {
+    "id": "ex-127",
+    "title": "Listening to Music",
+    "level": "beginner",
+    "category": "culture-arts",
+    "description": "Describe music preference",
+    "sourceText": "Tôi thích nghe nhạc pop. Tôi nghe nhạc mỗi ngày. Tôi có danh sách phát yêu thích. Tôi nghe nhạc khi đi làm và về nhà. Nhạc giúp tôi thư giãn và vui vẻ. Ca sĩ yêu thích của tôi là Mỹ Tâm. Tôi biết hát nhiều bài hát của cô ấy.",
+    "highlightedSentences": [
+      "I like listening to pop music"
+    ],
+    "hints": [
+      "Use 'like' + gerund",
+      "Consider preposition with 'music'"
+    ],
+    "expectedKeywords": [
+      "like",
+      "listening",
+      "to",
+      "pop",
+      "music"
+    ]
+  },
+  {
+    "id": "ex-128",
+    "title": "Photography Hobby",
+    "level": "beginner",
+    "category": "culture-arts",
+    "description": "Describe photography interest",
+    "sourceText": "Tôi có sở thích chụp ảnh. Tôi có một chiếc máy ảnh kỹ thuật số. Tôi chụp ảnh phong cảnh và con người. Tôi thích chụp ảnh vào buổi sáng sớm. Ánh sáng buổi sáng rất đẹp. Tôi đăng ảnh lên mạng xã hội. Bạn bè khen ảnh tôi chụp đẹp.",
+    "highlightedSentences": [
+      "I have a hobby of taking photos"
+    ],
+    "hints": [
+      "Use 'have a hobby of' + gerund",
+      "Consider plural form"
+    ],
+    "expectedKeywords": [
+      "have",
+      "hobby",
+      "of",
+      "taking",
+      "photos"
+    ]
+  },
+  {
+    "id": "ex-129",
+    "title": "Theater Play",
+    "level": "beginner",
+    "category": "culture-arts",
+    "description": "Describe theater experience",
+    "sourceText": "Tuần trước tôi xem kịch ở nhà hát. Vở kịch kể về tình yêu và gia đình. Diễn viên diễn xuất rất hay. Sân khấu được trang trí đẹp mắt. Ánh đèn và âm nhạc rất ấn tượng. Khán giả vỗ tay rất lâu. Tôi rất thích xem kịch. Đó là một đêm đáng nhớ.",
+    "highlightedSentences": [
+      "I watched a play at the theater last week"
+    ],
+    "hints": [
+      "Use past simple for completed action",
+      "Consider article before 'play'"
+    ],
+    "expectedKeywords": [
+      "watched",
+      "play",
+      "at",
+      "theater",
+      "last",
+      "week"
+    ]
+  },
+  {
+    "id": "ex-130",
+    "title": "Crafting Handmade Cards",
+    "level": "beginner",
+    "category": "culture-arts",
+    "description": "Describe craft activity",
+    "sourceText": "Tôi thích làm thiệp handmade. Tôi dùng giấy màu, keo và bút màu. Tôi cắt giấy thành hình trái tim và hoa. Tôi viết lời chúc bằng tay. Tôi làm thiệp tặng bạn bè vào sinh nhật. Họ rất vui khi nhận được thiệp. Làm đồ thủ công rất sáng tạo và thú vị.",
+    "highlightedSentences": [
+      "I like making handmade cards"
+    ],
+    "hints": [
+      "Use 'like' + gerund",
+      "Consider adjective placement"
+    ],
+    "expectedKeywords": [
+      "like",
+      "making",
+      "handmade",
+      "cards"
+    ]
+  }
+]

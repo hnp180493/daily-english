@@ -1,0 +1,143 @@
+.feedback-panel {
+  padding: 0;
+  margin: 0;
+}
+
+.feedback-section {
+  margin: 0;
+}
+
+.feedback-groups {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.feedback-group {
+  background-color: transparent;
+  padding: 0;
+}
+
+.group-title {
+  color: #ffffff;
+  font-size: 1.1rem;
+  margin: 0 0 1rem 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 500;
+}
+
+.type-icon {
+  font-size: 1.3rem;
+}
+
+.feedback-items {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.feedback-item {
+  background-color: rgba(42, 45, 74, 0.3);
+  border-left: 4px solid #f5b800;
+  padding: 1.25rem;
+  border-radius: 8px;
+  line-height: 1.8;
+}
+
+// Suggestion Line Styling
+.suggestion-line {
+  margin-bottom: 1rem;
+  font-size: 1.05rem;
+  line-height: 1.8;
+
+  .label-pink {
+    color: #ff6b9d;
+    font-weight: 600;
+    margin-right: 0.5rem;
+  }
+
+  .suggestion-text {
+    color: #ffffff;
+  }
+}
+
+// Color Classes for Highlighting
+::ng-deep {
+  .text-green {
+    color: #4ade80;
+    font-weight: 500;
+  }
+
+  .text-red {
+    color: #f87171;
+    font-weight: 500;
+  }
+
+  .text-orange {
+    color: #fbbf24;
+    font-weight: 500;
+  }
+
+  .line-through {
+    text-decoration: line-through;
+  }
+}
+
+// Improvements Section
+.improvements-section {
+  margin-top: 1rem;
+
+  .improvements-label {
+    color: #9ca3af;
+    font-size: 0.95rem;
+    margin-bottom: 0.75rem;
+    font-weight: 500;
+  }
+
+  .improvement-text {
+    color: #d1d5db;
+    font-size: 0.95rem;
+    line-height: 1.8;
+    padding-left: 1rem;
+
+    ul {
+      margin: 0.5rem 0;
+      padding-left: 1.5rem;
+
+      li {
+        margin: 0.5rem 0;
+      }
+    }
+  }
+}
+
+@media (max-width: 767px) {
+  .feedback-panel {
+    padding: 1.5rem;
+  }
+
+  .accuracy-score {
+    font-size: 3rem;
+  }
+
+  .feedback-group {
+    padding: 1rem;
+  }
+}
+
+.user-input-display {
+  background-color: rgba(42, 45, 74, 0.5);
+  border-left: 4px solid #6366f1;
+  padding: 1rem 1.25rem;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+
+  .user-input-text {
+    color: #e5e7eb;
+    font-size: 1rem;
+    line-height: 1.6;
+    margin: 0;
+  }
+}

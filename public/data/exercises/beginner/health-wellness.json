@@ -1,0 +1,301 @@
+[
+  {
+    "id": "ex-012",
+    "title": "A Visit to the Doctor",
+    "level": "beginner",
+    "category": "health-wellness",
+    "description": "Describe a medical checkup experience",
+    "sourceText": "Hôm nay tôi đi khám bác sĩ. Tôi cảm thấy không được khỏe. Tôi bị ho và sốt nhẹ. Bác sĩ khám tôi rất kỹ lưỡng. Ông ấy nói tôi bị cảm cúm thông thường. Ông ấy kê đơn thuốc và dặn tôi về nhà nghỉ ngơi. Tôi cần nghỉ ngơi nhiều và uống đủ nước. Tôi hy vọng mình sẽ mau khỏi.",
+    "highlightedSentences": [
+      "I don't feel well"
+    ],
+    "hints": [
+      "Use present simple for current state",
+      "Consider the negative form"
+    ],
+    "expectedKeywords": [
+      "don't",
+      "feel",
+      "well"
+    ]
+  },
+  {
+    "id": "ex-021",
+    "title": "Training for the Marathon",
+    "level": "beginner",
+    "category": "health-wellness",
+    "description": "Describe fitness routine",
+    "sourceText": "Tôi đang tập luyện để chạy marathon. Mỗi ngày tôi chạy bộ 5 km. Tôi cũng tập gym ba buổi mỗi tuần. Tôi ăn uống lành mạnh và khoa học. Tôi uống nhiều nước mỗi ngày. Tôi ngủ đủ 8 tiếng mỗi đêm. Tôi cảm thấy cơ thể mình ngày càng khỏe mạnh hơn. Tôi hoàn toàn sẵn sàng cho cuộc thi.",
+    "highlightedSentences": [
+      "I am training for a marathon"
+    ],
+    "hints": [
+      "Use present continuous for ongoing action",
+      "Consider the correct preposition"
+    ],
+    "expectedKeywords": [
+      "am",
+      "training",
+      "for",
+      "marathon"
+    ]
+  },
+  {
+    "id": "ex-069",
+    "title": "Gym Membership",
+    "level": "beginner",
+    "category": "health-wellness",
+    "description": "Describe fitness routine",
+    "sourceText": "Tôi vừa mới mua thẻ tập gym. Tôi đến phòng gym ba lần mỗi tuần. Tôi tập cardio và nâng tạ để tăng cơ. Huấn luyện viên hướng dẫn tôi các bài tập phù hợp. Tôi cảm thấy mình khỏe mạnh hơn rất nhiều. Tôi có nhiều năng lượng hơn trước. Tập gym thực sự tốt cho sức khỏe của tôi.",
+    "highlightedSentences": [
+      "I just bought a gym membership"
+    ],
+    "hints": [
+      "Use past tense for recent action"
+    ],
+    "expectedKeywords": [
+      "just",
+      "bought",
+      "gym",
+      "membership"
+    ]
+  },
+  {
+    "id": "ex-070",
+    "title": "Healthy Eating Habits",
+    "level": "beginner",
+    "category": "health-wellness",
+    "description": "Discuss nutrition",
+    "sourceText": "Tôi luôn cố gắng ăn uống lành mạnh. Tôi ăn nhiều rau xanh và trái cây tươi. Tôi uống ít nhất 2 lít nước mỗi ngày. Tôi hạn chế đồ ăn nhanh và đồ ngọt. Tôi thích tự nấu ăn ở nhà hơn là ăn ngoài. Ăn uống lành mạnh giúp tôi luôn cảm thấy tràn đầy năng lượng.",
+    "highlightedSentences": [
+      "I try to eat healthy"
+    ],
+    "hints": [
+      "Use 'try to' + infinitive"
+    ],
+    "expectedKeywords": [
+      "try",
+      "to",
+      "eat",
+      "healthy"
+    ]
+  },
+  {
+    "id": "ex-131",
+    "title": "Morning Yoga Practice",
+    "level": "beginner",
+    "category": "health-wellness",
+    "description": "Describe yoga routine",
+    "sourceText": "Mỗi sáng tôi tập yoga 30 phút. Tôi trải thảm yoga trên sàn nhà. Tôi làm các động tác duỗi người. Tôi tập thở sâu và thư giãn. Yoga giúp cơ thể tôi dẻo dai. Tôi cảm thấy tỉnh táo và sảng khoái. Tập yoga là cách tốt để bắt đầu ngày mới.",
+    "highlightedSentences": [
+      "I practice yoga every morning"
+    ],
+    "hints": [
+      "Use present simple for routine",
+      "Consider frequency adverb"
+    ],
+    "expectedKeywords": [
+      "practice",
+      "yoga",
+      "every",
+      "morning"
+    ]
+  },
+  {
+    "id": "ex-132",
+    "title": "Getting Enough Sleep",
+    "level": "beginner",
+    "category": "health-wellness",
+    "description": "Discuss sleep habits",
+    "sourceText": "Tôi cố gắng ngủ đủ 8 tiếng mỗi đêm. Tôi đi ngủ lúc 10 giờ tối. Tôi tắt điện thoại trước khi ngủ. Tôi đọc sách để thư giãn. Phòng ngủ của tôi tối và yên tĩnh. Ngủ đủ giấc giúp tôi khỏe mạnh. Tôi thức dậy vào buổi sáng đầy năng lượng.",
+    "highlightedSentences": [
+      "I try to sleep 8 hours every night"
+    ],
+    "hints": [
+      "Use 'try to' + infinitive",
+      "Consider time expression"
+    ],
+    "expectedKeywords": [
+      "try",
+      "to",
+      "sleep",
+      "hours",
+      "every",
+      "night"
+    ]
+  },
+  {
+    "id": "ex-133",
+    "title": "Dental Checkup",
+    "level": "beginner",
+    "category": "health-wellness",
+    "description": "Describe dentist visit",
+    "sourceText": "Hôm nay tôi đi khám răng. Nha sĩ kiểm tra răng của tôi. Tôi không có sâu răng. Nha sĩ làm sạch răng cho tôi. Nha sĩ dặn tôi đánh răng hai lần mỗi ngày. Tôi nên dùng chỉ nha khoa. Tôi hẹn khám lại sau 6 tháng.",
+    "highlightedSentences": [
+      "I go to the dentist today"
+    ],
+    "hints": [
+      "Use present simple for current event",
+      "Consider article before 'dentist'"
+    ],
+    "expectedKeywords": [
+      "go",
+      "to",
+      "dentist",
+      "today"
+    ]
+  },
+  {
+    "id": "ex-134",
+    "title": "Drinking Water Reminder",
+    "level": "beginner",
+    "category": "health-wellness",
+    "description": "Discuss hydration",
+    "sourceText": "Tôi luôn mang theo chai nước đi làm. Tôi uống nước thường xuyên trong ngày. Tôi đặt báo thức nhắc uống nước. Uống đủ nước rất quan trọng. Nước giúp cơ thể hoạt động tốt. Da tôi trở nên mịn màng hơn. Tôi cảm thấy khỏe mạnh và tràn đầy sinh lực.",
+    "highlightedSentences": [
+      "I always bring a water bottle to work"
+    ],
+    "hints": [
+      "Use frequency adverb",
+      "Consider article before 'water bottle'"
+    ],
+    "expectedKeywords": [
+      "always",
+      "bring",
+      "water",
+      "bottle",
+      "to",
+      "work"
+    ]
+  },
+  {
+    "id": "ex-135",
+    "title": "Walking for Health",
+    "level": "beginner",
+    "category": "health-wellness",
+    "description": "Describe walking habit",
+    "sourceText": "Tôi đi bộ 30 phút mỗi ngày. Tôi đi bộ sau bữa tối. Tôi đi bộ quanh khu phố. Đi bộ giúp tiêu hóa tốt. Tôi nghe nhạc khi đi bộ. Tôi gặp hàng xóm và chào hỏi. Đi bộ là bài tập đơn giản nhưng rất tốt.",
+    "highlightedSentences": [
+      "I walk 30 minutes every day"
+    ],
+    "hints": [
+      "Use present simple for routine",
+      "Consider time expression"
+    ],
+    "expectedKeywords": [
+      "walk",
+      "minutes",
+      "every",
+      "day"
+    ]
+  },
+  {
+    "id": "ex-136",
+    "title": "Stress Relief Activities",
+    "level": "beginner",
+    "category": "health-wellness",
+    "description": "Discuss relaxation methods",
+    "sourceText": "Khi căng thẳng, tôi có nhiều cách thư giãn. Tôi nghe nhạc nhẹ nhàng. Tôi tắm nước ấm. Tôi uống trà thảo mộc. Tôi nói chuyện với bạn bè. Tôi viết nhật ký. Những hoạt động này giúp tôi bình tĩnh. Tôi cảm thấy tốt hơn sau đó.",
+    "highlightedSentences": [
+      "I have many ways to relax when stressed"
+    ],
+    "hints": [
+      "Use present simple for habits",
+      "Consider 'when' clause"
+    ],
+    "expectedKeywords": [
+      "have",
+      "many",
+      "ways",
+      "to",
+      "relax",
+      "when",
+      "stressed"
+    ]
+  },
+  {
+    "id": "ex-137",
+    "title": "Taking Vitamins",
+    "level": "beginner",
+    "category": "health-wellness",
+    "description": "Describe supplement routine",
+    "sourceText": "Tôi uống vitamin mỗi sáng. Tôi uống vitamin C và vitamin D. Bác sĩ khuyên tôi nên uống vitamin. Vitamin giúp tăng cường sức đề kháng. Tôi ít bị ốm hơn trước. Tôi mua vitamin ở hiệu thuốc. Tôi nhớ uống vitamin đều đặn.",
+    "highlightedSentences": [
+      "I take vitamins every morning"
+    ],
+    "hints": [
+      "Use 'take' with vitamins",
+      "Consider frequency adverb"
+    ],
+    "expectedKeywords": [
+      "take",
+      "vitamins",
+      "every",
+      "morning"
+    ]
+  },
+  {
+    "id": "ex-138",
+    "title": "Eye Care Routine",
+    "level": "beginner",
+    "category": "health-wellness",
+    "description": "Discuss eye health",
+    "sourceText": "Tôi làm việc với máy tính nhiều giờ. Mắt tôi thường mỏi và khô. Tôi nghỉ giải lao 5 phút mỗi giờ. Tôi nhìn xa để thư giãn mắt. Tôi nhỏ thuốc nhỏ mắt khi cần. Tôi đeo kính chống ánh sáng xanh. Chăm sóc mắt rất quan trọng.",
+    "highlightedSentences": [
+      "I work with computers for many hours"
+    ],
+    "hints": [
+      "Use present simple for routine",
+      "Consider preposition with 'computers'"
+    ],
+    "expectedKeywords": [
+      "work",
+      "with",
+      "computers",
+      "for",
+      "many",
+      "hours"
+    ]
+  },
+  {
+    "id": "ex-139",
+    "title": "Healthy Breakfast",
+    "level": "beginner",
+    "category": "health-wellness",
+    "description": "Describe morning meal",
+    "sourceText": "Tôi không bao giờ bỏ bữa sáng. Tôi ăn sáng lúc 7 giờ. Tôi ăn yến mạch với sữa. Tôi thêm chuối và hạt chia. Tôi uống một ly nước cam. Bữa sáng cho tôi năng lượng. Tôi sẵn sàng cho một ngày làm việc.",
+    "highlightedSentences": [
+      "I never skip breakfast"
+    ],
+    "hints": [
+      "Use frequency adverb 'never'",
+      "Consider verb 'skip'"
+    ],
+    "expectedKeywords": [
+      "never",
+      "skip",
+      "breakfast"
+    ]
+  },
+  {
+    "id": "ex-140",
+    "title": "Meditation Practice",
+    "level": "beginner",
+    "category": "health-wellness",
+    "description": "Describe mindfulness activity",
+    "sourceText": "Tôi thiền 10 phút mỗi tối. Tôi ngồi yên và nhắm mắt. Tôi tập trung vào hơi thở. Tôi để tâm trí thư giãn. Thiền giúp tôi ngủ ngon hơn. Tôi bớt lo lắng và căng thẳng. Thiền rất tốt cho sức khỏe tinh thần.",
+    "highlightedSentences": [
+      "I meditate 10 minutes every evening"
+    ],
+    "hints": [
+      "Use present simple for routine",
+      "Consider time expression"
+    ],
+    "expectedKeywords": [
+      "meditate",
+      "minutes",
+      "every",
+      "evening"
+    ]
+  }
+]

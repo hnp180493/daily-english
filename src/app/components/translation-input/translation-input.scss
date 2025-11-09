@@ -1,0 +1,39 @@
+.translation-input-container {
+  margin: 1.5rem 0;
+}
+
+.input-label {
+  display: block;
+  color: #f5b800;
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+}
+
+.translation-textarea {
+  width: 100%;
+  background-color: #1e2139;
+  border: 2px solid #2a2d4a;
+  border-radius: 12px;
+  padding: 1rem;
+  color: #ffffff;
+  font-size: 1rem;
+  line-height: 1.6;
+  resize: vertical;
+  font-family: inherit;
+  transition: border-color 0.2s ease;
+
+  &:focus {
+    outline: none;
+    border-color: #f5b800;
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+  &::placeholder {
+    color: #6a6a8a;
+  }
+}

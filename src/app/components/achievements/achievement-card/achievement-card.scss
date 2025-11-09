@@ -1,0 +1,260 @@
+.achievement-card {
+  position: relative;
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+  border-radius: 12px;
+  padding: 1.5rem;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  border: 2px solid rgba(167, 139, 250, 0.2);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  min-height: 320px;
+  height: 100%;
+
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+  }
+
+  &:focus {
+    outline: 2px solid #4F46E5;
+    outline-offset: 2px;
+  }
+
+  &.locked {
+    opacity: 0.85;
+    
+    .achievement-icon img {
+      filter: grayscale(80%) brightness(0.9);
+    }
+  }
+
+  &.common {
+    border-color: #6B7280;
+    
+    &:hover {
+      box-shadow: 0 8px 16px rgba(107, 114, 128, 0.2);
+    }
+  }
+
+  &.rare {
+    border-color: #3B82F6;
+    
+    &:hover {
+      box-shadow: 0 8px 16px rgba(59, 130, 246, 0.3);
+    }
+  }
+
+  &.epic {
+    border-color: #8B5CF6;
+    
+    &:hover {
+      box-shadow: 0 8px 16px rgba(139, 92, 246, 0.3);
+    }
+  }
+
+  &.legendary {
+    border-color: #F59E0B;
+    
+    &:hover {
+      box-shadow: 0 8px 16px rgba(245, 158, 11, 0.4);
+    }
+  }
+}
+
+.lock-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.8);
+  z-index: 1;
+  pointer-events: none;
+
+  .lock-icon {
+    font-size: 3rem;
+    opacity: 0.5;
+  }
+}
+
+.achievement-icon {
+  width: 80px;
+  height: 80px;
+  margin: 0 auto 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+}
+
+.achievement-content {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+
+  h3 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #F3F4F6;
+    margin: 0 0 0.5rem;
+    min-height: 2.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .achievement-description {
+    font-size: 0.875rem;
+    color: #D1D5DB;
+    margin: 0 0 1rem;
+    line-height: 1.5;
+    min-height: 3rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
+
+.rarity-badge {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: auto;
+
+  &.common {
+    background: #F3F4F6;
+    color: #6B7280;
+  }
+
+  &.rare {
+    background: #DBEAFE;
+    color: #3B82F6;
+  }
+
+  &.epic {
+    background: #EDE9FE;
+    color: #8B5CF6;
+  }
+
+  &.legendary {
+    background: #FEF3C7;
+    color: #F59E0B;
+  }
+}
+
+.progress-container {
+  margin-top: auto;
+  padding-top: 1rem;
+
+  .progress-bar {
+    width: 100%;
+    height: 8px;
+    background: #E5E7EB;
+    border-radius: 9999px;
+    overflow: hidden;
+    margin-bottom: 0.5rem;
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #4F46E5, #10B981);
+      border-radius: 9999px;
+      transition: width 0.3s ease;
+    }
+  }
+
+  .progress-text {
+    font-size: 0.75rem;
+    color: #D1D5DB;
+    font-weight: 500;
+  }
+}
+
+.unlock-date {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  color: #10B981;
+  font-weight: 500;
+  margin-top: auto;
+  padding-top: 1rem;
+
+  .icon {
+    font-size: 1rem;
+  }
+}
+
+.claim-button {
+  margin-top: 0.75rem;
+  padding: 0.625rem 1.25rem;
+  background: linear-gradient(135deg, #10B981, #059669);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
+
+  &:hover {
+    background: linear-gradient(135deg, #059669, #047857);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+
+  &:focus {
+    outline: 2px solid #10B981;
+    outline-offset: 2px;
+  }
+}
+
+.claimed-badge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+  padding: 0.5rem 1rem;
+  background: rgba(16, 185, 129, 0.1);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  border-radius: 8px;
+  font-size: 0.875rem;
+  color: #10B981;
+  font-weight: 500;
+
+  .icon {
+    font-size: 1rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .achievement-card {
+    transition: none;
+  }
+
+  .progress-fill {
+    transition: none;
+  }
+}

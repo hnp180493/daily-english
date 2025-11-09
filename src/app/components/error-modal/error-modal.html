@@ -1,0 +1,32 @@
+<div class="modal-overlay" (click)="onClose()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <div class="icon-container error">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"></circle>
+          <line x1="12" y1="8" x2="12" y2="12"></line>
+          <line x1="12" y1="16" x2="12.01" y2="16"></line>
+        </svg>
+      </div>
+      <h2 class="modal-title">{{ title() }}</h2>
+    </div>
+
+    <div class="modal-body">
+      <div class="error-message">
+        @for (part of parseMessage(); track $index) {
+          @if (part.isLink) {
+            <a [href]="part.url" target="_blank" rel="noopener noreferrer" class="error-link">
+              {{ part.text }}
+            </a>
+          } @else {
+            <span>{{ part.text }}</span>
+          }
+        }
+      </div>
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn btn-primary" (click)="onClose()">OK</button>
+    </div>
+  </div>
+</div>

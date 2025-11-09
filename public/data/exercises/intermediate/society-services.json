@@ -1,0 +1,360 @@
+[
+  {
+    "id": "ex-027",
+    "title": "Customer Service Excellence",
+    "level": "intermediate",
+    "category": "society-services",
+    "description": "Handle customer inquiries",
+    "sourceText": "Xin chào quý khách, Cảm ơn quý khách đã liên hệ với chúng tôi. Tôi hiểu rằng quý khách đang gặp vấn đề với đơn hàng. Tôi thành thật xin lỗi về sự bất tiện này. Chúng tôi sẽ giải quyết vấn đề ngay lập tức. Tôi đã kiểm tra hệ thống và tìm thấy đơn hàng của quý khách. Chúng tôi sẽ gửi lại sản phẩm hoàn toàn miễn phí. Quý khách sẽ nhận được hàng trong vòng 3-5 ngày làm việc. Xin chân thành cảm ơn sự kiên nhẫn và thông cảm của quý khách.",
+    "highlightedSentences": [
+      "I apologize for the inconvenience"
+    ],
+    "hints": [
+      "Use formal apology structure",
+      "Consider the correct preposition"
+    ],
+    "expectedKeywords": [
+      "apologize",
+      "for",
+      "the",
+      "inconvenience"
+    ]
+  },
+  {
+    "id": "ex-076",
+    "title": "Community Volunteering",
+    "level": "intermediate",
+    "category": "society-services",
+    "description": "Discuss volunteer work",
+    "sourceText": "Tôi tham gia hoạt động tình nguyện tại một tổ chức từ thiện địa phương mỗi tháng. Chúng tôi giúp đỡ những người vô gia cư bằng cách phục vụ bữa ăn miễn phí. Tôi cũng dạy tiếng Anh cho những người nhập cư mới. Công việc tình nguyện mang lại cho tôi cảm giác sống có ý nghĩa. Tôi được gặp gỡ nhiều người tuyệt vời và học hỏi được rất nhiều điều. Đóng góp cho cộng đồng thực sự rất có giá trị.",
+    "highlightedSentences": [
+      "I volunteer at a local charity every month"
+    ],
+    "hints": [
+      "Use present simple for regular activity"
+    ],
+    "expectedKeywords": [
+      "volunteer",
+      "at",
+      "local",
+      "charity",
+      "every",
+      "month"
+    ]
+  },
+  {
+    "id": "ex-077",
+    "title": "Public Healthcare System",
+    "level": "intermediate",
+    "category": "society-services",
+    "description": "Discuss healthcare access",
+    "sourceText": "Hệ thống y tế công cộng ở nước tôi cung cấp dịch vụ chăm sóc sức khỏe cơ bản cho tất cả công dân. Mọi người đều có thể đến bệnh viện công khi cần thiết. Chi phí được chi trả bằng nguồn thuế. Tuy nhiên, thời gian chờ đợi đôi khi khá lâu. Một số người chọn mua bảo hiểm y tế tư nhân để được phục vụ nhanh hơn và chu đáo hơn.",
+    "highlightedSentences": [
+      "The public healthcare system in my country provides basic healthcare for all citizens"
+    ],
+    "hints": [
+      "Use 'provides' with singular subject"
+    ],
+    "expectedKeywords": [
+      "public",
+      "healthcare",
+      "system",
+      "provides",
+      "basic",
+      "healthcare",
+      "for",
+      "all"
+    ]
+  },
+  {
+    "id": "ex-101",
+    "title": "Emergency Services Response",
+    "level": "intermediate",
+    "category": "society-services",
+    "description": "Discuss emergency preparedness",
+    "sourceText": "Dịch vụ khẩn cấp đóng vai trò vô cùng quan trọng trong cộng đồng. Cảnh sát, lính cứu hỏa và nhân viên y tế cấp cứu luôn sẵn sàng hỗ trợ 24/7. Họ phản ứng cực kỳ nhanh chóng trong các tình huống nguy hiểm. Chúng ta nên thuộc lòng số điện thoại khẩn cấp và biết cách gọi trợ giúp. Chúng ta cũng nên học các kỹ năng sơ cứu cơ bản. Chuẩn bị tốt cho tình huống khẩn cấp có thể cứu sống con người.",
+    "highlightedSentences": [
+      "Emergency services play a vital role in the community"
+    ],
+    "hints": [
+      "Use 'play a role' idiom",
+      "Consider 'vital' as adjective"
+    ],
+    "expectedKeywords": [
+      "emergency",
+      "services",
+      "play",
+      "vital",
+      "role",
+      "in",
+      "community"
+    ]
+  },
+  {
+    "id": "ex-208",
+    "title": "Social Welfare Programs",
+    "level": "intermediate",
+    "category": "society-services",
+    "description": "Discuss government support",
+    "sourceText": "Các chương trình phúc lợi xã hội giúp đỡ những người gặp khó khăn trong cộng đồng. Chính phủ cung cấp hỗ trợ tài chính cho người thất nghiệp và người già. Có các chương trình hỗ trợ nhà ở cho người thu nhập thấp. Trẻ em từ gia đình nghèo được hỗ trợ học phí và bữa ăn học đường. Người khuyết tật nhận được các dịch vụ chăm sóc đặc biệt. Những chương trình này giúp giảm bất bình đẳng và tạo cơ hội cho mọi người. Phúc lợi xã hội là dấu hiệu của một xã hội văn minh và nhân đạo.",
+    "highlightedSentences": [
+      "Social welfare programs help people in need"
+    ],
+    "hints": [
+      "Use present simple for general truth",
+      "Consider 'in need' phrase"
+    ],
+    "expectedKeywords": [
+      "social",
+      "welfare",
+      "programs",
+      "help",
+      "people",
+      "in",
+      "need"
+    ]
+  },
+  {
+    "id": "ex-209",
+    "title": "Digital Government Services",
+    "level": "intermediate",
+    "category": "society-services",
+    "description": "Discuss e-government",
+    "sourceText": "Chính phủ điện tử đang làm cho dịch vụ công trở nên tiện lợi hơn bao giờ hết. Công dân có thể nộp thuế trực tuyến mà không cần đến cơ quan thuế. Chúng ta có thể đăng ký giấy tờ tùy thân qua internet. Chúng ta có thể thanh toán hóa đơn điện nước bằng ứng dụng di động. Hệ thống trực tuyến giảm thời gian chờ đợi và giấy tờ hành chính. Tuy nhiên, chúng ta cần đảm bảo an ninh thông tin và bảo vệ dữ liệu cá nhân. Chính phủ điện tử giúp nâng cao hiệu quả và minh bạch.",
+    "highlightedSentences": [
+      "E-government is making public services more convenient than ever"
+    ],
+    "hints": [
+      "Use present continuous for ongoing change",
+      "Consider comparative structure"
+    ],
+    "expectedKeywords": [
+      "e-government",
+      "is",
+      "making",
+      "public",
+      "services",
+      "more",
+      "convenient"
+    ]
+  },
+  {
+    "id": "ex-210",
+    "title": "Community Policing Approach",
+    "level": "intermediate",
+    "category": "society-services",
+    "description": "Discuss law enforcement",
+    "sourceText": "Mô hình cảnh sát cộng đồng tập trung vào xây dựng mối quan hệ với người dân. Cảnh sát tuần tra thường xuyên trong khu phố và làm quen với cư dân. Họ tham gia các sự kiện cộng đồng và lắng nghe mối quan tâm của người dân. Cách tiếp cận này giúp ngăn ngừa tội phạm thay vì chỉ phản ứng sau khi xảy ra. Người dân cảm thấy an toàn hơn và tin tưởng cảnh sát hơn. Sự hợp tác giữa cảnh sát và cộng đồng tạo ra môi trường sống an toàn cho tất cả.",
+    "highlightedSentences": [
+      "Community policing focuses on building relationships with residents"
+    ],
+    "hints": [
+      "Use present simple for approach",
+      "Consider 'focuses on' + gerund"
+    ],
+    "expectedKeywords": [
+      "community",
+      "policing",
+      "focuses",
+      "on",
+      "building",
+      "relationships"
+    ]
+  },
+  {
+    "id": "ex-211",
+    "title": "Public Library Resources",
+    "level": "intermediate",
+    "category": "society-services",
+    "description": "Discuss library services",
+    "sourceText": "Thư viện công cộng cung cấp nhiều hơn là chỉ sách để mượn. Chúng cung cấp truy cập internet miễn phí cho những người không có máy tính. Chúng tổ chức các lớp học kỹ năng và workshop miễn phí. Trẻ em có thể tham gia các chương trình đọc sách và hoạt động giáo dục. Người lớn tuổi có thể tham gia các câu lạc bộ và hoạt động xã hội. Thư viện là trung tâm học tập và giao lưu cộng đồng. Chúng đóng vai trò quan trọng trong việc thu hẹp khoảng cách kỹ thuật số.",
+    "highlightedSentences": [
+      "Public libraries provide more than just books to borrow"
+    ],
+    "hints": [
+      "Use present simple for services",
+      "Consider 'more than' structure"
+    ],
+    "expectedKeywords": [
+      "public",
+      "libraries",
+      "provide",
+      "more",
+      "than",
+      "just",
+      "books"
+    ]
+  },
+  {
+    "id": "ex-212",
+    "title": "Waste Management System",
+    "level": "intermediate",
+    "category": "society-services",
+    "description": "Discuss sanitation services",
+    "sourceText": "Hệ thống quản lý rác thải là dịch vụ công thiết yếu cho thành phố. Rác được thu gom định kỳ từ mỗi hộ gia đình và doanh nghiệp. Rác được phân loại thành rác hữu cơ, rác tái chế và rác thải nguy hại. Rác hữu cơ được chuyển thành phân compost để bón cho cây. Rác tái chế được xử lý và tái sử dụng làm nguyên liệu mới. Rác thải nguy hại được xử lý đặc biệt để bảo vệ môi trường. Quản lý rác thải hiệu quả giúp giữ thành phố sạch sẽ và bảo vệ sức khỏe cộng đồng.",
+    "highlightedSentences": [
+      "Waste management system is an essential public service"
+    ],
+    "hints": [
+      "Use 'is' with singular subject",
+      "Consider article before 'essential'"
+    ],
+    "expectedKeywords": [
+      "waste",
+      "management",
+      "system",
+      "is",
+      "an",
+      "essential",
+      "public",
+      "service"
+    ]
+  },
+  {
+    "id": "ex-213",
+    "title": "Public Education System",
+    "level": "intermediate",
+    "category": "society-services",
+    "description": "Discuss schooling",
+    "sourceText": "Hệ thống giáo dục công lập cung cấp giáo dục miễn phí cho tất cả trẻ em. Mọi đứa trẻ đều có quyền được đến trường bất kể hoàn cảnh gia đình. Chính phủ tài trợ cho trường học, giáo viên và tài liệu học tập. Chương trình giảng dạy được thiết kế để phát triển toàn diện học sinh. Giáo dục công lập giúp tạo cơ hội bình đẳng cho mọi người. Tuy nhiên, chất lượng giáo dục vẫn cần được cải thiện liên tục. Đầu tư vào giáo dục là đầu tư vào tương lai của đất nước.",
+    "highlightedSentences": [
+      "Public education system provides free education for all children"
+    ],
+    "hints": [
+      "Use present simple for system",
+      "Consider 'for all' phrase"
+    ],
+    "expectedKeywords": [
+      "public",
+      "education",
+      "system",
+      "provides",
+      "free",
+      "education",
+      "for",
+      "all"
+    ]
+  },
+  {
+    "id": "ex-214",
+    "title": "Consumer Protection Laws",
+    "level": "intermediate",
+    "category": "society-services",
+    "description": "Discuss consumer rights",
+    "sourceText": "Luật bảo vệ người tiêu dùng giúp đảm bảo giao dịch công bằng. Người tiêu dùng có quyền được cung cấp thông tin chính xác về sản phẩm. Chúng ta có quyền đổi trả hàng lỗi hoặc không đúng mô tả. Chúng ta có quyền khiếu nại khi bị lừa đảo hoặc gian lận. Các cơ quan bảo vệ người tiêu dùng điều tra và xử lý vi phạm. Doanh nghiệp vi phạm có thể bị phạt nặng hoặc đình chỉ hoạt động. Luật bảo vệ người tiêu dùng tạo môi trường kinh doanh lành mạnh.",
+    "highlightedSentences": [
+      "Consumer protection laws ensure fair transactions"
+    ],
+    "hints": [
+      "Use present simple for laws",
+      "Consider plural verb"
+    ],
+    "expectedKeywords": [
+      "consumer",
+      "protection",
+      "laws",
+      "ensure",
+      "fair",
+      "transactions"
+    ]
+  },
+  {
+    "id": "ex-215",
+    "title": "Neighborhood Association",
+    "level": "intermediate",
+    "category": "society-services",
+    "description": "Discuss community organization",
+    "sourceText": "Hội đồng khu phố giúp cư dân giải quyết các vấn đề chung. Chúng tôi họp định kỳ mỗi tháng để thảo luận về an ninh và môi trường. Chúng tôi tổ chức các hoạt động cộng đồng như dọn dẹp công viên và lễ hội đường phố. Chúng tôi làm việc với chính quyền địa phương để cải thiện cơ sở hạ tầng. Chúng tôi tạo ra các quy tắc chung để duy trì môi trường sống tốt. Sự tham gia tích cực của cư dân làm cho khu phố trở nên tốt đẹp hơn. Đoàn kết cộng đồng là sức mạnh của chúng ta.",
+    "highlightedSentences": [
+      "Neighborhood association helps residents solve common problems"
+    ],
+    "hints": [
+      "Use present simple for function",
+      "Consider plural 'problems'"
+    ],
+    "expectedKeywords": [
+      "neighborhood",
+      "association",
+      "helps",
+      "residents",
+      "solve",
+      "common",
+      "problems"
+    ]
+  },
+  {
+    "id": "ex-216",
+    "title": "Public Transportation Infrastructure",
+    "level": "intermediate",
+    "category": "society-services",
+    "description": "Discuss transit systems",
+    "sourceText": "Hệ thống giao thông công cộng là xương sống của thành phố hiện đại. Xe buýt, tàu điện ngầm và tàu điện kết nối các khu vực khác nhau. Hệ thống được thiết kế để di chuyển hiệu quả và giảm tắc nghẽn giao thông. Giá vé được trợ cấp để người dân có thu nhập thấp cũng có thể sử dụng. Nhiều thành phố đang đầu tư vào xe buýt điện và tàu điện xanh. Giao thông công cộng tốt giảm ô nhiễm không khí và cải thiện chất lượng cuộc sống. Đầu tư vào giao thông công cộng là đầu tư vào tương lai bền vững.",
+    "highlightedSentences": [
+      "Public transportation system is the backbone of modern cities"
+    ],
+    "hints": [
+      "Use 'is' with singular subject",
+      "Consider article before 'backbone'"
+    ],
+    "expectedKeywords": [
+      "public",
+      "transportation",
+      "system",
+      "is",
+      "backbone",
+      "of",
+      "modern",
+      "cities"
+    ]
+  },
+  {
+    "id": "ex-217",
+    "title": "Social Housing Programs",
+    "level": "intermediate",
+    "category": "society-services",
+    "description": "Discuss affordable housing",
+    "sourceText": "Chương trình nhà ở xã hội giúp người thu nhập thấp có nơi ở ổn định. Chính phủ xây dựng hoặc trợ cấp nhà ở với giá phải chăng. Gia đình đủ điều kiện có thể thuê hoặc mua nhà với giá ưu đãi. Chương trình ưu tiên người già, người khuyết tật và gia đình có trẻ nhỏ. Nhà ở xã hội thường được xây dựng gần trường học và bệnh viện. Có nơi ở ổn định giúp mọi người tập trung vào công việc và giáo dục. Nhà ở là quyền cơ bản mà mọi người đều xứng đáng có được.",
+    "highlightedSentences": [
+      "Social housing programs help low-income people have stable housing"
+    ],
+    "hints": [
+      "Use present simple for programs",
+      "Consider 'help + object + infinitive'"
+    ],
+    "expectedKeywords": [
+      "social",
+      "housing",
+      "programs",
+      "help",
+      "low-income",
+      "people",
+      "have",
+      "stable"
+    ]
+  },
+  {
+    "id": "ex-218",
+    "title": "Civic Engagement Importance",
+    "level": "intermediate",
+    "category": "society-services",
+    "description": "Discuss citizen participation",
+    "sourceText": "Tham gia công dân là trách nhiệm quan trọng trong xã hội dân chủ. Chúng ta nên bỏ phiếu trong các cuộc bầu cử để chọn người đại diện. Chúng ta nên tham dự các cuộc họp công khai và bày tỏ ý kiến. Chúng ta có thể tham gia các tổ chức phi lợi nhuận và hoạt động tình nguyện. Chúng ta nên theo dõi tin tức và hiểu biết về các vấn đề xã hội. Tham gia tích cực giúp tạo ra những thay đổi tích cực trong cộng đồng. Dân chủ chỉ hoạt động tốt khi công dân tham gia tích cực.",
+    "highlightedSentences": [
+      "Civic engagement is an important responsibility in democratic society"
+    ],
+    "hints": [
+      "Use 'is' with singular subject",
+      "Consider article before 'important'"
+    ],
+    "expectedKeywords": [
+      "civic",
+      "engagement",
+      "is",
+      "an",
+      "important",
+      "responsibility",
+      "in",
+      "democratic"
+    ]
+  }
+]

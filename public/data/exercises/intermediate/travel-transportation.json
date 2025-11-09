@@ -1,0 +1,404 @@
+[
+  {
+    "id": "ex-005",
+    "title": "Anticipation in the Air",
+    "level": "intermediate",
+    "category": "travel-transportation",
+    "description": "Translate a story about preparing for a journey",
+    "sourceText": "Tôi thực sự rất háo hức cho chuyến đi sắp tới này. Tôi cảm thấy một sự phấn khích đặc biệt khó tả. Tôi đã chuẩn bị mọi thứ thật kỹ lưỡng. Tôi đã sắp xếp gọn gàng quần áo và đồ dùng cá nhân vào vali. Tôi đã kiểm tra kỹ vé máy bay và hộ chiếu. Tôi không thể chờ đợi để được khám phá những vùng đất mới. Tôi hy vọng chuyến đi sẽ diễn ra thật suôn sẻ và thuận lợi.",
+    "highlightedSentences": [
+      "I cannot wait to explore new places"
+    ],
+    "hints": [
+      "Use 'cannot wait' or 'can't wait' correctly",
+      "Consider the infinitive form after 'wait'"
+    ],
+    "expectedKeywords": [
+      "cannot",
+      "wait",
+      "explore",
+      "new"
+    ]
+  },
+  {
+    "id": "ex-058",
+    "title": "Solo Travel Experience",
+    "level": "intermediate",
+    "category": "travel-transportation",
+    "description": "Share independent travel story",
+    "sourceText": "Lần đầu tiên tôi đi du lịch một mình thực sự là một trải nghiệm đáng nhớ. Tôi đã lên kế hoạch cẩn thận nhưng vẫn để ngỏ cho những điều bất ngờ. Tôi gặp gỡ nhiều người thú vị đến từ khắp nơi trên thế giới. Tôi học được cách tin tưởng vào bản thân và tự mình đưa ra quyết định.",
+    "highlightedSentences": [
+      "My first solo travel was a memorable experience"
+    ],
+    "hints": [
+      "Use past tense for completed experience"
+    ],
+    "expectedKeywords": [
+      "first",
+      "solo",
+      "travel",
+      "was",
+      "memorable"
+    ]
+  },
+  {
+    "id": "ex-059",
+    "title": "Public Transportation Benefits",
+    "level": "intermediate",
+    "category": "travel-transportation",
+    "description": "Discuss urban mobility",
+    "sourceText": "Tôi đã chuyển từ việc tự lái xe sang sử dụng phương tiện công cộng. Ban đầu, tôi khá lo lắng về sự bất tiện. Nhưng tôi nhanh chóng nhận ra rất nhiều lợi ích. Tôi tiết kiệm được tiền xăng và phí đỗ xe. Tôi có thể thoải mái đọc sách hoặc làm việc trong lúc di chuyển. Tôi cũng góp phần giảm lượng khí thải carbon ra môi trường.",
+    "highlightedSentences": [
+      "I have switched from driving to using public transportation"
+    ],
+    "hints": [
+      "Use present perfect for recent change"
+    ],
+    "expectedKeywords": [
+      "have",
+      "switched",
+      "from",
+      "driving",
+      "to",
+      "using"
+    ]
+  },
+  {
+    "id": "ex-060",
+    "title": "Cultural Immersion Travel",
+    "level": "intermediate",
+    "category": "travel-transportation",
+    "description": "Explore authentic travel experiences",
+    "sourceText": "Tôi thích du lịch theo phong cách hòa mình vào văn hóa địa phương. Thay vì ở khách sạn sang trọng, tôi chọn thuê nhà dân homestay. Tôi ăn uống ở các quán ăn bình dân thay vì nhà hàng du lịch đắt đỏ. Tôi học một số cụm từ giao tiếp cơ bản bằng ngôn ngữ địa phương. Tôi tích cực tham gia các lễ hội và sự kiện cộng đồng.",
+    "highlightedSentences": [
+      "I prefer to travel in a way that immerses me in local culture"
+    ],
+    "hints": [
+      "Use 'prefer to' + infinitive"
+    ],
+    "expectedKeywords": [
+      "prefer",
+      "to",
+      "travel",
+      "way",
+      "that",
+      "immerses"
+    ]
+  },
+  {
+    "id": "ex-219",
+    "title": "Budget Travel Tips",
+    "level": "intermediate",
+    "category": "travel-transportation",
+    "description": "Discuss affordable travel",
+    "sourceText": "Du lịch tiết kiệm không có nghĩa là hy sinh trải nghiệm. Tôi đặt vé máy bay sớm để được giá tốt nhất. Tôi ở nhà trọ hoặc hostel thay vì khách sạn đắt tiền. Tôi nấu ăn tự phục vụ thay vì ăn nhà hàng mỗi bữa. Tôi sử dụng phương tiện công cộng thay vì taxi. Tôi tìm các hoạt động miễn phí như tham quan công viên và bảo tàng. Du lịch thông minh giúp tôi đi nhiều nơi hơn với cùng ngân sách.",
+    "highlightedSentences": [
+      "Budget travel doesn't mean sacrificing experiences"
+    ],
+    "hints": [
+      "Use present simple for general truth",
+      "Consider gerund after 'mean'"
+    ],
+    "expectedKeywords": [
+      "budget",
+      "travel",
+      "doesn't",
+      "mean",
+      "sacrificing",
+      "experiences"
+    ]
+  },
+  {
+    "id": "ex-220",
+    "title": "Sustainable Tourism",
+    "level": "intermediate",
+    "category": "travel-transportation",
+    "description": "Discuss responsible travel",
+    "sourceText": "Du lịch bền vững đang trở thành xu hướng quan trọng. Chúng ta nên tôn trọng văn hóa và môi trường địa phương. Chúng ta nên chọn các tour du lịch có trách nhiệm với môi trường. Chúng ta nên hạn chế sử dụng nhựa và giảm thiểu rác thải. Chúng ta nên ủng hộ doanh nghiệp địa phương thay vì chuỗi quốc tế. Chúng ta nên tìm hiểu và tuân thủ phong tục địa phương. Du lịch có trách nhiệm giúp bảo vệ điểm đến cho thế hệ tương lai.",
+    "highlightedSentences": [
+      "Sustainable tourism is becoming an important trend"
+    ],
+    "hints": [
+      "Use present continuous for trend",
+      "Consider article before 'trend'"
+    ],
+    "expectedKeywords": [
+      "sustainable",
+      "tourism",
+      "is",
+      "becoming",
+      "important",
+      "trend"
+    ]
+  },
+  {
+    "id": "ex-221",
+    "title": "Travel Photography",
+    "level": "intermediate",
+    "category": "travel-transportation",
+    "description": "Discuss capturing memories",
+    "sourceText": "Nhiếp ảnh du lịch giúp tôi lưu giữ những kỷ niệm đẹp. Tôi luôn mang theo máy ảnh trong mọi chuyến đi. Tôi chụp ảnh phong cảnh, kiến trúc và con người địa phương. Tôi cố gắng chụp vào golden hour để có ánh sáng đẹp nhất. Tôi xin phép trước khi chụp ảnh người dân địa phương. Tôi chỉnh sửa ảnh nhẹ nhàng để giữ được vẻ tự nhiên. Những bức ảnh giúp tôi nhớ lại chuyến đi và chia sẻ với người khác.",
+    "highlightedSentences": [
+      "Travel photography helps me preserve beautiful memories"
+    ],
+    "hints": [
+      "Use present simple for function",
+      "Consider 'help + object + infinitive'"
+    ],
+    "expectedKeywords": [
+      "travel",
+      "photography",
+      "helps",
+      "me",
+      "preserve",
+      "beautiful",
+      "memories"
+    ]
+  },
+  {
+    "id": "ex-222",
+    "title": "Language Barriers",
+    "level": "intermediate",
+    "category": "travel-transportation",
+    "description": "Discuss communication challenges",
+    "sourceText": "Rào cản ngôn ngữ là thách thức phổ biến khi du lịch nước ngoài. Tôi học một số cụm từ cơ bản trước khi đi. Tôi sử dụng ứng dụng dịch thuật trên điện thoại khi cần. Tôi dùng ngôn ngữ cơ thể và cử chỉ để giao tiếp. Tôi mang theo sổ tay và bút để vẽ hoặc viết. Người dân địa phương thường rất kiên nhẫn và sẵn lòng giúp đỡ. Vượt qua rào cản ngôn ngữ tạo ra những kết nối đáng nhớ.",
+    "highlightedSentences": [
+      "Language barriers are a common challenge when traveling abroad"
+    ],
+    "hints": [
+      "Use present simple for general truth",
+      "Consider plural verb"
+    ],
+    "expectedKeywords": [
+      "language",
+      "barriers",
+      "are",
+      "common",
+      "challenge",
+      "when",
+      "traveling"
+    ]
+  },
+  {
+    "id": "ex-223",
+    "title": "Travel Insurance Importance",
+    "level": "intermediate",
+    "category": "travel-transportation",
+    "description": "Discuss travel protection",
+    "sourceText": "Bảo hiểm du lịch là khoản đầu tư quan trọng cho mọi chuyến đi. Nó bảo vệ chúng ta khỏi các chi phí y tế bất ngờ ở nước ngoài. Nó bồi thường khi hành lý bị mất hoặc chuyến bay bị hủy. Nó cung cấp hỗ trợ khẩn cấp 24/7 khi cần thiết. Tôi luôn mua bảo hiểm trước mỗi chuyến đi quốc tế. Chi phí bảo hiểm nhỏ so với rủi ro có thể xảy ra. Du lịch an toàn là du lịch có bảo hiểm.",
+    "highlightedSentences": [
+      "Travel insurance is an important investment for every trip"
+    ],
+    "hints": [
+      "Use 'is' with singular subject",
+      "Consider article before 'important'"
+    ],
+    "expectedKeywords": [
+      "travel",
+      "insurance",
+      "is",
+      "an",
+      "important",
+      "investment",
+      "for",
+      "every"
+    ]
+  },
+  {
+    "id": "ex-224",
+    "title": "Airport Navigation",
+    "level": "intermediate",
+    "category": "travel-transportation",
+    "description": "Discuss airport procedures",
+    "sourceText": "Sân bay quốc tế có thể gây choáng ngợp cho người lần đầu đi. Tôi luôn đến sân bay sớm ít nhất 3 tiếng trước giờ bay. Tôi check-in trực tuyến để tiết kiệm thời gian. Tôi chuẩn bị hộ chiếu và boarding pass sẵn sàng. Tôi tuân thủ quy định về hành lý xách tay và chất lỏng. Tôi đi qua kiểm tra an ninh một cách nhanh chóng và hợp tác. Tôi theo dõi thông tin chuyến bay trên màn hình. Chuẩn bị kỹ giúp trải nghiệm sân bay suôn sẻ hơn.",
+    "highlightedSentences": [
+      "I always arrive at the airport at least 3 hours before departure"
+    ],
+    "hints": [
+      "Use present simple for habit",
+      "Consider 'at least' phrase"
+    ],
+    "expectedKeywords": [
+      "always",
+      "arrive",
+      "at",
+      "airport",
+      "at",
+      "least",
+      "hours",
+      "before"
+    ]
+  },
+  {
+    "id": "ex-225",
+    "title": "Road Trip Planning",
+    "level": "intermediate",
+    "category": "travel-transportation",
+    "description": "Discuss car travel",
+    "sourceText": "Chuyến đi bằng ô tô cho phép tự do khám phá theo tốc độ riêng. Tôi lập kế hoạch tuyến đường và đánh dấu các điểm dừng thú vị. Tôi kiểm tra xe kỹ lưỡng trước khi khởi hành. Tôi chuẩn bị đồ ăn nhẹ, nước uống và nhạc cho đường dài. Tôi đặt chỗ nghỉ trước hoặc để ngỏ tùy hứng. Tôi dừng lại thường xuyên để nghỉ ngơi và ngắm cảnh. Road trip tạo ra những kỷ niệm tuyệt vời và phiêu lưu bất ngờ.",
+    "highlightedSentences": [
+      "Road trips allow freedom to explore at your own pace"
+    ],
+    "hints": [
+      "Use present simple for general truth",
+      "Consider 'at your own pace' phrase"
+    ],
+    "expectedKeywords": [
+      "road",
+      "trips",
+      "allow",
+      "freedom",
+      "to",
+      "explore",
+      "at",
+      "own",
+      "pace"
+    ]
+  },
+  {
+    "id": "ex-226",
+    "title": "Travel Blogging",
+    "level": "intermediate",
+    "category": "travel-transportation",
+    "description": "Discuss sharing experiences",
+    "sourceText": "Tôi viết blog du lịch để chia sẻ trải nghiệm và lời khuyên. Tôi viết về những địa điểm đã đến và những điều đã học được. Tôi đăng ảnh đẹp và mô tả chi tiết về mỗi nơi. Tôi cung cấp thông tin hữu ích về chi phí, lưu trú và ăn uống. Tôi chia sẻ cả những trải nghiệm tốt và không tốt một cách trung thực. Nhiều người đọc blog của tôi trước khi lên kế hoạch du lịch. Viết blog giúp tôi ghi nhớ chuyến đi và kết nối với cộng đồng du lịch.",
+    "highlightedSentences": [
+      "I write a travel blog to share experiences and tips"
+    ],
+    "hints": [
+      "Use present simple for regular activity",
+      "Consider 'to' + infinitive for purpose"
+    ],
+    "expectedKeywords": [
+      "write",
+      "travel",
+      "blog",
+      "to",
+      "share",
+      "experiences",
+      "and",
+      "tips"
+    ]
+  },
+  {
+    "id": "ex-227",
+    "title": "Jet Lag Management",
+    "level": "intermediate",
+    "category": "travel-transportation",
+    "description": "Discuss time zone adjustment",
+    "sourceText": "Jet lag là thách thức khi bay qua nhiều múi giờ. Tôi cố gắng điều chỉnh giấc ngủ vài ngày trước chuyến bay. Tôi uống nhiều nước và tránh rượu trên máy bay. Tôi cố gắng ngủ theo giờ địa phương ngay khi đến nơi. Tôi ra ngoài ánh sáng mặt trời để điều chỉnh đồng hồ sinh học. Tôi tránh ngủ trưa dài trong những ngày đầu. Tôi dùng melatonin nếu cần thiết. Thường mất vài ngày để cơ thể thích nghi hoàn toàn.",
+    "highlightedSentences": [
+      "Jet lag is a challenge when flying across multiple time zones"
+    ],
+    "hints": [
+      "Use 'is' with singular subject",
+      "Consider 'when' clause with gerund"
+    ],
+    "expectedKeywords": [
+      "jet",
+      "lag",
+      "is",
+      "challenge",
+      "when",
+      "flying",
+      "across",
+      "time",
+      "zones"
+    ]
+  },
+  {
+    "id": "ex-228",
+    "title": "Travel Safety Precautions",
+    "level": "intermediate",
+    "category": "travel-transportation",
+    "description": "Discuss staying safe",
+    "sourceText": "An toàn là ưu tiên hàng đầu khi du lịch. Tôi nghiên cứu về điểm đến trước khi đi để biết khu vực an toàn. Tôi giữ hộ chiếu và tiền trong túi an toàn bên trong. Tôi không đeo trang sức đắt tiền hoặc khoe của cải. Tôi luôn để người thân biết lịch trình của mình. Tôi tránh đi một mình vào ban đêm ở nơi xa lạ. Tôi tin vào trực giác và tránh xa tình huống đáng ngờ. Cẩn thận không làm giảm niềm vui mà giúp du lịch an toàn hơn.",
+    "highlightedSentences": [
+      "Safety is the top priority when traveling"
+    ],
+    "hints": [
+      "Use 'is' with singular subject",
+      "Consider article before 'top priority'"
+    ],
+    "expectedKeywords": [
+      "safety",
+      "is",
+      "the",
+      "top",
+      "priority",
+      "when",
+      "traveling"
+    ]
+  },
+  {
+    "id": "ex-229",
+    "title": "Travel Companions",
+    "level": "intermediate",
+    "category": "travel-transportation",
+    "description": "Discuss traveling with others",
+    "sourceText": "Du lịch cùng bạn bè tạo ra những kỷ niệm đáng nhớ. Chúng tôi lên kế hoạch cùng nhau và thỏa thuận về ngân sách. Chúng tôi chia sẻ chi phí lưu trú và phương tiện di chuyển. Chúng tôi thay phiên nhau lái xe và chọn nhà hàng. Đôi khi chúng tôi có ý kiến khác nhau nhưng luôn thỏa hiệp. Chúng tôi có thể chia sẻ trải nghiệm và cười cùng nhau. Du lịch nhóm vừa tiết kiệm vừa vui vẻ hơn. Tuy nhiên, điều quan trọng là chọn bạn đồng hành phù hợp.",
+    "highlightedSentences": [
+      "Traveling with friends creates memorable experiences"
+    ],
+    "hints": [
+      "Use present simple for general truth",
+      "Consider gerund as subject"
+    ],
+    "expectedKeywords": [
+      "traveling",
+      "with",
+      "friends",
+      "creates",
+      "memorable",
+      "experiences"
+    ]
+  },
+  {
+    "id": "ex-230",
+    "title": "Off-Season Travel Benefits",
+    "level": "intermediate",
+    "category": "travel-transportation",
+    "description": "Discuss timing advantages",
+    "sourceText": "Du lịch ngoài mùa cao điểm có nhiều lợi ích bất ngờ. Giá vé máy bay và khách sạn rẻ hơn đáng kể. Các điểm tham quan ít đông đúc hơn nhiều. Chúng ta có thể tận hưởng trải nghiệm yên tĩnh và thư thái hơn. Người dân địa phương có nhiều thời gian để trò chuyện và giúp đỡ. Thời tiết có thể không hoàn hảo nhưng vẫn có thể tận hưởng. Tôi thích du lịch ngoài mùa vì trải nghiệm chân thực hơn. Đó là cách thông minh để tiết kiệm tiền và tránh đám đông.",
+    "highlightedSentences": [
+      "Off-season travel has many unexpected benefits"
+    ],
+    "hints": [
+      "Use present simple for general truth",
+      "Consider plural 'benefits'"
+    ],
+    "expectedKeywords": [
+      "off-season",
+      "travel",
+      "has",
+      "many",
+      "unexpected",
+      "benefits"
+    ]
+  },
+  {
+    "id": "ex-231",
+    "title": "Travel Packing Strategies",
+    "level": "intermediate",
+    "category": "travel-transportation",
+    "description": "Discuss luggage preparation",
+    "sourceText": "Đóng gói hành lý hiệu quả là kỹ năng quan trọng cho du khách. Tôi làm danh sách kiểm tra để không quên đồ quan trọng. Tôi chọn quần áo có thể mix-match và mặc nhiều lần. Tôi cuộn quần áo thay vì gấp để tiết kiệm không gian. Tôi đựng đồ lỏng trong túi zip để tránh rò rỉ. Tôi mang theo bộ quần áo thay trong hành lý xách tay phòng mất vali. Tôi để lại không gian cho đồ mua về. Đóng gói thông minh giúp du lịch thoải mái và tiện lợi hơn.",
+    "highlightedSentences": [
+      "Efficient packing is an important skill for travelers"
+    ],
+    "hints": [
+      "Use 'is' with singular subject",
+      "Consider article before 'important'"
+    ],
+    "expectedKeywords": [
+      "efficient",
+      "packing",
+      "is",
+      "an",
+      "important",
+      "skill",
+      "for",
+      "travelers"
+    ]
+  }
+]

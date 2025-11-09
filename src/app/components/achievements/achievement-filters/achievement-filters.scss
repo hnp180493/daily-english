@@ -1,0 +1,64 @@
+.achievement-filters {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  padding: 1.5rem;
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+  border-radius: 12px;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(167, 139, 250, 0.15);
+  margin-bottom: 2rem;
+}
+
+.filter-group {
+  flex: 1;
+  min-width: 200px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+
+  label {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #D1D5DB;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .filter-select {
+    padding: 0.75rem 1rem;
+    border: 1px solid rgba(167, 139, 250, 0.3);
+    border-radius: 8px;
+    font-size: 1rem;
+    color: #F3F4F6;
+    background: rgba(255, 255, 255, 0.05);
+    cursor: pointer;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+
+    option {
+      background: #1a1f3a;
+      color: #F3F4F6;
+    }
+
+    &:hover {
+      border-color: rgba(167, 139, 250, 0.5);
+    }
+
+    &:focus {
+      outline: none;
+      border-color: #A78BFA;
+      box-shadow: 0 0 0 3px rgba(167, 139, 250, 0.2);
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .achievement-filters {
+    flex-direction: column;
+  }
+
+  .filter-group {
+    min-width: 100%;
+  }
+}

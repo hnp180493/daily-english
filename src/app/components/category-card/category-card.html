@@ -1,0 +1,10 @@
+<div 
+  class="category-card"
+  (click)="onSelect()"
+  (keydown.enter)="onSelect()"
+  (keydown.space)="onSelect()"
+  tabindex="0"
+  role="button">
+  <div class="category-icon">{{ categoryInfo().icon }}</div>
+  <h4 class="category-name">{{ categoryInfo().name }}</h4>
+</div>

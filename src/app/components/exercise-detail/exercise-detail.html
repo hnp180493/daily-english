@@ -1,0 +1,258 @@
+@if (showApiKeyPrompt()) {
+  <app-api-key-prompt
+    (close)="onCloseApiKeyPrompt()"
+    (goToSettings)="onGoToSettings()">
+  </app-api-key-prompt>
+}
+
+@if (exercise()) {
+  <div class="exercise-detail-container">
+    <!-- Header with Title, Stats and Progress Bar -->
+    <header class="exercise-header">
+      <div class="header-left">
+        <button class="back-btn" (click)="onQuit()" aria-label="Back to exercises">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M19 12H5M12 19l-7-7 7-7"/>
+          </svg>
+        </button>
+        <h1 class="exercise-title">
+          {{ exercise()!.title }}
+          @if (isCustomExercise()) {
+            <span class="custom-badge">Custom</span>
+          }
+        </h1>
+        <button 
+          class="favorite-btn-detail" 
+          (click)="toggleFavorite()"
+          [class.is-favorite]="isFavorite()"
+          [attr.aria-label]="isFavorite() ? 'Xóa khỏi yêu thích' : 'Thêm vào yêu thích'">
+          <svg class="w-6 h-6" viewBox="0 0 24 24">
+            <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+          </svg>
+        </button>
+      </div>
+      <div class="header-stats">
+        <!-- <span class="stat-item">💰 {{ creditsToEarn() }} credits</span> -->
+        <span class="stat-item">⭐ {{ exercisePoints() }} points</span>
+        @if (perfectCompletions() > 0) {
+          <span class="stat-item mastered-badge">
+            🏆 {{ perfectCompletions() }}× Perfect
+          </span>
+        }
+        <span class="progress-text">Progress: {{ currentSentenceIndex() }}/{{ sentences().length }} sentences</span>
+      </div>
+    </header>
+
+    <div class="progress-bar-container">
+      <div class="progress-bar-fill" [style.width.%]="progressPercentage()"></div>
+    </div>
+
+    <!-- Main Content: 2 Column Layout -->
+    <div class="exercise-content">
+        <!-- Left Column: Full Text + Input Area -->
+        <div class="left-column">
+          <!-- Full Original Text -->
+          <div class="section-card original-text-card">
+            <div class="full-text-box">
+              <p class="full-text">
+                @for (sentence of sentences(); track sentence.original; let i = $index) {
+                  <span
+                    [class.sentence-completed]="sentence.isCompleted"
+                    [class.sentence-current]="i === currentSentenceIndex()"
+                    [class.sentence-pending]="i > currentSentenceIndex()">
+                    {{ sentence.showTranslation ? sentence.translation : sentence.original }}{{ i < sentences().length - 1 ? ' ' : '' }}
+                  </span>
+                }
+              </p>
+            </div>
+            @if (completedSentences().length > 0) {
+              <button 
+                class="inline-paragraph-tts-btn" 
+                (click)="toggleFullTextTTS()"
+                [class.playing]="isPlayingTTS()"
+                [attr.aria-label]="isPlayingTTS() ? 'Pause reading' : 'Play full text'">
+                @if (isPlayingTTS() && !isPausedTTS()) {
+                  ⏸️
+                } @else {
+                  🔊
+                }
+              </button>
+            }
+          </div>
+
+          <!-- Translation Input Area -->
+          @if (!isReviewMode() && !isExerciseComplete()) {
+            <div class="translation-input-section" (keydown)="onKeyDown($event)">
+              <textarea 
+                #translationInput
+                class="translation-textarea"
+                [ngModel]="userInput()"
+                (ngModelChange)="userInput.set($event); onInputChange()"
+                [disabled]="isSubmitting()"
+                [readonly]="canProceedToNext()"
+                placeholder="Enter your English translation here... (Only highlighted sentence)"
+                rows="3"></textarea>
+
+              <!-- Action Buttons -->
+              <div class="actions">
+                @if (!canProceedToNext()) {
+                  <button 
+                    class="action-btn submit-btn" 
+                    (click)="onSubmit()" 
+                    [disabled]="!userInput() || isSubmitting()">
+                    @if (!isSubmitting()) {
+                      <span>Submit</span>
+                    } @else {
+                      <span>Analyzing...</span>
+                    }
+                  </button>
+                  <button 
+                    class="action-btn hint-btn" 
+                    (click)="onHint()" 
+                    [disabled]="!hasMoreHints() || isLoadingHint()">
+                    @if (isLoadingHint()) {
+                      <span>⏳ Loading...</span>
+                    } @else {
+                      <span>💡 Hint ({{ hintsShown() }}/3)</span>
+                    }
+                  </button>
+                } @else {
+                  <button 
+                    class="action-btn next-btn" 
+                    (click)="onNextSentence()">
+                    Next Sentence →
+                  </button>
+                }
+              </div>
+            </div>
+          }
+          
+          <!-- Review Mode: Show all completed sentences -->
+          @if (isReviewMode() || isExerciseComplete()) {
+            <div class="review-mode-section">
+              <div class="review-header">
+                <h3>📝 Your Translations</h3>
+                <div class="review-actions">
+                  <button class="action-btn practice-again-btn" (click)="onPracticeAgain()">
+                    🔄 Practice Again
+                  </button>
+                  <button class="action-btn quit-btn" (click)="onQuit()">
+                    ← Back to Exercises
+                  </button>
+                </div>
+              </div>
+              
+              <div class="review-sentences-list">
+                @for (sentence of sentences(); track $index; let i = $index) {
+                  <div class="review-sentence-item" 
+                       [class.current-sentence]="i === currentSentenceIndex() && !isExerciseComplete()"
+                       [class.tts-playing]="i === currentTTSSentenceIndex()">
+                    <div class="sentence-number-badge">{{ i + 1 }}</div>
+                    <div class="sentence-content">
+                      <div class="sentence-row">
+                        <span class="label">Tiếng Việt:</span>
+                        <span class="text vietnamese-text">{{ sentence.original }}</span>
+                      </div>
+                      <div class="sentence-row translation-row">
+                        <span class="label">Your Translation:</span>
+                        <span class="text">{{ sentence.translation || '(Not translated yet)' }}</span>
+                      </div>
+                      <div class="sentence-footer">
+                        @if (sentence.accuracyScore !== undefined) {
+                          <div class="sentence-score-badge" [class.high-score]="sentence.accuracyScore >= 90">
+                            ✓ {{ sentence.accuracyScore }}% accuracy
+                          </div>
+                        }
+                        @if (sentence.isCompleted) {
+                          <button 
+                            class="sentence-tts-btn" 
+                            (click)="playSentence(i)"
+                            [attr.aria-label]="'Play sentence ' + (i + 1)">
+                            🔊
+                          </button>
+                        }
+                      </div>
+                    </div>
+                  </div>
+                }
+              </div>
+            </div>
+          }
+        </div>
+
+        <!-- Right Column: Dictionary, Feedback, Achievements -->
+        <div class="right-column">
+          <!-- Dictionary -->
+          <div class="section-card dictionary-card">
+            <!-- <h3 class="section-title">📚 Dictionary</h3> -->
+            <div class="dictionary-content">
+              @if (isStreaming()) {
+                <div class="streaming-indicator">
+                  <div class="streaming-dots">
+                    <span class="dot"></span>
+                    <span class="dot"></span>
+                    <span class="dot"></span>
+                  </div>
+                  <p class="streaming-text">Analyzing your translation...</p>
+                </div>
+              } @else if (accuracyScore()) {
+                <div class="accuracy-badge">
+                  <span class="accuracy-icon">✓</span>
+                  <span class="accuracy-text">{{ accuracyScore() }}% Accuracy</span>
+                </div>
+              } @else {
+                <div class="dictionary-placeholder">
+                  <!-- <p class="placeholder-text">Select a word to see its definition</p> -->
+                </div>
+              }
+            </div>
+          </div>
+
+          <!-- Feedback Panel -->
+          @if (feedback() && accuracyScore()) {
+            <div class="section-card feedback-card">
+              <h3 class="section-title">Feedback</h3>
+              <app-feedback-panel
+                [userInput]="userInputAfterSubmit()"
+                [feedback]="feedback()!"
+                [accuracyScore]="accuracyScore()">
+              </app-feedback-panel>
+            </div>
+          }
+
+          <!-- Hint -->
+          @if (currentHint()) {
+            <div class="section-card hint-card">
+              <h3 class="section-title">💡 Hint</h3>
+              <p class="hint-text">{{ currentHint() }}</p>
+            </div>
+          }
+
+          <!-- Today's Achievements -->
+          <!-- <div class="section-card achievements-card">
+            <h3 class="section-title">Today's Achievements</h3>
+            <app-progress-stats
+              [streak]="streak()"
+              [achievements]="achievements()">
+            </app-progress-stats>
+          </div> -->
+        </div>
+      </div>
+  </div>
+}
+
+<!-- API Key Prompt Modal -->
+@if (showApiKeyPrompt()) {
+  <app-api-key-prompt
+    (close)="onCloseApiKeyPrompt()"
+    (goToSettings)="onGoToSettings()">
+  </app-api-key-prompt>
+}
+
+<!-- Error Modal -->
+@if (showErrorModal()) {
+  <app-error-modal
+    [errorMessage]="errorMessage()"
+    (close)="onCloseErrorModal()">
+  </app-error-modal>
+}

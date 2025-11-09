@@ -1,0 +1,413 @@
+[
+  {
+    "id": "ex-031",
+    "title": "The Power of Democracy",
+    "level": "intermediate",
+    "category": "philosophy-beliefs",
+    "description": "Understand democratic principles",
+    "sourceText": "Dân chủ là một hệ thống chính trị vô cùng quan trọng. Trong chế độ dân chủ, người dân có tiếng nói quyết định. Chúng ta bầu ra những người đại diện cho mình. Chính phủ phải chịu trách nhiệm trước công dân. Có sự kiểm soát và cân bằng quyền lực giữa các nhánh. Tự do báo chí là nền tảng của dân chủ. Người dân có quyền biểu tình hòa bình. Dân chủ không hoàn hảo, nhưng nó cho phép cải cách và thay đổi. Chúng ta phải luôn bảo vệ các giá trị dân chủ.",
+    "highlightedSentences": [
+      "Democracy is an important political system"
+    ],
+    "hints": [
+      "Use 'is' with singular subject",
+      "Consider the article before 'important'"
+    ],
+    "expectedKeywords": [
+      "democracy",
+      "is",
+      "an",
+      "important",
+      "political",
+      "system"
+    ]
+  },
+  {
+    "id": "ex-032",
+    "title": "Ancient Civilizations",
+    "level": "intermediate",
+    "category": "philosophy-beliefs",
+    "description": "Learn about historical societies",
+    "sourceText": "Các nền văn minh cổ đại đã để lại di sản vô cùng vĩ đại. Người Ai Cập xây dựng những kim tự tháp hùng vĩ. Người La Mã tạo ra hệ thống luật pháp hoàn chỉnh. Người Hy Lạp phát triển triết học và nền dân chủ. Người Trung Quốc phát minh ra giấy và la bàn. Những thành tựu này vẫn ảnh hưởng sâu sắc đến chúng ta ngày nay. Chúng ta học được vô số bài học quý giá từ quá khứ. Lịch sử giúp chúng ta thấu hiểu hiện tại và chuẩn bị tốt hơn cho tương lai.",
+    "highlightedSentences": [
+      "Ancient civilizations left a great legacy"
+    ],
+    "hints": [
+      "Use past tense for historical events",
+      "Consider the article before 'great legacy'"
+    ],
+    "expectedKeywords": [
+      "ancient",
+      "civilizations",
+      "left",
+      "a",
+      "great",
+      "legacy"
+    ]
+  },
+  {
+    "id": "ex-035",
+    "title": "Faith and Community",
+    "level": "intermediate",
+    "category": "philosophy-beliefs",
+    "description": "Reflect on religious practice",
+    "sourceText": "Đức tin đóng vai trò vô cùng quan trọng trong cuộc sống của nhiều người. Nó mang lại ý nghĩa và mục đích sống. Nó mang đến sự an ủi trong những thời khắc khó khăn. Cộng đồng tôn giáo luôn hỗ trợ và giúp đỡ lẫn nhau. Họ cùng nhau cầu nguyện và tôn vinh đức tin. Họ giúp đỡ những người gặp khó khăn. Tôn giáo dạy chúng ta về lòng trắc ẩn và sự tha thứ. Nó khuyến khích chúng ta trở thành phiên bản tốt đẹp hơn của chính mình. Chúng ta nên tôn trọng mọi tín ngưỡng.",
+    "highlightedSentences": [
+      "Faith plays an important role in many lives"
+    ],
+    "hints": [
+      "Use 'plays' with singular subject",
+      "Consider the article before 'important role'"
+    ],
+    "expectedKeywords": [
+      "faith",
+      "plays",
+      "an",
+      "important",
+      "role"
+    ]
+  },
+  {
+    "id": "ex-036",
+    "title": "Justice for All",
+    "level": "intermediate",
+    "category": "philosophy-beliefs",
+    "description": "Understand legal systems",
+    "sourceText": "Hệ thống tư pháp bảo vệ quyền lợi của chúng ta. Luật pháp được áp dụng công bằng cho tất cả mọi người. Không ai được phép đứng trên luật pháp. Tòa án đảm bảo công lý được thực thi. Luật sư đại diện và bảo vệ quyền lợi cho thân chủ. Thẩm phán đưa ra những quyết định công minh. Bồi thẩm đoàn lắng nghe và cân nhắc mọi bằng chứng. Hệ thống không hoàn hảo, nhưng nó luôn nỗ lực hướng tới công bằng. Chúng ta phải không ngừng cải thiện công lý cho tất cả mọi người.",
+    "highlightedSentences": [
+      "The justice system protects our rights"
+    ],
+    "hints": [
+      "Use 'protects' with singular subject",
+      "Consider possessive adjective"
+    ],
+    "expectedKeywords": [
+      "justice",
+      "system",
+      "protects",
+      "our",
+      "rights"
+    ]
+  },
+  {
+    "id": "ex-037",
+    "title": "The Meaning of Life",
+    "level": "intermediate",
+    "category": "philosophy-beliefs",
+    "description": "Contemplate existential questions",
+    "sourceText": "Ý nghĩa của cuộc sống là gì? Đây là câu hỏi triết học mà con người đã trăn trở suy ngẫm trong hàng ngàn năm. Một số người tìm thấy ý nghĩa trong gia đình và tình yêu thương. Một số tìm thấy nó trong sự nghiệp và công việc. Một số tìm thấy nó trong việc cống hiến giúp đỡ người khác. Có lẽ ý nghĩa cuộc sống khác nhau đối với mỗi con người. Có lẽ chính chúng ta tự tạo ra ý nghĩa cho cuộc đời mình. Điều quan trọng là sống một cuộc sống có mục đích rõ ràng. Chúng ta nên theo đuổi những gì thực sự làm cho chúng ta hạnh phúc và trọn vẹn.",
+    "highlightedSentences": [
+      "What is the meaning of life?"
+    ],
+    "hints": [
+      "Use question word order",
+      "Consider the article before 'meaning'"
+    ],
+    "expectedKeywords": [
+      "what",
+      "is",
+      "the",
+      "meaning",
+      "of",
+      "life"
+    ]
+  },
+  {
+    "id": "ex-232",
+    "title": "Freedom and Responsibility",
+    "level": "intermediate",
+    "category": "philosophy-beliefs",
+    "description": "Discuss philosophical concepts",
+    "sourceText": "Tự do và trách nhiệm là hai mặt của cùng một đồng xu. Chúng ta có tự do lựa chọn nhưng phải chịu trách nhiệm về hậu quả. Tự do không có nghĩa là làm bất cứ điều gì chúng ta muốn. Tự do của chúng ta kết thúc khi nó xâm phạm quyền của người khác. Chúng ta có trách nhiệm sử dụng tự do một cách có đạo đức. Xã hội cần cân bằng giữa tự do cá nhân và trách nhiệm tập thể. Tự do thực sự đến từ việc hiểu và chấp nhận trách nhiệm của mình.",
+    "highlightedSentences": [
+      "Freedom and responsibility are two sides of the same coin"
+    ],
+    "hints": [
+      "Use present simple for philosophical truth",
+      "Consider 'two sides of the same coin' idiom"
+    ],
+    "expectedKeywords": [
+      "freedom",
+      "and",
+      "responsibility",
+      "are",
+      "two",
+      "sides",
+      "same",
+      "coin"
+    ]
+  },
+  {
+    "id": "ex-233",
+    "title": "Cultural Identity",
+    "level": "intermediate",
+    "category": "philosophy-beliefs",
+    "description": "Explore identity formation",
+    "sourceText": "Bản sắc văn hóa định hình cách chúng ta nhìn nhận thế giới. Chúng ta được nuôi dưỡng bởi ngôn ngữ, truyền thống và giá trị của cộng đồng. Bản sắc văn hóa cho chúng ta cảm giác thuộc về và kết nối. Tuy nhiên, trong thế giới toàn cầu hóa, bản sắc ngày càng phức tạp. Nhiều người có nhiều bản sắc văn hóa chồng chéo. Chúng ta có thể tôn vinh di sản của mình trong khi cởi mở với văn hóa khác. Bản sắc văn hóa không cố định mà luôn phát triển và thay đổi.",
+    "highlightedSentences": [
+      "Cultural identity shapes how we see the world"
+    ],
+    "hints": [
+      "Use present simple for general truth",
+      "Consider 'how' clause"
+    ],
+    "expectedKeywords": [
+      "cultural",
+      "identity",
+      "shapes",
+      "how",
+      "we",
+      "see",
+      "world"
+    ]
+  },
+  {
+    "id": "ex-234",
+    "title": "Moral Relativism vs Absolutism",
+    "level": "intermediate",
+    "category": "philosophy-beliefs",
+    "description": "Discuss ethical theories",
+    "sourceText": "Đạo đức tương đối và đạo đức tuyệt đối là hai quan điểm triết học khác nhau. Thuyết tương đối cho rằng đạo đức phụ thuộc vào văn hóa và hoàn cảnh. Thuyết tuyệt đối tin rằng có những nguyên tắc đạo đức phổ quát. Cả hai quan điểm đều có điểm mạnh và hạn chế. Một số hành động như giết người vô tội được coi là sai trái phổ biến. Nhưng nhiều vấn đề đạo đức phức tạp hơn và phụ thuộc ngữ cảnh. Chúng ta cần suy nghĩ cẩn thận về đạo đức trong từng tình huống cụ thể.",
+    "highlightedSentences": [
+      "Moral relativism and absolutism are two different philosophical views"
+    ],
+    "hints": [
+      "Use present simple for definition",
+      "Consider plural verb"
+    ],
+    "expectedKeywords": [
+      "moral",
+      "relativism",
+      "and",
+      "absolutism",
+      "are",
+      "two",
+      "different",
+      "philosophical"
+    ]
+  },
+  {
+    "id": "ex-235",
+    "title": "The Power of Forgiveness",
+    "level": "intermediate",
+    "category": "philosophy-beliefs",
+    "description": "Reflect on forgiveness",
+    "sourceText": "Tha thứ là một trong những hành động mạnh mẽ nhất con người có thể làm. Tha thứ không có nghĩa là chấp nhận hành vi sai trái. Nó có nghĩa là buông bỏ sự tức giận và oán hận. Giữ mối hận thù chỉ làm tổn thương chính chúng ta. Tha thứ giải phóng chúng ta khỏi gánh nặng quá khứ. Nó cho phép chúng ta tiến về phía trước và chữa lành. Tha thứ đòi hỏi sức mạnh và lòng dũng cảm lớn. Đó là món quà chúng ta tặng cho chính mình.",
+    "highlightedSentences": [
+      "Forgiveness is one of the most powerful acts humans can do"
+    ],
+    "hints": [
+      "Use 'is' with singular subject",
+      "Consider superlative form"
+    ],
+    "expectedKeywords": [
+      "forgiveness",
+      "is",
+      "one",
+      "of",
+      "most",
+      "powerful",
+      "acts"
+    ]
+  },
+  {
+    "id": "ex-236",
+    "title": "Tradition vs Progress",
+    "level": "intermediate",
+    "category": "philosophy-beliefs",
+    "description": "Discuss social change",
+    "sourceText": "Cân bằng giữa truyền thống và tiến bộ là thách thức của mọi xã hội. Truyền thống kết nối chúng ta với quá khứ và bản sắc văn hóa. Tiến bộ mang lại cải thiện và cơ hội mới. Một số truyền thống có giá trị và nên được bảo tồn. Một số truyền thống lỗi thời và cần thay đổi. Chúng ta cần phân biệt giữa truyền thống tốt và xấu. Xã hội khôn ngoan tôn trọng quá khứ trong khi hướng tới tương lai. Thay đổi nên diễn ra một cách cân nhắc và có trách nhiệm.",
+    "highlightedSentences": [
+      "Balancing tradition and progress is a challenge for every society"
+    ],
+    "hints": [
+      "Use gerund as subject",
+      "Consider article before 'challenge'"
+    ],
+    "expectedKeywords": [
+      "balancing",
+      "tradition",
+      "and",
+      "progress",
+      "is",
+      "challenge",
+      "for",
+      "every"
+    ]
+  },
+  {
+    "id": "ex-237",
+    "title": "The Nature of Happiness",
+    "level": "intermediate",
+    "category": "philosophy-beliefs",
+    "description": "Explore happiness philosophy",
+    "sourceText": "Hạnh phúc là gì và làm thế nào để đạt được nó? Triết gia đã tranh luận về câu hỏi này trong nhiều thế kỷ. Một số tin rằng hạnh phúc đến từ khoái lạc và thỏa mãn. Một số tin rằng nó đến từ đức hạnh và sống có ý nghĩa. Nghiên cứu hiện đại cho thấy hạnh phúc đến từ nhiều yếu tố. Mối quan hệ tốt, sức khỏe và mục đích sống đều quan trọng. Hạnh phúc không phải là trạng thái cố định mà là hành trình. Chúng ta có thể học cách trở nên hạnh phúc hơn qua thực hành.",
+    "highlightedSentences": [
+      "What is happiness and how can we achieve it?"
+    ],
+    "hints": [
+      "Use question structure",
+      "Consider 'how can we' modal"
+    ],
+    "expectedKeywords": [
+      "what",
+      "is",
+      "happiness",
+      "and",
+      "how",
+      "can",
+      "we",
+      "achieve"
+    ]
+  },
+  {
+    "id": "ex-238",
+    "title": "Environmental Ethics",
+    "level": "intermediate",
+    "category": "philosophy-beliefs",
+    "description": "Discuss ecological responsibility",
+    "sourceText": "Đạo đức môi trường xem xét trách nhiệm của chúng ta với thiên nhiên. Chúng ta có quyền khai thác tài nguyên thiên nhiên không giới hạn không? Chúng ta có nghĩa vụ bảo vệ các loài động thực vật khác không? Một số người tin rằng thiên nhiên có giá trị nội tại, không chỉ giá trị cho con người. Chúng ta nên sống hài hòa với thiên nhiên thay vì thống trị nó. Hành động của chúng ta hôm nay ảnh hưởng đến thế hệ tương lai. Chúng ta có trách nhiệm đạo đức để bảo vệ hành tinh.",
+    "highlightedSentences": [
+      "Environmental ethics considers our responsibility to nature"
+    ],
+    "hints": [
+      "Use present simple for field of study",
+      "Consider possessive 'our'"
+    ],
+    "expectedKeywords": [
+      "environmental",
+      "ethics",
+      "considers",
+      "our",
+      "responsibility",
+      "to",
+      "nature"
+    ]
+  },
+  {
+    "id": "ex-239",
+    "title": "The Value of Education",
+    "level": "intermediate",
+    "category": "philosophy-beliefs",
+    "description": "Reflect on learning importance",
+    "sourceText": "Giáo dục là nền tảng của xã hội văn minh và tiến bộ. Nó không chỉ dạy kiến thức mà còn dạy cách suy nghĩ phản biện. Giáo dục mở rộng tầm nhìn và tạo cơ hội. Nó giúp chúng ta hiểu thế giới và vị trí của mình trong đó. Giáo dục tốt phát triển toàn diện con người. Nó dạy chúng ta không chỉ kiếm sống mà còn sống có ý nghĩa. Đầu tư vào giáo dục là đầu tư vào tương lai. Mọi người đều xứng đáng có cơ hội học tập chất lượng.",
+    "highlightedSentences": [
+      "Education is the foundation of civilized and progressive society"
+    ],
+    "hints": [
+      "Use 'is' with singular subject",
+      "Consider article before 'foundation'"
+    ],
+    "expectedKeywords": [
+      "education",
+      "is",
+      "the",
+      "foundation",
+      "of",
+      "civilized",
+      "progressive",
+      "society"
+    ]
+  },
+  {
+    "id": "ex-240",
+    "title": "Truth and Perspective",
+    "level": "intermediate",
+    "category": "philosophy-beliefs",
+    "description": "Discuss epistemology",
+    "sourceText": "Sự thật có phải là tuyệt đối hay phụ thuộc vào quan điểm? Đây là câu hỏi triết học sâu sắc. Một số sự thật như toán học và khoa học có vẻ khách quan. Nhưng nhiều sự thật khác bị ảnh hưởng bởi văn hóa và kinh nghiệm cá nhân. Mỗi người nhìn thế giới qua lăng kính riêng của mình. Chúng ta nên lắng nghe nhiều quan điểm khác nhau. Chúng ta nên khiêm tốn về những gì chúng ta nghĩ là biết. Tìm kiếm sự thật đòi hỏi tâm trí cởi mở và tư duy phản biện.",
+    "highlightedSentences": [
+      "Is truth absolute or does it depend on perspective?"
+    ],
+    "hints": [
+      "Use question structure with 'or'",
+      "Consider 'depend on' phrasal verb"
+    ],
+    "expectedKeywords": [
+      "is",
+      "truth",
+      "absolute",
+      "or",
+      "does",
+      "it",
+      "depend",
+      "on",
+      "perspective"
+    ]
+  },
+  {
+    "id": "ex-241",
+    "title": "Legacy and Impact",
+    "level": "intermediate",
+    "category": "philosophy-beliefs",
+    "description": "Contemplate life purpose",
+    "sourceText": "Di sản chúng ta để lại là gì sau khi ra đi? Đây là câu hỏi khiến nhiều người suy ngẫm. Một số người muốn để lại tài sản vật chất cho con cháu. Một số muốn để lại tác phẩm nghệ thuật hoặc khám phá khoa học. Một số muốn để lại ảnh hưởng tích cực đến cuộc sống người khác. Di sản thực sự không phải là những gì chúng ta có mà là những gì chúng ta cho đi. Nó là cách chúng ta đối xử với người khác và đóng góp cho xã hội. Mỗi hành động tử tế là một phần di sản của chúng ta.",
+    "highlightedSentences": [
+      "What legacy will we leave behind after we're gone?"
+    ],
+    "hints": [
+      "Use future 'will' for prediction",
+      "Consider question word order"
+    ],
+    "expectedKeywords": [
+      "what",
+      "legacy",
+      "will",
+      "we",
+      "leave",
+      "behind",
+      "after",
+      "gone"
+    ]
+  },
+  {
+    "id": "ex-242",
+    "title": "Compassion and Empathy",
+    "level": "intermediate",
+    "category": "philosophy-beliefs",
+    "description": "Discuss human connection",
+    "sourceText": "Lòng trắc ẩn và sự đồng cảm là những phẩm chất thiết yếu của nhân tính. Đồng cảm là khả năng hiểu và chia sẻ cảm xúc của người khác. Trắc ẩn là mong muốn giảm bớt đau khổ của người khác. Những phẩm chất này kết nối chúng ta với nhau. Chúng giúp chúng ta vượt qua sự khác biệt và xung đột. Chúng ta có thể phát triển đồng cảm qua lắng nghe và quan sát. Thế giới cần nhiều lòng trắc ẩn và đồng cảm hơn. Đó là nền tảng của một xã hội nhân đạo và hòa bình.",
+    "highlightedSentences": [
+      "Compassion and empathy are essential qualities of humanity"
+    ],
+    "hints": [
+      "Use present simple for definition",
+      "Consider plural verb"
+    ],
+    "expectedKeywords": [
+      "compassion",
+      "and",
+      "empathy",
+      "are",
+      "essential",
+      "qualities",
+      "of",
+      "humanity"
+    ]
+  },
+  {
+    "id": "ex-243",
+    "title": "Wisdom vs Knowledge",
+    "level": "intermediate",
+    "category": "philosophy-beliefs",
+    "description": "Distinguish concepts",
+    "sourceText": "Tri thức và trí tuệ không phải là một. Tri thức là thông tin và sự kiện chúng ta học được. Trí tuệ là khả năng áp dụng tri thức một cách khôn ngoan. Chúng ta có thể có nhiều tri thức nhưng thiếu trí tuệ. Trí tuệ đến từ kinh nghiệm, suy ngẫm và hiểu biết sâu sắc. Nó bao gồm phán đoán tốt và nhìn xa trông rộng. Trí tuệ giúp chúng ta đưa ra quyết định đúng đắn trong cuộc sống. Nó phát triển theo thời gian qua học hỏi từ sai lầm và thành công.",
+    "highlightedSentences": [
+      "Knowledge and wisdom are not the same thing"
+    ],
+    "hints": [
+      "Use present simple for distinction",
+      "Consider negative form"
+    ],
+    "expectedKeywords": [
+      "knowledge",
+      "and",
+      "wisdom",
+      "are",
+      "not",
+      "the",
+      "same",
+      "thing"
+    ]
+  }
+]

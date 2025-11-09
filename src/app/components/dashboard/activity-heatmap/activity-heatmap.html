@@ -1,0 +1,58 @@
+<div class="heatmap-section">
+  <h2>Activity Heatmap</h2>
+
+  <div class="streak-stats">
+    <div class="stat-card">
+      <span class="icon">🔥</span>
+      <div>
+        <label>Current Streak</label>
+        <strong>{{ analytics().currentStreak }} days</strong>
+      </div>
+    </div>
+    <div class="stat-card">
+      <span class="icon">🏆</span>
+      <div>
+        <label>Longest Streak</label>
+        <strong>{{ analytics().longestStreak }} days</strong>
+      </div>
+    </div>
+  </div>
+
+  <div class="heatmap-container">
+    @if (analytics().heatmapData.length > 0) {
+      <div class="heatmap-grid">
+        @for (week of analytics().heatmapData; track week.weekNumber) {
+          <div class="heatmap-week">
+            @for (day of week.days; track day.date) {
+              <div 
+                class="heatmap-cell"
+                [class.intensity-0]="day.intensity === 0"
+                [class.intensity-1]="day.intensity === 1"
+                [class.intensity-2]="day.intensity === 2"
+                [class.intensity-3]="day.intensity === 3"
+                [class.intensity-4]="day.intensity === 4"
+                [title]="getTooltip(day)"
+                [attr.aria-label]="getTooltip(day)"
+                (click)="showDayDetails(day)"
+                tabindex="0"
+                role="button">
+              </div>
+            }
+          </div>
+        }
+      </div>
+      
+      <div class="heatmap-legend">
+        <span>Less</span>
+        <div class="legend-cell intensity-0"></div>
+        <div class="legend-cell intensity-1"></div>
+        <div class="legend-cell intensity-2"></div>
+        <div class="legend-cell intensity-3"></div>
+        <div class="legend-cell intensity-4"></div>
+        <span>More</span>
+      </div>
+    } @else {
+      <p class="empty-message">No activity data available yet</p>
+    }
+  </div>
+</div>

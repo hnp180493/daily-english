@@ -1,0 +1,116 @@
+<div class="favorites-container">
+  <!-- Header -->
+  <header class="favorites-header">
+    <div class="header-content">
+      <div class="header-left">
+        <button
+          (click)="goBack()"
+          class="back-btn"
+          aria-label="Quay lại">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+          </svg>
+        </button>
+        <h1 class="page-title">Bài tập yêu thích</h1>
+      </div>
+      <div class="exercise-count">
+        {{ favoriteExercises().length }} bài tập
+      </div>
+    </div>
+  </header>
+
+  <!-- Content -->
+  <main class="favorites-content">
+    @if (hasFavorites()) {
+      <div class="exercises-grid">
+        @for (exercise of favoriteExercises(); track exercise.id) {
+          <div class="exercise-card" (click)="startExercise(exercise)">
+            <!-- Completion Icon -->
+            @if (getExerciseStatus(exercise.id); as status) {
+              @if (status.bestScore !== undefined && status.bestScore >= 90) {
+                <div class="completion-icon" 
+                  [class.mastered]="status.perfectCompletions !== undefined && status.perfectCompletions >= 2">
+                  @if (status.perfectCompletions !== undefined && status.perfectCompletions >= 2) {
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/>
+                    </svg>
+                  } @else {
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>
+                    </svg>
+                  }
+                </div>
+              }
+            }
+            
+            <!-- Card Header -->
+            <div class="card-header">
+              <div class="header-top">
+                <span class="level-badge"
+                  [class.level-beginner]="exercise.level === 'beginner'"
+                  [class.level-intermediate]="exercise.level === 'intermediate'"
+                  [class.level-advanced]="exercise.level === 'advanced'">
+                  {{ getLevelLabel(exercise.level) }}
+                </span>
+                <button
+                  (click)="removeFavorite(exercise.id, $event)"
+                  class="remove-favorite-btn"
+                  aria-label="Xóa khỏi yêu thích">
+                  <svg class="w-5 h-5" viewBox="0 0 24 24">
+                    <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                  </svg>
+                </button>
+              </div>
+
+              <h3 class="exercise-title">{{ exercise.title }}</h3>
+              <p class="category-label">{{ getCategoryLabel(exercise.category) }}</p>
+              <p class="exercise-description">{{ exercise.description }}</p>
+
+              <!-- Status Badge -->
+              @if (getExerciseStatus(exercise.id); as status) {
+                <div class="status-info">
+                  @if (status.status === 'attempted') {
+                    <span class="status-attempted">
+                      <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                      </svg>
+                      Đã làm {{ status.attemptCount }} lần
+                    </span>
+                    @if (status.bestScore !== undefined) {
+                      <span class="separator">•</span>
+                      <span class="best-score">
+                        Điểm: {{ status.bestScore }}%
+                      </span>
+                    }
+                  } @else {
+                    <span class="status-new">Chưa làm</span>
+                  }
+                </div>
+              }
+            </div>
+
+            <!-- Card Footer -->
+            <div class="card-footer">
+              <span class="footer-item">{{ exercise.highlightedSentences.length }} câu</span>
+              <span class="footer-item">{{ exercise.hints.length }} gợi ý</span>
+            </div>
+          </div>
+        }
+      </div>
+    } @else {
+      <!-- Empty State -->
+      <div class="empty-state">
+        <svg class="empty-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
+        </svg>
+        <h3 class="empty-title">Chưa có bài tập yêu thích</h3>
+        <p class="empty-description">
+          Thêm bài tập vào danh sách yêu thích để dễ dàng luyện tập lại sau này
+        </p>
+        <button (click)="goBack()" class="explore-btn">
+          Khám phá bài tập
+        </button>
+      </div>
+    }
+  </main>
+</div>

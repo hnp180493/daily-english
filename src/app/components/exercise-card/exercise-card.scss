@@ -1,0 +1,316 @@
+.exercise-card {
+  background: rgba(26, 31, 58, 0.6);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 2px solid rgba(167, 139, 250, 0.2);
+  border-radius: 20px;
+  padding: 1.75rem;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+  height: 100%;
+  min-height: 280px;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: #a78bfa;
+    transform: scaleX(0);
+    transition: transform 0.4s ease;
+    box-shadow: 0 0 10px rgba(167, 139, 250, 0.5);
+  }
+
+  &:hover {
+    border-color: rgba(167, 139, 250, 0.4);
+    transform: translateY(-6px);
+    box-shadow: 0 0 30px rgba(167, 139, 250, 0.3), 0 12px 28px rgba(0, 0, 0, 0.4);
+    background: rgba(37, 43, 72, 0.8);
+
+    &::before {
+      transform: scaleX(1);
+    }
+  }
+
+  &.completed {
+    border-color: rgba(52, 211, 153, 0.3);
+
+    &::before {
+      background: #34d399;
+      box-shadow: 0 0 10px rgba(52, 211, 153, 0.5);
+    }
+
+    &:hover {
+      border-color: rgba(52, 211, 153, 0.5);
+      box-shadow: 0 0 30px rgba(52, 211, 153, 0.3), 0 12px 28px rgba(0, 0, 0, 0.4);
+    }
+  }
+}
+
+.completion-icon {
+  position: absolute;
+  top: 17px;
+  right: 22px;
+  width: 40px;
+  height: 40px;
+  background: #34d399;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 20px rgba(52, 211, 153, 0.5);
+  z-index: 10;
+  animation: completionPulse 2s ease-in-out infinite;
+
+  svg {
+    width: 22px;
+    height: 22px;
+    color: white;
+  }
+
+  &.mastered {
+    background: #fbbf24;
+    box-shadow: 0 0 20px rgba(251, 191, 36, 0.6);
+
+    svg {
+      color: #0f1419;
+    }
+  }
+}
+
+@keyframes completionPulse {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex: 1;
+}
+
+.exercise-title {
+  color: #e2e8f0;
+  font-size: 1.375rem;
+  margin: 0;
+  font-weight: 700;
+  font-family: 'Poppins', sans-serif;
+  letter-spacing: -0.3px;
+}
+
+.favorite-btn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  color: #666;
+
+  svg {
+    width: 20px;
+    height: 20px;
+    fill: currentColor;
+  }
+
+  &:hover {
+    color: #ff6b6b;
+    transform: scale(1.1);
+  }
+
+  &.is-favorite {
+    color: #ff6b6b;
+  }
+
+  &:focus {
+    outline: 2px solid #f5b800;
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+}
+
+.status-badge {
+  padding: 0.25rem 0.75rem;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+
+  &.status-new {
+    background-color: #34d399;
+    color: white;
+  }
+
+  &.status-attempted {
+    background-color: #2dd4bf;
+    color: white;
+  }
+
+  &.status-completed {
+    background-color: #34d399;
+    color: white;
+  }
+
+  &.status-mastered {
+    background: #fbbf24;
+    color: #0f1419;
+    font-weight: 700;
+    box-shadow: 0 0 15px rgba(251, 191, 36, 0.4);
+  }
+}
+
+.card-body {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  flex: 1;
+  min-height: 0;
+}
+
+.badges {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.difficulty-badge,
+.category-badge {
+  padding: 0.25rem 0.75rem;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  background: rgba(167, 139, 250, 0.15);
+  color: #c4b5fd;
+  border: 1px solid rgba(167, 139, 250, 0.3);
+}
+
+.exercise-description {
+  color: #94a3b8;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  margin: 0;
+  flex: 1;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.card-footer {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.start-btn {
+  background: #8b5cf6;
+  color: #ffffff;
+  border: none;
+  border-radius: 12px;
+  padding: 0.625rem 1.75rem;
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 0 20px rgba(139, 92, 246, 0.4);
+  font-family: 'Poppins', sans-serif;
+  letter-spacing: -0.2px;
+
+  &:hover {
+    transform: translateY(-2px);
+    background: #a78bfa;
+    box-shadow: 0 0 30px rgba(167, 139, 250, 0.6);
+  }
+
+  &:focus {
+    outline: 2px solid #a78bfa;
+    outline-offset: 2px;
+  }
+
+  &.review-btn {
+    background: #34d399;
+    box-shadow: 0 0 20px rgba(52, 211, 153, 0.4);
+
+    &:hover {
+      background: #2dd4bf;
+      box-shadow: 0 0 30px rgba(45, 212, 191, 0.6);
+    }
+  }
+}
+
+.progress-section {
+  margin-top: auto;
+  min-height: 40px;
+}
+
+.progress-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.progress-label {
+  font-size: 0.75rem;
+  color: #94a3b8;
+  font-weight: 500;
+}
+
+.progress-value {
+  font-size: 0.875rem;
+  color: #a78bfa;
+  font-weight: 600;
+}
+
+.progress-bar {
+  width: 100%;
+  height: 6px;
+  background-color: rgba(167, 139, 250, 0.15);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: #8b5cf6;
+  border-radius: 3px;
+  transition: width 0.3s ease;
+  box-shadow: 0 0 8px rgba(139, 92, 246, 0.5);
+}
+
+@media (max-width: 767px) {
+  .exercise-card {
+    padding: 1rem;
+  }
+
+  .exercise-title {
+    font-size: 1.1rem;
+  }
+
+  .start-btn {
+    width: 100%;
+  }
+}

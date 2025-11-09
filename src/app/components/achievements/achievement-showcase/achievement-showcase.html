@@ -1,0 +1,56 @@
+<div class="achievement-showcase">
+  <div class="showcase-header">
+    <h3>Achievements</h3>
+    @if (hasLegendary()) {
+      <span class="elite-badge" title="Has unlocked at least one Legendary achievement">
+        ⭐ Elite Learner
+      </span>
+    }
+  </div>
+
+  <div class="showcase-stats">
+    <div class="stat">
+      <span class="stat-value">{{ totalUnlocked() }}</span>
+      <span class="stat-label">Unlocked</span>
+    </div>
+    <div class="stat">
+      <span class="stat-value">{{ completionPercentage() }}%</span>
+      <span class="stat-label">Complete</span>
+    </div>
+  </div>
+
+  @if (rarityDistribution().length > 0) {
+    <div class="rarity-distribution">
+      @for (rarity of rarityDistribution(); track rarity.level) {
+        <div class="rarity-count" [class]="rarity.level">
+          <span class="count">{{ rarity.count }}</span>
+          <span class="label">{{ rarity.level | titlecase }}</span>
+        </div>
+      }
+    </div>
+  }
+
+  @if (recentAchievements().length > 0) {
+    <div class="recent-achievements">
+      <h4>Recent Achievements</h4>
+      <div class="achievements-list">
+        @for (achievement of recentAchievements(); track achievement.id) {
+          <div class="showcase-achievement" [class]="achievement.rarity">
+            <img 
+              [src]="achievement.iconUrl" 
+              [alt]="achievement.name"
+              loading="lazy" />
+            <div class="achievement-info">
+              <span class="name">{{ achievement.name }}</span>
+              <span class="date">{{ formatDate(achievement.unlockedAt!) }}</span>
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+  }
+
+  <a routerLink="/achievements" class="view-all-link">
+    View All Achievements →
+  </a>
+</div>

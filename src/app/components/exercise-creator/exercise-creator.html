@@ -1,0 +1,228 @@
+<div class="min-h-screen py-8">
+  <div class="max-w-4xl mx-auto px-4">
+    <!-- Header -->
+    <div class="mb-6">
+      <h1 class="text-3xl font-bold text-white">
+        {{ isEditMode() ? 'Edit Exercise' : 'Create Custom Exercise' }}
+      </h1>
+      <p class="text-gray-400 mt-2">
+        Create your own translation exercises or generate them with AI
+      </p>
+    </div>
+
+    <!-- Tab Navigation -->
+    <div class="bg-gray-800/50 border border-purple-500/20 rounded-lg mb-6">
+      <div class="border-b border-gray-700">
+        <nav class="flex -mb-px">
+          <button
+            (click)="switchTab('manual')"
+            [class.border-purple-500]="activeTab() === 'manual'"
+            [class.text-purple-400]="activeTab() === 'manual'"
+            [class.border-transparent]="activeTab() !== 'manual'"
+            [class.text-gray-500]="activeTab() !== 'manual'"
+            [attr.aria-selected]="activeTab() === 'manual'"
+            role="tab"
+            [attr.aria-controls]="'manual-panel'"
+            class="px-6 py-3 border-b-2 font-medium text-sm hover:text-purple-400 hover:border-gray-600 transition-colors"
+          >
+            Manual Entry
+          </button>
+          <button
+            (click)="switchTab('ai')"
+            [class.border-purple-500]="activeTab() === 'ai'"
+            [class.text-purple-400]="activeTab() === 'ai'"
+            [class.border-transparent]="activeTab() !== 'ai'"
+            [class.text-gray-500]="activeTab() !== 'ai'"
+            [attr.aria-selected]="activeTab() === 'ai'"
+            role="tab"
+            [attr.aria-controls]="'ai-panel'"
+            class="px-6 py-3 border-b-2 font-medium text-sm hover:text-purple-400 hover:border-gray-600 transition-colors"
+          >
+            AI Generate
+          </button>
+        </nav>
+      </div>
+
+      <!-- AI Generation Tab -->
+      @if (activeTab() === 'ai') {
+        <div class="p-6" role="tabpanel" id="ai-panel" [attr.aria-hidden]="activeTab() !== 'ai'">
+          <div class="space-y-4">
+            <div>
+              <label class="block text-sm font-medium text-gray-300 mb-2">
+                Describe what you want to practice
+              </label>
+              <textarea
+                [(ngModel)]="aiPrompt"
+                [disabled]="isGenerating()"
+                rows="4"
+                class="w-full px-3 py-2 bg-gray-900/50 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                placeholder="Example: Create an exercise about ordering food at a restaurant"
+              ></textarea>
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium text-gray-300 mb-2">
+                Difficulty Level
+              </label>
+              <select
+                [(ngModel)]="difficulty"
+                [disabled]="isGenerating()"
+                class="w-full px-3 py-2 bg-gray-900/50 border border-gray-700 rounded-lg text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+              >
+                @for (level of difficultyLevels; track level) {
+                  <option [value]="level">{{ level }}</option>
+                }
+              </select>
+            </div>
+
+            @if (generationError()) {
+              <div class="bg-red-500/10 border border-red-500/50 text-red-400 px-4 py-3 rounded-lg">
+                {{ generationError() }}
+              </div>
+            }
+
+            <button
+              (click)="generateWithAI()"
+              [disabled]="isGenerating() || !aiPrompt().trim()"
+              class="w-full bg-purple-600 text-white px-6 py-3 rounded-lg hover:bg-purple-500 disabled:bg-gray-700 disabled:cursor-not-allowed transition-all font-medium shadow-lg shadow-purple-500/30"
+            >
+              @if (isGenerating()) {
+                <span class="flex items-center justify-center">
+                  <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                  Generating...
+                </span>
+              } @else {
+                Generate Exercise
+              }
+            </button>
+          </div>
+        </div>
+      }
+
+      <!-- Manual Entry Tab -->
+      @if (activeTab() === 'manual') {
+        <div class="p-6 space-y-6" role="tabpanel" id="manual-panel" [attr.aria-hidden]="activeTab() !== 'manual'">
+          <!-- Title -->
+          <div>
+            <label for="exercise-title" class="block text-sm font-medium text-gray-300 mb-2">
+              Exercise Title *
+            </label>
+            <input
+              id="exercise-title"
+              type="text"
+              [(ngModel)]="title"
+              [attr.aria-invalid]="validationErrors()['title'] ? 'true' : null"
+              [attr.aria-describedby]="validationErrors()['title'] ? 'title-error' : null"
+              class="w-full px-3 py-2 bg-gray-900/50 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+              placeholder="Enter a descriptive title"
+            />
+            @if (validationErrors()['title']) {
+              <p id="title-error" class="text-red-400 text-sm mt-1" role="alert">{{ validationErrors()['title'] }}</p>
+            }
+          </div>
+
+          <!-- Difficulty -->
+          <div>
+            <label for="difficulty-level" class="block text-sm font-medium text-gray-300 mb-2">
+              Difficulty Level *
+            </label>
+            <select
+              id="difficulty-level"
+              [(ngModel)]="difficulty"
+              class="w-full px-3 py-2 bg-gray-900/50 border border-gray-700 rounded-lg text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+            >
+              @for (level of difficultyLevels; track level) {
+                <option [value]="level">{{ level }}</option>
+              }
+            </select>
+          </div>
+
+          <!-- Source Text Editor -->
+          <div>
+            <label class="block text-sm font-medium text-gray-300 mb-2">
+              Source Text *
+            </label>
+            <textarea
+              [(ngModel)]="sourceText"
+              rows="8"
+              class="w-full px-3 py-2 bg-gray-900/50 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:ring-2 focus:ring-purple-500 focus:border-transparent resize-y"
+              placeholder="Enter the text in the source language (e.g., Chinese)"
+            ></textarea>
+            @if (validationErrors()['sourceText']) {
+              <p class="text-red-400 text-sm mt-1">{{ validationErrors()['sourceText'] }}</p>
+            }
+          </div>
+
+          <!-- Tags -->
+          <div>
+            <label class="block text-sm font-medium text-gray-300 mb-2">
+              Tags (Optional, max 10)
+            </label>
+            <div class="flex gap-2 mb-3 flex-wrap">
+              @for (tag of tags(); track $index) {
+                <span class="inline-flex items-center gap-1 bg-purple-600/20 text-purple-400 border border-purple-500/30 px-3 py-1 rounded-full text-sm">
+                  #{{ tag }}
+                  <button
+                    (click)="removeTag($index)"
+                    [attr.aria-label]="'Remove tag: ' + tag"
+                    class="hover:text-purple-300"
+                  >
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                  </button>
+                </span>
+              }
+            </div>
+            <div class="flex gap-2">
+              <input
+                type="text"
+                [(ngModel)]="newTag"
+                (keyup.enter)="addTag()"
+                class="flex-1 px-3 py-2 bg-gray-900/50 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                placeholder="Enter tag"
+              />
+              <button
+                (click)="addTag()"
+                class="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-500 transition-colors shadow-lg shadow-purple-500/20"
+              >
+                Add
+              </button>
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="flex gap-4 justify-end">
+      <button
+        (click)="cancel()"
+        [disabled]="isSaving()"
+        class="px-6 py-3 border border-gray-600 text-gray-300 rounded-lg hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium"
+      >
+        Cancel
+      </button>
+      <button
+        (click)="saveExercise()"
+        [disabled]="isSaving()"
+        class="px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-500 disabled:bg-gray-700 disabled:cursor-not-allowed transition-all font-medium shadow-lg shadow-purple-500/30"
+      >
+        @if (isSaving()) {
+          <span class="flex items-center">
+            <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+            Saving...
+          </span>
+        } @else {
+          {{ isEditMode() ? 'Update Exercise' : 'Create Exercise' }}
+        }
+      </button>
+    </div>
+  </div>
+</div>

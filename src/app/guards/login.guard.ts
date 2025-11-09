@@ -1,0 +1,21 @@
+import { inject } from '@angular/core';
+import { Router, CanActivateFn } from '@angular/router';
+import { AuthService } from '../services/auth.service';
+
+export const loginGuard: CanActivateFn = async () => {
+  const authService = inject(AuthService);
+  const router = inject(Router);
+
+  // Wait for auth to initialize
+  await authService.waitForAuth();
+
+  // Check if user is authenticated
+  if (authService.isAuthenticated()) {
+    // Already authenticated, redirect to home
+    router.navigate(['/home']);
+    return false;
+  }
+  
+  // Not authenticated, allow access to login page
+  return true;
+};

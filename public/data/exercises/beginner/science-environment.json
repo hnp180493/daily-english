@@ -1,0 +1,216 @@
+[
+  {
+    "id": "ex-016",
+    "title": "Exploring Nature's Beauty",
+    "level": "beginner",
+    "category": "science-environment",
+    "description": "Describe a nature walk",
+    "sourceText": "Tôi đi dạo trong rừng. Không khí thật trong lành. Tôi nghe tiếng chim hót líu lo. Tôi thấy nhiều loài hoa đẹp đang nở rộ. Có một con suối nhỏ chảy róc rách. Nước suối trong vắt và mát lạnh. Tôi ngồi nghỉ bên bờ suối. Tôi cảm thấy thư giãn và bình yên trong lòng. Thiên nhiên thật kỳ diệu.",
+    "highlightedSentences": [
+      "The air is very fresh"
+    ],
+    "hints": [
+      "Use 'is' for singular subject",
+      "Consider the correct adjective"
+    ],
+    "expectedKeywords": [
+      "air",
+      "is",
+      "very",
+      "fresh"
+    ]
+  },
+  {
+    "id": "ex-017",
+    "title": "My New Smartphone",
+    "level": "beginner",
+    "category": "science-environment",
+    "description": "Describe new technology",
+    "sourceText": "Tôi vừa mới mua một chiếc điện thoại thông minh. Nó có màn hình lớn và hiển thị rất đẹp. Camera chụp ảnh rất sắc nét. Tôi có thể chụp những bức ảnh chất lượng cao. Pin dùng được cả ngày mà không cần sạc. Tôi dùng nó để nhắn tin, gọi điện và lướt mạng. Tôi cũng xem video và chơi game trên đó. Tôi rất hài lòng với chiếc điện thoại mới này.",
+    "highlightedSentences": [
+      "I just bought a new phone"
+    ],
+    "hints": [
+      "Use past tense for recent action",
+      "Consider 'just' placement"
+    ],
+    "expectedKeywords": [
+      "just",
+      "bought",
+      "new",
+      "phone"
+    ]
+  },
+  {
+    "id": "ex-080",
+    "title": "Recycling at Home",
+    "level": "beginner",
+    "category": "science-environment",
+    "description": "Describe environmental action",
+    "sourceText": "Gia đình tôi có thói quen tái chế rác. Chúng tôi có các thùng riêng biệt cho giấy, nhựa và kim loại. Chúng tôi rửa sạch các hộp đựng trước khi bỏ vào thùng tái chế. Mỗi tuần chúng tôi mang rác tái chế đến trung tâm thu gom. Tái chế giúp bảo vệ môi trường rất nhiều. Đó tuy là việc nhỏ nhưng rất có ý nghĩa.",
+    "highlightedSentences": [
+      "My family recycles trash"
+    ],
+    "hints": [
+      "Use present simple for habit"
+    ],
+    "expectedKeywords": [
+      "my",
+      "family",
+      "recycles",
+      "trash"
+    ]
+  },
+  {
+    "id": "ex-081",
+    "title": "Weather Changes",
+    "level": "beginner",
+    "category": "science-environment",
+    "description": "Describe weather patterns",
+    "sourceText": "Thời tiết thay đổi theo từng mùa trong năm. Mùa xuân ấm áp và hoa nở khắp nơi. Mùa hè nóng bức và nắng gắt. Mùa thu mát mẻ và gió nhẹ. Mùa đông lạnh giá và đôi khi có tuyết rơi. Tôi thích mùa xuân nhất vì thời tiết dễ chịu. Thời tiết ảnh hưởng khá nhiều đến tâm trạng của tôi.",
+    "highlightedSentences": [
+      "The weather changes with the seasons"
+    ],
+    "hints": [
+      "Use present simple for general truth"
+    ],
+    "expectedKeywords": [
+      "weather",
+      "changes",
+      "with",
+      "seasons"
+    ]
+  },
+  {
+    "id": "ex-141",
+    "title": "Planting a Tree",
+    "level": "beginner",
+    "category": "science-environment",
+    "description": "Describe environmental action",
+    "sourceText": "Hôm nay tôi trồng một cây xanh trong vườn. Tôi đào một cái hố sâu. Tôi đặt cây vào hố và lấp đất. Tôi tưới nước cho cây. Trồng cây giúp không khí trong lành. Cây xanh rất quan trọng cho môi trường. Tôi sẽ chăm sóc cây mỗi ngày.",
+    "highlightedSentences": [
+      "I plant a tree in the garden today"
+    ],
+    "hints": [
+      "Use present simple for current action",
+      "Consider article before 'tree'"
+    ],
+    "expectedKeywords": [
+      "plant",
+      "tree",
+      "in",
+      "garden",
+      "today"
+    ]
+  },
+  {
+    "id": "ex-142",
+    "title": "Using Solar Energy",
+    "level": "beginner",
+    "category": "science-environment",
+    "description": "Learn about renewable energy",
+    "sourceText": "Nhà tôi có tấm pin mặt trời trên mái. Pin mặt trời tạo ra điện từ ánh sáng mặt trời. Chúng tôi tiết kiệm được nhiều tiền điện. Năng lượng mặt trời sạch và thân thiện với môi trường. Tôi tự hào vì gia đình tôi bảo vệ hành tinh. Nhiều nhà hàng xóm cũng lắp pin mặt trời.",
+    "highlightedSentences": [
+      "My house has solar panels on the roof"
+    ],
+    "hints": [
+      "Use 'has' with singular subject",
+      "Consider preposition with 'roof'"
+    ],
+    "expectedKeywords": [
+      "house",
+      "has",
+      "solar",
+      "panels",
+      "on",
+      "roof"
+    ]
+  },
+  {
+    "id": "ex-143",
+    "title": "Watching Stars at Night",
+    "level": "beginner",
+    "category": "science-environment",
+    "description": "Describe astronomy interest",
+    "sourceText": "Tôi thích ngắm sao vào ban đêm. Tôi ra sân thượng với kính thiên văn. Tôi nhìn thấy mặt trăng và các vì sao. Bầu trời đêm rất đẹp và bí ẩn. Tôi học tên các chòm sao. Tôi mơ ước được đi du hành vũ trụ. Khoa học thiên văn rất thú vị.",
+    "highlightedSentences": [
+      "I like watching stars at night"
+    ],
+    "hints": [
+      "Use 'like' + gerund",
+      "Consider time expression"
+    ],
+    "expectedKeywords": [
+      "like",
+      "watching",
+      "stars",
+      "at",
+      "night"
+    ]
+  },
+  {
+    "id": "ex-144",
+    "title": "Saving Electricity",
+    "level": "beginner",
+    "category": "science-environment",
+    "description": "Discuss energy conservation",
+    "sourceText": "Tôi luôn tắt đèn khi ra khỏi phòng. Tôi rút phích cắm các thiết bị không dùng. Tôi sử dụng bóng đèn LED tiết kiệm điện. Tôi không để tủ lạnh mở lâu. Tiết kiệm điện giúp giảm hóa đơn. Nó cũng tốt cho môi trường. Mọi người nên tiết kiệm năng lượng.",
+    "highlightedSentences": [
+      "I always turn off lights when leaving the room"
+    ],
+    "hints": [
+      "Use frequency adverb",
+      "Consider 'when' clause"
+    ],
+    "expectedKeywords": [
+      "always",
+      "turn",
+      "off",
+      "lights",
+      "when",
+      "leaving"
+    ]
+  },
+  {
+    "id": "ex-145",
+    "title": "Rainy Season",
+    "level": "beginner",
+    "category": "science-environment",
+    "description": "Describe weather and seasons",
+    "sourceText": "Mùa mưa đã đến. Trời mưa gần như mỗi ngày. Tôi luôn mang theo ô khi ra ngoài. Đường phố ướt và trơn trượt. Cây cối xanh tươi sau mưa. Không khí mát mẻ và dễ chịu. Tôi thích nghe tiếng mưa rơi.",
+    "highlightedSentences": [
+      "The rainy season has arrived"
+    ],
+    "hints": [
+      "Use present perfect for recent change",
+      "Consider article"
+    ],
+    "expectedKeywords": [
+      "rainy",
+      "season",
+      "has",
+      "arrived"
+    ]
+  },
+  {
+    "id": "ex-146",
+    "title": "Learning About Animals",
+    "level": "beginner",
+    "category": "science-environment",
+    "description": "Describe zoo visit",
+    "sourceText": "Hôm nay tôi đi sở thú. Tôi thấy nhiều loài động vật. Có sư tử, voi, khỉ và gấu trúc. Tôi thích nhất là gấu trúc. Chúng rất dễ thương và đáng yêu. Tôi học được nhiều điều về động vật. Tôi chụp nhiều bức ảnh đẹp.",
+    "highlightedSentences": [
+      "I go to the zoo today"
+    ],
+    "hints": [
+      "Use present simple for current event",
+      "Consider article"
+    ],
+    "expectedKeywords": [
+      "go",
+      "to",
+      "zoo",
+      "today"
+    ]
+  }
+]

@@ -1,0 +1,12 @@
+<div class="translation-input-container">
+  <label class="input-label" for="translation">Your Translation</label>
+  <textarea
+    id="translation"
+    class="translation-textarea"
+    [placeholder]="placeholder()"
+    [disabled]="isDisabled()"
+    [value]="value()"
+    (input)="onInputChange($any($event.target).value)"
+    rows="5">
+  </textarea>
+</div>

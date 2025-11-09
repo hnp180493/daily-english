@@ -1,0 +1,29 @@
+<div class="dashboard-container">
+  <header class="dashboard-header">
+    <h1>Your Learning Dashboard</h1>
+    <div class="dashboard-actions">
+      <button class="btn-secondary" (click)="exportData()" title="Export your progress data">
+        Export Data
+      </button>
+      <button class="btn-secondary" (click)="printReport()" title="Print this report">
+        Print Report
+      </button>
+    </div>
+  </header>
+
+  @if (hasEnoughData()) {
+    <div class="dashboard-grid">
+      <app-progress-charts [analytics]="analytics()" />
+      <app-performance-analysis [analytics]="analytics()" />
+      <app-activity-heatmap [analytics]="analytics()" />
+      <app-vocabulary-stats [analytics]="analytics()" />
+    </div>
+  } @else {
+    <div class="empty-state">
+      <div class="empty-state-icon">📊</div>
+      <h2>Not Enough Data Yet</h2>
+      <p>Complete at least 2 exercises to see your analytics and progress insights.</p>
+      <a routerLink="/exercises" class="btn-primary">Start Practicing</a>
+    </div>
+  }
+</div>

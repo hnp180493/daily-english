@@ -1,0 +1,305 @@
+[
+  {
+    "id": "ex-006",
+    "title": "Building My Tomorrow",
+    "level": "intermediate",
+    "category": "health-wellness",
+    "description": "Translate a reflection on health and wellness",
+    "sourceText": "Hôm nay, tôi bắt đầu một chặng đường mới trong cuộc đời. Tôi muốn cống hiến để giúp đỡ người khác. Tôi mơ ước mở một phòng khám nhỏ phục vụ những người nghèo. Tôi đã dày công học y khoa trong nhiều năm. Tôi tin chắc rằng mọi người đều xứng đáng được chăm sóc sức khỏe tốt nhất. Tôi sẽ nỗ lực hết mình để biến ước mơ này thành hiện thực.",
+    "highlightedSentences": [
+      "I believe that everyone deserves good healthcare"
+    ],
+    "hints": [
+      "Use 'believe that' correctly",
+      "Consider the verb 'deserve' with the correct object"
+    ],
+    "expectedKeywords": [
+      "believe",
+      "everyone",
+      "deserves",
+      "healthcare"
+    ]
+  },
+  {
+    "id": "ex-033",
+    "title": "The Olympic Spirit",
+    "level": "intermediate",
+    "category": "health-wellness",
+    "description": "Celebrate athletic achievement",
+    "sourceText": "Thế vận hội Olympic là sự kiện thể thao lớn nhất hành tinh. Vận động viên từ khắp nơi trên thế giới hội tụ về đây. Họ đã miệt mài tập luyện trong nhiều năm trời. Họ thể hiện kỹ năng đỉnh cao và sự cống hiến hết mình. Olympic không chỉ đơn thuần là về chiến thắng. Nó còn là về tinh thần thể thao cao đẹp và sự tôn trọng lẫn nhau. Nó là về việc vượt qua giới hạn của chính bản thân mình. Olympic kết nối và đoàn kết các quốc gia. Nó truyền cảm hứng mạnh mẽ cho thế hệ trẻ.",
+    "highlightedSentences": [
+      "The Olympics is the biggest sporting event"
+    ],
+    "hints": [
+      "Use 'is' for singular event",
+      "Consider the superlative form"
+    ],
+    "expectedKeywords": [
+      "olympics",
+      "is",
+      "the",
+      "biggest",
+      "sporting",
+      "event"
+    ]
+  },
+  {
+    "id": "ex-071",
+    "title": "Mental Health Awareness",
+    "level": "intermediate",
+    "category": "health-wellness",
+    "description": "Discuss psychological wellness",
+    "sourceText": "Sức khỏe tinh thần cũng quan trọng không kém sức khỏe thể chất. Tôi đã học được cách chăm sóc sức khỏe tinh thần của bản thân. Tôi dành thời gian cho các hoạt động thư giãn như yoga và thiền định. Tôi chia sẻ với bạn bè khi cảm thấy căng thẳng. Tôi không ngại ngần tìm kiếm sự giúp đỡ từ chuyên gia tâm lý khi cần thiết.",
+    "highlightedSentences": [
+      "Mental health is as important as physical health"
+    ],
+    "hints": [
+      "Use 'as...as' for comparison"
+    ],
+    "expectedKeywords": [
+      "mental",
+      "health",
+      "is",
+      "as",
+      "important",
+      "as",
+      "physical"
+    ]
+  },
+  {
+    "id": "ex-072",
+    "title": "Sleep Hygiene",
+    "level": "intermediate",
+    "category": "health-wellness",
+    "description": "Discuss sleep habits",
+    "sourceText": "Gần đây tôi đã cải thiện đáng kể thói quen ngủ của mình. Tôi đi ngủ và thức dậy vào cùng một giờ cố định mỗi ngày. Tôi tránh xa các thiết bị điện tử trước khi đi ngủ. Tôi luôn giữ phòng ngủ mát mẻ và tối đen. Tôi không uống cà phê sau 2 giờ chiều. Giấc ngủ chất lượng đã cải thiện rõ rệt tâm trạng và năng suất làm việc của tôi.",
+    "highlightedSentences": [
+      "I have improved my sleep habits recently"
+    ],
+    "hints": [
+      "Use present perfect for recent improvement"
+    ],
+    "expectedKeywords": [
+      "have",
+      "improved",
+      "sleep",
+      "habits",
+      "recently"
+    ]
+  },
+  {
+    "id": "ex-187",
+    "title": "Fitness Journey Transformation",
+    "level": "intermediate",
+    "category": "health-wellness",
+    "description": "Describe workout routine",
+    "sourceText": "Tôi đã bắt đầu hành trình tập gym được ba tháng. Ban đầu rất khó khăn vì cơ thể chưa quen với cường độ tập luyện cao. Tôi thuê huấn luyện viên cá nhân để được hướng dẫn đúng kỹ thuật và tránh chấn thương. Tôi tập 5 ngày mỗi tuần, kết hợp cardio và tập tạ để xây dựng cơ bắp. Tôi cũng thay đổi chế độ ăn uống để hỗ trợ quá trình tập luyện. Bây giờ tôi cảm thấy khỏe mạnh, tràn đầy năng lượng và tự tin hơn rất nhiều.",
+    "highlightedSentences": [
+      "I started my gym journey three months ago"
+    ],
+    "hints": [
+      "Use past simple for specific past time",
+      "Consider possessive adjective"
+    ],
+    "expectedKeywords": [
+      "started",
+      "gym",
+      "journey",
+      "three",
+      "months",
+      "ago"
+    ]
+  },
+  {
+    "id": "ex-188",
+    "title": "Nutrition Planning Strategy",
+    "level": "intermediate",
+    "category": "health-wellness",
+    "description": "Discuss healthy eating",
+    "sourceText": "Tôi đã học được rằng dinh dưỡng cân bằng là nền tảng của sức khỏe tốt. Tôi lập kế hoạch bữa ăn hàng tuần với đầy đủ protein, carbohydrate và chất béo lành mạnh. Tôi ăn nhiều rau xanh, trái cây tươi và ngũ cốc nguyên hạt. Tôi hạn chế đồ ăn chế biến sẵn, thức ăn nhanh và đường tinh luyện. Tôi nấu ăn tại nhà để kiểm soát nguyên liệu và khẩu phần ăn. Chế độ ăn lành mạnh đã cải thiện đáng kể sức khỏe tổng thể và mức năng lượng của tôi.",
+    "highlightedSentences": [
+      "I have learned that balanced nutrition is the foundation of health"
+    ],
+    "hints": [
+      "Use present perfect for acquired knowledge",
+      "Consider 'that' clause"
+    ],
+    "expectedKeywords": [
+      "have",
+      "learned",
+      "that",
+      "balanced",
+      "nutrition",
+      "is",
+      "foundation"
+    ]
+  },
+  {
+    "id": "ex-189",
+    "title": "Stress Management Techniques",
+    "level": "intermediate",
+    "category": "health-wellness",
+    "description": "Discuss coping strategies",
+    "sourceText": "Trong công việc áp lực cao, tôi đã phát triển nhiều kỹ thuật quản lý stress hiệu quả. Tôi thực hành thiền định 15 phút mỗi sáng để bắt đầu ngày với tâm trạng bình tĩnh. Tôi tập thể dục đều đặn để giải tỏa căng thẳng và tăng endorphin. Tôi duy trì thói quen viết nhật ký để xử lý và hiểu rõ cảm xúc của mình. Tôi cũng học cách nói không với những yêu cầu không hợp lý để bảo vệ thời gian cá nhân. Những phương pháp này giúp tôi duy trì sức khỏe tinh thần tốt và cân bằng cuộc sống.",
+    "highlightedSentences": [
+      "I have developed many effective stress management techniques"
+    ],
+    "hints": [
+      "Use present perfect for development over time",
+      "Consider adjective placement"
+    ],
+    "expectedKeywords": [
+      "have",
+      "developed",
+      "many",
+      "effective",
+      "stress",
+      "management",
+      "techniques"
+    ]
+  },
+  {
+    "id": "ex-190",
+    "title": "Preventive Healthcare Approach",
+    "level": "intermediate",
+    "category": "health-wellness",
+    "description": "Discuss health checkups",
+    "sourceText": "Tôi tin vào tầm quan trọng của chăm sóc sức khỏe phòng ngừa thay vì chữa bệnh. Tôi đi khám sức khỏe định kỳ mỗi năm một lần để phát hiện sớm vấn đề. Tôi làm xét nghiệm máu và kiểm tra các chỉ số sức khỏe quan trọng như cholesterol và đường huyết. Tôi tiêm phòng đầy đủ và cập nhật các vaccine cần thiết. Tôi khám nha khoa mỗi sáu tháng để bảo vệ răng miệng. Phát hiện sớm vấn đề sức khỏe giúp điều trị hiệu quả và tiết kiệm chi phí hơn.",
+    "highlightedSentences": [
+      "I believe in the importance of preventive healthcare"
+    ],
+    "hints": [
+      "Use present simple for belief",
+      "Consider 'in' preposition with 'believe'"
+    ],
+    "expectedKeywords": [
+      "believe",
+      "in",
+      "importance",
+      "of",
+      "preventive",
+      "healthcare"
+    ]
+  },
+  {
+    "id": "ex-191",
+    "title": "Mindfulness Practice Benefits",
+    "level": "intermediate",
+    "category": "health-wellness",
+    "description": "Describe meditation",
+    "sourceText": "Tôi đã thực hành chánh niệm được hai năm và thấy nhiều lợi ích tuyệt vời. Tôi dành 20 phút mỗi ngày để ngồi thiền và quan sát hơi thở một cách tỉnh thức. Tôi học cách sống trong hiện tại thay vì lo lắng về quá khứ hay tương lai. Chánh niệm giúp tôi giảm căng thẳng, lo âu và tăng khả năng tập trung. Tôi cũng áp dụng chánh niệm vào các hoạt động hàng ngày như ăn uống, đi bộ và làm việc. Cuộc sống của tôi trở nên bình an, ý nghĩa và hạnh phúc hơn rất nhiều.",
+    "highlightedSentences": [
+      "I have been practicing mindfulness for two years"
+    ],
+    "hints": [
+      "Use present perfect continuous for ongoing practice",
+      "Consider 'for' with time period"
+    ],
+    "expectedKeywords": [
+      "have",
+      "been",
+      "practicing",
+      "mindfulness",
+      "for",
+      "two",
+      "years"
+    ]
+  },
+  {
+    "id": "ex-192",
+    "title": "Recovery from Sports Injury",
+    "level": "intermediate",
+    "category": "health-wellness",
+    "description": "Discuss healing process",
+    "sourceText": "Năm ngoái tôi bị chấn thương đầu gối nghiêm trọng khi chơi bóng đá. Quá trình phục hồi dài và đầy thử thách cả về thể chất lẫn tinh thần. Tôi phải nghỉ ngơi hoàn toàn trong hai tháng đầu để vết thương lành. Tôi làm vật lý trị liệu ba lần mỗi tuần để phục hồi chức năng và sức mạnh. Tôi học được tầm quan trọng của sự kiên nhẫn và tuân thủ nghiêm ngặt hướng dẫn y tế. Bây giờ tôi đã hồi phục hoàn toàn và cẩn thận hơn rất nhiều khi tập luyện thể thao.",
+    "highlightedSentences": [
+      "I got seriously injured while playing football last year"
+    ],
+    "hints": [
+      "Use past simple for past event",
+      "Consider 'while' clause with continuous"
+    ],
+    "expectedKeywords": [
+      "got",
+      "seriously",
+      "injured",
+      "while",
+      "playing",
+      "football"
+    ]
+  },
+  {
+    "id": "ex-193",
+    "title": "Holistic Wellness Philosophy",
+    "level": "intermediate",
+    "category": "health-wellness",
+    "description": "Discuss overall health",
+    "sourceText": "Tôi tin rằng sức khỏe toàn diện bao gồm cả thể chất, tinh thần và cảm xúc. Tôi chăm sóc cơ thể qua tập luyện đều đặn và dinh dưỡng cân bằng. Tôi nuôi dưỡng tâm trí qua đọc sách, học hỏi liên tục và phát triển kỹ năng mới. Tôi duy trì các mối quan hệ tích cực, ý nghĩa với gia đình và bạn bè. Tôi dành thời gian cho sở thích và những điều mang lại niềm vui, thư giãn. Cân bằng tất cả các khía cạnh này tạo nên một cuộc sống khỏe mạnh, hạnh phúc và trọn vẹn.",
+    "highlightedSentences": [
+      "I believe that holistic wellness includes physical, mental and emotional health"
+    ],
+    "hints": [
+      "Use present simple for belief",
+      "Consider 'that' clause with multiple subjects"
+    ],
+    "expectedKeywords": [
+      "believe",
+      "that",
+      "holistic",
+      "wellness",
+      "includes",
+      "physical",
+      "mental",
+      "emotional"
+    ]
+  },
+  {
+    "id": "ex-194",
+    "title": "Hydration Importance",
+    "level": "intermediate",
+    "category": "health-wellness",
+    "description": "Discuss water intake",
+    "sourceText": "Tôi đã nhận ra tầm quan trọng của việc uống đủ nước mỗi ngày. Tôi luôn mang theo chai nước bên mình và uống đều đặn trong ngày. Tôi đặt mục tiêu uống ít nhất 2 lít nước mỗi ngày. Tôi uống nước ngay khi thức dậy để bù nước sau giấc ngủ dài. Uống đủ nước giúp da tôi mịn màng, cải thiện tiêu hóa và tăng năng lượng. Tôi cũng nhận thấy khả năng tập trung tốt hơn khi cơ thể được cung cấp đủ nước.",
+    "highlightedSentences": [
+      "I realized the importance of drinking enough water daily"
+    ],
+    "hints": [
+      "Use past simple for realization",
+      "Consider gerund after 'of'"
+    ],
+    "expectedKeywords": [
+      "realized",
+      "importance",
+      "of",
+      "drinking",
+      "enough",
+      "water",
+      "daily"
+    ]
+  },
+  {
+    "id": "ex-195",
+    "title": "Work-Life Balance for Health",
+    "level": "intermediate",
+    "category": "health-wellness",
+    "description": "Discuss balance",
+    "sourceText": "Tôi đã học được rằng cân bằng công việc và cuộc sống là chìa khóa cho sức khỏe lâu dài. Tôi không làm việc quá 8 tiếng mỗi ngày và tránh làm thêm giờ thường xuyên. Tôi dành thời gian cho gia đình, bạn bè và các hoạt động yêu thích. Tôi ngắt kết nối hoàn toàn khỏi công việc vào cuối tuần. Tôi đi du lịch và nghỉ ngơi để nạp lại năng lượng. Cân bằng này giúp tôi tránh kiệt sức và duy trì năng suất cao trong công việc.",
+    "highlightedSentences": [
+      "I have learned that work-life balance is key to long-term health"
+    ],
+    "hints": [
+      "Use present perfect for acquired knowledge",
+      "Consider 'key to' phrase"
+    ],
+    "expectedKeywords": [
+      "have",
+      "learned",
+      "that",
+      "work-life",
+      "balance",
+      "is",
+      "key",
+      "to"
+    ]
+  }
+]

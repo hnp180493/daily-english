@@ -1,0 +1,202 @@
+import { Component, ChangeDetectionStrategy, inject, signal, computed, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { Router, ActivatedRoute } from '@angular/router';
+import { CustomExerciseService } from '../../services/custom-exercise.service';
+import { ExerciseGeneratorService } from '../../services/ai/exercise-generator.service';
+import { ToastService } from '../../services/toast.service';
+import { DifficultyLevel, ExerciseCategory } from '../../models/exercise.model';
+
+@Component({
+  selector: 'app-exercise-creator',
+  imports: [CommonModule, FormsModule],
+  templateUrl: './exercise-creator.html',
+  styleUrl: './exercise-creator.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush
+})
+export class ExerciseCreator implements OnInit {
+  // Services
+  private customExerciseService = inject(CustomExerciseService);
+  private exerciseGeneratorService = inject(ExerciseGeneratorService);
+  private toastService = inject(ToastService);
+  private router = inject(Router);
+  private route = inject(ActivatedRoute);
+
+  // State signals
+  exerciseId = signal<string | null>(null);
+  isEditMode = computed(() => this.exerciseId() !== null);
+  isGenerating = signal(false);
+  isSaving = signal(false);
+  activeTab = signal<'manual' | 'ai'>('manual');
+
+  // Form signals
+  title = signal('');
+  sourceText = signal('');
+  difficulty = signal<DifficultyLevel>(DifficultyLevel.BEGINNER);
+  tags = signal<string[]>([]);
+
+  // AI generation
+  aiPrompt = signal('');
+  generationError = signal<string | null>(null);
+
+  // Input fields for adding tags
+  newTag = signal('');
+
+  // Validation errors
+  validationErrors = signal<Record<string, string>>({});
+
+  // Enums for template
+  DifficultyLevel = DifficultyLevel;
+  difficultyLevels = Object.values(DifficultyLevel);
+
+  ngOnInit(): void {
+    // Check if we're in edit mode
+    this.route.params.subscribe(params => {
+      const id = params['id'];
+      if (id) {
+        this.exerciseId.set(id);
+        this.loadExercise(id);
+      }
+    });
+  }
+
+  private loadExercise(id: string): void {
+    this.customExerciseService.getCustomExerciseById(id).subscribe(exercise => {
+      if (exercise) {
+        this.title.set(exercise.title);
+        this.sourceText.set(exercise.sourceText);
+        this.difficulty.set(exercise.level);
+        this.tags.set(exercise.tags || []);
+      }
+    });
+  }
+
+  generateWithAI(): void {
+    const prompt = this.aiPrompt().trim();
+    if (!prompt) {
+      this.generationError.set('Please enter a prompt');
+      return;
+    }
+
+    this.isGenerating.set(true);
+    this.generationError.set(null);
+
+    this.exerciseGeneratorService.generateExercise({
+      prompt,
+      difficulty: this.difficulty(),
+      sourceLanguage: 'Vietnamese',
+      targetLanguage: 'English'
+    }).subscribe({
+      next: (response) => {
+        this.title.set(response.title);
+        this.sourceText.set(response.sourceText);
+        this.isGenerating.set(false);
+        this.activeTab.set('manual'); // Switch to manual tab to show generated content
+      },
+      error: (error) => {
+        this.generationError.set(error.message);
+        this.isGenerating.set(false);
+      }
+    });
+  }
+
+  addTag(): void {
+    const tag = this.newTag().trim();
+    if (!tag) return;
+
+    const current = this.tags();
+    if (current.length >= 10) {
+      this.toastService.warning('Maximum 10 tags allowed');
+      return;
+    }
+
+    if (current.includes(tag)) {
+      this.toastService.warning('Tag already added');
+      return;
+    }
+
+    this.tags.set([...current, tag]);
+    this.newTag.set('');
+  }
+
+  removeTag(index: number): void {
+    const current = this.tags();
+    this.tags.set(current.filter((_, i) => i !== index));
+  }
+
+  saveExercise(): void {
+    // Auto-extract sentences from source text
+    const sourceText = this.sourceText();
+    // const highlightedSentences = sourceText ? this.customExerciseService.extractSentences(sourceText) : [];
+    let highlightedSentences: any = [];
+
+    // Validate
+    const validation = this.customExerciseService.validateExercise({
+      title: this.title(),
+      sourceText: this.sourceText(),
+      highlightedSentences: highlightedSentences,
+      level: this.difficulty(),
+      customCategories: ['Custom'], // Auto-assign "Custom" category
+      tags: this.tags()
+    });
+
+    if (!validation.isValid) {
+      const errors: Record<string, string> = {};
+      validation.errors.forEach(err => {
+        errors[err.field] = err.message;
+      });
+      this.validationErrors.set(errors);
+      return;
+    }
+
+    this.validationErrors.set({});
+    this.isSaving.set(true);
+
+    const exerciseData = {
+      title: this.title(),
+      sourceText: this.sourceText(),
+      highlightedSentences: highlightedSentences,
+      level: this.difficulty(),
+      category: ExerciseCategory.DAILY_LIFE, // Default category
+      description: this.title(),
+      hints: [],
+      customCategories: ['Custom'], // Auto-assign "Custom" category
+      tags: this.tags(),
+      generatedByAI: this.aiPrompt().trim().length > 0,
+      aiPrompt: this.aiPrompt().trim() || undefined
+    };
+
+    const operation = this.isEditMode()
+      ? this.customExerciseService.updateExercise(this.exerciseId()!, exerciseData)
+      : this.customExerciseService.createExercise(exerciseData);
+
+    operation.subscribe({
+      next: () => {
+        this.isSaving.set(false);
+        this.toastService.success(
+          this.isEditMode() ? 'Exercise updated successfully!' : 'Exercise created successfully!'
+        );
+        this.router.navigate(['/exercises/custom']);
+      },
+      error: (error) => {
+        this.isSaving.set(false);
+        this.toastService.error(`Failed to save exercise: ${error.message}`);
+      }
+    });
+  }
+
+  cancel(): void {
+    this.router.navigate(['/exercises/custom']);
+  }
+
+  switchTab(tab: 'manual' | 'ai'): void {
+    this.activeTab.set(tab);
+  }
+
+  onKeyDown(event: KeyboardEvent, action: () => void): void {
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      action();
+    }
+  }
+}

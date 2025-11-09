@@ -1,0 +1,13 @@
+<div 
+  class="level-card" 
+  [class.selected]="selected()"
+  (click)="onSelect()"
+  (keydown.enter)="onSelect()"
+  (keydown.space)="onSelect()"
+  tabindex="0"
+  role="button"
+  [attr.aria-pressed]="selected()">
+  <div class="level-icon">{{ levelInfo().icon }}</div>
+  <h3 class="level-name">{{ levelInfo().name }}</h3>
+  <p class="level-description">{{ levelInfo().description }}</p>
+</div>

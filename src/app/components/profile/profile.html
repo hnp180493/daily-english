@@ -1,0 +1,89 @@
+<div class="profile-container">
+  <div class="profile-header">
+    <button class="back-button" (click)="goBack()" aria-label="Go back">
+      <span class="back-icon">←</span>
+    </button>
+    <h1>👤 MY PROFILE</h1>
+  </div>
+
+  <div class="profile-content">
+    <!-- User Info Section -->
+    @if (currentUser()) {
+      <div class="user-info-section">
+        <div class="user-info-card">
+          @if (photoURL()) {
+            <img [src]="photoURL()!" alt="Profile" class="user-avatar" />
+          } @else {
+            <div class="user-avatar-placeholder">👤</div>
+          }
+          <div class="user-details">
+            @if (displayName()) {
+              <h3 class="user-name">{{ displayName() }}</h3>
+            }
+            @if (email()) {
+              <p class="user-email">{{ email() }}</p>
+            }
+            @if (isAnonymous()) {
+              <p class="user-status">
+                <span class="status-badge">Anonymous User</span>
+              </p>
+            }
+          </div>
+          <div class="user-actions">
+            @if (isAnonymous()) {
+              <button class="btn btn-link-google" (click)="linkWithGoogle()">
+                🔗 Link with Google
+              </button>
+            }
+            <button class="btn btn-logout" (click)="signOut()">
+              🚪 Đăng xuất
+            </button>
+          </div>
+        </div>
+      </div>
+    }
+
+    <!-- Tabs Navigation -->
+    <div class="tabs-container">
+      <div class="tabs-nav">
+        <button 
+          [class.active]="activeTab() === 'achievements'"
+          (click)="setActiveTab('achievements')"
+          class="tab-button"
+          type="button">
+          🏆 Achievements
+        </button>
+        <button 
+          [class.active]="activeTab() === 'settings'"
+          (click)="setActiveTab('settings')"
+          class="tab-button"
+          type="button">
+          ⚙️ Settings
+        </button>
+      </div>
+
+      <div class="tabs-content">
+        <!-- Achievement Tab -->
+        @if (activeTab() === 'achievements') {
+          <div class="tab-panel">
+            <app-achievement-showcase />
+          </div>
+        }
+
+        <!-- Settings Tab -->
+        @if (activeTab() === 'settings') {
+          <div class="tab-panel">
+            <div class="ai-provider-section">
+              <h3 class="section-title">🤖 AI Provider</h3>
+              <app-ai-provider-config />
+            </div>
+            
+            <div class="settings-divider"></div>
+            
+            <app-settings />
+          </div>
+        }
+      </div>
+    </div>
+  </div>
+</div>

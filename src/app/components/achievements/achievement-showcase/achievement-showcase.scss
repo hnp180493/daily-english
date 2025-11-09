@@ -1,0 +1,227 @@
+.achievement-showcase {
+  background: transparent;
+  border-radius: 12px;
+  padding: 0;
+}
+
+.showcase-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.5rem;
+
+  h3 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #1a1a1a;
+    margin: 0;
+  }
+
+  .elite-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.25rem 0.75rem;
+    background: linear-gradient(135deg, #FEF3C7 0%, #FDE68A 100%);
+    color: #92400E;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+}
+
+.showcase-stats {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+
+  .stat {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 1rem;
+    background: #f8f9fa;
+    border-radius: 8px;
+    border: 2px solid #e0e0e0;
+
+    .stat-value {
+      font-size: 2rem;
+      font-weight: 700;
+      color: #4F46E5;
+      line-height: 1;
+      margin-bottom: 0.25rem;
+    }
+
+    .stat-label {
+      font-size: 0.875rem;
+      color: #4a4a4a;
+      font-weight: 600;
+    }
+  }
+}
+
+.rarity-distribution {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-bottom: 1.5rem;
+
+  .rarity-count {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 0.75rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    border: 2px solid;
+
+    &.common {
+      background: #F3F4F6;
+      color: #374151;
+      border-color: #D1D5DB;
+    }
+
+    &.rare {
+      background: #DBEAFE;
+      color: #1E40AF;
+      border-color: #93C5FD;
+    }
+
+    &.epic {
+      background: #EDE9FE;
+      color: #6B21A8;
+      border-color: #C4B5FD;
+    }
+
+    &.legendary {
+      background: #FEF3C7;
+      color: #B45309;
+      border-color: #FCD34D;
+    }
+
+    .count {
+      font-weight: 700;
+    }
+
+    .label {
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+  }
+}
+
+.recent-achievements {
+  margin-bottom: 1.5rem;
+
+  h4 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #2a2a2a;
+    margin: 0 0 1rem;
+  }
+
+  .achievements-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+
+    .showcase-achievement {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.75rem;
+      background: #f8f9fa;
+      border-radius: 8px;
+      border-left: 4px solid;
+      border: 2px solid #e0e0e0;
+      border-left: 4px solid;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+      &:hover {
+        transform: translateX(4px);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        background: white;
+      }
+
+      &.common {
+        border-left-color: #6B7280;
+      }
+
+      &.rare {
+        border-left-color: #3B82F6;
+      }
+
+      &.epic {
+        border-left-color: #8B5CF6;
+      }
+
+      &.legendary {
+        border-left-color: #F59E0B;
+      }
+
+      img {
+        width: 40px;
+        height: 40px;
+        object-fit: contain;
+        flex-shrink: 0;
+      }
+
+      .achievement-info {
+        flex: 1;
+        min-width: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+
+        .name {
+          font-size: 0.875rem;
+          font-weight: 600;
+          color: #1a1a1a;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+        }
+
+        .date {
+          font-size: 0.75rem;
+          color: #5a5a5a;
+        }
+      }
+    }
+  }
+}
+
+.view-all-link {
+  display: block;
+  text-align: center;
+  padding: 0.75rem;
+  background: #f0f0f0;
+  color: #667eea;
+  text-decoration: none;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  transition: background 0.2s ease, color 0.2s ease;
+  border: 2px solid #d0d0d0;
+
+  &:hover {
+    background: #667eea;
+    color: white;
+    border-color: #667eea;
+  }
+
+  &:focus {
+    outline: 2px solid #667eea;
+    outline-offset: 2px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .showcase-achievement {
+    transition: none;
+  }
+}

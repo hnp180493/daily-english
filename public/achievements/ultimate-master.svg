@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100" height="100">
+  <defs>
+    <linearGradient id="rainbowGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#EF4444"/>
+      <stop offset="20%" stop-color="#F59E0B"/>
+      <stop offset="40%" stop-color="#10B981"/>
+      <stop offset="60%" stop-color="#3B82F6"/>
+      <stop offset="80%" stop-color="#8B5CF6"/>
+      <stop offset="100%" stop-color="#EC4899"/>
+    </linearGradient>
+  </defs>
+  <circle cx="50" cy="50" r="45" fill="url(#rainbowGradient)" opacity="0.3"/>
+  <circle cx="50" cy="50" r="40" fill="url(#rainbowGradient)"/>
+  <path d="M50 15 L58 32 L77 35 L63 49 L67 68 L50 59 L33 68 L37 49 L23 35 L42 32 Z" fill="white"/>
+  <circle cx="50" cy="50" r="18" fill="#FBBF24"/>
+  <path d="M50 35 L54 45 L65 46 L57 54 L59 65 L50 60 L41 65 L43 54 L35 46 L46 45 Z" fill="white"/>
+  <text x="50" y="92" font-family="Arial" font-size="7" fill="white" text-anchor="middle" font-weight="bold">ULTIMATE</text>
+</svg>

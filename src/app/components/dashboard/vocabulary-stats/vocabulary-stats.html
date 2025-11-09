@@ -1,0 +1,60 @@
+<div class="vocabulary-section">
+  <h2>Vocabulary Statistics</h2>
+
+  <div class="vocab-counters">
+    <div class="counter-card">
+      <span class="icon">📚</span>
+      <div>
+        <label>New Words Learned</label>
+        <strong>{{ analytics().vocabularyStats.totalWords }}</strong>
+      </div>
+    </div>
+    <div class="counter-card">
+      <span class="icon">🔄</span>
+      <div>
+        <label>Words to Review</label>
+        <strong>{{ analytics().vocabularyStats.wordsToReview }}</strong>
+      </div>
+    </div>
+  </div>
+
+  <div class="vocab-card">
+    <h3>Most Frequent Words</h3>
+    @if (analytics().vocabularyStats.wordCloud.length > 0) {
+      <div class="word-cloud-container">
+        <div class="word-cloud">
+          @for (word of analytics().vocabularyStats.wordCloud; track word.text) {
+            <span 
+              class="word-cloud-item"
+              [style.font-size.px]="word.size"
+              [title]="word.frequency + ' occurrences'"
+              [attr.aria-label]="word.text + ', ' + word.frequency + ' occurrences'"
+              (click)="showWordDetails(word)"
+              tabindex="0"
+              role="button">
+              {{ word.text }}
+            </span>
+          }
+        </div>
+      </div>
+    } @else {
+      <p class="empty-message">No vocabulary data available yet</p>
+    }
+  </div>
+
+  <div class="vocab-card">
+    <h3>Words Needing Review</h3>
+    @if (analytics().vocabularyStats.reviewWords.length > 0) {
+      <ul class="review-words">
+        @for (word of analytics().vocabularyStats.reviewWords; track word.text) {
+          <li class="review-word-item">
+            <strong>{{ word.text }}</strong>
+            <span class="error-count">{{ word.errorCount }} errors</span>
+          </li>
+        }
+      </ul>
+    } @else {
+      <p class="empty-message">No words need review - great job!</p>
+    }
+  </div>
+</div>

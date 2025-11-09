@@ -1,0 +1,40 @@
+<div class="achievement-filters">
+  <div class="filter-group">
+    <label for="type-filter">Type</label>
+    <select 
+      id="type-filter"
+      [value]="selectedType()"
+      (change)="onTypeChange($event)"
+      class="filter-select">
+      @for (option of typeOptions; track option.value) {
+        <option [value]="option.value">{{ option.label }}</option>
+      }
+    </select>
+  </div>
+
+  <div class="filter-group">
+    <label for="status-filter">Status</label>
+    <select 
+      id="status-filter"
+      [value]="selectedStatus()"
+      (change)="onStatusChange($event)"
+      class="filter-select">
+      @for (option of statusOptions; track option.value) {
+        <option [value]="option.value">{{ option.label }}</option>
+      }
+    </select>
+  </div>
+
+  <div class="filter-group">
+    <label for="rarity-filter">Rarity</label>
+    <select 
+      id="rarity-filter"
+      [value]="selectedRarity()"
+      (change)="onRarityChange($event)"
+      class="filter-select">
+      @for (option of rarityOptions; track option.value) {
+        <option [value]="option.value">{{ option.label }}</option>
+      }
+    </select>
+  </div>
+</div>
