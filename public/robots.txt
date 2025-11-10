@@ -1,12 +1,17 @@
 User-agent: *
 Allow: /
+
+# Block private pages only
+Disallow: /login
+Disallow: /profile
+
+# Allow public pages
 Allow: /home
 Allow: /exercises
 Allow: /guide
-Disallow: /login
-Disallow: /profile
-Disallow: /dashboard
-Disallow: /favorites
-Disallow: /achievements
+Allow: /dashboard
+Allow: /favorites
+Allow: /achievements
 
 Sitemap: https://dailyenglish.qzz.io/sitemap.xml
+Sitemap: https://dailyenglish.qzz.io/sitemap-vi.xml

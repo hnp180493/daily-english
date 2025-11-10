@@ -68,3 +68,29 @@
 - **Charts**: Chart.js 4.5
 - **Date Utils**: date-fns 4.1
 - **Testing**: Karma + Jasmine
+
+
+## 📞 Liên Hệ & Hỗ Trợ
+
+Nếu bạn có câu hỏi, góp ý hoặc cần hỗ trợ, vui lòng liên hệ:
+
+- **Email**: phuochnsw@gmail.com
+- **Báo lỗi**: Gửi email với tiêu đề "[Bug] Mô tả lỗi"
+- **Góp ý tính năng**: Gửi email với tiêu đề "[Feature] Ý tưởng của bạn"
+- **Hỗ trợ kỹ thuật**: Gửi email với tiêu đề "[Support] Vấn đề cần hỗ trợ"
+
+### Thời Gian Phản Hồi
+
+- Email thường được phản hồi trong vòng 24-48 giờ
+- Các vấn đề khẩn cấp sẽ được ưu tiên xử lý
+
+### Đóng Góp
+
+Nếu bạn muốn đóng góp vào dự án:
+1. Fork repository
+2. Tạo branch mới cho tính năng của bạn
+3. Commit changes
+4. Tạo Pull Request
+5. Hoặc liên hệ qua email để thảo luận
+
+Cảm ơn bạn đã sử dụng Daily English! 🎉

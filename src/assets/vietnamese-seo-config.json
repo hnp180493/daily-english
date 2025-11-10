@@ -1,0 +1,91 @@
+{
+  "keywords": {
+    "primary": [
+      "học tiếng anh",
+      "luyện dịch tiếng anh",
+      "học tiếng anh online",
+      "bài tập tiếng anh",
+      "học tiếng anh miễn phí"
+    ],
+    "secondary": [
+      "học tiếng anh với AI",
+      "phản hồi AI tiếng anh",
+      "luyện nghe tiếng anh",
+      "luyện nói tiếng anh",
+      "học từ vựng tiếng anh"
+    ],
+    "longTail": [
+      "học tiếng anh giao tiếp cơ bản",
+      "bài tập dịch tiếng anh có đáp án",
+      "học tiếng anh online miễn phí hiệu quả",
+      "ứng dụng học tiếng anh tốt nhất",
+      "website học tiếng anh cho người mới bắt đầu"
+    ]
+  },
+  "categories": {
+    "translation": {
+      "vi": "Dịch câu",
+      "keywords": ["luyện dịch", "dịch tiếng anh", "bài tập dịch"],
+      "description": "Luyện tập dịch câu tiếng Anh với phản hồi AI chi tiết"
+    },
+    "vocabulary": {
+      "vi": "Từ vựng",
+      "keywords": ["học từ vựng", "từ vựng tiếng anh", "ghi nhớ từ vựng"],
+      "description": "Học và ghi nhớ từ vựng tiếng Anh hiệu quả"
+    },
+    "grammar": {
+      "vi": "Ngữ pháp",
+      "keywords": ["ngữ pháp tiếng anh", "học ngữ pháp", "bài tập ngữ pháp"],
+      "description": "Nắm vững ngữ pháp tiếng Anh qua bài tập thực hành"
+    }
+  },
+  "proficiencyLevels": {
+    "beginner": {
+      "vi": "Sơ cấp",
+      "description": "Dành cho người mới bắt đầu học tiếng Anh",
+      "keywords": ["tiếng anh cơ bản", "học tiếng anh cho người mới", "tiếng anh sơ cấp"]
+    },
+    "intermediate": {
+      "vi": "Trung cấp",
+      "description": "Dành cho người có nền tảng tiếng Anh",
+      "keywords": ["tiếng anh trung cấp", "nâng cao tiếng anh", "tiếng anh giao tiếp"]
+    },
+    "advanced": {
+      "vi": "Cao cấp",
+      "description": "Dành cho người có trình độ tiếng Anh tốt",
+      "keywords": ["tiếng anh nâng cao", "tiếng anh chuyên sâu", "tiếng anh cao cấp"]
+    }
+  },
+  "metaTemplates": {
+    "exercise": {
+      "title": "{exerciseName} - Bài tập {category} {level} - Daily English",
+      "description": "Luyện tập {category} tiếng Anh cấp độ {level} với phản hồi AI chi tiết. {exerciseDescription}"
+    },
+    "category": {
+      "title": "Bài tập {category} tiếng Anh - Daily English",
+      "description": "Tổng hợp bài tập {category} tiếng Anh từ cơ bản đến nâng cao với phản hồi AI thông minh"
+    },
+    "level": {
+      "title": "Bài tập tiếng Anh {level} - Daily English",
+      "description": "Bài tập tiếng Anh dành cho người {level} với hệ thống phản hồi AI và theo dõi tiến độ"
+    }
+  },
+  "socialSharing": {
+    "zalo": {
+      "defaultImage": "/og-image-vi.png",
+      "titleSuffix": " | Daily English - Học tiếng Anh mỗi ngày"
+    },
+    "facebook": {
+      "appId": "",
+      "locale": "vi_VN"
+    }
+  },
+  "cocCoc": {
+    "verification": "",
+    "searchEngineUrl": "https://coccoc.com/search",
+    "optimizations": {
+      "enableSpecialTags": true,
+      "prioritizeVietnameseContent": true
+    }
+  }
+}

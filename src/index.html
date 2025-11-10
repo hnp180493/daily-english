@@ -1,5 +1,6 @@
 <!doctype html>
 <html lang="vi">
+
 <head>
   <!-- Basic Meta Tags -->
   <meta charset="utf-8">
@@ -7,32 +8,56 @@
   <meta name="theme-color" content="#4F46E5">
   <meta name="language" content="Vietnamese">
   <meta name="author" content="Daily English">
-  
+
   <!-- SEO Meta Tags -->
   <title>Daily English - Học tiếng Anh mỗi ngày</title>
-  <meta name="description" content="Nền tảng học tiếng Anh với bài tập dịch câu, phản hồi AI thông minh, và theo dõi tiến độ học tập">
-  <meta name="keywords" content="học tiếng anh, luyện dịch, AI feedback, học tiếng anh online, daily english, bài tập tiếng anh">
-  
+  <meta name="description"
+    content="Nền tảng học tiếng Anh với bài tập dịch câu, phản hồi AI thông minh, và theo dõi tiến độ học tập">
+  <meta name="keywords"
+    content="học tiếng anh, luyện dịch, AI feedback, học tiếng anh online, daily english, bài tập tiếng anh">
+
   <!-- Open Graph Meta Tags -->
   <meta property="og:site_name" content="Daily English">
   <meta property="og:locale" content="vi_VN">
   <meta name="google-site-verification" content="7JzL97lfcCS6JB8NHzOdxfhO20y2H8tkScCfogsuMbY" />
   <meta name="msvalidate.01" content="BA4A095D9E10222EBB9CEE67833C52BB" />
-  
+  <meta name="coccoc:title" content="Luyện tập tiếng anh bằng AI">
+  <meta name="coccoc:description" content="Luyện tập dịch câu tiếng Anh cấp độ sơ cấp với phản hồi AI chi tiết. Miễn phí và hiệu quả.">
+  <meta name="coccoc:keywords" content="học tiếng anh, bài tập dịch, AI feedback, học online">
+  <meta name="zalo:title" content="Luyện tập tiếng anh bằng AI">
+  <meta name="zalo:description" content="Luyện tập dịch câu tiếng Anh cấp độ sơ cấp với phản hồi AI chi tiết. Miễn phí và hiệu quả.">
+  <meta name="zalo:image" content="https://dailyenglish.qzz.io/og-image-vi.png">
+
+
   <!-- Base and Canonical -->
   <base href="/">
   <link rel="canonical" href="https://dailyenglish.qzz.io/">
-  
+
   <!-- Favicon -->
   <link rel="icon" type="image/x-icon" href="favicon.ico">
-  
+
   <!-- Preconnect for Performance -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  
+
+  <!-- Vietnamese Font Optimization -->
+  <link rel="preload"
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap&subset=vietnamese"
+    as="style">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap&subset=vietnamese"
+    rel="stylesheet">
+  <style>
+    /* Font display optimization for Vietnamese characters */
+    @font-face {
+      font-family: 'Inter';
+      font-display: swap;
+      unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+1EA0-1EF9;
+    }
+  </style>
+
   <script>
     // GitHub Pages SPA redirect handling
-    (function() {
+    (function () {
       var redirect = sessionStorage.redirect;
       delete sessionStorage.redirect;
       if (redirect && redirect !== location.href) {
@@ -41,7 +66,9 @@
     })();
   </script>
 </head>
+
 <body>
   <app-root></app-root>
 </body>
+
 </html>

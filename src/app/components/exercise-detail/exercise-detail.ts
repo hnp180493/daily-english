@@ -24,6 +24,7 @@ import { ExerciseValidationService } from '../../services/exercise-validation.se
 import { PointsAnimationService } from '../../services/points-animation.service';
 import { SettingsService } from '../../services/settings.service';
 import { SeoService } from '../../services/seo.service';
+import { VietnameseSeoService } from '../../services/vietnamese-seo.service';
 
 @Component({
   selector: 'app-exercise-detail',
@@ -53,6 +54,7 @@ export class ExerciseDetailComponent implements OnInit {
   private pointsAnimationService = inject(PointsAnimationService);
   private settingsService = inject(SettingsService);
   private seoService = inject(SeoService);
+  private vietnameseSeoService = inject(VietnameseSeoService);
 
   // Extracted services
   stateService = inject(ExerciseStateService);
@@ -197,6 +199,9 @@ export class ExerciseDetailComponent implements OnInit {
     this.exercise.set(exercise);
     this.isCustomExercise.set(isCustom);
     this.stateService.initializeSentences(exercise.sourceText);
+
+    // Update Vietnamese SEO for exercise page
+    this.updateVietnameseSEO(exercise);
 
     // Update SEO meta tags for this exercise
     this.updateExerciseSeo(exercise);
@@ -582,5 +587,85 @@ export class ExerciseDetailComponent implements OnInit {
   onCloseErrorModal(): void {
     this.showErrorModal.set(false);
     this.errorMessage.set('');
+  }
+
+  /**
+   * Update Vietnamese SEO for exercise page
+   */
+  private updateVietnameseSEO(exercise: Exercise): void {
+    if (!this.vietnameseSeoService.isConfigurationLoaded()) {
+      console.warn('[ExerciseDetail] Vietnamese SEO configuration not loaded');
+      return;
+    }
+
+    // Use exercise level directly (it's already a string)
+    const level = exercise.level;
+    const category = 'translation'; // Default category for exercises
+
+    // Generate Vietnamese title
+    const vietnameseTitle = this.vietnameseSeoService.getVietnameseTitle(
+      exercise.title,
+      category,
+      level,
+      exercise.title
+    );
+
+    // Generate Vietnamese description
+    const exerciseDescription = exercise.description || `Luyện tập ${exercise.title}`;
+    const vietnameseDescription = this.vietnameseSeoService.getVietnameseDescription(
+      exercise.description || '',
+      category,
+      level,
+      exerciseDescription
+    );
+
+    // Generate Vietnamese keywords
+    const vietnameseKeywords = this.vietnameseSeoService.generateVietnameseKeywords(
+      category,
+      level
+    );
+
+    // Update Vietnamese meta tags
+    this.vietnameseSeoService.updateVietnameseTags({
+      title: exercise.title,
+      description: exercise.description || '',
+      vietnameseTitle,
+      vietnameseDescription,
+      vietnameseKeywords,
+      image: '/og-image-vi.png',
+      url: `https://dailyenglish.qzz.io/exercise/${exercise.id}`,
+    });
+
+    // Generate and set Vietnamese breadcrumb schema
+    const breadcrumbs = [
+      { name: 'Trang chủ', url: 'https://dailyenglish.qzz.io/' },
+      { name: 'Bài tập', url: 'https://dailyenglish.qzz.io/exercises' },
+      { name: exercise.title, url: `https://dailyenglish.qzz.io/exercise/${exercise.id}` },
+    ];
+    const breadcrumbSchema = this.vietnameseSeoService.generateVietnameseBreadcrumbSchema(breadcrumbs);
+    this.vietnameseSeoService.setVietnameseStructuredData(breadcrumbSchema, 'exercise-breadcrumb');
+
+    // Generate and set Vietnamese LearningResource schema
+    const levelVietnamese = this.vietnameseSeoService['getLevelVietnamese'](level);
+    const courseSchema = this.vietnameseSeoService.generateVietnameseCourseSchema({
+      name: vietnameseTitle,
+      description: vietnameseDescription,
+      educationalLevel: levelVietnamese,
+      teaches: 'Tiếng Anh',
+    });
+    this.vietnameseSeoService.setVietnameseStructuredData(courseSchema, 'exercise-course');
+
+    // Set Zalo tags for sharing
+    this.vietnameseSeoService.setZaloTags({
+      title: vietnameseTitle,
+      description: vietnameseDescription,
+      image: 'https://dailyenglish.qzz.io/og-image-vi.png',
+      url: `https://dailyenglish.qzz.io/exercise/${exercise.id}`,
+    });
+
+    console.log('[ExerciseDetail] Vietnamese SEO updated', {
+      title: vietnameseTitle,
+      keywords: vietnameseKeywords.length,
+    });
   }
 }
