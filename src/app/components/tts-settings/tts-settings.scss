@@ -1,0 +1,39 @@
+.tts-settings {
+  input[type='range'] {
+    @apply h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer;
+
+    &::-webkit-slider-thumb {
+      @apply appearance-none w-4 h-4 bg-primary rounded-full cursor-pointer;
+      transition: transform 0.2s;
+
+      &:hover {
+        transform: scale(1.2);
+      }
+    }
+
+    &::-moz-range-thumb {
+      @apply w-4 h-4 bg-primary rounded-full cursor-pointer border-0;
+      transition: transform 0.2s;
+
+      &:hover {
+        transform: scale(1.2);
+      }
+    }
+  }
+
+  // Smooth slide animation
+  > div:last-child {
+    animation: slideDown 0.2s ease-out;
+  }
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

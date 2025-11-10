@@ -1,30 +1,29 @@
-import { DifficultyLevel } from './../../models/exercise.model';
 import { Component, ChangeDetectionStrategy, OnInit, viewChild, inject, signal, computed, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Location } from '@angular/common';
 import { filter, take } from 'rxjs/operators';
-import { Exercise, ExerciseAttempt, UserProgressHelper } from '../../models/exercise.model';
+import { Exercise } from '../../models/exercise.model';
 import { ExerciseService } from '../../services/exercise.service';
-import { CustomExerciseService } from '../../services/custom-exercise.service';
 import { AIService } from '../../services/ai/ai.service';
 import { ProgressService } from '../../services/progress.service';
 import { FavoriteService } from '../../services/favorite.service';
 import { TTSService } from '../../services/tts.service';
-import { AuthService } from '../../services/auth.service';
 import { FeedbackPanelComponent } from '../feedback-panel/feedback-panel';
 import { ApiKeyPromptComponent } from '../api-key-prompt/api-key-prompt';
 import { ErrorModal } from '../error-modal/error-modal';
+import { LoadingSpinnerComponent } from '../loading-spinner/loading-spinner';
+import { TranslationReview } from '../translation-review/translation-review';
 import { ConfigService } from '../../services/config.service';
 import { ExerciseStateService } from '../../services/exercise-state.service';
 import { ExerciseSubmissionService } from '../../services/exercise-submission.service';
 import { ExercisePersistenceService } from '../../services/exercise-persistence.service';
 import { ExerciseValidationService } from '../../services/exercise-validation.service';
-import { PointsAnimationService } from '../../services/points-animation.service';
 import { SettingsService } from '../../services/settings.service';
-import { SeoService } from '../../services/seo.service';
-import { VietnameseSeoService } from '../../services/vietnamese-seo.service';
+import { ExerciseSeoService } from '../../services/exercise-seo.service';
+import { ExerciseRecordingService } from '../../services/exercise-recording.service';
+import { TTSSettings } from '../tts-settings/tts-settings';
 
 @Component({
   selector: 'app-exercise-detail',
@@ -33,7 +32,10 @@ import { VietnameseSeoService } from '../../services/vietnamese-seo.service';
     FormsModule,
     FeedbackPanelComponent,
     ApiKeyPromptComponent,
-    ErrorModal
+    ErrorModal,
+    LoadingSpinnerComponent,
+    TranslationReview,
+    TTSSettings
   ],
   templateUrl: './exercise-detail.html',
   styleUrl: './exercise-detail.scss',
@@ -44,19 +46,15 @@ export class ExerciseDetailComponent implements OnInit {
   private router = inject(Router);
   private location = inject(Location);
   private exerciseService = inject(ExerciseService);
-  private customExerciseService = inject(CustomExerciseService);
   private aiService = inject(AIService);
   private progressService = inject(ProgressService);
   private favoriteService = inject(FavoriteService);
-  private authService = inject(AuthService);
   private configService = inject(ConfigService);
   private validationService = inject(ExerciseValidationService);
-  private pointsAnimationService = inject(PointsAnimationService);
   private settingsService = inject(SettingsService);
-  private seoService = inject(SeoService);
-  private vietnameseSeoService = inject(VietnameseSeoService);
+  private seoService = inject(ExerciseSeoService);
+  private recordingService = inject(ExerciseRecordingService);
 
-  // Extracted services
   stateService = inject(ExerciseStateService);
   submissionService = inject(ExerciseSubmissionService);
   persistenceService = inject(ExercisePersistenceService);
@@ -67,6 +65,7 @@ export class ExerciseDetailComponent implements OnInit {
   exercise = signal<Exercise | null>(null);
   isCustomExercise = signal(false);
   isLoadingHint = signal(false);
+  isLoadingExercise = signal(true);
   showApiKeyPrompt = signal(false);
   showErrorModal = signal(false);
   errorMessage = signal('');
@@ -200,48 +199,22 @@ export class ExerciseDetailComponent implements OnInit {
     this.isCustomExercise.set(isCustom);
     this.stateService.initializeSentences(exercise.sourceText);
 
-    // Update Vietnamese SEO for exercise page
-    this.updateVietnameseSEO(exercise);
-
-    // Update SEO meta tags for this exercise
-    this.updateExerciseSeo(exercise);
+    this.seoService.updateExerciseSeo(exercise);
+    this.seoService.updateVietnameseSeo(exercise);
 
     if (this.isReviewMode()) {
       this.loadBestAttempt(id);
     } else {
       const hasProgress = this.loadProgress(id);
-      // If no valid progress found, ensure we start from sentence 0
       if (!hasProgress) {
         this.stateService.currentSentenceIndex.set(0);
       }
     }
+
+    setTimeout(() => this.isLoadingExercise.set(false), 300);
   }
 
-  private updateExerciseSeo(exercise: Exercise): void {
-    // Generate title from exercise title or first sentence
-    const title = exercise.title || exercise.sourceText.split('.')[0].substring(0, 50);
-    
-    // Generate description from exercise description or source text
-    const description = exercise.description || 
-      `Luyện tập dịch tiếng Anh: ${exercise.sourceText.substring(0, 120)}...`;
-    
-    // Update meta tags
-    this.seoService.updateTags({
-      title: `${title} - Daily English`,
-      description,
-      keywords: ['bài tập tiếng anh', 'luyện dịch', exercise.category],
-      type: 'article',
-    });
 
-    // Add LearningResource structured data
-    const difficultyLevel = exercise.level || 'Beginner';
-    const learningResourceSchema = this.seoService.generateLearningResourceSchema(
-      title,
-      description,
-      difficultyLevel
-    );
-    this.seoService.setStructuredData(learningResourceSchema);
-  }
 
   private loadProgress(exerciseId: string): boolean {
     const state = this.persistenceService.loadProgress(exerciseId);
@@ -276,21 +249,7 @@ export class ExerciseDetailComponent implements OnInit {
     this.persistenceService.clearProgress(ex.id);
   }
 
-  private checkAndLoadCompletedExercise(exerciseId: string): void {
-    const progress = this.progressSignal();
-    const attempt = progress.exerciseHistory[exerciseId];
 
-    console.log('[ExerciseDetail] checkAndLoadCompletedExercise:', {
-      exerciseId,
-      hasAttempt: !!attempt,
-      hasSentenceAttempts: attempt?.sentenceAttempts?.length || 0,
-      attemptData: attempt
-    });
-
-    // Don't auto-load completed exercises - let user start fresh
-    // They can use "Practice Again" button if they want to redo
-    // This prevents jumping to sentence 2 when entering an exercise
-  }
 
   private loadBestAttempt(exerciseId: string): void {
     const progress = this.progressSignal();
@@ -306,22 +265,7 @@ export class ExerciseDetailComponent implements OnInit {
     this.stateService.loadBestAttempt(attempt);
   }
 
-  private createFallbackSentenceAttempts(attempt: ExerciseAttempt): void {
-    // Create fallback sentence attempts from the overall userInput
-    const sentences = this.stateService.sentences();
-    const userInputParts = attempt.userInput.split(/[.!?]+/).filter(s => s.trim());
 
-    this.stateService.sentences.update(sents => {
-      return sents.map((s, index) => ({
-        ...s,
-        translation: userInputParts[index]?.trim() || attempt.userInput,
-        isCompleted: true,
-        accuracyScore: attempt.accuracyScore
-      }));
-    });
-
-    this.stateService.currentSentenceIndex.set(sentences.length);
-  }
 
   onSubmit(): void {
     if (!this.configService.hasValidConfig()) {
@@ -350,16 +294,7 @@ export class ExerciseDetailComponent implements OnInit {
         }
 
         if (result.autoAdvance && result.wasLastSentence) {
-          this.recordAttempt();
-          this.clearProgress();
-          this.isReviewMode.set(true);
-
-          // Update URL to include review mode so refresh works correctly
-          this.router.navigate([], {
-            relativeTo: this.route,
-            queryParams: { mode: 'review' },
-            queryParamsHandling: 'merge'
-          });
+          this.completeExercise();
         }
 
         if (result.complete) {
@@ -447,24 +382,21 @@ export class ExerciseDetailComponent implements OnInit {
     this.submissionService.accuracyScore.set(0);
 
     if (wasLastSentence) {
-      console.log('Last sentence completed, recording attempt...');
-      this.recordAttempt();
-      this.clearProgress();
-      this.isReviewMode.set(true);
-
-      // Update URL to include review mode so refresh works correctly
-      const ex = this.exercise();
-      if (ex) {
-        this.router.navigate([], {
-          relativeTo: this.route,
-          queryParams: { mode: 'review' },
-          queryParamsHandling: 'merge'
-        });
-      }
+      this.completeExercise();
     } else {
       this.saveProgress();
       this.focusInput();
     }
+  }
+
+  onRetrySentence(): void {
+    // Reset current sentence state
+    this.stateService.retrySentence();
+    this.submissionService.feedback.set(null);
+    this.submissionService.accuracyScore.set(0);
+    this.submissionService.userInputAfterSubmit.set('');
+    this.saveProgress();
+    this.focusInput();
   }
 
   onPracticeAgain(): void {
@@ -518,61 +450,20 @@ export class ExerciseDetailComponent implements OnInit {
     this.ttsService.stop();
   }
 
-  private recordAttempt(): void {
+  private completeExercise(): void {
     const ex = this.exercise();
     if (!ex) return;
 
-    const status = this.progressService.getExerciseStatus(ex.id);
-    const sents = this.sentences();
+    console.log('Exercise completed, recording attempt...');
+    this.recordingService.recordAttempt(ex, this.hintsShown(), this.exercisePoints());
+    this.clearProgress();
+    this.isReviewMode.set(true);
 
-    const accuracyScores = sents.map(s => s.accuracyScore || 0);
-    const avgAccuracy = this.validationService.calculateAverageAccuracy(accuracyScores);
-    const fullTranslation = sents.map(s => s.translation).join(' ');
-
-    const sentenceAttempts = sents.map((s, index) => ({
-      sentenceIndex: index,
-      userInput: s.translation,
-      accuracyScore: s.accuracyScore || 0,
-      feedback: []
-    }));
-
-    const pointsEarned = this.exercisePoints();
-    const attempt: ExerciseAttempt = {
-      exerciseId: ex.id,
-      category: ex.category,
-      attemptNumber: status.attemptCount + 1,
-      userInput: fullTranslation,
-      accuracyScore: avgAccuracy,
-      pointsEarned,
-      feedback: [],
-      timestamp: new Date(),
-      hintsUsed: this.hintsShown(),
-      sentenceAttempts
-    };
-
-    // Trigger points animation first, then record attempt when animation completes
-    if (pointsEarned > 0) {
-      setTimeout(() => {
-        const pointsElement = document.querySelector('.stat-item');
-        if (pointsElement) {
-          // Start animation and wait for it to complete before recording
-          this.pointsAnimationService.triggerPointsAnimation(pointsEarned, pointsElement as HTMLElement)
-            .then(() => {
-              // Record attempt only after animation completes
-              this.progressService.recordAttempt(attempt);
-              console.log('Attempt recorded after animation:', attempt);
-            });
-        } else {
-          // Fallback: record immediately if element not found
-          this.progressService.recordAttempt(attempt);
-          console.log('Attempt recorded (no animation):', attempt);
-        }
-      }, 500);
-    } else {
-      // No points earned, record immediately
-      this.progressService.recordAttempt(attempt);
-      console.log('Attempt recorded (no points):', attempt);
-    }
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { mode: 'review' },
+      queryParamsHandling: 'merge'
+    });
   }
 
   onCloseApiKeyPrompt(): void {
@@ -581,91 +472,11 @@ export class ExerciseDetailComponent implements OnInit {
 
   onGoToSettings(): void {
     this.showApiKeyPrompt.set(false);
-    this.router.navigate(['/profile']);
+    this.router.navigate(['/profile'], { queryParams: { tab: 'settings' } });
   }
 
   onCloseErrorModal(): void {
     this.showErrorModal.set(false);
     this.errorMessage.set('');
-  }
-
-  /**
-   * Update Vietnamese SEO for exercise page
-   */
-  private updateVietnameseSEO(exercise: Exercise): void {
-    if (!this.vietnameseSeoService.isConfigurationLoaded()) {
-      console.warn('[ExerciseDetail] Vietnamese SEO configuration not loaded');
-      return;
-    }
-
-    // Use exercise level directly (it's already a string)
-    const level = exercise.level;
-    const category = 'translation'; // Default category for exercises
-
-    // Generate Vietnamese title
-    const vietnameseTitle = this.vietnameseSeoService.getVietnameseTitle(
-      exercise.title,
-      category,
-      level,
-      exercise.title
-    );
-
-    // Generate Vietnamese description
-    const exerciseDescription = exercise.description || `Luyện tập ${exercise.title}`;
-    const vietnameseDescription = this.vietnameseSeoService.getVietnameseDescription(
-      exercise.description || '',
-      category,
-      level,
-      exerciseDescription
-    );
-
-    // Generate Vietnamese keywords
-    const vietnameseKeywords = this.vietnameseSeoService.generateVietnameseKeywords(
-      category,
-      level
-    );
-
-    // Update Vietnamese meta tags
-    this.vietnameseSeoService.updateVietnameseTags({
-      title: exercise.title,
-      description: exercise.description || '',
-      vietnameseTitle,
-      vietnameseDescription,
-      vietnameseKeywords,
-      image: '/og-image-vi.png',
-      url: `https://dailyenglish.qzz.io/exercise/${exercise.id}`,
-    });
-
-    // Generate and set Vietnamese breadcrumb schema
-    const breadcrumbs = [
-      { name: 'Trang chủ', url: 'https://dailyenglish.qzz.io/' },
-      { name: 'Bài tập', url: 'https://dailyenglish.qzz.io/exercises' },
-      { name: exercise.title, url: `https://dailyenglish.qzz.io/exercise/${exercise.id}` },
-    ];
-    const breadcrumbSchema = this.vietnameseSeoService.generateVietnameseBreadcrumbSchema(breadcrumbs);
-    this.vietnameseSeoService.setVietnameseStructuredData(breadcrumbSchema, 'exercise-breadcrumb');
-
-    // Generate and set Vietnamese LearningResource schema
-    const levelVietnamese = this.vietnameseSeoService['getLevelVietnamese'](level);
-    const courseSchema = this.vietnameseSeoService.generateVietnameseCourseSchema({
-      name: vietnameseTitle,
-      description: vietnameseDescription,
-      educationalLevel: levelVietnamese,
-      teaches: 'Tiếng Anh',
-    });
-    this.vietnameseSeoService.setVietnameseStructuredData(courseSchema, 'exercise-course');
-
-    // Set Zalo tags for sharing
-    this.vietnameseSeoService.setZaloTags({
-      title: vietnameseTitle,
-      description: vietnameseDescription,
-      image: 'https://dailyenglish.qzz.io/og-image-vi.png',
-      url: `https://dailyenglish.qzz.io/exercise/${exercise.id}`,
-    });
-
-    console.log('[ExerciseDetail] Vietnamese SEO updated', {
-      title: vietnameseTitle,
-      keywords: vietnameseKeywords.length,
-    });
   }
 }

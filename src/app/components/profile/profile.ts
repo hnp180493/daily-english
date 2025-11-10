@@ -1,6 +1,6 @@
-import { Component, ChangeDetectionStrategy, inject, signal } from '@angular/core';
+import { Component, ChangeDetectionStrategy, inject, signal, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { AchievementShowcase } from '../achievements/achievement-showcase/achievement-showcase';
 import { AiProviderConfig } from '../ai-provider-config/ai-provider-config';
 import { AppSettingsComponent } from '../app-settings/app-settings';
@@ -16,8 +16,9 @@ type TabType = 'achievements' | 'settings';
   styleUrls: ['./profile.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ProfileComponent {
+export class ProfileComponent implements OnInit {
   private router = inject(Router);
+  private route = inject(ActivatedRoute);
   private authService = inject(AuthService);
 
   currentUser = this.authService.currentUser;
@@ -27,6 +28,13 @@ export class ProfileComponent {
   isAnonymous = () => this.authService.isAnonymous();
 
   activeTab = signal<TabType>('achievements');
+
+  ngOnInit(): void {
+    const tab = this.route.snapshot.queryParamMap.get('tab');
+    if (tab === 'settings') {
+      this.activeTab.set('settings');
+    }
+  }
 
   goBack(): void {
     this.router.navigate(['/home']);

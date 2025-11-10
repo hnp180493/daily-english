@@ -1,0 +1,145 @@
+<div class="tts-settings">
+  <button
+    type="button"
+    (click)="toggle()"
+    class="flex items-center gap-2 text-sm text-gray-600 hover:text-primary transition-colors"
+  >
+    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+        d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+    </svg>
+    <span>Voice Settings</span>
+  </button>
+
+  @if (isOpen()) {
+    <div class="mt-4 p-4 bg-white border-2 border-gray-200 rounded-lg shadow-lg space-y-4 relative">
+      <!-- Close Button -->
+      <button
+        type="button"
+        (click)="toggle()"
+        class="absolute top-2 right-2 text-gray-400 hover:text-gray-600 transition-colors"
+        aria-label="Close settings"
+      >
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+
+      <!-- Voice Selection -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-2">
+          Voice
+        </label>
+        <select
+          [(ngModel)]="currentVoiceName"
+          (change)="onVoiceChange($any($event.target).value)"
+          class="w-full px-3 py-2 text-gray-700 font-medium bg-white border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary"
+        >
+          @for (voice of availableVoices(); track voice.name) {
+            <option [value]="voice.name">
+              {{ voice.name }} ({{ voice.lang }})
+            </option>
+          }
+        </select>
+      </div>
+
+      <!-- Rate -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-2">
+          Speed: {{ settings().rate.toFixed(2) }}x
+        </label>
+        <input
+          type="range"
+          min="0.5"
+          max="2.0"
+          step="0.05"
+          [value]="settings().rate"
+          (input)="onRateChange($any($event.target).value)"
+          class="w-full"
+        />
+        <div class="flex justify-between text-xs text-gray-500 mt-1">
+          <span>Slow</span>
+          <span>Normal</span>
+          <span>Fast</span>
+        </div>
+      </div>
+
+      <!-- Pitch -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-2">
+          Pitch: {{ settings().pitch.toFixed(2) }}
+        </label>
+        <input
+          type="range"
+          min="0.5"
+          max="2.0"
+          step="0.1"
+          [value]="settings().pitch"
+          (input)="onPitchChange($any($event.target).value)"
+          class="w-full"
+        />
+        <div class="flex justify-between text-xs text-gray-500 mt-1">
+          <span>Low</span>
+          <span>Normal</span>
+          <span>High</span>
+        </div>
+      </div>
+
+      <!-- Volume -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-2">
+          Volume: {{ (settings().volume * 100).toFixed(0) }}%
+        </label>
+        <input
+          type="range"
+          min="0"
+          max="1"
+          step="0.1"
+          [value]="settings().volume"
+          (input)="onVolumeChange($any($event.target).value)"
+          class="w-full"
+        />
+      </div>
+
+      <!-- Presets -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-2">
+          Quick Presets
+        </label>
+        <div class="grid grid-cols-3 gap-2">
+          <button
+            type="button"
+            (click)="applyPreset('natural')"
+            class="px-3 py-2 text-sm text-gray-700 font-medium bg-white border-2 border-gray-300 rounded-lg hover:bg-gray-50 hover:border-primary transition-colors"
+          >
+            Natural
+          </button>
+          <button
+            type="button"
+            (click)="applyPreset('clear')"
+            class="px-3 py-2 text-sm text-gray-700 font-medium bg-white border-2 border-gray-300 rounded-lg hover:bg-gray-50 hover:border-primary transition-colors"
+          >
+            Clear
+          </button>
+          <button
+            type="button"
+            (click)="applyPreset('expressive')"
+            class="px-3 py-2 text-sm text-gray-700 font-medium bg-white border-2 border-gray-300 rounded-lg hover:bg-gray-50 hover:border-primary transition-colors"
+          >
+            Expressive
+          </button>
+        </div>
+      </div>
+
+      <!-- Test Button -->
+      <button
+        type="button"
+        (click)="testVoice()"
+        class="w-full px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors"
+      >
+        🔊 Test Voice
+      </button>
+    </div>
+  }
+</div>

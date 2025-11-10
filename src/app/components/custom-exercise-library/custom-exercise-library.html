@@ -1,13 +1,16 @@
 <div class="min-h-screen py-8">
   <div class="max-w-7xl mx-auto px-4">
-    <!-- Header -->
-    <div class="flex justify-between items-center mb-6">
-      <div>
-        <h1 class="text-3xl font-bold text-white">My Custom Exercises</h1>
-        <p class="text-gray-400 mt-2">
-          {{ exercises().length }} exercise{{ exercises().length !== 1 ? 's' : '' }} created
-        </p>
-      </div>
+    @if (isLoading()) {
+      <app-loading-spinner [message]="'Đang tải bài tập...'" />
+    } @else {
+      <!-- Header -->
+      <div class="flex justify-between items-center mb-6">
+        <div>
+          <h1 class="text-3xl font-bold text-white">My Custom Exercises</h1>
+          <p class="text-gray-400 mt-2">
+            {{ exercises().length }} exercise{{ exercises().length !== 1 ? 's' : '' }} created
+          </p>
+        </div>
       <button
         (click)="createNew()"
         class="px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-500 transition-all font-medium flex items-center gap-2 shadow-lg shadow-purple-500/30"
@@ -220,6 +223,7 @@
           Clear Filters
         </button>
       </div>
+    }
     }
   </div>
 </div>

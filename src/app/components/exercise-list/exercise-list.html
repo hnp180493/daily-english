@@ -1,10 +1,14 @@
 <div class="exercise-list-container">
   <header class="list-header">
     <h2 class="page-title">Available Exercises</h2>
-    <p class="exercise-count">Displaying {{ paginatedExercises().length }} of {{ totalExercises() }} exercises</p>
+    @if (!isLoading()) {
+      <p class="exercise-count">Displaying {{ paginatedExercises().length }} of {{ totalExercises() }} exercises</p>
+    }
   </header>
 
-  @if (paginatedExercises().length > 0) {
+  @if (isLoading()) {
+    <app-loading-spinner [message]="'Đang tải bài tập...'" />
+  } @else if (paginatedExercises().length > 0) {
     <div class="exercises-grid">
       @for (exercise of paginatedExercises(); track exercise.id) {
         <app-exercise-card
@@ -20,7 +24,7 @@
     </div>
   }
 
-  @if (totalPages() > 1) {
+  @if (!isLoading() && totalPages() > 1) {
     <div class="pagination">
       <button 
         class="page-btn"

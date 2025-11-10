@@ -6,10 +6,11 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { CustomExerciseService } from '../../services/custom-exercise.service';
 import { ToastService } from '../../services/toast.service';
 import { DifficultyLevel } from '../../models/exercise.model';
+import { LoadingSpinnerComponent } from '../loading-spinner/loading-spinner';
 
 @Component({
   selector: 'app-custom-exercise-library',
-  imports: [CommonModule, FormsModule, RouterModule],
+  imports: [CommonModule, FormsModule, RouterModule, LoadingSpinnerComponent],
   templateUrl: './custom-exercise-library.html',
   styleUrl: './custom-exercise-library.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -27,8 +28,17 @@ export class CustomExerciseLibrary {
   selectedDifficulty = signal<DifficultyLevel | null>(null);
   selectedTags = signal<string[]>([]);
   deleteConfirmId = signal<string | null>(null);
+  isLoading = signal(true);
 
   constructor() {
+    // Track loading state
+    effect(() => {
+      const exercises = this.exercises();
+      if (exercises.length >= 0) {
+        setTimeout(() => this.isLoading.set(false), 300);
+      }
+    });
+
     // Apply query parameters on initialization
     effect(() => {
       const params = this.route.snapshot.queryParams;

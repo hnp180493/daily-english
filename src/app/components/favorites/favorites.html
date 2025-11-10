@@ -21,7 +21,9 @@
 
   <!-- Content -->
   <main class="favorites-content">
-    @if (hasFavorites()) {
+    @if (isLoading()) {
+      <app-loading-spinner [message]="'Đang tải bài tập yêu thích...'" />
+    } @else if (hasFavorites()) {
       <div class="exercises-grid">
         @for (exercise of favoriteExercises(); track exercise.id) {
           <div class="exercise-card" (click)="startExercise(exercise)">

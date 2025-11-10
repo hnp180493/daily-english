@@ -7,10 +7,11 @@ import { Exercise, ExerciseCategory, DifficultyLevel } from '../../models/exerci
 import { ExerciseService } from '../../services/exercise.service';
 import { ProgressService } from '../../services/progress.service';
 import { ExerciseCardComponent } from '../exercise-card/exercise-card';
+import { LoadingSpinnerComponent } from '../loading-spinner/loading-spinner';
 
 @Component({
   selector: 'app-exercise-list',
-  imports: [CommonModule, ExerciseCardComponent],
+  imports: [CommonModule, ExerciseCardComponent, LoadingSpinnerComponent],
   templateUrl: './exercise-list.html',
   styleUrl: './exercise-list.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -23,6 +24,7 @@ export class ExerciseListComponent {
 
   allExercises = toSignal(this.exerciseService.getFilteredExercises(), { initialValue: [] });
   queryParams = toSignal(this.route.queryParams, { initialValue: {} });
+  isLoading = signal(true);
   currentPage = signal(0);
   pageSize = 6;
 
@@ -53,6 +55,14 @@ export class ExerciseListComponent {
     effect(() => {
       this.queryParams();
       this.currentPage.set(0);
+    });
+
+    // Track loading state
+    effect(() => {
+      const exercises = this.allExercises();
+      if (exercises.length > 0 || exercises.length === 0) {
+        setTimeout(() => this.isLoading.set(false), 300);
+      }
     });
   }
 

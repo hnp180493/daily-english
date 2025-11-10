@@ -1,0 +1,54 @@
+<div class="review-mode-section">
+  <div class="review-header">
+    <h3>📝 Your Translations</h3>
+    <div class="review-actions">
+      <button class="action-btn practice-again-btn" (click)="practiceAgain.emit()">
+        🔄 Practice Again
+      </button>
+      <button class="action-btn quit-btn" (click)="quit.emit()">
+        ← Back to Exercises
+      </button>
+    </div>
+  </div>
+  
+  <div class="review-sentences-list">
+    @for (sentence of sentences(); track $index; let i = $index) {
+      <div class="review-sentence-item" 
+           [class.current-sentence]="i === currentSentenceIndex() && !isExerciseComplete()"
+           [class.tts-playing]="i === currentTTSSentenceIndex()">
+        <div class="sentence-number-badge">{{ i + 1 }}</div>
+        <div class="sentence-content">
+          <div class="sentence-row">
+            <span class="label">Tiếng Việt:</span>
+            <span class="text vietnamese-text">{{ sentence.original }}</span>
+          </div>
+          <div class="sentence-row translation-row">
+            <span class="label">Your Translation:</span>
+            <span class="text">{{ sentence.translation || '(Not translated yet)' }}</span>
+          </div>
+          <div class="sentence-footer">
+            @if (sentence.accuracyScore !== undefined) {
+              <div class="sentence-score-badge" [class.high-score]="sentence.accuracyScore >= 90">
+                ✓ {{ sentence.accuracyScore }}% accuracy
+              </div>
+            }
+            @if (sentence.isCompleted) {
+              <button 
+                class="sentence-tts-btn" 
+                (click)="playSentence.emit(i)"
+                [attr.aria-label]="'Play sentence ' + (i + 1)">
+                🔊
+              </button>
+            }
+          </div>
+          @if (sentence.suggestion && sentence.accuracyScore !== undefined && sentence.accuracyScore <= 90) {
+            <div class="sentence-suggestion">
+              <div class="suggestion-label">💡 Suggestion:</div>
+              <div class="suggestion-text">{{ sentence.suggestion }}</div>
+            </div>
+          }
+        </div>
+      </div>
+    }
+  </div>
+</div>

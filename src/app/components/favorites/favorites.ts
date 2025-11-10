@@ -1,4 +1,4 @@
-import { Component, inject, computed, ChangeDetectionStrategy } from '@angular/core';
+import { Component, inject, computed, signal, effect, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
@@ -6,10 +6,11 @@ import { FavoriteService } from '../../services/favorite.service';
 import { ExerciseService } from '../../services/exercise.service';
 import { Exercise } from '../../models/exercise.model';
 import { ProgressService } from '../../services/progress.service';
+import { LoadingSpinnerComponent } from '../loading-spinner/loading-spinner';
 
 @Component({
   selector: 'app-favorites',
-  imports: [CommonModule],
+  imports: [CommonModule, LoadingSpinnerComponent],
   templateUrl: './favorites.html',
   styleUrl: './favorites.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -21,6 +22,16 @@ export class FavoritesComponent {
   private router = inject(Router);
 
   private allExercises = toSignal(this.exerciseService.getAllExercises(), { initialValue: [] });
+  isLoading = signal(true);
+
+  constructor() {
+    effect(() => {
+      const exercises = this.allExercises();
+      if (exercises.length > 0 || exercises.length === 0) {
+        setTimeout(() => this.isLoading.set(false), 300);
+      }
+    });
+  }
   
   favoriteExercises = computed(() => {
     const favoriteIds = this.favoriteService.favoriteIds();

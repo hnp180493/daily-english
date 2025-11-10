@@ -96,9 +96,9 @@ ${translatedContext}
 
 Rules:
 
-	90–99 → must include ≥1 feedback item.
+	90–99 → must include ≥1 feedback item with constructive suggestion for improvement.
 
-	100 → feedback optional.
+	100 → feedback optional (empty array is acceptable).
 `;
   }
 

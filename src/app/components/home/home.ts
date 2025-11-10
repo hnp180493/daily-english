@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy, inject, signal, computed } from '@angular/core';
+import { Component, ChangeDetectionStrategy, inject, signal, computed, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
@@ -7,10 +7,11 @@ import { ExerciseService } from '../../services/exercise.service';
 import { CustomExerciseService } from '../../services/custom-exercise.service';
 import { LevelCardComponent } from '../level-card/level-card';
 import { CategoryCardComponent } from '../category-card/category-card';
+import { LoadingSpinnerComponent } from '../loading-spinner/loading-spinner';
 
 @Component({
   selector: 'app-home',
-  imports: [CommonModule, LevelCardComponent, CategoryCardComponent],
+  imports: [CommonModule, LevelCardComponent, CategoryCardComponent, LoadingSpinnerComponent],
   templateUrl: './home.html',
   styleUrl: './home.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -19,6 +20,8 @@ export class HomeComponent {
   private exerciseService = inject(ExerciseService);
   private customExerciseService = inject(CustomExerciseService);
   private router = inject(Router);
+  
+  isLoading = signal(true);
 
   levels = [DifficultyLevel.BEGINNER, DifficultyLevel.INTERMEDIATE, DifficultyLevel.ADVANCED];
   categories = Object.values(ExerciseCategory);
@@ -48,6 +51,14 @@ export class HomeComponent {
     }
     return baseCategories;
   });
+
+  constructor() {
+    // Hide loading after custom exercises are loaded
+    effect(() => {
+      const customExercises = this.allCustomExercises();
+      setTimeout(() => this.isLoading.set(false), 300);
+    });
+  }
 
   onLevelSelect(level: DifficultyLevel): void {
     this.selectedLevel.set(level);

@@ -7,6 +7,7 @@ export interface SentenceProgress {
   isCompleted: boolean;
   accuracyScore?: number;
   showTranslation?: boolean; // Track if translation should be displayed in full text
+  suggestion?: string; // AI suggestion for improvement
 }
 
 export interface ExerciseState {
@@ -60,14 +61,15 @@ export class ExerciseStateService {
     })));
   }
 
-  markSentenceCompleted(index: number, translation: string, score: number): void {
+  markSentenceCompleted(index: number, translation: string, score: number, suggestion?: string): void {
     this.sentences.update(sentences => {
       const updated = [...sentences];
       updated[index] = {
         ...updated[index],
         translation,
         isCompleted: true,
-        accuracyScore: score
+        accuracyScore: score,
+        suggestion
       };
       return updated;
     });
@@ -96,6 +98,24 @@ export class ExerciseStateService {
     this.previousHints.set([]);
     this.hintsShown.set(0);
     this.userInput.set('');
+  }
+
+  retrySentence(): void {
+    const currentIdx = this.currentSentenceIndex();
+    this.sentences.update(sentences => {
+      const updated = [...sentences];
+      if (currentIdx < updated.length) {
+        updated[currentIdx] = {
+          ...updated[currentIdx],
+          translation: '',
+          isCompleted: false,
+          accuracyScore: undefined,
+          showTranslation: false
+        };
+      }
+      return updated;
+    });
+    this.resetSentenceState();
   }
 
   addHint(hint: string): void {
@@ -151,12 +171,23 @@ export class ExerciseStateService {
         const sentAttempt = attempt.sentenceAttempts?.find((sa: any) => sa.sentenceIndex === index);
         if (sentAttempt) {
           console.log(`[ExerciseStateService] Loading sentence ${index}:`, sentAttempt.userInput);
+          
+          // Extract suggestion from feedback if score <= 90
+          let suggestion: string | undefined;
+          if (sentAttempt.accuracyScore <= 90 && sentAttempt.feedback && sentAttempt.feedback.length > 0) {
+            // Try to find suggestion type first, fallback to any feedback with suggestion field
+            const suggestionItem = sentAttempt.feedback.find((f: any) => f.type === 'suggestion' || f.suggestion);
+            suggestion = suggestionItem?.suggestion;
+            // console.log(`[ExerciseStateService] Extracted suggestion for sentence ${index}:`, suggestion);
+          }
+          
           return {
             ...s,
             translation: sentAttempt.userInput,
             isCompleted: true,
             accuracyScore: sentAttempt.accuracyScore,
-            showTranslation: true // In review mode, show all translations
+            showTranslation: true, // In review mode, show all translations
+            suggestion
           };
         }
         return s;

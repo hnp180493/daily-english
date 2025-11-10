@@ -27,7 +27,7 @@ export class AiProviderConfig implements OnInit {
     },
     openai: {
       apiKey: '',
-      modelName: 'gpt-4o'
+      modelName: 'gpt-4o-mini'
     }
   });
 
@@ -132,7 +132,7 @@ export class AiProviderConfig implements OnInit {
         },
         openai: {
           apiKey: '',
-          modelName: 'gpt-4o'
+          modelName: 'gpt-4o-mini'
         }
       });
       this.expandedProvider.set(null);
