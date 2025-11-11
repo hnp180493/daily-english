@@ -272,13 +272,10 @@ export class OpenRouterProvider extends BaseAIProvider {
 
   private parseResponse(content: string): AIResponse {
     try {
-      // Strip markdown code blocks
+      // Strip markdown code blocks (handle both with and without newlines)
       let cleanText = content.trim();
-      if (cleanText.startsWith('```json')) {
-        cleanText = cleanText.replace(/^```json\n/, '').replace(/\n```$/, '');
-      } else if (cleanText.startsWith('```')) {
-        cleanText = cleanText.replace(/^```\n/, '').replace(/\n```$/, '');
-      }
+      cleanText = cleanText.replace(/^```json\s*/i, '').replace(/^```\s*/, '');
+      cleanText = cleanText.replace(/\s*```\s*$/, '');
 
       // Extract JSON object using regex
       const jsonMatch = cleanText.match(/\{[\s\S]*\}/);
@@ -293,6 +290,7 @@ export class OpenRouterProvider extends BaseAIProvider {
       throw new Error('Invalid response format - no JSON object found');
     } catch (error) {
       console.error('[OpenRouter] Failed to parse AI response:', error);
+      console.error('[OpenRouter] Content was:', content);
       // Return default response with score 50
       return {
         accuracyScore: 50,

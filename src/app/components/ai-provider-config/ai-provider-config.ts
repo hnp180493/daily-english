@@ -31,7 +31,7 @@ export class AiProviderConfig implements OnInit {
     },
     openrouter: {
       apiKey: '',
-      modelName: 'meta-llama/llama-3.2-3b-instruct:free',
+      modelName: 'mistralai/mistral-7b-instruct:free',
       siteUrl: '',
       siteName: ''
     }
@@ -47,6 +47,7 @@ export class AiProviderConfig implements OnInit {
   expandedProvider = signal<'azure' | 'gemini' | 'openai' | 'openrouter' | null>(null);
   saveSuccess = signal(false);
   saveError = signal(false);
+  useCustomOpenRouterModel = signal(false);
 
   ngOnInit(): void {
     this.loadConfig();
@@ -139,6 +140,10 @@ export class AiProviderConfig implements OnInit {
     this.config.update(c => ({ ...c, openrouter: { ...c.openrouter!, siteName } }));
   }
 
+  toggleOpenRouterModelInput(): void {
+    this.useCustomOpenRouterModel.update(v => !v);
+  }
+
   clearConfig(): void {
     if (confirm('Are you sure you want to clear all configuration?')) {
       this.configService.clearConfig();
@@ -159,7 +164,7 @@ export class AiProviderConfig implements OnInit {
         },
         openrouter: {
           apiKey: '',
-          modelName: 'meta-llama/llama-3.2-3b-instruct:free',
+          modelName: 'mistralai/mistral-7b-instruct:free',
           siteUrl: '',
           siteName: ''
         }

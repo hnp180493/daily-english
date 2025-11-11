@@ -77,20 +77,13 @@ export class TTSService {
       return;
     }
     
-    // Log available voices for debugging
-    console.log('Available voices:', this.voices.map(v => ({
-      name: v.name,
-      lang: v.lang,
-      localService: v.localService
-    })));
-    
     // If we already have a selected voice, try to restore it
     const currentVoiceName = this.currentVoiceName();
     if (currentVoiceName) {
       const existingVoice = this.voices.find(v => v.name === currentVoiceName);
       if (existingVoice) {
         this.selectedVoice = existingVoice;
-        console.log('Kept current voice:', existingVoice.name);
+        // console.log('Kept current voice:', existingVoice.name);
         return;
       }
     }
