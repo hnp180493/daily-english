@@ -1,6 +1,7 @@
 import { Component, ChangeDetectionStrategy, inject, signal, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, ActivatedRoute } from '@angular/router';
+import { Location } from '@angular/common';
 import { AchievementShowcase } from '../achievements/achievement-showcase/achievement-showcase';
 import { AiProviderConfig } from '../ai-provider-config/ai-provider-config';
 import { AppSettingsComponent } from '../app-settings/app-settings';
@@ -19,6 +20,7 @@ type TabType = 'achievements' | 'settings';
 export class ProfileComponent implements OnInit {
   private router = inject(Router);
   private route = inject(ActivatedRoute);
+  private location = inject(Location);
   private authService = inject(AuthService);
 
   currentUser = this.authService.currentUser;
@@ -37,7 +39,13 @@ export class ProfileComponent implements OnInit {
   }
 
   goBack(): void {
-    this.router.navigate(['/home']);
+    // Check if there's history to go back to
+    if (window.history.length > 1) {
+      this.location.back();
+    } else {
+      // Fallback to home if no history
+      this.router.navigate(['/home']);
+    }
   }
 
   signOut(): void {

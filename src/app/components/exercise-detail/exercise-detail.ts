@@ -83,6 +83,7 @@ export class ExerciseDetailComponent implements OnInit {
   currentHint = this.stateService.currentHint;
   previousHints = this.stateService.previousHints;
   userInput = this.stateService.userInput;
+  hasThreeConsecutiveFailures = this.stateService.hasThreeConsecutiveFailures;
 
   // Delegate to submission service
   feedback = this.submissionService.feedback;
@@ -397,6 +398,23 @@ export class ExerciseDetailComponent implements OnInit {
     this.submissionService.userInputAfterSubmit.set('');
     this.saveProgress();
     this.focusInput();
+  }
+
+  onSkipToNextSentence(): void {
+    // Skip to next sentence after 3 failed attempts
+    const wasLastSentence = (this.currentSentenceIndex() + 1) >= this.sentences().length;
+
+    this.stateService.moveToNextSentence();
+    this.submissionService.feedback.set(null);
+    this.submissionService.accuracyScore.set(0);
+    this.submissionService.userInputAfterSubmit.set('');
+
+    if (wasLastSentence) {
+      this.completeExercise();
+    } else {
+      this.saveProgress();
+      this.focusInput();
+    }
   }
 
   onPracticeAgain(): void {

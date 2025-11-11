@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 
 export interface AIConfig {
-  provider: 'azure' | 'gemini' | 'openai';
+  provider: 'azure' | 'gemini' | 'openai' | 'openrouter';
   azure: {
     endpoint: string;
     apiKey: string;
@@ -15,6 +15,12 @@ export interface AIConfig {
   openai: {
     apiKey: string;
     modelName: string;
+  };
+  openrouter?: {
+    apiKey: string;
+    modelName: string;
+    siteUrl?: string;
+    siteName?: string;
   };
 }
 
@@ -74,6 +80,8 @@ export class ConfigService {
       return !!(config.gemini.apiKey && config.gemini.modelName);
     } else if (config.provider === 'openai') {
       return !!(config.openai.apiKey && config.openai.modelName);
+    } else if (config.provider === 'openrouter') {
+      return !!(config.openrouter?.apiKey && config.openrouter?.modelName);
     }
     return false;
   }

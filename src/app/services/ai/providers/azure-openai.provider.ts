@@ -100,6 +100,10 @@ export class AzureOpenAIProvider extends BaseAIProvider {
     config: any
   ): Observable<AIStreamChunk> {
     return new Observable(observer => {
+      // Reset counters for each new stream
+      this.emittedFeedbackCount = 0;
+      this.lastEmittedScore = null;
+      
       const prompt = this.promptService.buildAnalysisPrompt(userInput, sourceText, context, context.fullContext, context.translatedContext);
       const url = `${config.azure.endpoint}/openai/deployments/${config.azure.deploymentName}/chat/completions?api-version=2024-02-15-preview`;
 
@@ -234,33 +238,53 @@ export class AzureOpenAIProvider extends BaseAIProvider {
     }
   }
 
+  private emittedFeedbackCount = 0;
+  private lastEmittedScore: number | null = null;
+
   private emitPartialResponse(buffer: string, observer: any): void {
     try {
-      const jsonMatch = buffer.match(/\{[\s\S]*\}/);
-      if (!jsonMatch) return;
-
-      const partial = jsonMatch[0];
-      
-      const scoreMatch = partial.match(/"accuracyScore"\s*:\s*(\d+)/);
+      // Emit score as soon as it appears
+      const scoreMatch = buffer.match(/"accuracyScore"\s*:\s*(\d+)/);
       if (scoreMatch) {
         const score = parseInt(scoreMatch[1], 10);
-        observer.next({ 
-          type: 'score', 
-          data: { accuracyScore: score, feedback: [], overallComment: '' }
-        });
+        if (this.lastEmittedScore !== score) {
+          observer.next({ 
+            type: 'score', 
+            data: { accuracyScore: score, feedback: [], overallComment: '' }
+          });
+          this.lastEmittedScore = score;
+        }
       }
 
-      const feedbackMatch = partial.match(/"feedback"\s*:\s*\[([\s\S]*?)\]/);
-      if (feedbackMatch) {
-        try {
-          const feedbackArray = JSON.parse(`[${feedbackMatch[1]}]`);
-          feedbackArray.forEach((item: any) => {
-            if (item && item.type) {
-              observer.next({ type: 'feedback', feedbackItem: item });
-            }
+      // Parse individual feedback items as they stream in
+      // Match complete feedback objects within the feedback array
+      const feedbackSectionMatch = buffer.match(/"feedback"\s*:\s*\[([^\]]*)/);
+      if (feedbackSectionMatch) {
+        const feedbackContent = feedbackSectionMatch[1];
+        
+        // Match individual complete feedback objects: {...}
+        const itemRegex = /\{\s*"type"\s*:\s*"([^"]+)"[^}]*?"severity"\s*:\s*"([^"]+)"[^}]*?"originalText"\s*:\s*"([^"]*)"[^}]*?"suggestion"\s*:\s*"([^"]*)"[^}]*?"explanation"\s*:\s*"([^"]*)"/g;
+        
+        const allMatches: any[] = [];
+        let match;
+        
+        // Collect all complete feedback items
+        while ((match = itemRegex.exec(feedbackContent)) !== null) {
+          allMatches.push({
+            type: match[1],
+            severity: match[2],
+            originalText: match[3],
+            suggestion: match[4],
+            explanation: match[5],
+            startIndex: 0,
+            endIndex: 0
           });
-        } catch (e) {
-          // Incomplete feedback array, ignore
+        }
+
+        // Emit only new items we haven't emitted yet
+        for (let i = this.emittedFeedbackCount; i < allMatches.length; i++) {
+          observer.next({ type: 'feedback', feedbackItem: allMatches[i] });
+          this.emittedFeedbackCount++;
         }
       }
     } catch (e) {

@@ -103,8 +103,12 @@ export class GeminiProvider extends BaseAIProvider {
     config: any
   ): Observable<AIStreamChunk> {
     return new Observable(observer => {
+      // Reset counters for each new stream
+      this.emittedFeedbackCount = 0;
+      this.lastEmittedScore = null;
+
       const prompt = this.promptService.buildAnalysisPrompt(userInput, sourceText, context, context.fullContext, context.translatedContext);
-      const url = `https://generativelanguage.googleapis.com/v1beta/models/${config.gemini.modelName}:generateContent?key=${config.gemini.apiKey}`;
+      const url = `https://generativelanguage.googleapis.com/v1beta/models/${config.gemini.modelName}:streamGenerateContent?alt=sse&key=${config.gemini.apiKey}`;
 
       const body = JSON.stringify({
         contents: [
@@ -123,38 +127,61 @@ export class GeminiProvider extends BaseAIProvider {
         headers: { 'Content-Type': 'application/json' },
         body
       }).then(async response => {
-        const data = await response.json();
-        
-        if (data.error) {
-          console.error('Gemini API error response:', data.error);
-          throw new Error(data.error.message || JSON.stringify(data.error));
-        }
-        
         if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        
-        return data;
-      }).then((data: any) => {
-        const content = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
-        
-        if (!content) {
-          throw new Error('No content in Gemini response');
-        }
-
-        // Clean markdown code blocks
-        let cleanText = content.trim();
-        if (cleanText.startsWith('```json')) {
-          cleanText = cleanText.replace(/^```json\n/, '').replace(/\n```$/, '');
-        } else if (cleanText.startsWith('```')) {
-          cleanText = cleanText.replace(/^```\n/, '').replace(/\n```$/, '');
+          let errorMessage = `HTTP error! status: ${response.status}`;
+          try {
+            const errorData = await response.json();
+            if (errorData.error) {
+              console.error('Gemini API error response:', errorData.error);
+              errorMessage = errorData.error.message || JSON.stringify(errorData.error);
+            }
+          } catch (e) {
+            // If can't parse error, use status
+          }
+          throw new Error(errorMessage);
         }
 
-        // Simulate streaming by emitting partial responses with delays
-        this.simulateStreaming(cleanText, observer);
-        
+        const reader = response.body?.getReader();
+        const decoder = new TextDecoder();
+        let buffer = '';
+
+        while (true) {
+          const { done, value } = await reader!.read();
+          
+          if (done) {
+            if (buffer) {
+              const parsed = this.parseResponse(buffer);
+              observer.next({ type: 'complete', data: parsed });
+            }
+            observer.complete();
+            break;
+          }
+
+          const chunk = decoder.decode(value, { stream: true });
+          const lines = chunk.split('\n');
+
+          for (const line of lines) {
+            if (line.startsWith('data: ')) {
+              const data = line.slice(6).trim();
+              
+              if (!data) continue;
+
+              try {
+                const parsed = JSON.parse(data);
+                const content = parsed.candidates?.[0]?.content?.parts?.[0]?.text || '';
+                
+                if (content) {
+                  buffer += content;
+                  this.emitPartialResponse(buffer, observer);
+                }
+              } catch (e) {
+                // Ignore JSON parse errors for incomplete chunks
+              }
+            }
+          }
+        }
       }).catch(error => {
-        console.error('Gemini API error:', error);
+        console.error('Gemini streaming error:', error);
         observer.error(error);
       });
     });
@@ -213,34 +240,64 @@ export class GeminiProvider extends BaseAIProvider {
     }
   }
 
-  private simulateStreaming(fullText: string, observer: any): void {
+  private emittedFeedbackCount = 0;
+  private lastEmittedScore: number | null = null;
+
+  private emitPartialResponse(buffer: string, observer: any): void {
     try {
-      const fullResponse = this.parseResponse(fullText);
-      
-      if (fullResponse.accuracyScore) {
-        observer.next({
-          type: 'score',
-          data: { accuracyScore: fullResponse.accuracyScore, feedback: [], overallComment: '' }
-        });
+      // Clean markdown code blocks from buffer
+      let cleanBuffer = buffer.trim();
+      if (cleanBuffer.startsWith('```json')) {
+        cleanBuffer = cleanBuffer.replace(/^```json\n/, '').replace(/\n```$/, '');
+      } else if (cleanBuffer.startsWith('```')) {
+        cleanBuffer = cleanBuffer.replace(/^```\n/, '').replace(/\n```$/, '');
       }
 
-      if (fullResponse.feedback && fullResponse.feedback.length > 0) {
-        fullResponse.feedback.forEach((item, index) => {
-          setTimeout(() => {
-            observer.next({ type: 'feedback', feedbackItem: item });
-          }, index * 200);
-        });
+      // Emit score as soon as it appears
+      const scoreMatch = cleanBuffer.match(/"accuracyScore"\s*:\s*(\d+)/);
+      if (scoreMatch) {
+        const score = parseInt(scoreMatch[1], 10);
+        if (this.lastEmittedScore !== score) {
+          observer.next({ 
+            type: 'score', 
+            data: { accuracyScore: score, feedback: [], overallComment: '' }
+          });
+          this.lastEmittedScore = score;
+        }
       }
 
-      const completeDelay = (fullResponse.feedback?.length || 0) * 200 + 100;
-      setTimeout(() => {
-        observer.next({ type: 'complete', data: fullResponse });
-        observer.complete();
-      }, completeDelay);
+      // Parse individual feedback items as they stream in
+      const feedbackSectionMatch = cleanBuffer.match(/"feedback"\s*:\s*\[([^\]]*)/);
+      if (feedbackSectionMatch) {
+        const feedbackContent = feedbackSectionMatch[1];
+        
+        // Match individual complete feedback objects
+        const itemRegex = /\{\s*"type"\s*:\s*"([^"]+)"[^}]*?"severity"\s*:\s*"([^"]+)"[^}]*?"originalText"\s*:\s*"([^"]*)"[^}]*?"suggestion"\s*:\s*"([^"]*)"[^}]*?"explanation"\s*:\s*"([^"]*)"/g;
+        
+        const allMatches: any[] = [];
+        let match;
+        
+        // Collect all complete feedback items
+        while ((match = itemRegex.exec(feedbackContent)) !== null) {
+          allMatches.push({
+            type: match[1],
+            severity: match[2],
+            originalText: match[3],
+            suggestion: match[4],
+            explanation: match[5],
+            startIndex: 0,
+            endIndex: 0
+          });
+        }
 
-    } catch (error) {
-      console.error('Failed to simulate streaming:', error);
-      observer.error(error);
+        // Emit only new items we haven't emitted yet
+        for (let i = this.emittedFeedbackCount; i < allMatches.length; i++) {
+          observer.next({ type: 'feedback', feedbackItem: allMatches[i] });
+          this.emittedFeedbackCount++;
+        }
+      }
+    } catch (e) {
+      // Ignore parsing errors for partial content
     }
   }
 }

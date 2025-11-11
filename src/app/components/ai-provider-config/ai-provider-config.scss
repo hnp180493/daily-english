@@ -361,3 +361,48 @@
     width: 100%;
   }
 }
+
+// OpenRouter specific styles
+.recommended-badge {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: white;
+  padding: 0.25rem 0.625rem;
+  border-radius: 12px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  margin-left: 0.5rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.btn-recommended {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  
+  &:hover {
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
+  }
+}
+
+.optional-group {
+  opacity: 0.8;
+  
+  label {
+    font-weight: 500;
+    color: #4a4a4a;
+  }
+}
+
+.model-info {
+  color: #10b981 !important;
+  font-weight: 600;
+}
+
+optgroup {
+  font-weight: 600;
+  color: #1a1a1a;
+  
+  option {
+    font-weight: 400;
+    padding-left: 1rem;
+  }
+}

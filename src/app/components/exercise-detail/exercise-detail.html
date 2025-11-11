@@ -100,42 +100,66 @@
 
               <!-- Action Buttons -->
               <div class="actions">
-                @if (!canProceedToNext()) {
-                  <button 
-                    class="action-btn submit-btn" 
-                    (click)="onSubmit()" 
-                    [disabled]="!userInput() || isSubmitting()">
-                    @if (!isSubmitting()) {
-                      <span>Submit</span>
-                    } @else {
-                      <span>Analyzing...</span>
-                    }
-                  </button>
-                  <button 
-                    class="action-btn hint-btn" 
-                    (click)="onHint()" 
-                    [disabled]="!hasMoreHints() || isLoadingHint()">
-                    @if (isLoadingHint()) {
-                      <span>⏳ Loading...</span>
-                    } @else {
-                      <span>💡 Hint ({{ hintsShown() }}/3)</span>
-                    }
-                  </button>
+                @if (!canProceedToNext() && !hasThreeConsecutiveFailures()) {
+                  <div class="action-buttons-row">
+                    <button 
+                      class="action-btn submit-btn" 
+                      (click)="onSubmit()" 
+                      [disabled]="!userInput() || isSubmitting()">
+                      @if (!isSubmitting()) {
+                        <span>Submit</span>
+                      } @else {
+                        <span>Analyzing...</span>
+                      }
+                    </button>
+                    <button 
+                      class="action-btn hint-btn" 
+                      (click)="onHint()" 
+                      [disabled]="!hasMoreHints() || isLoadingHint()">
+                      @if (isLoadingHint()) {
+                        <span>⏳ Loading...</span>
+                      } @else {
+                        <span>💡 Hint ({{ hintsShown() }}/3)</span>
+                      }
+                    </button>
+                  </div>
+                } @else if (hasThreeConsecutiveFailures()) {
+                  <div class="failure-message">
+                    <p>You've tried 3 times. Would you like to move to the next sentence or try again?</p>
+                  </div>
+                  <div class="action-buttons-row">
+                    <button 
+                      class="action-btn next-btn" 
+                      (click)="onSkipToNextSentence()">
+                      Next Sentence →
+                    </button>
+                    <button 
+                      class="action-btn retry-btn" 
+                      (click)="onRetrySentence()"
+                      aria-label="Retry this sentence">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.2"/>
+                      </svg>
+                      Retry
+                    </button>
+                  </div>
                 } @else {
-                  <button 
-                    class="action-btn next-btn" 
-                    (click)="onNextSentence()">
-                    Next Sentence →
-                  </button>
-                  <button 
-                    class="action-btn retry-btn" 
-                    (click)="onRetrySentence()"
-                    aria-label="Retry this sentence">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                      <path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.2"/>
-                    </svg>
-                    Retry
-                  </button>
+                  <div class="action-buttons-row">
+                    <button 
+                      class="action-btn next-btn" 
+                      (click)="onNextSentence()">
+                      Next Sentence →
+                    </button>
+                    <button 
+                      class="action-btn retry-btn" 
+                      (click)="onRetrySentence()"
+                      aria-label="Retry this sentence">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.2"/>
+                      </svg>
+                      Retry
+                    </button>
+                  </div>
                 }
               </div>
             </div>
@@ -177,14 +201,14 @@
                 </div>
               } @else {
                 <div class="dictionary-placeholder">
-                  <!-- <p class="placeholder-text">Select a word to see its definition</p> -->
+                  <p class="placeholder-text">Type your answer and hit Submit to check your result!</p>
                 </div>
               }
             </div>
           </div>
 
           <!-- Feedback Panel -->
-          @if (feedback() && accuracyScore()) {
+          @if (feedback()) {
             <div class="section-card feedback-card">
               <h3 class="section-title">Feedback</h3>
               <app-feedback-panel

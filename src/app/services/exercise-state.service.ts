@@ -8,6 +8,7 @@ export interface SentenceProgress {
   accuracyScore?: number;
   showTranslation?: boolean; // Track if translation should be displayed in full text
   suggestion?: string; // AI suggestion for improvement
+  consecutiveFailures?: number; // Track consecutive failed attempts
 }
 
 export interface ExerciseState {
@@ -48,6 +49,13 @@ export class ExerciseStateService {
     return current.isCompleted && (current.accuracyScore ?? 0) >= 90;
   });
   hasMoreHints = computed(() => this.hintsShown() < 3);
+  hasThreeConsecutiveFailures = computed(() => {
+    const currentIdx = this.currentSentenceIndex();
+    const sents = this.sentences();
+    if (currentIdx >= sents.length) return false;
+    const current = sents[currentIdx];
+    return (current.consecutiveFailures ?? 0) >= 3;
+  });
 
   initializeSentences(sourceText: string): void {
     const sentenceRegex = /[^.!?]+[.!?]+/g;
@@ -64,12 +72,16 @@ export class ExerciseStateService {
   markSentenceCompleted(index: number, translation: string, score: number, suggestion?: string): void {
     this.sentences.update(sentences => {
       const updated = [...sentences];
+      const current = updated[index];
+      const previousFailures = current.consecutiveFailures ?? 0;
+      
       updated[index] = {
         ...updated[index],
         translation,
         isCompleted: true,
         accuracyScore: score,
-        suggestion
+        suggestion,
+        consecutiveFailures: score < 90 ? previousFailures + 1 : 0
       };
       return updated;
     });
@@ -111,6 +123,7 @@ export class ExerciseStateService {
           isCompleted: false,
           accuracyScore: undefined,
           showTranslation: false
+          // Keep consecutiveFailures to track across retries
         };
       }
       return updated;

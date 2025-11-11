@@ -43,7 +43,7 @@ export interface AIResponse {
 }
 
 export interface AIConfig {
-  provider: 'azure' | 'gemini' | 'openai';
+  provider: 'azure' | 'gemini' | 'openai' | 'openrouter';
   azure?: {
     endpoint: string;
     apiKey: string;
@@ -56,5 +56,11 @@ export interface AIConfig {
   openai?: {
     apiKey: string;
     modelName: string;
+  };
+  openrouter?: {
+    apiKey: string;
+    modelName: string;
+    siteUrl?: string;
+    siteName?: string;
   };
 }

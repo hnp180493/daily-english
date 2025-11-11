@@ -59,6 +59,7 @@ export class ExerciseSubmissionService {
     };
 
     return new Observable(observer => {
+      this.userInputAfterSubmit.set(input);
       this.aiService.analyzeTranslationStream(input, tempExercise).subscribe({
         next: (chunk) => {
           if (chunk.type === 'score' && chunk.data?.accuracyScore !== undefined) {
@@ -72,13 +73,13 @@ export class ExerciseSubmissionService {
             this.accuracyScore.set(response.accuracyScore ?? 0);
 
             const score = response.accuracyScore ?? 0;
-            
+
             // Extract suggestion from feedback (always, regardless of score)
             let suggestion: string | undefined;
             if (response.feedback && response.feedback.length > 0) {
               const suggestionItem = response.feedback.find(f => f.type === 'suggestion');
               suggestion = suggestionItem?.suggestion || response.feedback[0]?.suggestion;
-              
+
               // Log for debugging
               console.log('[Submission] Feedback received:', {
                 score,
@@ -87,10 +88,10 @@ export class ExerciseSubmissionService {
                 allFeedback: response.feedback
               });
             }
-            
+
             // Always mark sentence as completed with suggestion
             this.stateService.markSentenceCompleted(currentIdx, input, score, suggestion);
-            
+
             if (score >= 90) {
               this.persistenceService.saveProgress(exerciseId, this.stateService.getState());
 
@@ -103,7 +104,7 @@ export class ExerciseSubmissionService {
               }
             }
 
-            this.userInputAfterSubmit.set(input);
+            // this.userInputAfterSubmit.set(input);
             this.stateService.userInput.set('');
             this.isSubmitting.set(false);
 

@@ -3,6 +3,7 @@ import { BaseAIProvider } from './base-ai-provider';
 import { AzureOpenAIProvider } from './providers/azure-openai.provider';
 import { OpenAIProvider } from './providers/openai.provider';
 import { GeminiProvider } from './providers/gemini.provider';
+import { OpenRouterProvider } from './providers/openrouter.provider';
 
 @Injectable({
   providedIn: 'root'
@@ -11,6 +12,7 @@ export class AIProviderFactory {
   private azureProvider = inject(AzureOpenAIProvider);
   private openaiProvider = inject(OpenAIProvider);
   private geminiProvider = inject(GeminiProvider);
+  private openrouterProvider = inject(OpenRouterProvider);
 
   private providers: Map<string, BaseAIProvider>;
 
@@ -19,6 +21,7 @@ export class AIProviderFactory {
     this.providers.set('azure', this.azureProvider);
     this.providers.set('openai', this.openaiProvider);
     this.providers.set('gemini', this.geminiProvider);
+    this.providers.set('openrouter', this.openrouterProvider);
   }
 
   getProvider(providerName: string): BaseAIProvider | null {

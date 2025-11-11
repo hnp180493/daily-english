@@ -28,16 +28,23 @@ export class AiProviderConfig implements OnInit {
     openai: {
       apiKey: '',
       modelName: 'gpt-4o-mini'
+    },
+    openrouter: {
+      apiKey: '',
+      modelName: 'meta-llama/llama-3.2-3b-instruct:free',
+      siteUrl: '',
+      siteName: ''
     }
   });
 
   showApiKeys = signal({
     azure: false,
     gemini: false,
-    openai: false
+    openai: false,
+    openrouter: false
   });
 
-  expandedProvider = signal<'azure' | 'gemini' | 'openai' | null>(null);
+  expandedProvider = signal<'azure' | 'gemini' | 'openai' | 'openrouter' | null>(null);
   saveSuccess = signal(false);
   saveError = signal(false);
 
@@ -68,14 +75,14 @@ export class AiProviderConfig implements OnInit {
     }
   }
 
-  toggleApiKeyVisibility(provider: 'azure' | 'gemini' | 'openai'): void {
+  toggleApiKeyVisibility(provider: 'azure' | 'gemini' | 'openai' | 'openrouter'): void {
     this.showApiKeys.update(keys => ({
       ...keys,
       [provider]: !keys[provider]
     }));
   }
 
-  toggleProvider(provider: 'azure' | 'gemini' | 'openai'): void {
+  toggleProvider(provider: 'azure' | 'gemini' | 'openai' | 'openrouter'): void {
     if (this.expandedProvider() === provider) {
       this.expandedProvider.set(null);
     } else {
@@ -83,7 +90,7 @@ export class AiProviderConfig implements OnInit {
     }
   }
 
-  selectProvider(provider: 'azure' | 'gemini' | 'openai'): void {
+  selectProvider(provider: 'azure' | 'gemini' | 'openai' | 'openrouter'): void {
     this.config.update(c => ({ ...c, provider }));
     this.expandedProvider.set(provider);
   }
@@ -116,6 +123,22 @@ export class AiProviderConfig implements OnInit {
     this.config.update(c => ({ ...c, openai: { ...c.openai, modelName } }));
   }
 
+  updateOpenRouterApiKey(apiKey: string): void {
+    this.config.update(c => ({ ...c, openrouter: { ...c.openrouter!, apiKey } }));
+  }
+
+  updateOpenRouterModel(modelName: string): void {
+    this.config.update(c => ({ ...c, openrouter: { ...c.openrouter!, modelName } }));
+  }
+
+  updateOpenRouterSiteUrl(siteUrl: string): void {
+    this.config.update(c => ({ ...c, openrouter: { ...c.openrouter!, siteUrl } }));
+  }
+
+  updateOpenRouterSiteName(siteName: string): void {
+    this.config.update(c => ({ ...c, openrouter: { ...c.openrouter!, siteName } }));
+  }
+
   clearConfig(): void {
     if (confirm('Are you sure you want to clear all configuration?')) {
       this.configService.clearConfig();
@@ -133,6 +156,12 @@ export class AiProviderConfig implements OnInit {
         openai: {
           apiKey: '',
           modelName: 'gpt-4o-mini'
+        },
+        openrouter: {
+          apiKey: '',
+          modelName: 'meta-llama/llama-3.2-3b-instruct:free',
+          siteUrl: '',
+          siteName: ''
         }
       });
       this.expandedProvider.set(null);

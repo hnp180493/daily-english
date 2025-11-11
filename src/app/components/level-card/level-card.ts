@@ -19,17 +19,17 @@ export class LevelCardComponent {
       [DifficultyLevel.BEGINNER]: {
         icon: '🌱',
         name: 'Beginner',
-        description: 'Perfect for those just starting their English journey. Simple sentences and basic vocabulary.'
+        description: 'Build your foundation with everyday phrases and simple grammar. Perfect for beginners!'
       },
       [DifficultyLevel.INTERMEDIATE]: {
         icon: '⭐',
         name: 'Intermediate',
-        description: 'For learners ready to tackle more complex sentences and varied vocabulary.'
+        description: 'Expand your skills with natural conversations and practical expressions for daily life.'
       },
       [DifficultyLevel.ADVANCED]: {
         icon: '👑',
         name: 'Advanced',
-        description: 'Challenge yourself with sophisticated texts and professional vocabulary.'
+        description: 'Master complex topics, idioms, and professional communication like a native speaker.'
       }
     };
     return info[this.level()];

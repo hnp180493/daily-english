@@ -1,43 +1,42 @@
 <!-- Display original user input -->
-@if (userInput()) {
-  <div class="user-input-display">
-    <p class="user-input-text">{{ userInput() }}</p>
-  </div>
-}
+
+@if (feedback().length > 0) {
+<div class="user-input-display">
+  <p class="user-input-text">{{ userInput() }}</p>
+</div>
 
 <div class="feedback-panel">
-  @if (feedback().length > 0) {
-    <div class="feedback-section">
-      <div class="feedback-groups">
-        @for (type of feedbackTypes(); track type) {
-          <div class="feedback-group">
-            <h4 class="group-title">
-              <span class="type-icon">{{ getTypeIcon(type) }}</span>
-              {{ getTypeLabel(type) }}
-            </h4>
+  <div class="feedback-section">
+    <div class="feedback-groups">
+      @for (type of feedbackTypes(); track type) {
+      <div class="feedback-group">
+        <h4 class="group-title">
+          <span class="type-icon">{{ getTypeIcon(type) }}</span>
+          {{ getTypeLabel(type) }}
+        </h4>
 
-            <div class="feedback-items">
-              @for (item of groupedFeedback()[type]; track $index) {
-                <div class="feedback-item">
-                  <!-- Suggestion Line with Highlighting -->
-                  <div class="suggestion-line">
-                    <span class="label-pink">Suggestion:</span>
-                    <span class="suggestion-text" [innerHTML]="formatSuggestion(item)"></span>
-                  </div>
-
-                  <!-- Suggested Improvements -->
-                  @if (item.explanation) {
-                    <div class="improvements-section">
-                      <div class="improvements-label">Suggested improvements:</div>
-                      <div class="improvement-text" [innerHTML]="formatExplanation(item.explanation)"></div>
-                    </div>
-                  }
-                </div>
-              }
+        <div class="feedback-items">
+          @for (item of groupedFeedback()[type]; track $index) {
+          <div class="feedback-item">
+            <!-- Suggestion Line with Highlighting -->
+            <div class="suggestion-line">
+              <span class="label-pink">Suggestion:</span>
+              <span class="suggestion-text" [innerHTML]="formatSuggestion(item)"></span>
             </div>
+
+            <!-- Suggested Improvements -->
+            @if (item.explanation) {
+            <div class="improvements-section">
+              <div class="improvements-label">Suggested improvements:</div>
+              <div class="improvement-text" [innerHTML]="formatExplanation(item.explanation)"></div>
+            </div>
+            }
           </div>
-        }
+          }
+        </div>
       </div>
+      }
     </div>
-  }
+  </div>
 </div>
+}

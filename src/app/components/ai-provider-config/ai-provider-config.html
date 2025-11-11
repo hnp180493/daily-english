@@ -5,6 +5,92 @@
   <!-- Provider Cards -->
   <div class="provider-cards">
 
+    <!-- OpenRouter Card (Recommended - Free) -->
+    <div class="provider-card" [class.selected]="config().provider === 'openrouter'"
+      [class.expanded]="expandedProvider() === 'openrouter'">
+      <div class="card-header" (click)="toggleProvider('openrouter')">
+        <div class="card-title">
+          <span class="provider-icon">🆓</span>
+          <div>
+            <h3>OpenRouter <span class="recommended-badge">Recommended</span></h3>
+            <p class="provider-desc">7 free AI models - No credit card required</p>
+          </div>
+        </div>
+        <div class="card-actions">
+          @if (config().provider === 'openrouter') {
+          <span class="active-badge">Active</span>
+          }
+          <button type="button" class="expand-btn" [class.expanded]="expandedProvider() === 'openrouter'">
+            {{ expandedProvider() === 'openrouter' ? '▼' : '▶' }}
+          </button>
+        </div>
+      </div>
+
+      @if (expandedProvider() === 'openrouter') {
+      <div class="card-content">
+        <div class="form-group">
+          <label for="openrouter-key">API Key</label>
+          <div class="input-with-toggle">
+            <input id="openrouter-key" [type]="showApiKeys().openrouter ? 'text' : 'password'"
+              [ngModel]="config().openrouter?.apiKey" (ngModelChange)="updateOpenRouterApiKey($event)" placeholder="sk-or-v1-..." />
+            <button type="button" class="toggle-visibility" (click)="toggleApiKeyVisibility('openrouter')"
+              aria-label="Toggle API key visibility">
+              {{ showApiKeys().openrouter ? '👁️' : '👁️‍🗨️' }}
+            </button>
+          </div>
+          <small>Get your free API key from <a href="https://openrouter.ai/keys" target="_blank"
+              rel="noopener">OpenRouter</a> | <a href="https://github.com/yourusername/yourrepo/blob/main/docs/OPENROUTER-GUIDE.md" target="_blank">Setup Guide</a></small>
+        </div>
+
+        <div class="form-group">
+          <label for="openrouter-model">Model (Free Tier Available)</label>
+          <select id="openrouter-model" [ngModel]="config().openrouter?.modelName" (ngModelChange)="updateOpenRouterModel($event)">
+            <!-- <optgroup label="Recommended (Free)">
+              <option value="meta-llama/llama-3.2-3b-instruct:free">Llama 3.2 3B Instruct (Fast) ⭐</option>
+              <option value="meta-llama/llama-3.1-8b-instruct:free">Llama 3.1 8B Instruct (Balanced)</option>
+            </optgroup> -->
+            <!-- <optgroup label="Google Models (Free)">
+              <option value="google/gemma-2-9b-it:free">Gemma 2 9B IT (Grammar)</option>
+              <option value="google/gemma-7b-it:free">Gemma 7B IT</option>
+            </optgroup> -->
+            <!-- <optgroup label="Microsoft Models (Free)">
+              <option value="microsoft/phi-3-mini-128k-instruct:free">Phi-3 Mini 128K (Large Context)</option>
+              <option value="microsoft/phi-3-medium-128k-instruct:free">Phi-3 Medium 128K</option>
+            </optgroup> -->
+            <optgroup label="Other Free Models">
+              <option value="mistralai/mistral-7b-instruct:free">Mistral 7B Instruct</option>
+              <option value="nousresearch/hermes-3-llama-3.1-405b:free">Hermes 3 Llama 405B (Powerful)</option>
+              <!-- <option value="liquid/lfm-40b:free">Liquid LFM 40B</option> -->
+            </optgroup>
+            <optgroup label="Paid Models (Better Quality)">
+              <option value="openai/gpt-4o-mini">GPT-4o Mini (Cheap)</option>
+              <option value="anthropic/claude-3.5-sonnet">Claude 3.5 Sonnet (Best)</option>
+              <option value="google/gemini-pro-1.5">Gemini Pro 1.5</option>
+            </optgroup>
+          </select>
+          <small class="model-info">💡 Free models have generous limits. Check <a href="https://openrouter.ai/models" target="_blank">OpenRouter Models</a> for current availability</small>
+        </div>
+
+        <div class="form-group optional-group">
+          <label for="openrouter-site-url">Site URL (Optional)</label>
+          <input id="openrouter-site-url" type="text" [ngModel]="config().openrouter?.siteUrl"
+            (ngModelChange)="updateOpenRouterSiteUrl($event)" placeholder="https://your-app.com" />
+          <small>For usage tracking in OpenRouter dashboard</small>
+        </div>
+
+        <div class="form-group optional-group">
+          <label for="openrouter-site-name">Site Name (Optional)</label>
+          <input id="openrouter-site-name" type="text" [ngModel]="config().openrouter?.siteName"
+            (ngModelChange)="updateOpenRouterSiteName($event)" placeholder="My English Learning App" />
+          <small>Displayed in OpenRouter dashboard</small>
+        </div>
+
+        <button class="btn btn-select btn-recommended" (click)="selectProvider('openrouter')">
+          ✨ Use OpenRouter (Free)
+        </button>
+      </div>
+      }
+    </div>
 
     <!-- OpenAI Card -->
     <div class="provider-card" [class.selected]="config().provider === 'openai'"

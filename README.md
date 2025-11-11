@@ -28,6 +28,7 @@
 2. Chọn nhà cung cấp AI bạn muốn sử dụng
 3. Click vào card của nhà cung cấp để mở rộng form cấu hình
 4. Nhập thông tin:
+   - **OpenRouter** (Khuyến nghị - 7 models miễn phí): API Key và chọn model
    - **Google Gemini**: API Key (model: gemini-2.5-pro)
    - **OpenAI**: API Key và chọn model (gpt-5)
    - **Azure OpenAI**: Endpoint URL, API Key, Deployment Name (gpt-4)
@@ -38,6 +39,13 @@
 - API Key được lưu trong LocalStorage của trình duyệt
 - Không được chia sẻ với server nào ngoài nhà cung cấp AI bạn chọn
 - Có thể thay đổi nhà cung cấp bất cứ lúc nào
+
+**OpenRouter - Lựa chọn miễn phí tốt nhất:**
+- Truy cập nhiều models AI miễn phí qua một API key duy nhất
+- Không cần thẻ tín dụng
+- Model khuyến nghị: Llama 3.2 3B (nhanh, ổn định)
+- Xem [hướng dẫn chi tiết](docs/OPENROUTER-GUIDE.md)
+- ⚠️ Lưu ý: Tình trạng model có thể thay đổi - kiểm tra [danh sách model](https://openrouter.ai/models)
 
 ## 📖 Cách Sử Dụng
 
@@ -64,10 +72,26 @@
 - **Language**: TypeScript 5.9 (Strict Mode)
 - **Styling**: SCSS + Tailwind CSS 3.4
 - **Database**: Supabase (PostgreSQL + Realtime)
-- **AI**: Azure OpenAI / Google Gemini / OpenAI
+- **AI**: OpenRouter (7 free models) / Azure OpenAI / Google Gemini / OpenAI
 - **Charts**: Chart.js 4.5
 - **Date Utils**: date-fns 4.1
 - **Testing**: Karma + Jasmine
+
+## 🤖 AI Provider Options
+
+### OpenRouter (Recommended for Free Tier)
+- **Multiple Free Models**: Llama 3.2 3B, Llama 3.1 8B, Gemma, Phi-3, Mistral, Hermes 3 405B
+- **No Credit Card Required**
+- **Unified API**: One key for multiple models
+- **Setup Guide**: [OpenRouter Integration Guide](docs/OPENROUTER-GUIDE.md)
+- **Note**: Model availability may vary - check [OpenRouter Models](https://openrouter.ai/models)
+
+### Other Providers
+- **Azure OpenAI**: Enterprise-grade, requires Azure subscription
+- **Google Gemini**: Free tier available, requires Google Cloud account
+- **OpenAI**: Pay-as-you-go, requires OpenAI account
+
+For detailed comparison and setup instructions, see [OpenRouter Guide](docs/OPENROUTER-GUIDE.md).
 
 
 ## 📞 Liên Hệ & Hỗ Trợ
