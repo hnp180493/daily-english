@@ -49,6 +49,9 @@ export class ReviewService {
   private lastNotificationTime = 0;
   private readonly NOTIFICATION_COOLDOWN = 60 * 60 * 1000; // 1 hour cooldown between notifications
 
+  // Guard against duplicate scheduleNextReview calls
+  private schedulingInProgress = new Map<string, boolean>();
+
   constructor() {
     // Trigger migration check when user logs in
     effect(() => {
@@ -206,6 +209,14 @@ export class ReviewService {
    * Schedule the next review for an exercise based on performance
    */
   scheduleNextReview(exerciseId: string, performance: number): void {
+    // Guard against duplicate calls
+    if (this.schedulingInProgress.get(exerciseId)) {
+      console.log(`[ReviewService] Already scheduling review for ${exerciseId}, skipping duplicate call`);
+      return;
+    }
+
+    this.schedulingInProgress.set(exerciseId, true);
+
     this.databaseService.loadReviewDataAuto(exerciseId).subscribe({
       next: existingReview => {
         const now = new Date();
@@ -234,8 +245,14 @@ export class ReviewService {
               // Invalidate cache and refresh the queue
               this.invalidateCache();
               this.getReviewQueue().subscribe();
+              // Clear scheduling flag
+              this.schedulingInProgress.delete(exerciseId);
             },
-            error: error => console.error('[ReviewService] Failed to save review data:', error)
+            error: error => {
+              console.error('[ReviewService] Failed to save review data:', error);
+              // Clear scheduling flag on error too
+              this.schedulingInProgress.delete(exerciseId);
+            }
           });
         } else {
           // Create new review data
@@ -261,12 +278,22 @@ export class ReviewService {
               // Invalidate cache and refresh the queue
               this.invalidateCache();
               this.getReviewQueue().subscribe();
+              // Clear scheduling flag
+              this.schedulingInProgress.delete(exerciseId);
             },
-            error: error => console.error('[ReviewService] Failed to create review data:', error)
+            error: error => {
+              console.error('[ReviewService] Failed to create review data:', error);
+              // Clear scheduling flag on error too
+              this.schedulingInProgress.delete(exerciseId);
+            }
           });
         }
       },
-      error: error => console.error('[ReviewService] Failed to load review data:', error)
+      error: error => {
+        console.error('[ReviewService] Failed to load review data:', error);
+        // Clear scheduling flag on error
+        this.schedulingInProgress.delete(exerciseId);
+      }
     });
   }
 
@@ -400,14 +427,17 @@ export class ReviewService {
   checkDueReviews(): Observable<{ count: number; urgentCount: number }> {
     return this.databaseService.loadAllReviewDataAuto().pipe(
       map(reviewDataList => {
-        const now = new Date();
+        const today = new Date();
+        today.setHours(0, 0, 0, 0); // Reset to start of day for date-only comparison
 
-        // Count reviews that are due NOW (not scheduled for future)
+        // Count reviews that are due today or earlier (compare dates only)
         const dueNow = reviewDataList.filter(rd => {
-          return rd.nextReviewDate <= now;
+          const reviewDate = new Date(rd.nextReviewDate);
+          reviewDate.setHours(0, 0, 0, 0); // Reset to start of day
+          return reviewDate <= today;
         });
 
-        // Count urgent reviews (overdue AND score < 60%)
+        // Count urgent reviews (due today or earlier AND score < 60%)
         const urgentReviews = dueNow.filter(rd => rd.lastScore < 60);
 
         return {

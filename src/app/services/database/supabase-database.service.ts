@@ -405,15 +405,31 @@ export class SupabaseDatabase implements IDatabase {
 
   // Review Data Operations
   saveReviewData(userId: string, exerciseId: string, reviewData: ReviewData): Observable<void> {
+    // Clean up reviewData to remove metadata fields that shouldn't be in data column
+    const cleanReviewData = {
+      easinessFactor: reviewData.easinessFactor,
+      interval: reviewData.interval,
+      nextReviewDate: reviewData.nextReviewDate,
+      repetitionCount: reviewData.repetitionCount,
+      lastReviewDate: reviewData.lastReviewDate,
+      lastScore: reviewData.lastScore,
+      incorrectSentenceIndices: reviewData.incorrectSentenceIndices || []
+    };
+
     return from(
       this.supabase
         .from('user_reviews')
-        .upsert({
-          user_id: userId,
-          exercise_id: exerciseId,
-          data: reviewData,
-          updated_at: new Date().toISOString()
-        })
+        .upsert(
+          {
+            user_id: userId,
+            exercise_id: exerciseId,
+            data: cleanReviewData,
+            updated_at: new Date().toISOString()
+          },
+          {
+            onConflict: 'user_id,exercise_id'
+          }
+        )
         .then(({ error }) => {
           if (error) throw error;
         })

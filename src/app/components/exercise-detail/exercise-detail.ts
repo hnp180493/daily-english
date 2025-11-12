@@ -569,17 +569,11 @@ export class ExerciseDetailComponent implements OnInit {
     console.log('[ExerciseDetail] Exercise completed, recording attempt...');
     this.recordingService.recordAttempt(ex, this.hintsShown(), this.exercisePoints());
     
-    // Schedule next review using spaced repetition
-    const sentences = this.sentences();
-    const completedSentences = sentences.filter(s => s.isCompleted);
-    const avgScore = completedSentences.length > 0
-      ? completedSentences.reduce((sum, s) => sum + (s.accuracyScore || 0), 0) / completedSentences.length
-      : 0;
-    
-    console.log(`[ExerciseDetail] Scheduling next review for ${ex.id} with score ${avgScore}%`);
-    this.reviewService.scheduleNextReview(ex.id, avgScore);
+    // NOTE: scheduleNextReview is now handled in ExerciseSubmissionService
+    // when all sentences are completed, so we don't call it here to avoid duplication
     
     // Update review data with incorrect sentence indices
+    const sentences = this.sentences();
     const incorrectIndices = sentences
       .map((s, index) => ({ index, score: s.accuracyScore || 0 }))
       .filter(item => item.score < 75)
