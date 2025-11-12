@@ -1,0 +1,72 @@
+<!-- Penalty Breakdown (Review Mode - Only when exercise is complete) -->
+@if ((isReviewMode() || isExerciseComplete()) && penaltyMetrics()) {
+  <div class="section-card penalty-card">
+    <h3 class="section-title">📊 Score Breakdown</h3>
+    <div class="penalty-breakdown">
+      <div class="penalty-item">
+        <span class="penalty-label">Base Score:</span>
+        <span class="penalty-value">{{ penaltyMetrics()!.baseScore }}%</span>
+      </div>
+      @if (penaltyMetrics()!.totalIncorrectAttempts > 0) {
+        <div class="penalty-item penalty-negative">
+          <span class="penalty-label">Incorrect Attempts ({{ penaltyMetrics()!.totalIncorrectAttempts }} × {{ INCORRECT_PENALTY }}):</span>
+          <span class="penalty-value">-{{ penaltyMetrics()!.totalIncorrectAttempts * INCORRECT_PENALTY }}%</span>
+        </div>
+      }
+      @if (penaltyMetrics()!.totalRetries > 0) {
+        <div class="penalty-item penalty-negative">
+          <span class="penalty-label">Retries ({{ penaltyMetrics()!.totalRetries }} × {{ RETRY_PENALTY }}):</span>
+          <span class="penalty-value">-{{ penaltyMetrics()!.totalRetries * RETRY_PENALTY }}%</span>
+        </div>
+      }
+      @if (penaltyMetrics()!.totalPenalty > 0) {
+        <div class="penalty-divider"></div>
+        <div class="penalty-item penalty-total">
+          <span class="penalty-label">Total Penalty:</span>
+          <span class="penalty-value">-{{ penaltyMetrics()!.totalPenalty }}%</span>
+        </div>
+      }
+      <div class="penalty-divider"></div>
+      <div class="penalty-item penalty-final">
+        <span class="penalty-label">Final Score:</span>
+        <span class="penalty-value">{{ penaltyMetrics()!.finalScore }}%</span>
+      </div>
+    </div>
+  </div>
+}
+
+<!-- Current Penalty Indicator (During Exercise) -->
+@if (!isReviewMode() && currentMetrics()) {
+  <div class="section-card penalty-card">
+    <h3 class="section-title">📊 Current Progress</h3>
+    <div class="penalty-breakdown">
+      <div class="penalty-item">
+        <span class="penalty-label">Current Average:</span>
+        <span class="penalty-value">{{ currentMetrics()!.currentAverage }}%</span>
+      </div>
+      @if (currentMetrics()!.totalIncorrectAttempts > 0 || currentMetrics()!.totalRetries > 0) {
+        <div class="penalty-item penalty-negative">
+          <span class="penalty-label">Penalties:</span>
+          <span class="penalty-value">-{{ currentMetrics()!.totalPenalty }}%</span>
+        </div>
+        <div class="penalty-details">
+          @if (currentMetrics()!.totalIncorrectAttempts > 0) {
+            <div class="penalty-detail-item">
+              <span>{{ currentMetrics()!.totalIncorrectAttempts }} incorrect (×{{ INCORRECT_PENALTY }})</span>
+            </div>
+          }
+          @if (currentMetrics()!.totalRetries > 0) {
+            <div class="penalty-detail-item">
+              <span>{{ currentMetrics()!.totalRetries }} retries (×{{ RETRY_PENALTY }})</span>
+            </div>
+          }
+        </div>
+        <div class="penalty-divider"></div>
+        <div class="penalty-item penalty-final">
+          <span class="penalty-label">Projected Score:</span>
+          <span class="penalty-value">{{ currentMetrics()!.currentScore }}%</span>
+        </div>
+      }
+    </div>
+  </div>
+}

@@ -24,6 +24,8 @@ import { SettingsService } from '../../services/settings.service';
 import { ExerciseSeoService } from '../../services/exercise-seo.service';
 import { ExerciseRecordingService } from '../../services/exercise-recording.service';
 import { TTSSettings } from '../tts-settings/tts-settings';
+import { PenaltyScore } from '../penalty-score/penalty-score';
+import { PENALTY_CONSTANTS } from '../../models/penalty.constants';
 
 @Component({
   selector: 'app-exercise-detail',
@@ -35,7 +37,8 @@ import { TTSSettings } from '../tts-settings/tts-settings';
     ErrorModal,
     LoadingSpinnerComponent,
     TranslationReview,
-    TTSSettings
+    TTSSettings,
+    PenaltyScore
   ],
   templateUrl: './exercise-detail.html',
   styleUrl: './exercise-detail.scss',
@@ -132,6 +135,49 @@ export class ExerciseDetailComponent implements OnInit {
     if (!status) return 0;
 
     return this.validationService.calculateExercisePoints(ex, status.attemptCount);
+  });
+
+  // Penalty metrics for review mode
+  penaltyMetrics = computed(() => {
+    const ex = this.exercise();
+    if (!ex || !this.isReviewMode()) return null;
+
+    const progress = this.progressSignal();
+    const attempt = progress.exerciseHistory[ex.id];
+
+    if (!attempt) return null;
+
+    return {
+      baseScore: attempt.baseScore ?? attempt.accuracyScore,
+      totalIncorrectAttempts: attempt.totalIncorrectAttempts ?? 0,
+      totalRetries: attempt.totalRetries ?? 0,
+      totalPenalty: attempt.totalPenalty ?? 0,
+      finalScore: attempt.accuracyScore
+    };
+  });
+
+  // Current penalty metrics during exercise
+  currentPenaltyMetrics = computed(() => {
+    if (this.isReviewMode()) return null;
+
+    const sents = this.sentences();
+    const completedSents = sents.filter(s => s.isCompleted);
+
+    if (completedSents.length === 0) return null;
+
+    const avgAccuracy = completedSents.reduce((sum, s) => sum + (s.accuracyScore || 0), 0) / completedSents.length;
+    const penalties = this.stateService.getPenaltyMetrics();
+    const totalPenalty = (penalties.totalIncorrectAttempts * PENALTY_CONSTANTS.INCORRECT_ATTEMPT_PENALTY) + 
+                        (penalties.totalRetries * PENALTY_CONSTANTS.RETRY_PENALTY);
+    const currentScore = Math.max(0, avgAccuracy - totalPenalty);
+
+    return {
+      currentAverage: Math.round(avgAccuracy),
+      totalIncorrectAttempts: penalties.totalIncorrectAttempts,
+      totalRetries: penalties.totalRetries,
+      totalPenalty,
+      currentScore: Math.round(currentScore)
+    };
   });
 
   isFavorite = computed(() => {
@@ -314,6 +360,11 @@ export class ExerciseDetailComponent implements OnInit {
     if (event.key === 'Enter' && !event.shiftKey) {
       event.preventDefault();
       this.canProceedToNext() ? this.onNextSentence() : this.onSubmit();
+    } else if (event.key === 'r' || event.key === 'R') {
+      if (this.canProceedToNext() || this.hasThreeConsecutiveFailures()) {
+        event.preventDefault();
+        this.onRetrySentence();
+      }
     }
   }
 

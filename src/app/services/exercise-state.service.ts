@@ -9,6 +9,8 @@ export interface SentenceProgress {
   showTranslation?: boolean; // Track if translation should be displayed in full text
   suggestion?: string; // AI suggestion for improvement
   consecutiveFailures?: number; // Track consecutive failed attempts
+  incorrectAttempts: number; // Count of submissions < 90%
+  retryCount: number; // Count of explicit retries
 }
 
 export interface ExerciseState {
@@ -57,6 +59,41 @@ export class ExerciseStateService {
     return (current.consecutiveFailures ?? 0) >= 3;
   });
 
+  // Penalty tracking methods
+  incrementIncorrectAttempt(index: number): void {
+    this.sentences.update(sentences => {
+      const updated = [...sentences];
+      if (index >= 0 && index < updated.length) {
+        updated[index] = {
+          ...updated[index],
+          incorrectAttempts: (updated[index].incorrectAttempts || 0) + 1
+        };
+      }
+      return updated;
+    });
+  }
+
+  incrementRetryCount(index: number): void {
+    this.sentences.update(sentences => {
+      const updated = [...sentences];
+      if (index >= 0 && index < updated.length) {
+        updated[index] = {
+          ...updated[index],
+          retryCount: (updated[index].retryCount || 0) + 1
+        };
+      }
+      return updated;
+    });
+  }
+
+  getPenaltyMetrics(): { totalIncorrectAttempts: number; totalRetries: number } {
+    const sents = this.sentences();
+    return {
+      totalIncorrectAttempts: sents.reduce((sum, s) => sum + (s.incorrectAttempts || 0), 0),
+      totalRetries: sents.reduce((sum, s) => sum + (s.retryCount || 0), 0)
+    };
+  }
+
   initializeSentences(sourceText: string): void {
     const sentenceRegex = /[^.!?]+[.!?]+/g;
     const matches = sourceText.match(sentenceRegex) || [];
@@ -65,7 +102,9 @@ export class ExerciseStateService {
       original: sentence.trim(),
       translation: '',
       isCompleted: false,
-      showTranslation: false
+      showTranslation: false,
+      incorrectAttempts: 0,
+      retryCount: 0
     })));
   }
 
@@ -75,13 +114,19 @@ export class ExerciseStateService {
       const current = updated[index];
       const previousFailures = current.consecutiveFailures ?? 0;
       
+      // Increment incorrect attempts if score < 90%
+      const incorrectAttempts = score < 90 
+        ? (current.incorrectAttempts || 0) + 1 
+        : (current.incorrectAttempts || 0);
+      
       updated[index] = {
         ...updated[index],
         translation,
         isCompleted: true,
         accuracyScore: score,
         suggestion,
-        consecutiveFailures: score < 90 ? previousFailures + 1 : 0
+        consecutiveFailures: score < 90 ? previousFailures + 1 : 0,
+        incorrectAttempts
       };
       return updated;
     });
@@ -114,16 +159,24 @@ export class ExerciseStateService {
 
   retrySentence(): void {
     const currentIdx = this.currentSentenceIndex();
+    
+    // Increment retry counter before resetting sentence state
+    this.incrementRetryCount(currentIdx);
+    
     this.sentences.update(sentences => {
       const updated = [...sentences];
       if (currentIdx < updated.length) {
+        const current = updated[currentIdx];
         updated[currentIdx] = {
           ...updated[currentIdx],
           translation: '',
           isCompleted: false,
           accuracyScore: undefined,
           showTranslation: false,
-          consecutiveFailures: 0 // Reset failures when user explicitly retries
+          consecutiveFailures: 0, // Reset failures when user explicitly retries
+          // Preserve incorrectAttempts and retryCount
+          incorrectAttempts: current.incorrectAttempts || 0,
+          retryCount: current.retryCount || 0
         };
       }
       return updated;
@@ -158,7 +211,13 @@ export class ExerciseStateService {
   }
 
   setState(state: ExerciseState): void {
-    this.sentences.set(state.sentences);
+    // Ensure backward compatibility by adding default values for new fields
+    const sentences = state.sentences.map(s => ({
+      ...s,
+      incorrectAttempts: s.incorrectAttempts ?? 0,
+      retryCount: s.retryCount ?? 0
+    }));
+    this.sentences.set(sentences);
     this.currentSentenceIndex.set(state.currentIndex);
     this.hintsShown.set(state.hintsShown || 0);
     this.previousHints.set(state.previousHints || []);
@@ -200,7 +259,9 @@ export class ExerciseStateService {
             isCompleted: true,
             accuracyScore: sentAttempt.accuracyScore,
             showTranslation: true, // In review mode, show all translations
-            suggestion
+            suggestion,
+            incorrectAttempts: sentAttempt.incorrectAttempts || 0,
+            retryCount: sentAttempt.retryCount || 0
           };
         }
         return s;

@@ -207,6 +207,14 @@
             </div>
           </div>
 
+          <!-- Penalty Score Display -->
+          <app-penalty-score
+            [penaltyMetrics]="penaltyMetrics()"
+            [currentMetrics]="currentPenaltyMetrics()"
+            [isReviewMode]="isReviewMode()"
+            [isExerciseComplete]="isExerciseComplete()">
+          </app-penalty-score>
+
           <!-- Feedback Panel -->
           @if (feedback()) {
             <div class="section-card feedback-card">

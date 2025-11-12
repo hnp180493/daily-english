@@ -1,0 +1,106 @@
+// Penalty display styles
+.penalty-card {
+  background: linear-gradient(135deg, #1a1d3a, #16182e);
+  border-left: 4px solid #818CF8;
+}
+
+.penalty-breakdown {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.penalty-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 0;
+  color: #ffffff;
+  font-size: 0.95rem;
+}
+
+.penalty-label {
+  color: #a0a0c0;
+  font-weight: 500;
+}
+
+.penalty-value {
+  color: #ffffff;
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+.penalty-negative {
+  .penalty-label {
+    color: #ff6b6b;
+  }
+
+  .penalty-value {
+    color: #ff6b6b;
+  }
+}
+
+.penalty-total {
+  .penalty-label {
+    color: #f59e0b;
+    font-weight: 600;
+  }
+
+  .penalty-value {
+    color: #f59e0b;
+    font-weight: 700;
+  }
+}
+
+.penalty-final {
+  .penalty-label {
+    color: #818CF8;
+    font-weight: 700;
+    font-size: 1.05rem;
+  }
+
+  .penalty-value {
+    color: #818CF8;
+    font-weight: 700;
+    font-size: 1.2rem;
+  }
+}
+
+.penalty-divider {
+  height: 1px;
+  background-color: #2a2d4a;
+  margin: 0.25rem 0;
+}
+
+.penalty-details {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding-left: 1rem;
+  margin-top: -0.5rem;
+}
+
+.penalty-detail-item {
+  color: #6a6a8a;
+  font-size: 0.85rem;
+  font-style: italic;
+
+  span {
+    color: #8a8aaa;
+  }
+}
+
+.section-card {
+  background-color: #16182e;
+  padding: 1.5rem;
+  border-radius: 12px;
+  border: 1px solid #2a2d4a;
+  margin-bottom: 1.5rem;
+}
+
+.section-title {
+  color: #818CF8;
+  font-size: 1rem;
+  margin: 0 0 1rem 0;
+  font-weight: 600;
+}

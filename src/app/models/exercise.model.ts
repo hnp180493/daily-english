@@ -34,6 +34,8 @@ export interface SentenceAttempt {
   accuracyScore: number;
   feedback: FeedbackItem[];
   overallComment?: string;
+  incorrectAttempts?: number; // Number of failed attempts for this sentence
+  retryCount?: number; // Number of times this sentence was retried
 }
 
 export interface ExerciseAttempt {
@@ -41,12 +43,16 @@ export interface ExerciseAttempt {
   category?: ExerciseCategory | string; // Added for achievement tracking
   attemptNumber: number;
   userInput: string;
-  accuracyScore: number;
+  accuracyScore: number; // This becomes the penalty-adjusted score
   pointsEarned: number;
   feedback: FeedbackItem[];
   timestamp: Date;
   hintsUsed: number;
   sentenceAttempts?: SentenceAttempt[];
+  baseScore?: number; // Average accuracy before penalties
+  totalIncorrectAttempts?: number; // Sum of all incorrect attempts
+  totalRetries?: number; // Sum of all retries
+  totalPenalty?: number; // Total points deducted
 }
 
 export interface FeedbackItem {

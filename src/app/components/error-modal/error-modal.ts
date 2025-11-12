@@ -18,6 +18,22 @@ export class ErrorModal {
     this.close.emit();
   }
 
+  // Check if error is AI-related (rate limit, API key, model issues)
+  isAIError(): boolean {
+    const message = this.errorMessage().toLowerCase();
+    return message.includes('rate limit') ||
+           message.includes('api key') ||
+           message.includes('authentication') ||
+           message.includes('model not found') ||
+           message.includes('payment required') ||
+           message.includes('insufficient credits') ||
+           message.includes('service error') ||
+           message.includes('openrouter') ||
+           message.includes('gemini') ||
+           message.includes('azure') ||
+           message.includes('openai');
+  }
+
   // Check if error message contains URLs
   hasLinks(): boolean {
     return this.errorMessage().includes('http://') || this.errorMessage().includes('https://');

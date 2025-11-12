@@ -84,7 +84,7 @@ export class OpenRouterProvider extends BaseAIProvider {
           observer.complete();
         })
         .catch(error => {
-          const errorMessage = this.handleError(error);
+          const errorMessage = this.handleError(error, config);
           console.error('[OpenRouter] Error:', error);
           observer.error(new Error(errorMessage));
         });
@@ -262,7 +262,7 @@ export class OpenRouterProvider extends BaseAIProvider {
                 }
               }
             } catch (error) {
-              const errorMessage = this.handleError(error);
+              const errorMessage = this.handleError(error, config);
               console.error('[OpenRouter] Streaming error:', error);
               observer.error(new Error(errorMessage));
             }
@@ -271,7 +271,7 @@ export class OpenRouterProvider extends BaseAIProvider {
           processStream();
         })
         .catch(error => {
-          const errorMessage = this.handleError(error);
+          const errorMessage = this.handleError(error, config);
           console.error('[OpenRouter] Error:', error);
           observer.error(new Error(errorMessage));
         });
@@ -382,7 +382,7 @@ export class OpenRouterProvider extends BaseAIProvider {
     }
   }
 
-  private handleError(error: any): string {
+  private handleError(error: any, config?: any): string {
     // Log all errors to console with full details for debugging
     console.error('[OpenRouter] Error details:', error);
     console.error('[OpenRouter] Error message:', error.message);
@@ -390,42 +390,43 @@ export class OpenRouterProvider extends BaseAIProvider {
 
     // Extract the actual error message from the error object
     const errorMessage = error.message || '';
+    const modelInfo = config?.openrouter?.modelName ? ` (Model: ${config.openrouter.modelName})` : '';
 
     // Check for HTTP status errors
     if (error.status) {
       switch (error.status) {
         case 400:
-          return `Bad Request: ${errorMessage || 'Invalid request parameters'}`;
+          return `Bad Request: ${errorMessage || 'Invalid request parameters'}${modelInfo}`;
         case 401:
-          return `Authentication Failed: ${errorMessage || 'Invalid API key. Please check your OpenRouter configuration.'}`;
+          return `Authentication Failed: ${errorMessage || 'Invalid API key. Please check your OpenRouter configuration.'}${modelInfo}`;
         case 402:
-          return `Payment Required: ${errorMessage || 'Insufficient credits. Please add credits to your OpenRouter account.'}`;
+          return `Payment Required: ${errorMessage || 'Insufficient credits. Please add credits to your OpenRouter account.'}${modelInfo}`;
         case 403:
-          return `Forbidden: ${errorMessage || 'Access denied. Check your API key permissions.'}`;
+          return `Forbidden: ${errorMessage || 'Access denied. Check your API key permissions.'}${modelInfo}`;
         case 404:
-          return `Model Not Found: ${errorMessage || 'The specified model does not exist or is not available.'}`;
+          return `Model Not Found: ${errorMessage || 'The specified model does not exist or is not available.'}${modelInfo}`;
         case 429:
-          return `Rate Limit Exceeded: ${errorMessage || 'Too many requests. Please try again in a moment.'}`;
+          return `Rate Limit Exceeded: ${errorMessage || 'free-models-per-day. Add 10 credits to unlock 1000 free model requests per day'}${modelInfo}`;
         case 500:
         case 502:
         case 503:
-          return `Service Error: ${errorMessage || 'OpenRouter service temporarily unavailable. Please try again later.'}`;
+          return `Service Error: ${errorMessage || 'OpenRouter service temporarily unavailable. Please try again later.'}${modelInfo}`;
         default:
-          return `API Error (${error.status}): ${errorMessage || error.statusText || 'Unknown error'}`;
+          return `API Error (${error.status}): ${errorMessage || error.statusText || 'Unknown error'}${modelInfo}`;
       }
     }
 
     // Check for network errors
     if (error instanceof TypeError && error.message.includes('fetch')) {
-      return `Network Error: ${errorMessage || 'Unable to connect. Please check your internet connection.'}`;
+      return `Network Error: ${errorMessage || 'Unable to connect. Please check your internet connection.'}${modelInfo}`;
     }
 
     // Return the actual error message if available
     if (errorMessage) {
-      return `Error: ${errorMessage}`;
+      return `Error: ${errorMessage}${modelInfo}`;
     }
 
     // Generic error
-    return 'An unexpected error occurred. Please check the console for details.';
+    return `An unexpected error occurred. Please check the console for details.${modelInfo}`;
   }
 }
