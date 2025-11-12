@@ -4,7 +4,7 @@
  */
 export const PENALTY_CONSTANTS = {
   /** Points deducted per incorrect attempt (score < 90%) */
-  INCORRECT_ATTEMPT_PENALTY: 2,
+  INCORRECT_ATTEMPT_PENALTY: 4,
   
   /** Points deducted per retry */
   RETRY_PENALTY: 5

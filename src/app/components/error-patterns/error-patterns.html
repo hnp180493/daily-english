@@ -1,0 +1,197 @@
+<div class="error-patterns-container max-w-6xl mx-auto p-4 md:p-6">
+  <!-- Header -->
+  <div class="header mb-8">
+    <h1 class="text-3xl font-bold text-gray-900 mb-2">Error Pattern Analysis</h1>
+    <p class="text-gray-600">
+      Identify your weak areas and get targeted practice recommendations
+    </p>
+  </div>
+
+  @if (isLoading()) {
+    <!-- Loading State -->
+    <div class="loading-state flex justify-center items-center py-12">
+      <div class="spinner animate-spin h-12 w-12 border-4 border-indigo-600 border-t-transparent rounded-full"></div>
+    </div>
+  } @else {
+    <!-- Weak Points Section -->
+    <div class="weak-points-section mb-8">
+      <h2 class="text-2xl font-semibold text-gray-900 mb-4">Your Weak Points</h2>
+      
+      @if (weakPoints().length > 0) {
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          @for (weakPoint of weakPoints(); track weakPoint.id) {
+            <div class="weak-point-card bg-white rounded-lg shadow-md p-5 hover:shadow-lg transition-shadow">
+              <div class="flex justify-between items-start mb-3">
+                <h3 class="text-lg font-semibold text-gray-900">{{ weakPoint.category }}</h3>
+                <span 
+                  class="improvement-badge px-2 py-1 rounded text-sm font-medium"
+                  [class]="getImprovementColor(weakPoint.improvementRate)"
+                >
+                  {{ weakPoint.improvementRate }}% improved
+                </span>
+              </div>
+              
+              <p class="text-gray-600 text-sm mb-3">{{ weakPoint.description }}</p>
+              
+              <div class="stats flex justify-between text-sm text-gray-500 mb-4">
+                <span>{{ weakPoint.errorCount }} errors</span>
+                <span>Last: {{ formatDate(weakPoint.lastOccurrence) }}</span>
+              </div>
+              
+              <button
+                (click)="generateCustomExercise(weakPoint)"
+                class="w-full px-4 py-2 bg-indigo-600 text-white font-medium rounded-lg hover:bg-indigo-700 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+              >
+                Generate Practice Exercise
+              </button>
+            </div>
+          }
+        </div>
+      } @else {
+        <div class="empty-state bg-white rounded-lg shadow-md p-8 text-center">
+          <svg
+            class="mx-auto h-12 w-12 text-gray-400 mb-3"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+            />
+          </svg>
+          <p class="text-gray-600">
+            No weak points identified yet. Complete more exercises to get personalized insights!
+          </p>
+        </div>
+      }
+    </div>
+
+    <!-- Error Patterns Section -->
+    <div class="error-patterns-section">
+      <h2 class="text-2xl font-semibold text-gray-900 mb-4">Error Patterns</h2>
+      
+      @if (errorPatterns().length > 0) {
+        <div class="space-y-4">
+          @for (pattern of errorPatterns(); track pattern.id) {
+            <div class="pattern-card bg-white rounded-lg shadow-md p-5 hover:shadow-lg transition-shadow">
+              <div class="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
+                <!-- Pattern Info -->
+                <div class="flex-1">
+                  <div class="flex items-center gap-3 mb-2">
+                    <span 
+                      class="type-badge px-3 py-1 rounded-full text-sm font-medium"
+                      [class]="getPatternTypeColor(pattern.type)"
+                    >
+                      {{ pattern.type }}
+                    </span>
+                    <h3 class="text-lg font-semibold text-gray-900">{{ pattern.description }}</h3>
+                  </div>
+                  
+                  <div class="stats flex flex-wrap gap-4 text-sm text-gray-600 mb-3">
+                    <span class="flex items-center gap-1">
+                      <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M2 11a1 1 0 011-1h2a1 1 0 011 1v5a1 1 0 01-1 1H3a1 1 0 01-1-1v-5zM8 7a1 1 0 011-1h2a1 1 0 011 1v9a1 1 0 01-1 1H9a1 1 0 01-1-1V7zM14 4a1 1 0 011-1h2a1 1 0 011 1v12a1 1 0 01-1 1h-2a1 1 0 01-1-1V4z" />
+                      </svg>
+                      Frequency: {{ pattern.frequency }}
+                    </span>
+                    <span>{{ pattern.affectedExercises.length }} exercises affected</span>
+                  </div>
+                  
+                  <!-- Frequency Bar -->
+                  <div class="frequency-bar bg-gray-200 rounded-full h-2 mb-3">
+                    <div 
+                      class="bg-indigo-600 h-2 rounded-full transition-all duration-300"
+                      [style.width.%]="(pattern.frequency / 10) * 100"
+                    ></div>
+                  </div>
+                  
+                  <!-- Grammar Rule or Vocabulary -->
+                  @if (pattern.grammarRule) {
+                    <p class="text-sm text-gray-700 mb-2">
+                      <span class="font-medium">Grammar Rule:</span> {{ pattern.grammarRule }}
+                    </p>
+                  }
+                  @if (pattern.vocabularyWords && pattern.vocabularyWords.length > 0) {
+                    <div class="vocabulary-words mb-2">
+                      <span class="text-sm font-medium text-gray-700">Related Words:</span>
+                      <div class="flex flex-wrap gap-2 mt-1">
+                        @for (word of pattern.vocabularyWords; track word) {
+                          <span class="px-2 py-1 bg-gray-100 text-gray-700 rounded text-sm">
+                            {{ word }}
+                          </span>
+                        }
+                      </div>
+                    </div>
+                  }
+                  
+                  <!-- Examples -->
+                  @if (pattern.examples && pattern.examples.length > 0) {
+                    <details class="mt-3">
+                      <summary class="text-sm font-medium text-indigo-600 cursor-pointer hover:text-indigo-700">
+                        View Examples ({{ pattern.examples.length }})
+                      </summary>
+                      <div class="mt-2 space-y-2">
+                        @for (example of pattern.examples.slice(0, 3); track $index) {
+                          <div class="example-item bg-gray-50 rounded p-2 text-sm">
+                            <p class="text-gray-700">
+                              <span class="font-medium">Original:</span> {{ example.originalText }}
+                            </p>
+                            <p class="text-green-700">
+                              <span class="font-medium">Suggestion:</span> {{ example.suggestion }}
+                            </p>
+                          </div>
+                        }
+                      </div>
+                    </details>
+                  }
+                </div>
+                
+                <!-- Action Buttons -->
+                <div class="flex flex-col gap-2 md:min-w-[180px]">
+                  @if (pattern.grammarRule) {
+                    <button
+                      (click)="viewGrammarLesson(pattern)"
+                      class="px-4 py-2 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                    >
+                      View Lesson
+                    </button>
+                  }
+                  @if (pattern.vocabularyWords && pattern.vocabularyWords.length > 0) {
+                    <button
+                      (click)="startVocabularyDrill(pattern)"
+                      class="px-4 py-2 bg-green-600 text-white font-medium rounded-lg hover:bg-green-700 transition-colors focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
+                    >
+                      Practice Vocabulary
+                    </button>
+                  }
+                </div>
+              </div>
+            </div>
+          }
+        </div>
+      } @else {
+        <div class="empty-state bg-white rounded-lg shadow-md p-8 text-center">
+          <svg
+            class="mx-auto h-12 w-12 text-gray-400 mb-3"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+            />
+          </svg>
+          <p class="text-gray-600">
+            No error patterns detected yet. Complete more exercises to see your patterns!
+          </p>
+        </div>
+      }
+    </div>
+  }
+</div>

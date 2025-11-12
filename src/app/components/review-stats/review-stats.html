@@ -1,0 +1,50 @@
+<div class="review-stats bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-lg shadow-lg p-4 mb-6">
+  <!-- Compact Stats Grid -->
+  <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+    <!-- Reviews This Week -->
+    <div class="stat-card bg-white bg-opacity-20 rounded-lg p-3 backdrop-blur-sm">
+      <div class="flex items-center justify-between mb-1">
+        <span class="text-xs opacity-90 font-medium">This Week</span>
+        <svg class="w-4 h-4 opacity-75" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+        </svg>
+      </div>
+      <div class="text-2xl font-bold leading-none">{{ stats().reviewsThisWeek }}</div>
+      <div class="text-xs opacity-75 mt-0.5">reviews</div>
+    </div>
+
+    <!-- Total Reviews -->
+    <div class="stat-card bg-white bg-opacity-20 rounded-lg p-3 backdrop-blur-sm">
+      <div class="flex items-center justify-between mb-1">
+        <span class="text-xs opacity-90 font-medium">Total</span>
+        <svg class="w-4 h-4 opacity-75" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+      </div>
+      <div class="text-2xl font-bold leading-none">{{ stats().totalReviewsCompleted }}</div>
+      <div class="text-xs opacity-75 mt-0.5">completed</div>
+    </div>
+
+    <!-- Current Streak -->
+    <div class="stat-card bg-white bg-opacity-20 rounded-lg p-3 backdrop-blur-sm">
+      <div class="flex items-center justify-between mb-1">
+        <span class="text-xs opacity-90 font-medium">Streak</span>
+        <span class="text-lg">🔥</span>
+      </div>
+      <div class="text-2xl font-bold leading-none">{{ stats().currentStreak }}</div>
+      <div class="text-xs opacity-75 mt-0.5">day{{ stats().currentStreak !== 1 ? 's' : '' }}</div>
+    </div>
+
+    <!-- Weak Points Improved -->
+    <div class="stat-card bg-white bg-opacity-20 rounded-lg p-3 backdrop-blur-sm">
+      <div class="flex items-center justify-between mb-1">
+        <span class="text-xs opacity-90 font-medium">Improved</span>
+        <svg class="w-4 h-4 opacity-75" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+        </svg>
+      </div>
+      <div class="text-2xl font-bold leading-none">{{ stats().weakPointsImproved }}</div>
+      <div class="text-xs opacity-75 mt-0.5">weak points</div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,107 @@
+.review-queue-container {
+  min-height: calc(100vh - 200px);
+}
+
+.filters-section {
+  @apply transition-shadow duration-200;
+
+  &:hover {
+    @apply shadow-lg;
+  }
+}
+
+.filter-btn {
+  @apply cursor-pointer select-none;
+  min-width: 100px;
+
+  &:focus {
+    @apply outline-none ring-2 ring-offset-2;
+  }
+
+  &:focus-visible {
+    @apply ring-2 ring-offset-2;
+  }
+}
+
+.sort-section {
+  select {
+    @apply cursor-pointer;
+    
+    &:focus {
+      @apply outline-none;
+    }
+  }
+}
+
+.queue-list {
+  .review-queue-item {
+    @apply transition-all duration-200;
+
+    &:focus {
+      @apply outline-none;
+    }
+
+    &:focus-visible {
+      @apply outline-none;
+    }
+  }
+
+  // Virtual scroll viewport styles
+  .virtual-scroll-viewport {
+    height: 600px;
+    @apply border border-gray-700 rounded-lg bg-transparent;
+
+    ::ng-deep .cdk-virtual-scroll-content-wrapper {
+      @apply w-full;
+    }
+  }
+}
+
+.empty-state {
+  @apply transition-all duration-300;
+  
+  svg {
+    @apply animate-pulse;
+  }
+
+  a {
+    @apply no-underline;
+    
+    &:focus {
+      @apply outline-none ring-2 ring-indigo-500 ring-offset-2;
+    }
+  }
+}
+
+// Loading state (for future use)
+.loading-spinner {
+  @apply flex justify-center items-center py-12;
+  
+  .spinner {
+    @apply animate-spin h-12 w-12 border-4 border-indigo-600 border-t-transparent rounded-full;
+  }
+}
+
+// Responsive adjustments
+@media (max-width: 768px) {
+  .review-queue-container {
+    @apply p-3;
+  }
+
+  .filters-section {
+    @apply p-3;
+  }
+
+  .filter-btn {
+    @apply text-sm px-3 py-1.5;
+    min-width: 80px;
+  }
+
+  .sort-section {
+    @apply w-full;
+    
+    select {
+      @apply flex-1;
+    }
+  }
+}

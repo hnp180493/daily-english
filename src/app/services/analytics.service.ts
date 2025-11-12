@@ -91,6 +91,7 @@ export class AnalyticsService {
       categoryDistribution: [],
       difficultyBreakdown: [],
       topErrors: [],
+      exercisesNeedingReview: [],
       categoryAccuracy: [],
       difficultyComparison: [],
       heatmapData: [],
@@ -116,6 +117,7 @@ export class AnalyticsService {
       categoryDistribution: this.aggregateCategoryStats(progress),
       difficultyBreakdown: this.analyzeDifficultyDistribution(progress),
       topErrors: this.extractTopErrors(progress),
+      exercisesNeedingReview: this.getExercisesNeedingReview(progress),
       categoryAccuracy: this.calculateCategoryAccuracy(progress),
       difficultyComparison: this.computeDifficultyComparison(progress),
       ...this.generateActivityHeatmap(progress),
@@ -193,10 +195,9 @@ export class AnalyticsService {
     const allAttempts = UserProgressHelper.getAllAttempts(progress);
     
     allAttempts.forEach((attempt) => {
-      // Extract category from exerciseId (format: category-level-number)
-      const parts = attempt.exerciseId.split('-');
-      if (parts.length >= 2) {
-        const category = parts[0] as ExerciseCategory;
+      // Use category from attempt if available
+      if (attempt.category) {
+        const category = attempt.category as ExerciseCategory;
         uniqueExercises.set(attempt.exerciseId, category);
       }
     });
@@ -206,6 +207,10 @@ export class AnalyticsService {
     });
 
     const total = uniqueExercises.size;
+    if (total === 0) {
+      return [];
+    }
+
     const stats = Array.from(categoryMap.entries()).map(([category, count]) => ({
       category,
       categoryName: CATEGORY_NAMES[category] || category,
@@ -233,10 +238,9 @@ export class AnalyticsService {
     const allAttempts = UserProgressHelper.getAllAttempts(progress);
     
     allAttempts.forEach((attempt) => {
-      // Extract difficulty from exerciseId (format: category-level-number)
-      const parts = attempt.exerciseId.split('-');
-      if (parts.length >= 2) {
-        const level = parts[1] as DifficultyLevel;
+      // Use level from attempt if available
+      if (attempt.level) {
+        const level = attempt.level as DifficultyLevel;
         uniqueExercises.set(attempt.exerciseId, level);
       }
     });
@@ -246,6 +250,10 @@ export class AnalyticsService {
     });
 
     const total = uniqueExercises.size;
+    if (total === 0) {
+      return [];
+    }
+
     const stats = Array.from(difficultyMap.entries()).map(([level, count]) => ({
       level,
       levelName: DIFFICULTY_NAMES[level] || level,
@@ -256,6 +264,32 @@ export class AnalyticsService {
     // Sort by difficulty level order
     const levelOrder = [DifficultyLevel.BEGINNER, DifficultyLevel.INTERMEDIATE, DifficultyLevel.ADVANCED];
     return stats.sort((a, b) => levelOrder.indexOf(a.level) - levelOrder.indexOf(b.level));
+  }
+
+  /**
+   * Get exercises that need review (score < 75%)
+   */
+  getExercisesNeedingReview(progress: UserProgress): {
+    exerciseId: string;
+    score: number;
+    attemptCount: number;
+    lastAttempt: Date;
+  }[] {
+    const allAttempts = UserProgressHelper.getAllAttempts(progress);
+    
+    // Filter exercises with score < 75% and sort by score ascending
+    const needsReview = allAttempts
+      .filter(attempt => attempt.accuracyScore < 75)
+      .map(attempt => ({
+        exerciseId: attempt.exerciseId,
+        score: Math.round(attempt.accuracyScore),
+        attemptCount: attempt.attemptNumber,
+        lastAttempt: new Date(attempt.timestamp)
+      }))
+      .sort((a, b) => a.score - b.score)
+      .slice(0, 5); // Top 5 lowest scores
+
+    return needsReview;
   }
 
   /**
@@ -314,9 +348,8 @@ export class AnalyticsService {
     const allAttempts = UserProgressHelper.getAllAttempts(progress);
 
     allAttempts.forEach((attempt) => {
-      const parts = attempt.exerciseId.split('-');
-      if (parts.length >= 2) {
-        const category = parts[0] as ExerciseCategory;
+      if (attempt.category) {
+        const category = attempt.category as ExerciseCategory;
         
         if (!categoryData.has(category)) {
           categoryData.set(category, { scores: [], exerciseIds: new Set() });
@@ -363,9 +396,8 @@ export class AnalyticsService {
     const allAttempts = UserProgressHelper.getAllAttempts(progress);
 
     allAttempts.forEach((attempt) => {
-      const parts = attempt.exerciseId.split('-');
-      if (parts.length >= 2) {
-        const level = parts[1] as DifficultyLevel;
+      if (attempt.level) {
+        const level = attempt.level as DifficultyLevel;
         
         if (!difficultyData.has(level)) {
           difficultyData.set(level, { scores: [], exerciseIds: new Set() });
@@ -382,10 +414,9 @@ export class AnalyticsService {
       .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
       .slice(0, 10);
     
-    const recentLevels = recentAttempts.map((attempt) => {
-      const parts = attempt.exerciseId.split('-');
-      return parts.length >= 2 ? (parts[1] as DifficultyLevel) : null;
-    }).filter(Boolean);
+    const recentLevels = recentAttempts
+      .map((attempt) => attempt.level as DifficultyLevel)
+      .filter(Boolean);
     
     const currentLevel = recentLevels[0] || DifficultyLevel.BEGINNER;
 
@@ -448,6 +479,20 @@ export class AnalyticsService {
       }
     });
 
+    // Add streak dates to dateMap if they're missing
+    // This ensures heatmap shows all days in the current streak
+    if (progress.currentStreak > 0 && progress.lastStreakDate) {
+      const lastStreakDate = new Date(progress.lastStreakDate);
+      for (let i = 0; i < progress.currentStreak; i++) {
+        const streakDate = new Date(lastStreakDate.getTime() - i * 24 * 60 * 60 * 1000);
+        const dateStr = streakDate.toISOString().split('T')[0];
+        if (!dateMap.has(dateStr)) {
+          // Add placeholder to show activity even if no attempt in exerciseHistory
+          dateMap.set(dateStr, ['streak-placeholder']);
+        }
+      }
+    }
+
     // Calculate max count for intensity calculation
     const maxCount = Math.max(...Array.from(dateMap.values()).map((ids) => ids.length), 1);
 
@@ -484,8 +529,14 @@ export class AnalyticsService {
       heatmapData.push(currentWeek);
     }
 
-    // Calculate streaks
-    const { currentStreak, longestStreak } = this.calculateStreaks(dateMap);
+    // Use streak from progress data (already calculated by ProgressService)
+    const currentStreak = progress.currentStreak;
+    
+    // Calculate longest streak from date map
+    const calculatedLongestStreak = this.calculateLongestStreak(dateMap);
+    
+    // Longest streak must be at least as long as current streak
+    const longestStreak = Math.max(calculatedLongestStreak, currentStreak);
 
     return {
       heatmapData,
@@ -507,42 +558,14 @@ export class AnalyticsService {
   }
 
   /**
-   * Calculate current and longest streaks
+   * Calculate longest streak from date map
    */
-  private calculateStreaks(dateMap: Map<string, string[]>): {
-    currentStreak: number;
-    longestStreak: number;
-  } {
+  private calculateLongestStreak(dateMap: Map<string, string[]>): number {
     const sortedDates = Array.from(dateMap.keys()).sort();
     if (sortedDates.length === 0) {
-      return { currentStreak: 0, longestStreak: 0 };
+      return 0;
     }
 
-    const today = new Date().toISOString().split('T')[0];
-    const yesterday = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString().split('T')[0];
-
-    // Calculate current streak
-    let currentStreak = 0;
-    const lastActivityDate = sortedDates[sortedDates.length - 1];
-    
-    if (lastActivityDate === today || lastActivityDate === yesterday) {
-      currentStreak = 1;
-      let checkDate = new Date(lastActivityDate);
-      
-      for (let i = sortedDates.length - 2; i >= 0; i--) {
-        const prevDate = new Date(sortedDates[i]);
-        const expectedDate = new Date(checkDate.getTime() - 24 * 60 * 60 * 1000);
-        
-        if (prevDate.toISOString().split('T')[0] === expectedDate.toISOString().split('T')[0]) {
-          currentStreak++;
-          checkDate = prevDate;
-        } else {
-          break;
-        }
-      }
-    }
-
-    // Calculate longest streak
     let longestStreak = 0;
     let tempStreak = 1;
     
@@ -562,7 +585,7 @@ export class AnalyticsService {
     }
     longestStreak = Math.max(longestStreak, tempStreak);
 
-    return { currentStreak, longestStreak };
+    return longestStreak;
   }
 
   /**

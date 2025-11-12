@@ -62,6 +62,13 @@ export class ExerciseService {
     );
   }
 
+  getExercisesByIds(ids: string[]): Observable<Exercise[]> {
+    return this.exercises$.pipe(
+      filter(exercises => exercises.length > 0),
+      map(exercises => exercises.filter(ex => ids.includes(ex.id)))
+    );
+  }
+
   // Check if exercise ID is for a custom exercise
   isCustomExercise(id: string): boolean {
     return id.startsWith('custom-');

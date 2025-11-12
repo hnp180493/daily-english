@@ -8,9 +8,38 @@
     
     <nav class="nav-links">
       <a routerLink="/home" routerLinkActive="active" class="nav-link">WRITING</a>
-      <a routerLink="/dashboard" routerLinkActive="active" class="nav-link">DASHBOARD</a>
-      <a routerLink="/exercises/custom" routerLinkActive="active" class="nav-link">MY EXERCISES</a>
-      <a routerLink="/guide" routerLinkActive="active" class="nav-link">📚 GUIDE</a>
+      <div class="nav-dropdown">
+        <button class="nav-link dropdown-trigger" 
+                [class.active]="isLearningMenuActive()"
+                (mouseenter)="onMenuMouseEnter()" 
+                (mouseleave)="onMenuMouseLeave()">
+          📖 LEARNING
+          <span class="dropdown-arrow">▼</span>
+        </button>
+        @if (showLearningMenu()) {
+          <div class="dropdown-menu"
+               (mouseenter)="onMenuMouseEnter()" 
+               (mouseleave)="onMenuMouseLeave()">
+            <a routerLink="/dashboard" routerLinkActive="active" class="dropdown-item">
+              📊 Dashboard
+            </a>
+            <a routerLink="/exercises/custom" routerLinkActive="active" class="dropdown-item">
+              📝 My Exercises
+            </a>
+            <a routerLink="/guide" routerLinkActive="active" class="dropdown-item">
+              📚 Guide
+            </a>
+          </div>
+        }
+      </div>
+      <a routerLink="/review-queue" routerLinkActive="active" class="nav-link review-link" title="Review Queue">
+        🔄 REVIEW
+        @if (dueReviewCount() > 0) {
+          <span class="review-badge" [class.urgent]="urgentReviewCount() > 0">
+            {{ dueReviewCount() }}
+          </span>
+        }
+      </a>
       <!-- <a class="nav-link">SPEAKING <span class="beta-badge">BETA</span></a>
       <a class="nav-link">VOCABULARY</a>
       <a class="nav-link">RANK</a> -->

@@ -23,6 +23,7 @@ import { ExerciseValidationService } from '../../services/exercise-validation.se
 import { SettingsService } from '../../services/settings.service';
 import { ExerciseSeoService } from '../../services/exercise-seo.service';
 import { ExerciseRecordingService } from '../../services/exercise-recording.service';
+import { ReviewService } from '../../services/review.service';
 import { TTSSettings } from '../tts-settings/tts-settings';
 import { PenaltyScore } from '../penalty-score/penalty-score';
 import { PENALTY_CONSTANTS } from '../../models/penalty.constants';
@@ -57,6 +58,7 @@ export class ExerciseDetailComponent implements OnInit {
   private settingsService = inject(SettingsService);
   private seoService = inject(ExerciseSeoService);
   private recordingService = inject(ExerciseRecordingService);
+  private reviewService = inject(ReviewService);
 
   stateService = inject(ExerciseStateService);
   submissionService = inject(ExerciseSubmissionService);
@@ -73,11 +75,35 @@ export class ExerciseDetailComponent implements OnInit {
   showErrorModal = signal(false);
   errorMessage = signal('');
   isReviewMode = signal(false);
+  quickReviewMode = signal(false);
+  incorrectSentenceIndices = signal<number[]>([]);
   // Delegate to state service
   sentences = this.stateService.sentences;
   currentSentenceIndex = this.stateService.currentSentenceIndex;
   currentSentence = this.stateService.currentSentence;
   completedSentences = this.stateService.completedSentences;
+
+  // Filtered sentences for quick review mode
+  filteredSentences = computed(() => {
+    const allSentences = this.sentences();
+    if (!this.quickReviewMode()) {
+      return allSentences;
+    }
+    const incorrectIndices = this.incorrectSentenceIndices();
+    return allSentences.filter((_, index) => incorrectIndices.includes(index));
+  });
+
+  // Quick review progress
+  quickReviewProgress = computed(() => {
+    if (!this.quickReviewMode()) return null;
+    const filtered = this.filteredSentences();
+    const completed = filtered.filter(s => s.isCompleted).length;
+    return {
+      current: completed + 1,
+      total: filtered.length,
+      percentage: filtered.length > 0 ? Math.round((completed / filtered.length) * 100) : 0
+    };
+  });
   progressPercentage = this.stateService.progressPercentage;
   isExerciseComplete = this.stateService.isExerciseComplete;
   canProceedToNext = this.stateService.canProceedToNext;
@@ -222,9 +248,21 @@ export class ExerciseDetailComponent implements OnInit {
   ngOnInit(): void {
     const id = this.route.snapshot.paramMap.get('id')!;
     const mode = this.route.snapshot.queryParamMap.get('mode');
+    const quickReview = this.route.snapshot.queryParamMap.get('quickReview');
+
+    // Reset feedback from previous exercise
+    this.submissionService.reset();
 
     if (mode === 'review') {
       this.isReviewMode.set(true);
+    }
+
+    if (quickReview === 'true') {
+      this.quickReviewMode.set(true);
+      // Get incorrect sentence indices from review service
+      const incorrectQuestions = this.reviewService.getIncorrectQuestions(id);
+      const indices = incorrectQuestions.map(q => q.sentenceIndex);
+      this.incorrectSentenceIndices.set(indices);
     }
 
     // Use unified method that handles both regular and custom exercises
@@ -273,13 +311,15 @@ export class ExerciseDetailComponent implements OnInit {
       if (firstIncomplete !== -1) {
         state.currentIndex = firstIncomplete;
         console.log('[ExerciseDetail] Resuming at first incomplete sentence:', firstIncomplete);
+        this.stateService.setState(state);
+        return true;
       } else {
-        // All sentences completed, set to last sentence
-        state.currentIndex = state.sentences.length - 1;
+        // All sentences completed - clear progress and don't load
+        // This prevents "cheating" by redoing the last sentence
+        console.log('[ExerciseDetail] All sentences completed, clearing progress');
+        this.persistenceService.clearProgress(exerciseId);
+        return false;
       }
-
-      this.stateService.setState(state);
-      return true;
     }
     return false;
   }
@@ -422,7 +462,10 @@ export class ExerciseDetailComponent implements OnInit {
   }
 
   onQuit(): void {
-    this.saveProgress();
+    // Only save progress if exercise is not completed
+    if (!this.isExerciseComplete()) {
+      this.saveProgress();
+    }
     this.location.back();
   }
 
@@ -525,12 +568,45 @@ export class ExerciseDetailComponent implements OnInit {
 
     console.log('Exercise completed, recording attempt...');
     this.recordingService.recordAttempt(ex, this.hintsShown(), this.exercisePoints());
+    
+    // Schedule next review using spaced repetition
+    const sentences = this.sentences();
+    const completedSentences = sentences.filter(s => s.isCompleted);
+    const avgScore = completedSentences.length > 0
+      ? completedSentences.reduce((sum, s) => sum + (s.accuracyScore || 0), 0) / completedSentences.length
+      : 0;
+    
+    this.reviewService.scheduleNextReview(ex.id, avgScore);
+    
+    // Update review data with incorrect sentence indices
+    const incorrectIndices = sentences
+      .map((s, index) => ({ index, score: s.accuracyScore || 0 }))
+      .filter(item => item.score < 75)
+      .map(item => item.index);
+    
+    if (incorrectIndices.length > 0) {
+      // Store incorrect indices for quick review mode
+      console.log('[ExerciseDetail] Incorrect sentence indices:', incorrectIndices);
+    }
+    
     this.clearProgress();
     this.isReviewMode.set(true);
 
     this.router.navigate([], {
       relativeTo: this.route,
       queryParams: { mode: 'review' },
+      queryParamsHandling: 'merge'
+    });
+  }
+
+  exitQuickReview(): void {
+    this.quickReviewMode.set(false);
+    this.incorrectSentenceIndices.set([]);
+    
+    // Navigate to regular exercise mode
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { quickReview: null },
       queryParamsHandling: 'merge'
     });
   }

@@ -103,8 +103,7 @@ Tài liệu này đề xuất các tính năng mới để phát triển ứng d
 
 **Intelligent Recommendations:**
 - Đề xuất bài cần ôn dựa trên:
-  - Điểm số thấp (< 70%)
-  - Thời gian từ lần làm cuối (> 7 ngày)
+  - Điểm số thấp (< 75%)
   - Lỗi grammar lặp lại
   - Difficulty level phù hợp
 

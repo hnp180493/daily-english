@@ -1,8 +1,11 @@
-import { Component } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { HeaderComponent } from './components/header/header';
 import { FooterComponent } from './components/footer/footer';
 import { ToastContainer } from './components/toast-container/toast-container';
+import { ToastService } from './services/toast.service';
+import { ReviewService } from './services/review.service';
+import { NotificationTestUtility } from './services/notification-test.utility';
 
 @Component({
   selector: 'app-root',
@@ -10,9 +13,14 @@ import { ToastContainer } from './components/toast-container/toast-container';
   templateUrl: './app.html',
   styleUrl: './app.scss'
 })
-export class App {
+export class App implements OnInit {
   title = 'English Practice Platform';
   
-  // Removed auto anonymous sign-in
-  // Users must sign in with Google to use the app
+  private toastService = inject(ToastService);
+  private reviewService = inject(ReviewService);
+  
+  ngOnInit(): void {
+    // Setup test functions in development
+    NotificationTestUtility.setupGlobalTestFunctions(this.toastService, this.reviewService);
+  }
 }

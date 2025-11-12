@@ -2,6 +2,19 @@
   <header class="dashboard-header">
     <h1>Your Learning Dashboard</h1>
     <div class="dashboard-actions">
+      @if (needsMigration() && !migrationComplete()) {
+        <button 
+          class="btn-primary" 
+          (click)="runMigration()" 
+          [disabled]="isMigrating()"
+          title="Update old data to show analytics">
+          @if (isMigrating()) {
+            <span>Updating...</span>
+          } @else {
+            <span>🔄 Update Analytics Data</span>
+          }
+        </button>
+      }
       <button class="btn-secondary" (click)="exportData()" title="Export your progress data">
         Export Data
       </button>

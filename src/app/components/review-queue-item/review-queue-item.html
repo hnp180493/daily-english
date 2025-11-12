@@ -1,0 +1,86 @@
+<div class="review-queue-item bg-gray-800 rounded-lg shadow-md p-4 hover:shadow-lg transition-all border border-gray-700 hover:border-indigo-500" role="article">
+  <!-- Compact Header Row -->
+  <div class="flex items-center justify-between mb-3">
+    <!-- Title and badges -->
+    <div class="flex-1 min-w-0">
+      <div class="flex items-center gap-2 mb-1">
+        <h3 class="text-base font-semibold text-gray-100 truncate">
+          {{ item().exercise.title }}
+        </h3>
+        <span 
+          [class]="'px-2 py-0.5 rounded text-xs font-medium flex-shrink-0 ' + getDifficultyColor(item().exercise.level)"
+          role="status"
+          [attr.aria-label]="'Difficulty level: ' + item().exercise.level">
+          {{ item().exercise.level }}
+        </span>
+      </div>
+      <span class="text-xs text-gray-400" role="status">{{ item().exercise.category }}</span>
+    </div>
+    
+    <!-- Urgency badge -->
+    <span 
+      [class]="'px-2.5 py-1 rounded-full text-xs font-semibold text-white flex-shrink-0 ml-3 ' + getUrgencyColor(item().urgency)"
+      role="status"
+      [attr.aria-label]="getUrgencyAriaLabel(item().urgency)">
+      {{ getUrgencyEmoji(item().urgency) }} {{ getUrgencyLabel(item().urgency) }}
+    </span>
+  </div>
+
+  <!-- Compact Stats Row -->
+  <div class="flex items-center gap-6 mb-3 text-xs" role="group" aria-label="Exercise statistics">
+    <!-- Last score -->
+    <div class="flex items-center gap-1.5">
+      <span class="text-gray-500">Last Score</span>
+      <span 
+        class="font-bold text-sm" 
+        [class.text-red-400]="item().lastScore < 60"
+        [class.text-yellow-400]="item().lastScore >= 60 && item().lastScore < 75"
+        [class.text-green-400]="item().lastScore >= 75"
+        role="status">
+        {{ roundScore(item().lastScore) }}%
+      </span>
+    </div>
+
+    <!-- Next review date -->
+    <div class="flex items-center gap-1.5">
+      <span class="text-gray-500">Next Review</span>
+      <span class="font-semibold text-gray-200" role="status">
+        {{ formatDate(item().nextReviewDate) }}
+      </span>
+    </div>
+
+    <!-- Estimated time -->
+    <div class="flex items-center gap-1.5">
+      <span class="text-gray-500">Est. Time</span>
+      <span class="font-semibold text-gray-200" role="status">
+        {{ item().estimatedTime }} min
+      </span>
+    </div>
+  </div>
+
+  <!-- Quick review info (compact) -->
+  @if (item().incorrectQuestionCount > 0) {
+    <div class="bg-blue-900/30 border border-blue-700 rounded px-3 py-1.5 mb-3 text-xs text-blue-300" role="status">
+      <span class="font-semibold">{{ item().incorrectQuestionCount }}</span> question{{ item().incorrectQuestionCount > 1 ? 's' : '' }} available for quick review
+    </div>
+  }
+
+  <!-- Compact Action buttons -->
+  <div class="flex gap-2">
+    <button 
+      (click)="onStartReview()"
+      class="flex-1 bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-indigo-700 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500"
+      aria-label="Start full review of {{ item().exercise.title }}">
+      Start Review
+    </button>
+    
+    @if (item().incorrectQuestionCount > 0) {
+      <button 
+        (click)="onStartQuickReview()"
+        class="flex-1 bg-green-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-green-700 transition-colors focus:outline-none focus:ring-2 focus:ring-green-500"
+        aria-label="Start quick review of incorrect questions for {{ item().exercise.title }}">
+        Quick Review
+      </button>
+    }
+  </div>
+</div>

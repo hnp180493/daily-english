@@ -43,12 +43,12 @@ export class ExerciseRecordingService {
       
       if (s.suggestion) {
         feedback.push({
-          // type: 'suggestion',
-          // originalText: s.translation,
+          type: 'suggestion',
+          originalText: s.translation,
           suggestion: s.suggestion,
-          // explanation: 'AI-generated suggestion for improvement',
-          // startIndex: 0,
-          // endIndex: s.translation.length
+          explanation: 'AI-generated suggestion for improvement',
+          startIndex: 0,
+          endIndex: s.translation.length
         } as FeedbackItem);
       }
       
@@ -62,9 +62,18 @@ export class ExerciseRecordingService {
       };
     });
 
+    // Aggregate all feedback from sentences to attempt level
+    const allFeedback: FeedbackItem[] = [];
+    sentenceAttempts.forEach(sa => {
+      if (sa.feedback && sa.feedback.length > 0) {
+        allFeedback.push(...sa.feedback);
+      }
+    });
+
     const attempt: ExerciseAttempt = {
       exerciseId: exercise.id,
       category: exercise.category,
+      level: exercise.level,
       attemptNumber: status.attemptCount + 1,
       userInput: fullTranslation,
       accuracyScore: finalScore,
@@ -73,7 +82,7 @@ export class ExerciseRecordingService {
       totalRetries,
       totalPenalty,
       pointsEarned,
-      feedback: [],
+      feedback: allFeedback,
       timestamp: new Date(),
       hintsUsed,
       sentenceAttempts

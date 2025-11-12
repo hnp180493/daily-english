@@ -1,0 +1,147 @@
+.toast-container {
+  position: fixed;
+  top: 80px;
+  right: 20px;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-width: 400px;
+  pointer-events: none;
+
+  @media (max-width: 640px) {
+    top: 70px;
+    right: 10px;
+    left: 10px;
+    max-width: none;
+  }
+}
+
+.toast {
+  pointer-events: auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 16px;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  background: white;
+  border-left: 4px solid;
+  min-width: 300px;
+
+  @media (max-width: 640px) {
+    min-width: auto;
+    padding: 12px;
+  }
+}
+
+.toast-success {
+  border-left-color: #10B981;
+  background: #F0FDF4;
+}
+
+.toast-error {
+  border-left-color: #EF4444;
+  background: #FEF2F2;
+}
+
+.toast-warning {
+  border-left-color: #F59E0B;
+  background: #FFFBEB;
+}
+
+.toast-info {
+  border-left-color: #3B82F6;
+  background: #EFF6FF;
+}
+
+.toast-content {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+}
+
+.toast-icon {
+  font-size: 20px;
+  font-weight: bold;
+  flex-shrink: 0;
+}
+
+.toast-success .toast-icon {
+  color: #10B981;
+}
+
+.toast-error .toast-icon {
+  color: #EF4444;
+}
+
+.toast-warning .toast-icon {
+  color: #F59E0B;
+}
+
+.toast-info .toast-icon {
+  color: #3B82F6;
+}
+
+.toast-message {
+  font-size: 14px;
+  line-height: 1.5;
+  color: #1F2937;
+}
+
+.toast-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.toast-action-btn {
+  padding: 6px 12px;
+  font-size: 13px;
+  font-weight: 600;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s;
+  background: rgba(79, 70, 229, 0.1);
+  color: #4F46E5;
+
+  &:hover {
+    background: rgba(79, 70, 229, 0.2);
+  }
+
+  &:focus {
+    outline: 2px solid #4F46E5;
+    outline-offset: 2px;
+  }
+}
+
+.toast-close-btn {
+  padding: 4px;
+  font-size: 16px;
+  line-height: 1;
+  border: none;
+  background: transparent;
+  color: #6B7280;
+  cursor: pointer;
+  transition: color 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 4px;
+
+  &:hover {
+    color: #1F2937;
+    background: rgba(0, 0, 0, 0.05);
+  }
+
+  &:focus {
+    outline: 2px solid #4F46E5;
+    outline-offset: 2px;
+  }
+}

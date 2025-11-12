@@ -31,9 +31,12 @@
                 [class.intensity-2]="day.intensity === 2"
                 [class.intensity-3]="day.intensity === 3"
                 [class.intensity-4]="day.intensity === 4"
+                [class.selected]="selectedDay()?.date === day.date"
                 [title]="getTooltip(day)"
                 [attr.aria-label]="getTooltip(day)"
                 (click)="showDayDetails(day)"
+                (keydown.enter)="showDayDetails(day)"
+                (keydown.space)="showDayDetails(day)"
                 tabindex="0"
                 role="button">
               </div>
@@ -55,4 +58,59 @@
       <p class="empty-message">No activity data available yet</p>
     }
   </div>
+
+  <!-- Day Details Panel -->
+  @if (selectedDay()) {
+    <div class="day-details-overlay" (click)="closeDetails()">
+      <div class="day-details-panel" (click)="$event.stopPropagation()" role="dialog" aria-labelledby="day-details-title">
+        <div class="panel-header">
+          <h3 id="day-details-title">{{ selectedDay()!.formattedDate }}</h3>
+          <button 
+            class="close-btn" 
+            (click)="closeDetails()"
+            aria-label="Close details">
+            ✕
+          </button>
+        </div>
+
+        <div class="panel-content">
+          @if (selectedDay()!.exerciseCount > 0) {
+            <div class="day-summary">
+              <div class="summary-stat">
+                <span class="stat-label">Exercises Completed</span>
+                <span class="stat-value">{{ selectedDay()!.exerciseCount }}</span>
+              </div>
+              <div class="summary-stat">
+                <span class="stat-label">Average Score</span>
+                <span class="stat-value">{{ selectedDay()!.averageScore }}%</span>
+              </div>
+            </div>
+
+            <div class="exercise-list">
+              <h4>Exercises</h4>
+              @for (exercise of selectedDay()!.exercises; track exercise.id) {
+                <div class="exercise-item" (click)="goToExercise(exercise.id)">
+                  <div class="exercise-info">
+                    <span class="exercise-id">{{ exercise.id }}</span>
+                    <span class="exercise-time">{{ exercise.timestamp | date:'shortTime' }}</span>
+                  </div>
+                  <div class="exercise-score" 
+                    [class.score-high]="exercise.score >= 80"
+                    [class.score-medium]="exercise.score >= 60 && exercise.score < 80"
+                    [class.score-low]="exercise.score < 60">
+                    {{ exercise.score }}%
+                  </div>
+                </div>
+              }
+            </div>
+          } @else {
+            <div class="empty-day">
+              <p>🔥 Streak day - Keep up the momentum!</p>
+              <p class="hint">Activity recorded but no detailed data available</p>
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+  }
 </div>

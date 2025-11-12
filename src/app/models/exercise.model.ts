@@ -41,6 +41,7 @@ export interface SentenceAttempt {
 export interface ExerciseAttempt {
   exerciseId: string;
   category?: ExerciseCategory | string; // Added for achievement tracking
+  level?: DifficultyLevel | string; // Added for analytics
   attemptNumber: number;
   userInput: string;
   accuracyScore: number; // This becomes the penalty-adjusted score

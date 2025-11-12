@@ -4,6 +4,7 @@ import { RouterModule } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { AnalyticsService } from '../../services/analytics.service';
 import { ProgressService } from '../../services/progress.service';
+import { ProgressMigrationUtility } from '../../services/progress-migration.utility';
 import { TimeRange } from '../../models/analytics.model';
 import { ProgressChartsComponent } from './progress-charts/progress-charts';
 import { PerformanceAnalysisComponent } from './performance-analysis/performance-analysis';
@@ -21,10 +22,13 @@ import { UserProgressHelper } from '../../models/exercise.model';
 export class DashboardComponent {
   private analyticsService = inject(AnalyticsService);
   private progressService = inject(ProgressService);
+  private migrationUtility = inject(ProgressMigrationUtility);
 
   userProgress = toSignal(this.progressService.getUserProgress());
   selectedTimeRange = signal<TimeRange>('30d');
   isLoading = signal(false);
+  isMigrating = signal(false);
+  migrationComplete = signal(false);
 
   analytics = computed(() => {
     const progress = this.userProgress();
@@ -35,6 +39,11 @@ export class DashboardComponent {
   hasEnoughData = computed(() => {
     const progress = this.userProgress();
     return progress && UserProgressHelper.getAttemptsCount(progress) >= 2;
+  });
+
+  needsMigration = computed(() => {
+    const progress = this.userProgress();
+    return progress && this.migrationUtility.needsMigration(progress);
   });
 
   exportData(): void {
@@ -60,5 +69,23 @@ export class DashboardComponent {
 
   setTimeRange(range: TimeRange): void {
     this.selectedTimeRange.set(range);
+  }
+
+  runMigration(): void {
+    this.isMigrating.set(true);
+    this.migrationUtility.migrateProgressData().subscribe({
+      next: (success) => {
+        this.isMigrating.set(false);
+        if (success) {
+          this.migrationComplete.set(true);
+          // Reload page to refresh analytics
+          setTimeout(() => window.location.reload(), 1000);
+        }
+      },
+      error: (error) => {
+        console.error('Migration failed:', error);
+        this.isMigrating.set(false);
+      }
+    });
   }
 }

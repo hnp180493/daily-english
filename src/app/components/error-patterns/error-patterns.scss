@@ -1,0 +1,159 @@
+.error-patterns-container {
+  min-height: calc(100vh - 200px);
+}
+
+.header {
+  h1 {
+    @apply mb-2;
+  }
+}
+
+.loading-state {
+  .spinner {
+    @apply border-4 border-indigo-600 border-t-transparent;
+  }
+}
+
+.weak-point-card {
+  @apply transition-all duration-200;
+  
+  &:hover {
+    @apply transform -translate-y-1;
+  }
+  
+  .improvement-badge {
+    @apply font-semibold;
+  }
+  
+  button {
+    @apply transition-all duration-200;
+    
+    &:hover {
+      @apply transform scale-105;
+    }
+    
+    &:active {
+      @apply transform scale-95;
+    }
+  }
+}
+
+.pattern-card {
+  @apply transition-all duration-200;
+  
+  &:hover {
+    @apply border-l-4 border-indigo-600;
+  }
+  
+  .type-badge {
+    @apply font-semibold uppercase tracking-wide;
+  }
+  
+  .frequency-bar {
+    @apply overflow-hidden;
+    
+    div {
+      @apply transition-all duration-500 ease-out;
+    }
+  }
+  
+  .vocabulary-words {
+    span {
+      @apply transition-colors duration-200;
+      
+      &:hover {
+        @apply bg-indigo-100 text-indigo-800;
+      }
+    }
+  }
+  
+  details {
+    summary {
+      @apply transition-colors duration-200;
+      
+      &:hover {
+        @apply underline;
+      }
+      
+      &:focus {
+        @apply outline-none ring-2 ring-indigo-500 ring-offset-2 rounded;
+      }
+    }
+  }
+  
+  .example-item {
+    @apply border-l-2 border-gray-300;
+    
+    &:hover {
+      @apply border-indigo-400 bg-indigo-50;
+    }
+  }
+  
+  button {
+    @apply transition-all duration-200;
+    
+    &:hover {
+      @apply transform scale-105;
+    }
+    
+    &:active {
+      @apply transform scale-95;
+    }
+  }
+}
+
+.empty-state {
+  @apply transition-all duration-300;
+  
+  svg {
+    @apply transition-transform duration-300;
+  }
+  
+  &:hover svg {
+    @apply transform scale-110;
+  }
+}
+
+// Responsive adjustments
+@media (max-width: 768px) {
+  .error-patterns-container {
+    @apply p-3;
+  }
+  
+  .header {
+    h1 {
+      @apply text-2xl;
+    }
+  }
+  
+  .weak-point-card,
+  .pattern-card {
+    @apply p-4;
+  }
+  
+  .pattern-card {
+    .stats {
+      @apply flex-col gap-2;
+    }
+  }
+}
+
+// Accessibility
+button:focus-visible,
+summary:focus-visible {
+  @apply outline-none ring-2 ring-offset-2;
+}
+
+// Animation for loading
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.loading-state svg {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}

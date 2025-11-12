@@ -4,6 +4,7 @@ import { catchError } from 'rxjs/operators';
 import { supabaseClient } from '../supabase.client';
 import { UserProgress, CustomExercise } from '../../models/exercise.model';
 import { UserAchievementData } from '../../models/achievement.model';
+import { ReviewData, ReviewDataWithMetadata } from '../../models/review.model';
 import {
   IDatabase,
   FavoriteData,
@@ -398,6 +399,128 @@ export class SupabaseDatabase implements IDatabase {
             hints: data.hints || 0,
             avatarFrames: data.avatar_frames || []
           } as UserRewards;
+        })
+    ).pipe(catchError(this.handleError));
+  }
+
+  // Review Data Operations
+  saveReviewData(userId: string, exerciseId: string, reviewData: ReviewData): Observable<void> {
+    return from(
+      this.supabase
+        .from('user_reviews')
+        .upsert({
+          user_id: userId,
+          exercise_id: exerciseId,
+          data: reviewData,
+          updated_at: new Date().toISOString()
+        })
+        .then(({ error }) => {
+          if (error) throw error;
+        })
+    ).pipe(catchError(this.handleError));
+  }
+
+  loadReviewData(userId: string, exerciseId: string): Observable<ReviewDataWithMetadata | null> {
+    return from(
+      this.supabase
+        .from('user_reviews')
+        .select('exercise_id, user_id, data, created_at, updated_at')
+        .eq('user_id', userId)
+        .eq('exercise_id', exerciseId)
+        .maybeSingle()
+        .then(({ data, error }) => {
+          if (error) throw error;
+          if (!data) return null;
+
+          const reviewData = data.data as any;
+          // Convert date strings back to Date objects and merge with metadata from columns
+          return {
+            ...reviewData,
+            exerciseId: data.exercise_id,
+            userId: data.user_id,
+            nextReviewDate: new Date(reviewData.nextReviewDate),
+            lastReviewDate: new Date(reviewData.lastReviewDate),
+            createdAt: new Date(data.created_at),
+            updatedAt: new Date(data.updated_at)
+          } as ReviewDataWithMetadata;
+        })
+    ).pipe(catchError(this.handleError));
+  }
+
+  loadAllReviewData(userId: string): Observable<ReviewDataWithMetadata[]> {
+    return from(
+      this.supabase
+        .from('user_reviews')
+        .select('exercise_id, user_id, data, created_at, updated_at')
+        .eq('user_id', userId)
+        .then(({ data, error }) => {
+          if (error) throw error;
+          if (!data) return [];
+
+          return data.map((row) => {
+            const reviewData = row.data as any;
+            return {
+              ...reviewData,
+              exerciseId: row.exercise_id,
+              userId: row.user_id,
+              nextReviewDate: new Date(reviewData.nextReviewDate),
+              lastReviewDate: new Date(reviewData.lastReviewDate),
+              createdAt: new Date(row.created_at),
+              updatedAt: new Date(row.updated_at)
+            } as ReviewDataWithMetadata;
+          });
+        })
+    ).pipe(catchError(this.handleError));
+  }
+
+  updateReviewSchedule(
+    userId: string,
+    exerciseId: string,
+    nextReviewDate: Date,
+    interval: number,
+    easinessFactor: number
+  ): Observable<void> {
+    // Load existing review data, update it, and save back
+    return from(
+      this.supabase
+        .from('user_reviews')
+        .select('data')
+        .eq('user_id', userId)
+        .eq('exercise_id', exerciseId)
+        .maybeSingle()
+        .then(({ data, error }) => {
+          if (error) throw error;
+          if (!data) throw new Error('Review data not found');
+
+          const reviewData = data.data as any;
+          reviewData.nextReviewDate = nextReviewDate.toISOString();
+          reviewData.interval = interval;
+          reviewData.easinessFactor = easinessFactor;
+
+          return this.supabase
+            .from('user_reviews')
+            .update({
+              data: reviewData,
+              updated_at: new Date().toISOString()
+            })
+            .eq('user_id', userId)
+            .eq('exercise_id', exerciseId);
+        })
+        .then(({ error }) => {
+          if (error) throw error;
+        })
+    ).pipe(catchError(this.handleError));
+  }
+
+  deleteReviewData(userId: string, exerciseId: string): Observable<void> {
+    return from(
+      this.supabase
+        .from('user_reviews')
+        .delete()
+        .eq('user_id', userId)
+        .eq('exercise_id', exerciseId)
+        .then(({ error }) => {
+          if (error) throw error;
         })
     ).pipe(catchError(this.handleError));
   }

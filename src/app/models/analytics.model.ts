@@ -35,6 +35,13 @@ export interface AnalyticsData {
     percentage: number;
   }[];
 
+  exercisesNeedingReview: {
+    exerciseId: string;
+    score: number;
+    attemptCount: number;
+    lastAttempt: Date;
+  }[];
+
   categoryAccuracy: {
     category: ExerciseCategory;
     categoryName: string;

@@ -1,24 +1,30 @@
 <div class="performance-section">
   <h2>Performance Analysis</h2>
 
-  <!-- Top Errors -->
+  <!-- Exercises Needing Review -->
   <div class="analysis-card">
-    <h3>Top 5 Common Errors</h3>
-    @if (analytics().topErrors.length > 0) {
-      <ul class="error-list">
-        @for (error of analytics().topErrors; track error.type) {
-          <li class="error-item">
-            <span class="error-icon">{{ getErrorIcon(error.type) }}</span>
-            <div class="error-details">
-              <strong>{{ error.type }}</strong>
-              <p>{{ error.description }}</p>
-              <span class="error-count">{{ error.count }} occurrences ({{ error.percentage }}%)</span>
+    <h3>Exercises Needing Review</h3>
+    @if (analytics().exercisesNeedingReview && analytics().exercisesNeedingReview.length > 0) {
+      <ul class="review-list">
+        @for (exercise of analytics().exercisesNeedingReview; track exercise.exerciseId) {
+          <li class="review-item">
+            <div class="review-details">
+              <strong>{{ exercise.exerciseId }}</strong>
+              <div class="review-meta">
+                <span class="score-badge" [class]="getAccuracyClass(exercise.score)">
+                  {{ exercise.score }}%
+                </span>
+                <span class="attempt-count">{{ exercise.attemptCount }} attempt{{ exercise.attemptCount > 1 ? 's' : '' }}</span>
+              </div>
             </div>
+            <button class="review-btn" (click)="goToExercise(exercise.exerciseId)">
+              Review
+            </button>
           </li>
         }
       </ul>
     } @else {
-      <p class="empty-message">No errors detected yet - keep practicing!</p>
+      <p class="empty-message">Great job! No exercises need immediate review 🎉</p>
     }
   </div>
 

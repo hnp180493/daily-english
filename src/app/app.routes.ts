@@ -190,6 +190,66 @@ export const routes: Routes = [
     canActivate: [authGuard],
   },
   {
+    path: 'review-queue',
+    loadComponent: () =>
+      import('./components/review-queue/review-queue').then((m) => m.ReviewQueueComponent),
+    canActivate: [authGuard],
+    data: {
+      seo: {
+        title: 'Hàng đợi ôn tập - Daily English',
+        description:
+          'Xem danh sách bài tập cần ôn tập với hệ thống lặp lại ngắt quãng thông minh. Tối ưu hóa việc ghi nhớ từ vựng và ngữ pháp',
+        keywords: ['ôn tập tiếng anh', 'spaced repetition', 'lặp lại ngắt quãng', 'học tiếng anh hiệu quả'],
+        vietnamese: {
+          title: 'Hàng đợi ôn tập - Daily English',
+          description:
+            'Hệ thống ôn tập thông minh với thuật toán lặp lại ngắt quãng giúp bạn ghi nhớ lâu dài. Xem bài tập cần ôn và theo dõi tiến độ.',
+          keywords: [
+            'ôn tập tiếng anh',
+            'hệ thống ôn tập',
+            'spaced repetition',
+            'lặp lại ngắt quãng',
+            'học tiếng anh hiệu quả',
+          ],
+          breadcrumbs: [
+            { name: 'Trang chủ', url: '/' },
+            { name: 'Ôn tập', url: '/review-queue' },
+          ],
+        },
+      } as VietnameseRouteSeoData,
+    },
+  },
+  {
+    path: 'error-patterns',
+    loadComponent: () =>
+      import('./components/error-patterns/error-patterns').then((m) => m.ErrorPatternsComponent),
+    canActivate: [authGuard],
+    data: {
+      seo: {
+        title: 'Phân tích lỗi - Daily English',
+        description:
+          'Phân tích các lỗi thường gặp trong quá trình học và nhận đề xuất bài tập luyện tập có mục tiêu',
+        keywords: ['phân tích lỗi', 'học từ lỗi sai', 'cải thiện tiếng anh', 'điểm yếu tiếng anh'],
+        vietnamese: {
+          title: 'Phân tích lỗi - Daily English',
+          description:
+            'Xác định điểm yếu trong tiếng Anh của bạn qua phân tích lỗi thông minh. Nhận bài tập luyện tập có mục tiêu để cải thiện nhanh chóng.',
+          keywords: [
+            'phân tích lỗi tiếng anh',
+            'điểm yếu tiếng anh',
+            'cải thiện tiếng anh',
+            'học từ lỗi sai',
+            'phân tích ngữ pháp',
+          ],
+          breadcrumbs: [
+            { name: 'Trang chủ', url: '/' },
+            { name: 'Phân tích lỗi', url: '/error-patterns' },
+          ],
+        },
+      } as VietnameseRouteSeoData,
+    },
+  },
+  {
     path: 'guide',
     loadComponent: () => import('./components/guide/guide').then((m) => m.GuideComponent),
     data: {

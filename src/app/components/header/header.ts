@@ -1,11 +1,12 @@
-import { Component, ChangeDetectionStrategy, inject, computed, effect, signal } from '@angular/core';
-import { RouterLink, RouterLinkActive } from '@angular/router';
+import { Component, ChangeDetectionStrategy, inject, computed, effect, signal, OnInit } from '@angular/core';
+import { RouterLink, RouterLinkActive, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { AuthStatus } from '../auth-status/auth-status';
 import { FavoriteService } from '../../services/favorite.service';
 import { ProgressService } from '../../services/progress.service';
 import { AchievementService } from '../../services/achievement.service';
 import { PointsAnimationService } from '../../services/points-animation.service';
+import { ReviewService } from '../../services/review.service';
 import { UserProgressHelper } from '../../models/exercise.model';
 
 @Component({
@@ -15,15 +16,34 @@ import { UserProgressHelper } from '../../models/exercise.model';
   styleUrl: './header.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class HeaderComponent {
+export class HeaderComponent implements OnInit {
   private favoriteService = inject(FavoriteService);
   private progressService = inject(ProgressService);
   private achievementService = inject(AchievementService);
   private pointsAnimationService = inject(PointsAnimationService);
+  private reviewService = inject(ReviewService);
+  private router = inject(Router);
   
   appTitle = 'English';
   favoriteCount = computed(() => this.favoriteService.favoriteCount());
   achievementCount = computed(() => this.achievementService.unlockedAchievements().length);
+  
+  // Dropdown menu state
+  showLearningMenu = signal(false);
+  private menuCloseTimeout: any = null;
+  
+  // Review queue badge
+  reviewQueue = this.reviewService.getReviewQueueSignal();
+  dueReviewCount = computed(() => {
+    const queue = this.reviewQueue();
+    const now = new Date();
+    return queue.filter(item => item.nextReviewDate <= now).length;
+  });
+  
+  urgentReviewCount = computed(() => {
+    const queue = this.reviewQueue();
+    return queue.filter(item => item.urgency === 'high').length;
+  });
   
   // Use signal directly from service for better reactivity
   private progressSignal = this.progressService.getProgressSignal();
@@ -109,6 +129,38 @@ export class HeaderComponent {
         attempts: UserProgressHelper.getAttemptsCount(progress)
       });
     });
+  }
+
+  ngOnInit(): void {
+    // Load review queue to populate badge
+    this.reviewService.getReviewQueue().subscribe();
+  }
+
+  navigateToReviewQueue(): void {
+    // This will be called from the template
+    console.log('[Header] Navigate to review queue');
+  }
+  
+  isLearningMenuActive(): boolean {
+    const url = this.router.url;
+    return url.includes('/dashboard') || url.includes('/exercises/custom') || url.includes('/guide');
+  }
+  
+  onMenuMouseEnter(): void {
+    // Clear any pending close timeout
+    if (this.menuCloseTimeout) {
+      clearTimeout(this.menuCloseTimeout);
+      this.menuCloseTimeout = null;
+    }
+    this.showLearningMenu.set(true);
+  }
+  
+  onMenuMouseLeave(): void {
+    // Add delay before closing menu
+    this.menuCloseTimeout = setTimeout(() => {
+      this.showLearningMenu.set(false);
+      this.menuCloseTimeout = null;
+    }, 200); // 200ms delay
   }
   
   private animateCount(

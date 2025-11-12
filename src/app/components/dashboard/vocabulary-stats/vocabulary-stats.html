@@ -1,19 +1,19 @@
 <div class="vocabulary-section">
-  <h2>Vocabulary Statistics</h2>
+  <h2>Learning Overview</h2>
 
   <div class="vocab-counters">
     <div class="counter-card">
       <span class="icon">📚</span>
       <div>
-        <label>New Words Learned</label>
-        <strong>{{ analytics().vocabularyStats.totalWords }}</strong>
+        <label>Total Exercises</label>
+        <strong>{{ analytics().totalExercises }}</strong>
       </div>
     </div>
     <div class="counter-card">
       <span class="icon">🔄</span>
       <div>
-        <label>Words to Review</label>
-        <strong>{{ analytics().vocabularyStats.wordsToReview }}</strong>
+        <label>Need Review</label>
+        <strong>{{ analytics().exercisesNeedingReview.length }}</strong>
       </div>
     </div>
   </div>
@@ -42,19 +42,5 @@
     }
   </div>
 
-  <div class="vocab-card">
-    <h3>Words Needing Review</h3>
-    @if (analytics().vocabularyStats.reviewWords.length > 0) {
-      <ul class="review-words">
-        @for (word of analytics().vocabularyStats.reviewWords; track word.text) {
-          <li class="review-word-item">
-            <strong>{{ word.text }}</strong>
-            <span class="error-count">{{ word.errorCount }} errors</span>
-          </li>
-        }
-      </ul>
-    } @else {
-      <p class="empty-message">No words need review - great job!</p>
-    }
-  </div>
+
 </div>

@@ -1,0 +1,78 @@
+.review-stats {
+  // Gradient background using theme colors
+  background: linear-gradient(135deg, #4F46E5 0%, #10B981 100%);
+
+  .stat-card {
+    backdrop-filter: blur(10px);
+    transition: transform 0.2s ease-in-out;
+
+    &:hover {
+      transform: translateY(-2px);
+      background-color: rgba(255, 255, 255, 0.3);
+    }
+  }
+
+  .consistency-chart {
+    backdrop-filter: blur(10px);
+
+    // Bar animations
+    .flex-1 > div {
+      transition: height 0.3s ease-in-out, background-color 0.2s ease-in-out;
+    }
+
+    // Tooltip positioning
+    .group:hover .absolute {
+      animation: fadeIn 0.2s ease-in-out;
+    }
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// Responsive adjustments
+@media (max-width: 768px) {
+  .review-stats {
+    .grid {
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .stat-card {
+      padding: 0.75rem;
+
+      .text-3xl {
+        font-size: 1.5rem;
+      }
+    }
+
+    .consistency-chart {
+      .h-24 {
+        height: 4rem;
+      }
+    }
+  }
+}
+
+@media (max-width: 640px) {
+  .review-stats {
+    padding: 1rem;
+
+    .stat-card {
+      .text-3xl {
+        font-size: 1.25rem;
+      }
+
+      .text-sm {
+        font-size: 0.75rem;
+      }
+    }
+  }
+}

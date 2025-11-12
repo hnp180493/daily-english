@@ -4,6 +4,7 @@ import { retry, catchError } from 'rxjs/operators';
 import { AuthService } from '../auth.service';
 import { UserProgress, CustomExercise } from '../../models/exercise.model';
 import { UserAchievementData } from '../../models/achievement.model';
+import { ReviewData, ReviewDataWithMetadata } from '../../models/review.model';
 import { IDatabase, FavoriteData, UserProfile, UserRewards, UnsubscribeFunction } from './database.interface';
 import { SupabaseDatabase } from './supabase-database.service';
 
@@ -304,5 +305,77 @@ export class DatabaseService implements IDatabase {
     const userId = this.authService.getUserId();
     if (!userId) return of(null);
     return this.loadRewards(userId);
+  }
+
+  // Review Data Operations
+  saveReviewData(userId: string, exerciseId: string, reviewData: ReviewData): Observable<void> {
+    if (!userId) {
+      console.log('[DatabaseService] No userId provided, skipping save');
+      return of(undefined);
+    }
+    return this.database.saveReviewData(userId, exerciseId, reviewData);
+  }
+
+  loadReviewData(userId: string, exerciseId: string): Observable<ReviewDataWithMetadata | null> {
+    if (!userId) {
+      console.log('[DatabaseService] No userId provided, returning null');
+      return of(null);
+    }
+    return this.database.loadReviewData(userId, exerciseId);
+  }
+
+  loadAllReviewData(userId: string): Observable<ReviewDataWithMetadata[]> {
+    if (!userId) {
+      console.log('[DatabaseService] No userId provided, returning empty array');
+      return of([]);
+    }
+    return this.database.loadAllReviewData(userId);
+  }
+
+  updateReviewSchedule(userId: string, exerciseId: string, nextReviewDate: Date, interval: number, easinessFactor: number): Observable<void> {
+    if (!userId) {
+      console.log('[DatabaseService] No userId provided, skipping update');
+      return of(undefined);
+    }
+    return this.database.updateReviewSchedule(userId, exerciseId, nextReviewDate, interval, easinessFactor);
+  }
+
+  deleteReviewData(userId: string, exerciseId: string): Observable<void> {
+    if (!userId) {
+      console.log('[DatabaseService] No userId provided, skipping delete');
+      return of(undefined);
+    }
+    return this.database.deleteReviewData(userId, exerciseId);
+  }
+
+  // Auto methods for review data
+  saveReviewDataAuto(exerciseId: string, reviewData: ReviewData): Observable<void> {
+    const userId = this.authService.getUserId();
+    if (!userId) return of(undefined);
+    return this.saveWithRetry(this.saveReviewData(userId, exerciseId, reviewData));
+  }
+
+  loadReviewDataAuto(exerciseId: string): Observable<ReviewDataWithMetadata | null> {
+    const userId = this.authService.getUserId();
+    if (!userId) return of(null);
+    return this.loadReviewData(userId, exerciseId);
+  }
+
+  loadAllReviewDataAuto(): Observable<ReviewDataWithMetadata[]> {
+    const userId = this.authService.getUserId();
+    if (!userId) return of([]);
+    return this.loadAllReviewData(userId);
+  }
+
+  updateReviewScheduleAuto(exerciseId: string, nextReviewDate: Date, interval: number, easinessFactor: number): Observable<void> {
+    const userId = this.authService.getUserId();
+    if (!userId) return of(undefined);
+    return this.saveWithRetry(this.updateReviewSchedule(userId, exerciseId, nextReviewDate, interval, easinessFactor));
+  }
+
+  deleteReviewDataAuto(exerciseId: string): Observable<void> {
+    const userId = this.authService.getUserId();
+    if (!userId) return of(undefined);
+    return this.deleteReviewData(userId, exerciseId);
   }
 }

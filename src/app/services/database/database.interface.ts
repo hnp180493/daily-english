@@ -1,6 +1,7 @@
 import { Observable } from 'rxjs';
 import { UserProgress, CustomExercise } from '../../models/exercise.model';
 import { UserAchievementData, AchievementProgress } from '../../models/achievement.model';
+import { ReviewData, ReviewDataWithMetadata } from '../../models/review.model';
 
 export interface FavoriteData {
   exerciseId: string;
@@ -64,4 +65,12 @@ export interface IDatabase {
   // Reward Operations
   saveRewards(userId: string, rewards: UserRewards): Observable<void>;
   loadRewards(userId: string): Observable<UserRewards | null>;
+
+  // Review Data Operations
+  // Note: saveReviewData accepts ReviewData (without metadata), but load methods return ReviewDataWithMetadata
+  saveReviewData(userId: string, exerciseId: string, reviewData: ReviewData): Observable<void>;
+  loadReviewData(userId: string, exerciseId: string): Observable<ReviewDataWithMetadata | null>;
+  loadAllReviewData(userId: string): Observable<ReviewDataWithMetadata[]>;
+  updateReviewSchedule(userId: string, exerciseId: string, nextReviewDate: Date, interval: number, easinessFactor: number): Observable<void>;
+  deleteReviewData(userId: string, exerciseId: string): Observable<void>;
 }

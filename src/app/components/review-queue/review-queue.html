@@ -1,0 +1,213 @@
+<div class="review-queue-container max-w-6xl mx-auto p-4 md:p-6" role="main" aria-label="Review Queue">
+  <!-- Review Stats Section -->
+  <app-review-stats [stats]="reviewStats()" class="mb-8" role="region" aria-label="Review Statistics" />
+
+  <!-- Compact Filters and Sort Section -->
+  <div class="filters-section bg-gray-800 rounded-lg shadow-md p-3 mb-4" role="region" aria-label="Filter and Sort Controls">
+    <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3">
+      <!-- Urgency Filters -->
+      <div class="filter-buttons flex flex-wrap gap-2" role="group" aria-label="Filter by urgency level">
+        <button
+          (click)="filterByUrgency('all')"
+          [class.active]="selectedUrgency() === 'all'"
+          class="filter-btn px-3 py-1.5 rounded-lg text-sm font-medium transition-colors"
+          [class.bg-indigo-600]="selectedUrgency() === 'all'"
+          [class.text-white]="selectedUrgency() === 'all'"
+          [class.bg-gray-700]="selectedUrgency() !== 'all'"
+          [class.text-gray-300]="selectedUrgency() !== 'all'"
+          [class.hover:bg-indigo-700]="selectedUrgency() === 'all'"
+          [class.hover:bg-gray-600]="selectedUrgency() !== 'all'"
+          [attr.aria-pressed]="selectedUrgency() === 'all'"
+          aria-label="Show all reviews"
+        >
+          All Reviews
+        </button>
+        <button
+          (click)="filterByUrgency('high')"
+          [class.active]="selectedUrgency() === 'high'"
+          class="filter-btn px-3 py-1.5 rounded-lg text-sm font-medium transition-colors"
+          [class.bg-red-600]="selectedUrgency() === 'high'"
+          [class.text-white]="selectedUrgency() === 'high'"
+          [class.bg-gray-700]="selectedUrgency() !== 'high'"
+          [class.text-gray-300]="selectedUrgency() !== 'high'"
+          [class.hover:bg-red-700]="selectedUrgency() === 'high'"
+          [class.hover:bg-gray-600]="selectedUrgency() !== 'high'"
+          [attr.aria-pressed]="selectedUrgency() === 'high'"
+          aria-label="Show urgent reviews - exercises with scores below 60%"
+        >
+          🔴 Urgent
+        </button>
+        <button
+          (click)="filterByUrgency('medium')"
+          [class.active]="selectedUrgency() === 'medium'"
+          class="filter-btn px-3 py-1.5 rounded-lg text-sm font-medium transition-colors"
+          [class.bg-yellow-600]="selectedUrgency() === 'medium'"
+          [class.text-white]="selectedUrgency() === 'medium'"
+          [class.bg-gray-700]="selectedUrgency() !== 'medium'"
+          [class.text-gray-300]="selectedUrgency() !== 'medium'"
+          [class.hover:bg-yellow-700]="selectedUrgency() === 'medium'"
+          [class.hover:bg-gray-600]="selectedUrgency() !== 'medium'"
+          [attr.aria-pressed]="selectedUrgency() === 'medium'"
+          aria-label="Show medium urgency reviews - exercises with scores between 60% and 75%"
+        >
+          🟡 Due Soon
+        </button>
+        <button
+          (click)="filterByUrgency('low')"
+          [class.active]="selectedUrgency() === 'low'"
+          class="filter-btn px-3 py-1.5 rounded-lg text-sm font-medium transition-colors"
+          [class.bg-green-600]="selectedUrgency() === 'low'"
+          [class.text-white]="selectedUrgency() === 'low'"
+          [class.bg-gray-700]="selectedUrgency() !== 'low'"
+          [class.text-gray-300]="selectedUrgency() !== 'low'"
+          [class.hover:bg-green-700]="selectedUrgency() === 'low'"
+          [class.hover:bg-gray-600]="selectedUrgency() !== 'low'"
+          [attr.aria-pressed]="selectedUrgency() === 'low'"
+          aria-label="Show scheduled reviews - exercises due for review"
+        >
+          🟢 Scheduled
+        </button>
+      </div>
+
+      <!-- Right side controls -->
+      <div class="flex items-center gap-3 flex-wrap">
+        <!-- Column Layout Toggle -->
+        <div class="flex items-center gap-1.5 bg-gray-700 rounded-lg p-1">
+          <button
+            (click)="setColumnLayout(1)"
+            [class.bg-indigo-600]="columnLayout() === 1"
+            [class.text-white]="columnLayout() === 1"
+            [class.text-gray-400]="columnLayout() !== 1"
+            class="px-2 py-1 rounded text-xs font-medium transition-colors hover:text-white"
+            title="1 column"
+          >
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <rect x="4" y="4" width="16" height="16" stroke-width="2" rx="2"/>
+            </svg>
+          </button>
+          <button
+            (click)="setColumnLayout(2)"
+            [class.bg-indigo-600]="columnLayout() === 2"
+            [class.text-white]="columnLayout() === 2"
+            [class.text-gray-400]="columnLayout() !== 2"
+            class="px-2 py-1 rounded text-xs font-medium transition-colors hover:text-white"
+            title="2 columns"
+          >
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <rect x="4" y="4" width="6" height="16" stroke-width="2" rx="2"/>
+              <rect x="14" y="4" width="6" height="16" stroke-width="2" rx="2"/>
+            </svg>
+          </button>
+          <button
+            (click)="setColumnLayout(3)"
+            [class.bg-indigo-600]="columnLayout() === 3"
+            [class.text-white]="columnLayout() === 3"
+            [class.text-gray-400]="columnLayout() !== 3"
+            class="px-2 py-1 rounded text-xs font-medium transition-colors hover:text-white"
+            title="3 columns"
+          >
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <rect x="4" y="4" width="4" height="16" stroke-width="2" rx="2"/>
+              <rect x="10" y="4" width="4" height="16" stroke-width="2" rx="2"/>
+              <rect x="16" y="4" width="4" height="16" stroke-width="2" rx="2"/>
+            </svg>
+          </button>
+        </div>
+
+        <!-- Sort Dropdown -->
+        <div class="sort-section flex items-center gap-2">
+          <label for="sort-select" class="text-xs font-medium text-gray-400">Sort:</label>
+          <select
+            id="sort-select"
+            (change)="setSortBy($any($event.target).value)"
+            [value]="sortBy()"
+            class="px-2.5 py-1.5 text-sm bg-gray-700 text-gray-200 border border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+          >
+            <option value="urgency">Urgency</option>
+            <option value="date">Review Date</option>
+            <option value="difficulty">Difficulty</option>
+          </select>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Review Queue List -->
+  <div class="queue-list" role="region" aria-label="Review queue items">
+    @if (filteredQueue().length > 0) {
+      @if (filteredQueue().length > 20) {
+        <!-- Virtual scrolling for large lists -->
+        <cdk-virtual-scroll-viewport 
+          [itemSize]="200" 
+          class="virtual-scroll-viewport"
+          role="list"
+          [attr.aria-label]="'Review queue with ' + filteredQueue().length + ' items'"
+          aria-live="polite"
+        >
+          <div [class]="gridClass()">
+            @for (item of filteredQueue(); track item.exerciseId; let i = $index) {
+              <app-review-queue-item
+                [item]="item"
+                (startReview)="startReview($event)"
+                (startQuickReview)="startQuickReview($event)"
+                class="review-queue-item"
+                role="listitem"
+                [attr.aria-label]="item.exercise.title + ' - ' + item.urgency + ' urgency - Score: ' + item.lastScore + '%'"
+              />
+            }
+          </div>
+        </cdk-virtual-scroll-viewport>
+      } @else {
+        <!-- Regular rendering for small lists with dynamic grid -->
+        <div 
+          [class]="gridClass()" 
+          role="list" 
+          [attr.aria-label]="'Review queue with ' + filteredQueue().length + ' items'"
+          aria-live="polite"
+        >
+          @for (item of filteredQueue(); track item.exerciseId; let i = $index) {
+            <app-review-queue-item
+              [item]="item"
+              (startReview)="startReview($event)"
+              (startQuickReview)="startQuickReview($event)"
+              class="review-queue-item"
+              role="listitem"
+              [attr.aria-label]="item.exercise.title + ' - ' + item.urgency + ' urgency - Score: ' + item.lastScore + '%'"
+            />
+          }
+        </div>
+      }
+    } @else {
+      <!-- Empty State -->
+      <div class="empty-state bg-gray-800 rounded-lg shadow-md p-8 text-center">
+        <div class="max-w-md mx-auto">
+          <svg
+            class="mx-auto h-16 w-16 text-gray-500 mb-4"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+            />
+          </svg>
+          <h3 class="text-xl font-semibold text-gray-100 mb-2">
+            All caught up!
+          </h3>
+          <p class="text-gray-400 mb-6">
+            You don't have any reviews due right now. Great job staying on top of your learning!
+          </p>
+          <a
+            href="/exercises"
+            class="inline-block px-6 py-3 bg-indigo-600 text-white font-medium rounded-lg hover:bg-indigo-700 transition-colors"
+          >
+            Explore New Exercises
+          </a>
+        </div>
+      </div>
+    }
+  </div>
+</div>

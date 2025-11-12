@@ -213,6 +213,14 @@
   optionalDependencies:
     lmdb "3.4.2"
 
+"@angular/cdk@^20.2.12":
+  version "20.2.12"
+  resolved "https://registry.npmjs.org/@angular/cdk/-/cdk-20.2.12.tgz"
+  integrity sha512-hz8GtiMy3N9/e8407ZfrByHD5GEC4SkWtxyUknWuTM9P88AOie0jDZ6CfQg9gQ0OJX+6BAbJV3RpYZA1uzNUqA==
+  dependencies:
+    parse5 "^8.0.0"
+    tslib "^2.3.0"
+
 "@angular/cli@^20.3.4":
   version "20.3.8"
   resolved "https://registry.npmjs.org/@angular/cli/-/cli-20.3.8.tgz"
@@ -237,7 +245,7 @@
     yargs "18.0.0"
     zod "3.25.76"
 
-"@angular/common@^20.3.0", "@angular/common@20.3.9":
+"@angular/common@^20.0.0 || ^21.0.0", "@angular/common@^20.3.0", "@angular/common@20.3.9":
   version "20.3.9"
   resolved "https://registry.npmjs.org/@angular/common/-/common-20.3.9.tgz"
   integrity sha512-PgKEnv30TxvpfTJ3d4h5LEjUHpKSYcs3Rc4OvK7p5A7waBkXzfqCBmy54nomzfcf4dlEjb6wSoXxlJbR7Y34Iw==
@@ -265,7 +273,7 @@
   dependencies:
     tslib "^2.3.0"
 
-"@angular/core@^20.0.0", "@angular/core@^20.3.0", "@angular/core@20.3.9":
+"@angular/core@^20.0.0", "@angular/core@^20.0.0 || ^21.0.0", "@angular/core@^20.3.0", "@angular/core@20.3.9":
   version "20.3.9"
   resolved "https://registry.npmjs.org/@angular/core/-/core-20.3.9.tgz"
   integrity sha512-zZb7wUexBIIUojr1helzXsL25ilAoASm8aPOjBNHPLYr4ndDjMD/wogmH/dA7EzuCdmZf30ZmZZpuX149WdrpA==

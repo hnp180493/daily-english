@@ -1,5 +1,6 @@
-import { Component, ChangeDetectionStrategy, input } from '@angular/core';
+import { Component, ChangeDetectionStrategy, input, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
 import { AnalyticsData } from '../../../models/analytics.model';
 
 @Component({
@@ -10,18 +11,9 @@ import { AnalyticsData } from '../../../models/analytics.model';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class PerformanceAnalysisComponent {
+  private router = inject(Router);
+  
   analytics = input.required<AnalyticsData>();
-
-  getErrorIcon(type: string): string {
-    const icons: Record<string, string> = {
-      grammar: '📝',
-      vocabulary: '📚',
-      structure: '🏗️',
-      spelling: '✍️',
-      suggestion: '💡'
-    };
-    return icons[type] || '⚠️';
-  }
 
   getAccuracyClass(avgScore: number): string {
     if (avgScore >= 80) return 'high';
@@ -33,5 +25,9 @@ export class PerformanceAnalysisComponent {
     if (avgScore >= 80) return 'Excellent';
     if (avgScore >= 60) return 'Good';
     return 'Needs Practice';
+  }
+
+  goToExercise(exerciseId: string): void {
+    this.router.navigate(['/exercise', exerciseId]);
   }
 }
