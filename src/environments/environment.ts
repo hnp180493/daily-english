@@ -18,8 +18,8 @@ export const environment = {
   // - qwen/qwen-2-7b-instruct:free (multilingual)
   // - huggingfaceh4/zephyr-7b-beta:free (beginner-friendly)
   supabase: {
-    url: 'https://pxxbalgsvnpvxhnnkeyg.supabase.co',
-    anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB4eGJhbGdzdm5wdnhobm5rZXlnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjI1OTY3MjAsImV4cCI6MjA3ODE3MjcyMH0.ymh1h-2JR3Hl1D9vB_cKHsHBxQU4Rxd5XWNZbTLaHks'
+    url: '',
+    anonKey: ''
   },
   
   seo: {

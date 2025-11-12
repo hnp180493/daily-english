@@ -43,16 +43,25 @@ export class ReviewService {
   private cacheTimestamp: number = 0;
   private readonly CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
 
+  // Notification management
+  private notificationIntervalId: any = null;
+  private notificationInitialized = false;
+  private lastNotificationTime = 0;
+  private readonly NOTIFICATION_COOLDOWN = 60 * 60 * 1000; // 1 hour cooldown between notifications
+
   constructor() {
     // Trigger migration check when user logs in
     effect(() => {
       const user = this.authService.currentUser();
       if (user && !this.migrationCompleted) {
         this.checkAndMigrateReviewData();
-        // Initialize notifications after migration
-        setTimeout(() => this.initializeNotifications(), 2000);
+        // Initialize notifications after migration (only once)
+        if (!this.notificationInitialized) {
+          setTimeout(() => this.initializeNotifications(), 2000);
+        }
       } else if (!user) {
         this.migrationCompleted = false;
+        this.cleanupNotifications();
       }
     });
   }
@@ -419,6 +428,15 @@ export class ReviewService {
    * Call this on app initialization to set up periodic checks
    */
   initializeNotifications(): void {
+    // Prevent multiple initializations
+    if (this.notificationInitialized) {
+      console.log('[ReviewService] Notifications already initialized, skipping');
+      return;
+    }
+
+    this.notificationInitialized = true;
+    console.log('[ReviewService] Initializing notifications');
+
     // Check immediately on initialization
     this.checkDueReviews().subscribe(({ count, urgentCount }) => {
       if (count > 0 || urgentCount > 0) {
@@ -426,8 +444,13 @@ export class ReviewService {
       }
     });
 
+    // Clear any existing interval
+    if (this.notificationIntervalId) {
+      clearInterval(this.notificationIntervalId);
+    }
+
     // Set up periodic checks (every hour)
-    setInterval(() => {
+    this.notificationIntervalId = setInterval(() => {
       this.checkDueReviews().subscribe(({ count, urgentCount }) => {
         if (count > 0 || urgentCount > 0) {
           this.showReviewNotification(count, urgentCount);
@@ -437,12 +460,35 @@ export class ReviewService {
   }
 
   /**
+   * Clean up notification resources
+   */
+  private cleanupNotifications(): void {
+    if (this.notificationIntervalId) {
+      clearInterval(this.notificationIntervalId);
+      this.notificationIntervalId = null;
+    }
+    this.notificationInitialized = false;
+    this.lastNotificationTime = 0;
+    console.log('[ReviewService] Notifications cleaned up');
+  }
+
+  /**
    * Show a review notification with toast UI
+   * Includes cooldown to prevent spam
    */
   private showReviewNotification(dueCount: number, urgentCount: number): void {
+    // Check cooldown to prevent spam
+    const now = Date.now();
+    if (now - this.lastNotificationTime < this.NOTIFICATION_COOLDOWN) {
+      console.log('[ReviewService] Notification cooldown active, skipping');
+      return;
+    }
+
+    this.lastNotificationTime = now;
+
     if (urgentCount > 0) {
       const message = urgentCount === 1 
-        ? '🔴 Bạn có 1 bài ôn tập khẩn cấp cần làm ngay!'
+        ? '� BBạn có 1 bài ôn tập khẩn cấp cần làm ngay!'
         : `🔴 Bạn có ${urgentCount} bài ôn tập khẩn cấp cần làm ngay!`;
       
       this.toastService.show(message, 'warning', 10000, {
