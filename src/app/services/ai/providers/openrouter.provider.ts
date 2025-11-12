@@ -49,10 +49,31 @@ export class OpenRouterProvider extends BaseAIProvider {
       })
         .then(async response => {
           if (!response.ok) {
-            const errorData = await response.json().catch(() => ({}));
-            const error: any = new Error(errorData.error?.message || `HTTP error! status: ${response.status}`);
+            let errorData: any = {};
+            try {
+              errorData = await response.json();
+            } catch (e) {
+              // If response is not JSON, try to get text
+              try {
+                const errorText = await response.text();
+                errorData = { error: { message: errorText } };
+              } catch (textError) {
+                errorData = {};
+              }
+            }
+            
+            // Extract detailed error message
+            const errorMsg = errorData.error?.message 
+              || errorData.message 
+              || errorData.error 
+              || `HTTP ${response.status}: ${response.statusText}`;
+            
+            const error: any = new Error(errorMsg);
             error.status = response.status;
             error.statusText = response.statusText;
+            error.details = errorData;
+            
+            console.error('[OpenRouter] API Error Response:', errorData);
             throw error;
           }
           return response.json();
@@ -154,10 +175,31 @@ export class OpenRouterProvider extends BaseAIProvider {
       })
         .then(async response => {
           if (!response.ok) {
-            const errorData = await response.json().catch(() => ({}));
-            const error: any = new Error(errorData.error?.message || `HTTP error! status: ${response.status}`);
+            let errorData: any = {};
+            try {
+              errorData = await response.json();
+            } catch (e) {
+              // If response is not JSON, try to get text
+              try {
+                const errorText = await response.text();
+                errorData = { error: { message: errorText } };
+              } catch (textError) {
+                errorData = {};
+              }
+            }
+            
+            // Extract detailed error message
+            const errorMsg = errorData.error?.message 
+              || errorData.message 
+              || errorData.error 
+              || `HTTP ${response.status}: ${response.statusText}`;
+            
+            const error: any = new Error(errorMsg);
             error.status = response.status;
             error.statusText = response.statusText;
+            error.details = errorData;
+            
+            console.error('[OpenRouter] API Error Response:', errorData);
             throw error;
           }
           return response;
@@ -343,29 +385,47 @@ export class OpenRouterProvider extends BaseAIProvider {
   private handleError(error: any): string {
     // Log all errors to console with full details for debugging
     console.error('[OpenRouter] Error details:', error);
+    console.error('[OpenRouter] Error message:', error.message);
+    console.error('[OpenRouter] Error stack:', error.stack);
+
+    // Extract the actual error message from the error object
+    const errorMessage = error.message || '';
 
     // Check for HTTP status errors
     if (error.status) {
       switch (error.status) {
+        case 400:
+          return `Bad Request: ${errorMessage || 'Invalid request parameters'}`;
         case 401:
-          return 'Invalid API key. Please check your OpenRouter configuration.';
+          return `Authentication Failed: ${errorMessage || 'Invalid API key. Please check your OpenRouter configuration.'}`;
+        case 402:
+          return `Payment Required: ${errorMessage || 'Insufficient credits. Please add credits to your OpenRouter account.'}`;
+        case 403:
+          return `Forbidden: ${errorMessage || 'Access denied. Check your API key permissions.'}`;
+        case 404:
+          return `Model Not Found: ${errorMessage || 'The specified model does not exist or is not available.'}`;
         case 429:
-          return 'Rate limit exceeded. Please try again in a moment.';
+          return `Rate Limit Exceeded: ${errorMessage || 'Too many requests. Please try again in a moment.'}`;
         case 500:
         case 502:
         case 503:
-          return 'Service temporarily unavailable. Please try again later.';
+          return `Service Error: ${errorMessage || 'OpenRouter service temporarily unavailable. Please try again later.'}`;
         default:
-          return `API error: ${error.statusText || 'Unknown error'}`;
+          return `API Error (${error.status}): ${errorMessage || error.statusText || 'Unknown error'}`;
       }
     }
 
     // Check for network errors
     if (error instanceof TypeError && error.message.includes('fetch')) {
-      return 'Network error, please check your connection.';
+      return `Network Error: ${errorMessage || 'Unable to connect. Please check your internet connection.'}`;
+    }
+
+    // Return the actual error message if available
+    if (errorMessage) {
+      return `Error: ${errorMessage}`;
     }
 
     // Generic error
-    return 'An unexpected error occurred. Please try again.';
+    return 'An unexpected error occurred. Please check the console for details.';
   }
 }

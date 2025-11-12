@@ -45,12 +45,12 @@
         <div class="form-group">
           <div class="label-with-toggle">
             <label for="openrouter-model">Model (Free Tier Available)</label>
-            <button type="button" class="toggle-input-mode" (click)="toggleOpenRouterModelInput()">
-              {{ useCustomOpenRouterModel() ? '📋 Use Preset' : '✏️ Custom Model' }}
+            <button type="button" class="toggle-input-mode" (click)="toggleCustomModelInput('openrouter')">
+              {{ useCustomModel().openrouter ? '📋 Use Preset' : '✏️ Custom Model' }}
             </button>
           </div>
           
-          @if (useCustomOpenRouterModel()) {
+          @if (useCustomModel().openrouter) {
             <input 
               id="openrouter-model-custom" 
               type="text" 
@@ -63,8 +63,10 @@
             <select id="openrouter-model" [ngModel]="config().openrouter?.modelName" (ngModelChange)="updateOpenRouterModel($event)">
               <optgroup label="Popular Free Models">
                 <option value="mistralai/mistral-7b-instruct:free">Mistral 7B Instruct (Best) ⭐</option>
-                <option value="meta-llama/llama-3.2-3b-instruct:free">Llama 3.2 3B Instruct (Fast)</option>
-                <option value="nousresearch/hermes-3-llama-3.1-405b:free">Hermes 3 Llama 405B (Powerful)</option>
+                <option value="openrouter/polaris-alpha">Polaris Alpha (Fast)</option>
+                <option value="qwen/qwen-2.5-coder-32b-instruct:free">Qwen2.5 Coder 32B Instruct</option>
+                <!-- <option value="meta-llama/llama-3.2-3b-instruct:free">Llama 3.2 3B Instruct (Fast)</option>
+                <option value="nousresearch/hermes-3-llama-3.1-405b:free">Hermes 3 Llama 405B (Powerful)</option> -->
               </optgroup>
               <optgroup label="Paid Models (Better Quality)">
                 <option value="openai/gpt-4o-mini">GPT-4o Mini (Cheap)</option>
@@ -135,14 +137,29 @@
         </div>
 
         <div class="form-group">
-          <label for="openai-model">Model</label>
-          <select id="openai-model" [ngModel]="config().openai.modelName" (ngModelChange)="updateOpenAIModel($event)">
-            <option value="gpt-5">GPT-5</option>
-            <option value="gpt-5-mini">GPT-5 Mini</option>
-            <!-- <option value="gpt-5-nano">GPT-5 Nano</option> -->
-            <!-- <option value="gpt-4o">GPT-4o</option> -->
-            <option value="gpt-4o-mini">GPT-4o Mini</option>
-          </select>
+          <div class="label-with-toggle">
+            <label for="openai-model">Model</label>
+            <button type="button" class="toggle-input-mode" (click)="toggleCustomModelInput('openai')">
+              {{ useCustomModel().openai ? '📋 Use Preset' : '✏️ Custom Model' }}
+            </button>
+          </div>
+          
+          @if (useCustomModel().openai) {
+            <input 
+              id="openai-model-custom" 
+              type="text" 
+              [ngModel]="config().openai.modelName" 
+              (ngModelChange)="updateOpenAIModel($event)" 
+              placeholder="e.g., gpt-4o-mini"
+            />
+            <small class="model-info">💡 Enter any OpenAI model name</small>
+          } @else {
+            <select id="openai-model" [ngModel]="config().openai.modelName" (ngModelChange)="updateOpenAIModel($event)">
+              <option value="gpt-5">GPT-5</option>
+              <option value="gpt-5-mini">GPT-5 Mini</option>
+              <option value="gpt-4o-mini">GPT-4o Mini</option>
+            </select>
+          }
         </div>
 
         <button class="btn btn-select" (click)="selectProvider('openai')">
@@ -191,13 +208,30 @@
         </div>
 
         <div class="form-group">
-          <label for="gemini-model">Model</label>
-          <select id="gemini-model" [ngModel]="config().gemini.modelName" (ngModelChange)="updateGeminiModel($event)">
-            <option value="gemini-2.5-pro">Gemini 2.5 Pro (Latest)</option>
-            <option value="gemini-2.5-flash">Gemini 2.5 Flash</option>
-            <option value="gemini-2.0-flash-exp">Gemini 2.0 Flash Experimental</option>
-            <option value="gemini-exp-1206">Gemini Exp 1206</option>
-          </select>
+          <div class="label-with-toggle">
+            <label for="gemini-model">Model</label>
+            <button type="button" class="toggle-input-mode" (click)="toggleCustomModelInput('gemini')">
+              {{ useCustomModel().gemini ? '📋 Use Preset' : '✏️ Custom Model' }}
+            </button>
+          </div>
+          
+          @if (useCustomModel().gemini) {
+            <input 
+              id="gemini-model-custom" 
+              type="text" 
+              [ngModel]="config().gemini.modelName" 
+              (ngModelChange)="updateGeminiModel($event)" 
+              placeholder="e.g., gemini-2.0-flash-exp"
+            />
+            <small class="model-info">💡 Enter any Gemini model name</small>
+          } @else {
+            <select id="gemini-model" [ngModel]="config().gemini.modelName" (ngModelChange)="updateGeminiModel($event)">
+              <option value="gemini-2.5-pro">Gemini 2.5 Pro (Latest)</option>
+              <option value="gemini-2.5-flash">Gemini 2.5 Flash</option>
+              <option value="gemini-2.0-flash-exp">Gemini 2.0 Flash Experimental</option>
+              <option value="gemini-exp-1206">Gemini Exp 1206</option>
+            </select>
+          }
         </div>
 
         <button class="btn btn-select" (click)="selectProvider('gemini')">

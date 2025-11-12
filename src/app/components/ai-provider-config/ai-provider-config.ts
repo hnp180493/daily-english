@@ -47,16 +47,50 @@ export class AiProviderConfig implements OnInit {
   expandedProvider = signal<'azure' | 'gemini' | 'openai' | 'openrouter' | null>(null);
   saveSuccess = signal(false);
   saveError = signal(false);
-  useCustomOpenRouterModel = signal(false);
+  
+  useCustomModel = signal({
+    gemini: false,
+    openai: false,
+    openrouter: false
+  });
+
+  private readonly CUSTOM_MODEL_KEYS = {
+    gemini: 'gemini_useCustomModel',
+    openai: 'openai_useCustomModel',
+    openrouter: 'openrouter_useCustomModel'
+  };
 
   ngOnInit(): void {
     this.loadConfig();
+    this.loadCustomModelPreference();
   }
 
   loadConfig(): void {
     const saved = this.configService.getConfig();
     if (saved) {
       this.config.set(saved);
+    }
+  }
+
+  private loadCustomModelPreference(): void {
+    try {
+      const preferences: any = {};
+      for (const [provider, key] of Object.entries(this.CUSTOM_MODEL_KEYS)) {
+        const saved = localStorage.getItem(key);
+        preferences[provider] = saved === 'true';
+      }
+      this.useCustomModel.set(preferences);
+    } catch (error) {
+      console.error('Failed to load custom model preferences:', error);
+    }
+  }
+
+  private saveCustomModelPreference(provider: 'gemini' | 'openai' | 'openrouter'): void {
+    try {
+      const key = this.CUSTOM_MODEL_KEYS[provider];
+      localStorage.setItem(key, String(this.useCustomModel()[provider]));
+    } catch (error) {
+      console.error('Failed to save custom model preference:', error);
     }
   }
 
@@ -140,13 +174,29 @@ export class AiProviderConfig implements OnInit {
     this.config.update(c => ({ ...c, openrouter: { ...c.openrouter!, siteName } }));
   }
 
-  toggleOpenRouterModelInput(): void {
-    this.useCustomOpenRouterModel.update(v => !v);
+  toggleCustomModelInput(provider: 'gemini' | 'openai' | 'openrouter'): void {
+    this.useCustomModel.update(models => ({
+      ...models,
+      [provider]: !models[provider]
+    }));
+    this.saveCustomModelPreference(provider);
   }
 
   clearConfig(): void {
     if (confirm('Are you sure you want to clear all configuration?')) {
       this.configService.clearConfig();
+      
+      // Clear all custom model preferences
+      for (const key of Object.values(this.CUSTOM_MODEL_KEYS)) {
+        localStorage.removeItem(key);
+      }
+      
+      this.useCustomModel.set({
+        gemini: false,
+        openai: false,
+        openrouter: false
+      });
+      
       this.config.set({
         provider: 'openai',
         azure: {

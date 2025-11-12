@@ -122,8 +122,8 @@ export class ExerciseStateService {
           translation: '',
           isCompleted: false,
           accuracyScore: undefined,
-          showTranslation: false
-          // Keep consecutiveFailures to track across retries
+          showTranslation: false,
+          consecutiveFailures: 0 // Reset failures when user explicitly retries
         };
       }
       return updated;
