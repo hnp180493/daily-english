@@ -566,7 +566,7 @@ export class ExerciseDetailComponent implements OnInit {
     const ex = this.exercise();
     if (!ex) return;
 
-    console.log('Exercise completed, recording attempt...');
+    console.log('[ExerciseDetail] Exercise completed, recording attempt...');
     this.recordingService.recordAttempt(ex, this.hintsShown(), this.exercisePoints());
     
     // Schedule next review using spaced repetition
@@ -576,6 +576,7 @@ export class ExerciseDetailComponent implements OnInit {
       ? completedSentences.reduce((sum, s) => sum + (s.accuracyScore || 0), 0) / completedSentences.length
       : 0;
     
+    console.log(`[ExerciseDetail] Scheduling next review for ${ex.id} with score ${avgScore}%`);
     this.reviewService.scheduleNextReview(ex.id, avgScore);
     
     // Update review data with incorrect sentence indices

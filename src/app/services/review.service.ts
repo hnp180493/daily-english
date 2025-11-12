@@ -401,18 +401,17 @@ export class ReviewService {
     return this.databaseService.loadAllReviewDataAuto().pipe(
       map(reviewDataList => {
         const now = new Date();
-        const tomorrow = new Date(now.getTime() + 24 * 60 * 60 * 1000);
 
-        // Count reviews due within 24 hours
-        const dueWithin24h = reviewDataList.filter(rd => {
-          return rd.nextReviewDate <= tomorrow && rd.nextReviewDate >= now;
+        // Count reviews that are due NOW (not scheduled for future)
+        const dueNow = reviewDataList.filter(rd => {
+          return rd.nextReviewDate <= now;
         });
 
-        // Count urgent reviews (score < 60%)
-        const urgentReviews = reviewDataList.filter(rd => rd.lastScore < 60);
+        // Count urgent reviews (overdue AND score < 60%)
+        const urgentReviews = dueNow.filter(rd => rd.lastScore < 60);
 
         return {
-          count: dueWithin24h.length,
+          count: dueNow.length,
           urgentCount: urgentReviews.length
         };
       }),
@@ -497,8 +496,8 @@ export class ReviewService {
       });
     } else if (dueCount > 0) {
       const message = dueCount === 1
-        ? '📚 Bạn có 1 bài cần ôn tập trong 24 giờ tới'
-        : `📚 Bạn có ${dueCount} bài cần ôn tập trong 24 giờ tới`;
+        ? '📚 Bạn có 1 bài đã đến hạn ôn tập'
+        : `📚 Bạn có ${dueCount} bài đã đến hạn ôn tập`;
       
       this.toastService.show(message, 'info', 8000, {
         label: 'Xem danh sách',
@@ -582,6 +581,7 @@ export class ReviewService {
 
   /**
    * Invalidate the cache (call after updates)
+   * Public method to allow components to force refresh
    */
   invalidateCache(): void {
     this.allReviewDataCache = null;

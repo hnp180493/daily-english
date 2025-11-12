@@ -28,6 +28,9 @@ export class ReviewQueueComponent implements OnInit {
   });
 
   ngOnInit(): void {
+    // Force invalidate cache to ensure fresh data
+    this.reviewService.invalidateCache();
+    
     // Load review queue
     this.reviewService.getReviewQueue().subscribe();
     
@@ -51,6 +54,10 @@ export class ReviewQueueComponent implements OnInit {
   // Computed filtered and sorted queue
   filteredQueue = computed(() => {
     let queue = this.reviewQueue();
+    
+    // Filter: only show items that are due NOW (not scheduled for future)
+    const now = new Date();
+    queue = queue.filter(item => item.nextReviewDate <= now);
     
     // Filter by urgency
     const urgency = this.selectedUrgency();

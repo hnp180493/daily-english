@@ -4,6 +4,7 @@ import { AIService } from './ai/ai.service';
 import { ExerciseStateService } from './exercise-state.service';
 import { ExerciseValidationService } from './exercise-validation.service';
 import { ExercisePersistenceService } from './exercise-persistence.service';
+import { ReviewService } from './review.service';
 import { Exercise, FeedbackItem } from '../models/exercise.model';
 
 export interface SubmissionResult {
@@ -20,6 +21,7 @@ export class ExerciseSubmissionService {
   private stateService = inject(ExerciseStateService);
   private validationService = inject(ExerciseValidationService);
   private persistenceService = inject(ExercisePersistenceService);
+  private reviewService = inject(ReviewService);
 
   isSubmitting = signal(false);
   isStreaming = signal(false);
@@ -91,6 +93,18 @@ export class ExerciseSubmissionService {
 
             // Always mark sentence as completed with suggestion
             this.stateService.markSentenceCompleted(currentIdx, input, score, suggestion);
+
+            // Check if all sentences are now completed
+            const sentences = this.stateService.sentences();
+            const allCompleted = sentences.every(s => s.isCompleted);
+            
+            if (allCompleted) {
+              // Calculate average score from all completed sentences
+              const avgScore = sentences.reduce((sum, s) => sum + (s.accuracyScore || 0), 0) / sentences.length;
+              
+              console.log(`[Submission] All sentences completed! Scheduling next review for ${exerciseId} with avg score ${avgScore.toFixed(2)}%`);
+              this.reviewService.scheduleNextReview(exerciseId, avgScore);
+            }
 
             if (score >= 90) {
               this.persistenceService.saveProgress(exerciseId, this.stateService.getState());
