@@ -1,0 +1,148 @@
+.performance-trend-chart {
+  @apply bg-white dark:bg-gray-800 rounded-lg shadow-md p-6;
+}
+
+.widget-header {
+  @apply flex items-center justify-between mb-6;
+}
+
+.widget-title {
+  @apply text-xl font-semibold text-gray-900 dark:text-white;
+}
+
+.trend-indicator {
+  @apply flex items-center gap-2 px-3 py-1 rounded-full bg-gray-100 dark:bg-gray-700;
+}
+
+.trend-icon {
+  @apply text-xl font-bold;
+}
+
+.trend-text {
+  @apply text-sm font-medium;
+}
+
+.insufficient-data {
+  @apply flex flex-col items-center justify-center py-12 text-center;
+}
+
+.info-icon {
+  @apply text-gray-400 dark:text-gray-600 mb-4;
+}
+
+.insufficient-message {
+  @apply text-base font-medium text-gray-900 dark:text-gray-100 mb-2;
+}
+
+.insufficient-hint {
+  @apply text-sm text-gray-600 dark:text-gray-400;
+}
+
+.chart-container {
+  @apply w-full overflow-x-auto;
+}
+
+.chart-svg {
+  @apply w-full h-auto;
+  min-width: 400px;
+}
+
+.grid-line {
+  @apply stroke-gray-200 dark:stroke-gray-700;
+  stroke-width: 1;
+  stroke-dasharray: 2, 2;
+}
+
+.axis-label {
+  @apply fill-gray-600 dark:fill-gray-400 text-xs;
+  text-anchor: middle;
+}
+
+.y-axis-labels .axis-label {
+  text-anchor: end;
+}
+
+.trend-line {
+  @apply stroke-gray-400 dark:stroke-gray-500;
+  stroke-width: 2;
+  stroke-dasharray: 5, 5;
+  opacity: 0.6;
+}
+
+.performance-line {
+  @apply stroke-primary dark:stroke-primary;
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.data-point {
+  @apply fill-white dark:fill-gray-800 stroke-primary dark:stroke-primary;
+  stroke-width: 2;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover,
+  &:focus {
+    r: 6;
+    @apply fill-primary dark:fill-primary;
+    outline: none;
+  }
+}
+
+.chart-legend {
+  @apply flex flex-wrap items-center gap-4 mt-6 pt-4 border-t border-gray-200 dark:border-gray-700;
+}
+
+.legend-item {
+  @apply flex items-center gap-2;
+}
+
+.legend-line {
+  @apply w-8 h-0.5;
+
+  &.performance-legend {
+    @apply bg-primary dark:bg-primary;
+  }
+
+  &.trend-legend {
+    @apply bg-gray-400 dark:bg-gray-500;
+    background-image: repeating-linear-gradient(
+      to right,
+      currentColor,
+      currentColor 5px,
+      transparent 5px,
+      transparent 10px
+    );
+  }
+}
+
+.legend-label {
+  @apply text-sm text-gray-700 dark:text-gray-300;
+}
+
+// Responsive adjustments
+@media (max-width: 768px) {
+  .performance-trend-chart {
+    @apply p-4;
+  }
+
+  .widget-header {
+    @apply flex-col items-start gap-2;
+  }
+
+  .chart-legend {
+    @apply flex-col items-start gap-2;
+  }
+}
+
+// Dark mode specific adjustments
+@media (prefers-color-scheme: dark) {
+  .performance-line {
+    filter: drop-shadow(0 0 4px rgba(79, 70, 229, 0.5));
+  }
+
+  .data-point {
+    filter: drop-shadow(0 0 2px rgba(79, 70, 229, 0.3));
+  }
+}

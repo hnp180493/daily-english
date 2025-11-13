@@ -1,0 +1,61 @@
+<div class="learning-velocity-widget">
+  <div class="widget-header">
+    <h3 class="widget-title">Learning Velocity</h3>
+    <p class="widget-subtitle">Your practice frequency and consistency</p>
+  </div>
+
+  @if (data().weeklyBreakdown.length > 0) {
+    <div class="velocity-content">
+      <!-- Average Exercises Per Week -->
+      <div class="metric-card">
+        <div class="metric-label">Average per week</div>
+        <div class="metric-value">{{ data().averageExercisesPerWeek }} exercises</div>
+      </div>
+
+      <!-- Current Week vs Average -->
+      <div class="metric-card" [class]="getStatusBgClass()">
+        <div class="metric-label">This week</div>
+        <div class="metric-value">
+          <span>{{ data().currentWeekCount }} exercises</span>
+          <span [class]="getStatusColorClass()" class="percentage-badge">
+            {{ formatPercentage(data().percentageDifference) }}
+          </span>
+        </div>
+      </div>
+
+      <!-- Weekly Breakdown Chart -->
+      <div class="chart-container">
+        <h4 class="chart-title">Last 4 Weeks</h4>
+        <div class="bar-chart">
+          @for (week of data().weeklyBreakdown; track week.weekLabel) {
+            <div class="bar-wrapper">
+              <div 
+                class="bar"
+                [style.height.%]="getBarHeight(week.exerciseCount)"
+                [attr.aria-label]="week.weekLabel + ': ' + week.exerciseCount + ' exercises'"
+                role="img">
+                <span class="bar-value">{{ week.exerciseCount }}</span>
+              </div>
+              <div class="bar-label">{{ week.weekLabel }}</div>
+            </div>
+          }
+        </div>
+      </div>
+
+      <!-- Encouragement Message -->
+      <div class="encouragement-message" [class]="getStatusBgClass()">
+        <svg class="message-icon" width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+          <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
+        </svg>
+        <p [class]="getStatusColorClass()">{{ encouragementMessage() }}</p>
+      </div>
+    </div>
+  } @else {
+    <div class="empty-state">
+      <svg class="empty-icon" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+      </svg>
+      <p class="empty-message">Complete exercises to track your learning velocity</p>
+    </div>
+  }
+</div>

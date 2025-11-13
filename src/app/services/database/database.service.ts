@@ -5,6 +5,7 @@ import { AuthService } from '../auth.service';
 import { UserProgress, CustomExercise } from '../../models/exercise.model';
 import { UserAchievementData } from '../../models/achievement.model';
 import { ReviewData, ReviewDataWithMetadata } from '../../models/review.model';
+import { ExerciseHistoryRecord } from '../../models/exercise-history.model';
 import { IDatabase, FavoriteData, UserProfile, UserRewards, UnsubscribeFunction } from './database.interface';
 import { SupabaseDatabase } from './supabase-database.service';
 
@@ -377,5 +378,42 @@ export class DatabaseService implements IDatabase {
     const userId = this.authService.getUserId();
     if (!userId) return of(undefined);
     return this.deleteReviewData(userId, exerciseId);
+  }
+
+  // Exercise History Operations
+  insertExerciseHistory(record: ExerciseHistoryRecord): Observable<void> {
+    if (!record.userId) {
+      console.log('[DatabaseService] No userId provided, skipping save');
+      return of(undefined);
+    }
+    return this.database.insertExerciseHistory(record);
+  }
+
+  loadRecentHistory(userId: string, limit: number): Observable<ExerciseHistoryRecord[]> {
+    if (!userId) {
+      console.log('[DatabaseService] No userId provided, returning empty array');
+      return of([]);
+    }
+    return this.database.loadRecentHistory(userId, limit);
+  }
+
+  loadExerciseHistory(userId: string, exerciseId: string): Observable<ExerciseHistoryRecord[]> {
+    if (!userId) {
+      console.log('[DatabaseService] No userId provided, returning empty array');
+      return of([]);
+    }
+    return this.database.loadExerciseHistory(userId, exerciseId);
+  }
+
+  loadHistoryForDateRange(
+    userId: string,
+    startDate: Date,
+    endDate: Date
+  ): Observable<ExerciseHistoryRecord[]> {
+    if (!userId) {
+      console.log('[DatabaseService] No userId provided, returning empty array');
+      return of([]);
+    }
+    return this.database.loadHistoryForDateRange(userId, startDate, endDate);
   }
 }

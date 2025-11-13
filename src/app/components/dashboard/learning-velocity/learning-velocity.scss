@@ -1,0 +1,129 @@
+.learning-velocity-widget {
+  @apply bg-white dark:bg-gray-800 rounded-lg shadow-md p-6;
+}
+
+.widget-header {
+  @apply mb-6;
+}
+
+.widget-title {
+  @apply text-xl font-semibold text-gray-900 dark:text-white mb-1;
+}
+
+.widget-subtitle {
+  @apply text-sm text-gray-600 dark:text-gray-400;
+}
+
+.velocity-content {
+  @apply space-y-6;
+}
+
+.metric-card {
+  @apply p-4 rounded-lg border border-gray-200 dark:border-gray-700;
+  transition: background-color 0.2s ease;
+}
+
+.metric-label {
+  @apply text-sm font-medium text-gray-600 dark:text-gray-400 mb-1;
+}
+
+.metric-value {
+  @apply text-2xl font-bold text-gray-900 dark:text-white flex items-center gap-2;
+}
+
+.percentage-badge {
+  @apply text-lg font-semibold;
+}
+
+.chart-container {
+  @apply mt-6;
+}
+
+.chart-title {
+  @apply text-sm font-medium text-gray-700 dark:text-gray-300 mb-4;
+}
+
+.bar-chart {
+  @apply flex items-end justify-between gap-2 h-32;
+}
+
+.bar-wrapper {
+  @apply flex-1 flex flex-col items-center;
+}
+
+.bar {
+  @apply w-full bg-primary dark:bg-primary/80 rounded-t-md relative transition-all duration-300 min-h-[20px];
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: 4px;
+
+  &:hover {
+    @apply bg-primary/80 dark:bg-primary;
+  }
+}
+
+.bar-value {
+  @apply text-xs font-semibold text-white;
+}
+
+.bar-label {
+  @apply text-xs text-gray-600 dark:text-gray-400 mt-2 text-center;
+  font-size: 10px;
+  line-height: 1.2;
+}
+
+.encouragement-message {
+  @apply flex items-start gap-3 p-4 rounded-lg;
+  transition: background-color 0.2s ease;
+
+  p {
+    @apply text-sm font-medium flex-1;
+  }
+}
+
+.message-icon {
+  @apply flex-shrink-0 mt-0.5;
+}
+
+.empty-state {
+  @apply flex flex-col items-center justify-center py-12 text-center;
+}
+
+.empty-icon {
+  @apply text-gray-400 dark:text-gray-600 mb-4;
+}
+
+.empty-message {
+  @apply text-gray-600 dark:text-gray-400;
+}
+
+// Responsive adjustments
+@media (max-width: 768px) {
+  .learning-velocity-widget {
+    @apply p-4;
+  }
+
+  .metric-value {
+    @apply text-xl;
+  }
+
+  .bar-chart {
+    @apply h-24;
+  }
+
+  .bar-label {
+    font-size: 9px;
+  }
+}
+
+// Dark mode specific adjustments
+@media (prefers-color-scheme: dark) {
+  .metric-card {
+    @apply bg-gray-900/50;
+  }
+
+  .bar {
+    box-shadow: 0 2px 8px rgba(79, 70, 229, 0.3);
+  }
+}

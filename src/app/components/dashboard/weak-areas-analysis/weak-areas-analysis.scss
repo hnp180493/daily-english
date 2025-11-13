@@ -1,0 +1,186 @@
+.weak-areas-analysis {
+  @apply bg-white dark:bg-gray-800 rounded-lg shadow-md p-6;
+}
+
+.widget-header {
+  @apply mb-6;
+}
+
+.widget-title {
+  @apply text-xl font-semibold text-gray-900 dark:text-white mb-1;
+}
+
+.widget-subtitle {
+  @apply text-sm text-gray-600 dark:text-gray-400;
+}
+
+.empty-state {
+  @apply flex flex-col items-center justify-center py-12 text-center;
+}
+
+.empty-icon {
+  @apply text-gray-400 dark:text-gray-600 mb-4;
+}
+
+.empty-message {
+  @apply text-base font-medium text-gray-900 dark:text-gray-100 mb-2;
+}
+
+.empty-hint {
+  @apply text-sm text-gray-600 dark:text-gray-400;
+}
+
+.weak-areas-list {
+  @apply space-y-4;
+}
+
+.weak-area-card {
+  @apply border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden;
+  transition: all 0.2s ease;
+
+  &:hover {
+    @apply shadow-md;
+  }
+}
+
+.weak-area-header {
+  @apply flex items-center gap-4 p-4 cursor-pointer;
+  transition: background-color 0.2s ease;
+
+  &:hover {
+    @apply bg-gray-50 dark:bg-gray-700/50;
+  }
+
+  &:focus {
+    @apply outline-none ring-2 ring-primary ring-inset;
+  }
+
+  &.expanded {
+    @apply bg-gray-50 dark:bg-gray-700/50;
+  }
+}
+
+.area-info {
+  @apply flex-1;
+}
+
+.area-pattern {
+  @apply text-base font-semibold text-gray-900 dark:text-white mb-2;
+}
+
+.area-stats {
+  @apply flex flex-wrap items-center gap-3;
+}
+
+.stat-item {
+  @apply flex items-center gap-1 text-sm text-gray-600 dark:text-gray-400;
+}
+
+.stat-icon {
+  @apply flex-shrink-0;
+  stroke-width: 2;
+}
+
+.area-accuracy {
+  @apply flex items-center justify-center px-4 py-2 rounded-lg;
+}
+
+.accuracy-value {
+  @apply text-lg font-bold;
+}
+
+.expand-icon {
+  @apply flex-shrink-0 text-gray-400 dark:text-gray-500;
+  transition: transform 0.2s ease;
+
+  &.rotated {
+    transform: rotate(180deg);
+  }
+}
+
+.weak-area-content {
+  @apply p-4 pt-0 space-y-4;
+  animation: slideDown 0.2s ease;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.recommendation {
+  @apply flex items-start gap-3 p-4 rounded-lg bg-blue-50 dark:bg-blue-900/20;
+}
+
+.recommendation-icon {
+  @apply flex-shrink-0 text-blue-600 dark:text-blue-400 mt-0.5;
+}
+
+.recommendation-text {
+  @apply text-sm text-blue-900 dark:text-blue-100;
+}
+
+.examples-section {
+  @apply mt-4;
+}
+
+.examples-title {
+  @apply text-sm font-semibold text-gray-900 dark:text-white mb-3;
+}
+
+.examples-list {
+  @apply space-y-3;
+}
+
+.example-item {
+  @apply p-3 rounded-lg bg-gray-50 dark:bg-gray-900/50 border border-gray-200 dark:border-gray-700;
+}
+
+.example-original,
+.example-translation {
+  @apply mb-2;
+}
+
+.example-label {
+  @apply text-xs font-medium text-gray-500 dark:text-gray-400 mr-2;
+}
+
+.example-text {
+  @apply text-sm text-gray-900 dark:text-white;
+}
+
+.example-score {
+  @apply text-xs font-semibold;
+}
+
+// Responsive adjustments
+@media (max-width: 768px) {
+  .weak-areas-analysis {
+    @apply p-4;
+  }
+
+  .weak-area-header {
+    @apply flex-wrap;
+  }
+
+  .area-accuracy {
+    @apply w-full justify-start px-0;
+  }
+
+  .area-stats {
+    @apply flex-col items-start gap-1;
+  }
+}
+
+// Dark mode specific adjustments
+@media (prefers-color-scheme: dark) {
+  .weak-area-card {
+    @apply bg-gray-900/50;
+  }
+}

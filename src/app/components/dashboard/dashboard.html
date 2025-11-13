@@ -1,13 +1,14 @@
-<div class="dashboard-container">
+<div class="dashboard-container" role="main" aria-label="Learning Dashboard">
   <header class="dashboard-header">
-    <h1>Your Learning Dashboard</h1>
-    <div class="dashboard-actions">
+    <h1 id="dashboard-title">Your Learning Dashboard</h1>
+    <div class="dashboard-actions" role="toolbar" aria-label="Dashboard actions">
       @if (needsMigration() && !migrationComplete()) {
         <button 
           class="btn-primary" 
           (click)="runMigration()" 
           [disabled]="isMigrating()"
-          title="Update old data to show analytics">
+          [attr.aria-busy]="isMigrating()"
+          aria-label="Update old data to show analytics">
           @if (isMigrating()) {
             <span>Updating...</span>
           } @else {
@@ -15,28 +16,241 @@
           }
         </button>
       }
-      <button class="btn-secondary" (click)="exportData()" title="Export your progress data">
+      <button 
+        class="btn-secondary" 
+        (click)="exportData()" 
+        aria-label="Export your progress data as JSON file">
         Export Data
       </button>
-      <button class="btn-secondary" (click)="printReport()" title="Print this report">
+      <button 
+        class="btn-secondary" 
+        (click)="printReport()" 
+        aria-label="Print this dashboard report">
         Print Report
       </button>
     </div>
   </header>
 
+  <!-- Tab Navigation -->
+  <nav class="dashboard-tabs" role="tablist" aria-label="Dashboard sections">
+    <button 
+      role="tab"
+      class="tab-btn" 
+      [class.active]="activeTab() === 'overview'"
+      [attr.aria-selected]="activeTab() === 'overview'"
+      [attr.aria-controls]="'tab-overview'"
+      (click)="setActiveTab('overview')">
+      <span class="tab-icon" aria-hidden="true">📊</span>
+      <span>Overview</span>
+    </button>
+    <button 
+      role="tab"
+      class="tab-btn" 
+      [class.active]="activeTab() === 'performance'"
+      [attr.aria-selected]="activeTab() === 'performance'"
+      [attr.aria-controls]="'tab-performance'"
+      (click)="setActiveTab('performance')">
+      <span class="tab-icon" aria-hidden="true">📈</span>
+      <span>Performance</span>
+    </button>
+    <button 
+      role="tab"
+      class="tab-btn" 
+      [class.active]="activeTab() === 'activity'"
+      [attr.aria-selected]="activeTab() === 'activity'"
+      [attr.aria-controls]="'tab-activity'"
+      (click)="setActiveTab('activity')">
+      <span class="tab-icon" aria-hidden="true">📅</span>
+      <span>Activity</span>
+    </button>
+    <button 
+      role="tab"
+      class="tab-btn" 
+      [class.active]="activeTab() === 'insights'"
+      [attr.aria-selected]="activeTab() === 'insights'"
+      [attr.aria-controls]="'tab-insights'"
+      (click)="setActiveTab('insights')">
+      <span class="tab-icon" aria-hidden="true">💡</span>
+      <span>Insights</span>
+    </button>
+  </nav>
+
   @if (hasEnoughData()) {
-    <div class="dashboard-grid">
-      <app-progress-charts [analytics]="analytics()" />
-      <app-performance-analysis [analytics]="analytics()" />
-      <app-activity-heatmap [analytics]="analytics()" />
-      <app-vocabulary-stats [analytics]="analytics()" />
-    </div>
+    <!-- Overview Tab -->
+    @if (activeTab() === 'overview') {
+      <div id="tab-overview" role="tabpanel" aria-labelledby="tab-overview" class="tab-content">
+        <section aria-labelledby="overview-heading">
+          <h2 id="overview-heading" class="section-title">Quick Overview</h2>
+          <div class="overview-grid" role="group" aria-label="Overview widgets">
+            @if (enhancedAnalytics(); as enhanced) {
+              <div class="stats-row">
+                <app-practice-stats-widget [data]="enhanced.practiceStats" />
+              </div>
+              <div class="heatmap-row">
+                <app-activity-heatmap [heatmapData]="enhanced.activityHeatmap" />
+              </div>
+                <div class="charts-row">
+                  <app-progress-charts [analytics]="analytics()" />
+                </div>
+              <div class="history-row">
+                <app-recent-history-widget />
+              </div>
+
+            }
+          </div>
+        </section>
+      </div>
+    }
+
+    <!-- Performance Tab -->
+    @if (activeTab() === 'performance') {
+      <div id="tab-performance" role="tabpanel" aria-labelledby="tab-performance" class="tab-content">
+        @if (isLoadingEnhanced()) {
+          <div class="loading-state" role="status" aria-live="polite">
+            <div class="skeleton-widget">
+              <div class="skeleton-header"></div>
+              <div class="skeleton-content">
+                <div class="skeleton-line"></div>
+                <div class="skeleton-line"></div>
+              </div>
+            </div>
+          </div>
+        } @else if (enhancedError()) {
+          <div class="error-state" role="alert" aria-live="assertive">
+            <div class="error-icon" aria-hidden="true">⚠️</div>
+            <h3>Failed to Load Analytics</h3>
+            <p>{{ enhancedError() }}</p>
+            <button 
+              class="btn-primary" 
+              (click)="retryEnhancedAnalytics()"
+              aria-label="Retry loading enhanced analytics">
+              Retry
+            </button>
+          </div>
+        } @else if (enhancedAnalytics(); as enhanced) {
+          <section aria-labelledby="performance-heading">
+            <h2 id="performance-heading" class="section-title">Performance Analysis</h2>
+            <div class="performance-grid" role="group" aria-label="Performance widgets">
+              <div class="trend-row">
+                <app-performance-trend-chart [data]="enhanced.performanceTrends" />
+              </div>
+              <div class="analysis-row">
+                <app-performance-analysis [analytics]="analytics()" />
+              </div>
+              <div class="performance-details-row">
+                <app-best-performances [data]="enhanced.bestPerformances" />
+                <app-most-practiced [data]="enhanced.mostPracticed" />
+              </div>
+            </div>
+          </section>
+        }
+      </div>
+    }
+
+    <!-- Activity Tab -->
+    @if (activeTab() === 'activity') {
+      <div id="tab-activity" role="tabpanel" aria-labelledby="tab-activity" class="tab-content">
+        <section aria-labelledby="activity-heading">
+          <h2 id="activity-heading" class="section-title">Activity History</h2>
+          
+          <div class="timeline-section">
+            <div class="timeline-controls" role="group" aria-label="Time range selector">
+              <button 
+                class="time-range-btn" 
+                [class.active]="historyTimeRange() === '7d'"
+                [attr.aria-pressed]="historyTimeRange() === '7d'"
+                (click)="setHistoryTimeRange('7d')"
+                aria-label="Show last 7 days">
+                7 Days
+              </button>
+              <button 
+                class="time-range-btn" 
+                [class.active]="historyTimeRange() === '30d'"
+                [attr.aria-pressed]="historyTimeRange() === '30d'"
+                (click)="setHistoryTimeRange('30d')"
+                aria-label="Show last 30 days">
+                30 Days
+              </button>
+              <button 
+                class="time-range-btn" 
+                [class.active]="historyTimeRange() === '90d'"
+                [attr.aria-pressed]="historyTimeRange() === '90d'"
+                (click)="setHistoryTimeRange('90d')"
+                aria-label="Show last 90 days">
+                90 Days
+              </button>
+            </div>
+            <app-activity-timeline-widget [timeRange]="historyTimeRange()" />
+          </div>
+
+          @if (enhancedAnalytics(); as enhanced) {
+            <div class="activity-grid" role="group" aria-label="Activity widgets">
+              <div class="heatmap-row">
+                <app-activity-heatmap [heatmapData]="enhanced.activityHeatmap" />
+              </div>
+              <div class="activity-details-row">
+                <app-time-of-day-analysis [data]="enhanced.timeOfDayAnalysis" />
+                <app-learning-velocity [data]="enhanced.learningVelocity" />
+              </div>
+            </div>
+          }
+        </section>
+      </div>
+    }
+
+    <!-- Insights Tab -->
+    @if (activeTab() === 'insights') {
+      <div id="tab-insights" role="tabpanel" aria-labelledby="tab-insights" class="tab-content">
+        @if (isLoadingEnhanced()) {
+          <div class="loading-state" role="status" aria-live="polite">
+            <div class="skeleton-widget">
+              <div class="skeleton-header"></div>
+              <div class="skeleton-content">
+                <div class="skeleton-line"></div>
+                <div class="skeleton-line"></div>
+              </div>
+            </div>
+          </div>
+        } @else if (enhancedError()) {
+          <div class="error-state" role="alert" aria-live="assertive">
+            <div class="error-icon" aria-hidden="true">⚠️</div>
+            <h3>Failed to Load Analytics</h3>
+            <p>{{ enhancedError() }}</p>
+            <button 
+              class="btn-primary" 
+              (click)="retryEnhancedAnalytics()"
+              aria-label="Retry loading enhanced analytics">
+              Retry
+            </button>
+          </div>
+        } @else if (enhancedAnalytics(); as enhanced) {
+          <section aria-labelledby="insights-heading">
+            <h2 id="insights-heading" class="section-title">Learning Insights</h2>
+            <div class="insights-grid" role="group" aria-label="Insights widgets">
+              <div class="weak-areas-row">
+                <app-weak-areas-analysis [data]="enhanced.weakAreas" />
+              </div>
+              <div class="insights-details-row">
+                <app-vocabulary-stats [analytics]="analytics()" />
+                <app-hints-usage-analysis [data]="enhanced.hintsAnalysis" />
+              </div>
+            </div>
+          </section>
+        } @else {
+          <div class="empty-state" role="status">
+            <div class="empty-state-icon" aria-hidden="true">📊</div>
+            <h3>No Enhanced Analytics Yet</h3>
+            <p>Complete more exercises to see detailed insights and analytics.</p>
+          </div>
+        }
+      </div>
+    }
   } @else {
-    <div class="empty-state">
-      <div class="empty-state-icon">📊</div>
+    <div class="empty-state" role="status">
+      <div class="empty-state-icon" aria-hidden="true">📊</div>
       <h2>Not Enough Data Yet</h2>
       <p>Complete at least 2 exercises to see your analytics and progress insights.</p>
-      <a routerLink="/exercises" class="btn-primary">Start Practicing</a>
+      <a routerLink="/exercises" class="btn-primary" aria-label="Go to exercises page to start practicing">Start Practicing</a>
     </div>
   }
 </div>

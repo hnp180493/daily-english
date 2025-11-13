@@ -1,0 +1,109 @@
+<div class="performance-trend-chart">
+  <div class="widget-header">
+    <h3 class="widget-title">Performance Trend</h3>
+    <div class="trend-indicator" [class]="getTrendColorClass()">
+      <span class="trend-icon">{{ getTrendIcon() }}</span>
+      <span class="trend-text">{{ getTrendText() }}</span>
+    </div>
+  </div>
+
+  @if (hasInsufficientData()) {
+    <div class="insufficient-data">
+      <svg class="info-icon" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+      </svg>
+      <p class="insufficient-message">Insufficient data for trend analysis</p>
+      <p class="insufficient-hint">Complete exercises on at least 3 different days to see your performance trend</p>
+    </div>
+  } @else {
+    <div class="chart-container">
+      <svg 
+        [attr.viewBox]="'0 0 ' + chartWidth + ' ' + chartHeight"
+        class="chart-svg"
+        role="img"
+        [attr.aria-label]="'Performance trend chart showing ' + data().dailyAverages.length + ' days of data'">
+        
+        <!-- Grid lines -->
+        <g class="grid-lines">
+          @for (label of yAxisLabels; track label) {
+            <line
+              [attr.x1]="padding.left"
+              [attr.y1]="getYPosition(label)"
+              [attr.x2]="padding.left + innerWidth()"
+              [attr.y2]="getYPosition(label)"
+              class="grid-line" />
+          }
+        </g>
+
+        <!-- Y-axis labels -->
+        <g class="y-axis-labels">
+          @for (label of yAxisLabels; track label) {
+            <text
+              [attr.x]="padding.left - 10"
+              [attr.y]="getYPosition(label) + 4"
+              class="axis-label">
+              {{ label }}
+            </text>
+          }
+        </g>
+
+        <!-- X-axis labels -->
+        <g class="x-axis-labels">
+          @for (day of data().dailyAverages; track day.date; let i = $index) {
+            @if (i === 0 || i === data().dailyAverages.length - 1 || i % labelInterval() === 0) {
+              <text
+                [attr.x]="getXPosition(i, data().dailyAverages.length)"
+                [attr.y]="padding.top + innerHeight() + 20"
+                class="axis-label">
+                {{ formatDate(day.date) }}
+              </text>
+            }
+          }
+        </g>
+
+        <!-- Trend line (dashed) -->
+        <path
+          [attr.d]="trendLinePath()"
+          class="trend-line"
+          fill="none" />
+
+        <!-- Performance line -->
+        <path
+          [attr.d]="linePath()"
+          class="performance-line"
+          fill="none" />
+
+        <!-- Data points -->
+        <g class="data-points">
+          @for (day of data().dailyAverages; track day.date; let i = $index) {
+            <circle
+              [attr.cx]="getXPosition(i, data().dailyAverages.length)"
+              [attr.cy]="getYPosition(day.averageScore)"
+              r="4"
+              class="data-point"
+              [attr.aria-label]="getDataPointLabel(day)"
+              role="img"
+              tabindex="0">
+              <title>{{ getDataPointLabel(day) }}</title>
+            </circle>
+          }
+        </g>
+      </svg>
+    </div>
+
+    <!-- Legend -->
+    <div class="chart-legend">
+      <div class="legend-item">
+        <div class="legend-line performance-legend"></div>
+        <span class="legend-label">Actual Performance</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-line trend-legend"></div>
+        <span class="legend-label">Trend Line</span>
+      </div>
+      <div class="legend-item">
+        <span class="legend-label">Overall Average: {{ data().overallAverage }}%</span>
+      </div>
+    </div>
+  }
+</div>

@@ -1,0 +1,44 @@
+<div class="activity-timeline-widget">
+  <h3 class="widget-title">Practice Activity Timeline ({{ timeRange() }})</h3>
+
+  @if (isLoading()) {
+    <div class="loading-state">
+      <div class="skeleton-chart"></div>
+    </div>
+  } @else if (isEmpty()) {
+    <div class="empty-state">
+      <p class="empty-message">No activity in this time range</p>
+      <p class="empty-hint">Complete exercises to see your activity timeline!</p>
+    </div>
+  } @else {
+    <div class="timeline-chart">
+      @for (day of timeline(); track day.date) {
+        <div class="timeline-bar-container">
+          <div 
+            class="timeline-bar"
+            [class]="getBarColorClass(day.completionCount)"
+            [style.height.%]="getBarHeight(day.completionCount)"
+            [title]="formatDate(day.date) + ': ' + day.completionCount + ' exercise' + (day.completionCount !== 1 ? 's' : '')">
+          </div>
+          <div class="timeline-label">{{ formatDate(day.date) }}</div>
+          <div class="timeline-count">{{ day.completionCount }}</div>
+        </div>
+      }
+    </div>
+
+    <div class="timeline-legend">
+      <div class="legend-item">
+        <div class="legend-color bar-low"></div>
+        <span>1-2 exercises</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-color bar-medium"></div>
+        <span>3-4 exercises</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-color bar-high"></div>
+        <span>5+ exercises</span>
+      </div>
+    </div>
+  }
+</div>

@@ -3,28 +3,47 @@
 
   <!-- Exercises Needing Review -->
   <div class="analysis-card">
-    <h3>Exercises Needing Review</h3>
+    <div class="card-header">
+      <h3>Exercises Needing Review</h3>
+      @if (analytics().exercisesNeedingReview && analytics().exercisesNeedingReview.length > 0) {
+        <span class="count-badge">{{ analytics().exercisesNeedingReview.length }}</span>
+      }
+    </div>
     @if (analytics().exercisesNeedingReview && analytics().exercisesNeedingReview.length > 0) {
-      <ul class="review-list">
+      <div class="review-grid">
         @for (exercise of analytics().exercisesNeedingReview; track exercise.exerciseId) {
-          <li class="review-item">
-            <div class="review-details">
-              <strong>{{ exercise.exerciseId }}</strong>
-              <div class="review-meta">
-                <span class="score-badge" [class]="getAccuracyClass(exercise.score)">
-                  {{ exercise.score }}%
+          <div class="review-card" [class]="getAccuracyClass(exercise.score)">
+            <div class="review-header">
+              <div class="exercise-info">
+                <span class="exercise-id">{{ exercise.exerciseId }}</span>
+                <span class="attempt-badge">
+                  <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                    <path d="M4 4a2 2 0 00-2 2v1h16V6a2 2 0 00-2-2H4z"/>
+                    <path fill-rule="evenodd" d="M18 9H2v5a2 2 0 002 2h12a2 2 0 002-2V9zM4 13a1 1 0 011-1h1a1 1 0 110 2H5a1 1 0 01-1-1zm5-1a1 1 0 100 2h1a1 1 0 100-2H9z" clip-rule="evenodd"/>
+                  </svg>
+                  {{ exercise.attemptCount }} attempt{{ exercise.attemptCount > 1 ? 's' : '' }}
                 </span>
-                <span class="attempt-count">{{ exercise.attemptCount }} attempt{{ exercise.attemptCount > 1 ? 's' : '' }}</span>
+              </div>
+              <div class="score-display" [class]="getAccuracyClass(exercise.score)">
+                <span class="score-value">{{ exercise.score }}%</span>
+                <span class="score-label">Score</span>
               </div>
             </div>
             <button class="review-btn" (click)="goToExercise(exercise.exerciseId)">
-              Review
+              <svg class="btn-icon" viewBox="0 0 20 20" fill="currentColor">
+                <path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z"/>
+              </svg>
+              Review Now
             </button>
-          </li>
+          </div>
         }
-      </ul>
+      </div>
     } @else {
-      <p class="empty-message">Great job! No exercises need immediate review 🎉</p>
+      <div class="success-state">
+        <div class="success-icon">🎉</div>
+        <p class="success-message">Great job! No exercises need immediate review</p>
+        <p class="success-submessage">Keep up the excellent work!</p>
+      </div>
     }
   </div>
 

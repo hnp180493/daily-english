@@ -24,6 +24,7 @@ import { SettingsService } from '../../services/settings.service';
 import { ExerciseSeoService } from '../../services/exercise-seo.service';
 import { ExerciseRecordingService } from '../../services/exercise-recording.service';
 import { ReviewService } from '../../services/review.service';
+import { ExerciseHistoryService } from '../../services/exercise-history.service';
 import { TTSSettings } from '../tts-settings/tts-settings';
 import { PenaltyScore } from '../penalty-score/penalty-score';
 import { PENALTY_CONSTANTS } from '../../models/penalty.constants';
@@ -59,6 +60,7 @@ export class ExerciseDetailComponent implements OnInit {
   private seoService = inject(ExerciseSeoService);
   private recordingService = inject(ExerciseRecordingService);
   private reviewService = inject(ReviewService);
+  private exerciseHistoryService = inject(ExerciseHistoryService);
 
   stateService = inject(ExerciseStateService);
   submissionService = inject(ExerciseSubmissionService);
@@ -77,6 +79,7 @@ export class ExerciseDetailComponent implements OnInit {
   isReviewMode = signal(false);
   quickReviewMode = signal(false);
   incorrectSentenceIndices = signal<number[]>([]);
+  exerciseStartTime: Date | null = null;
   // Delegate to state service
   sentences = this.stateService.sentences;
   currentSentenceIndex = this.stateService.currentSentenceIndex;
@@ -294,6 +297,8 @@ export class ExerciseDetailComponent implements OnInit {
       if (!hasProgress) {
         this.stateService.currentSentenceIndex.set(0);
       }
+      // Start time tracking for new exercise attempts
+      this.exerciseStartTime = new Date();
     }
 
     setTimeout(() => this.isLoadingExercise.set(false), 300);
@@ -583,6 +588,38 @@ export class ExerciseDetailComponent implements OnInit {
       // Store incorrect indices for quick review mode
       console.log('[ExerciseDetail] Incorrect sentence indices:', incorrectIndices);
     }
+
+    // Record exercise history (optional - won't block completion if it fails)
+    const timeSpent = this.exerciseStartTime 
+      ? Math.floor((new Date().getTime() - this.exerciseStartTime.getTime()) / 1000)
+      : 0;
+    
+    const penalties = this.stateService.getPenaltyMetrics();
+    const completedSents = sentences.filter(s => s.isCompleted);
+    const avgAccuracy = completedSents.length > 0
+      ? completedSents.reduce((sum, s) => sum + (s.accuracyScore || 0), 0) / completedSents.length
+      : 0;
+    const totalPenalty = (penalties.totalIncorrectAttempts * PENALTY_CONSTANTS.INCORRECT_ATTEMPT_PENALTY) + 
+                        (penalties.totalRetries * PENALTY_CONSTANTS.RETRY_PENALTY);
+    
+    const penaltyMetrics = {
+      baseScore: Math.round(avgAccuracy),
+      totalIncorrectAttempts: penalties.totalIncorrectAttempts,
+      totalRetries: penalties.totalRetries,
+      totalPenalty,
+      finalScore: Math.max(0, Math.round(avgAccuracy - totalPenalty))
+    };
+
+    this.exerciseHistoryService.recordExerciseAttempt(
+      ex.id,
+      penaltyMetrics.finalScore,
+      timeSpent,
+      this.hintsShown(),
+      sentences,
+      penaltyMetrics
+    ).subscribe({
+      error: (err) => console.warn('[ExerciseDetail] History recording failed:', err)
+    });
     
     this.clearProgress();
     this.isReviewMode.set(true);

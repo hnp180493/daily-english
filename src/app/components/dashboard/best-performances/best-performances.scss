@@ -1,0 +1,122 @@
+.best-performances {
+  @apply bg-white dark:bg-gray-800 rounded-lg shadow-md p-6;
+}
+
+.widget-header {
+  @apply mb-6;
+}
+
+.widget-title {
+  @apply text-xl font-semibold text-gray-900 dark:text-white mb-1;
+}
+
+.widget-subtitle {
+  @apply text-sm text-gray-600 dark:text-gray-400;
+}
+
+.empty-state {
+  @apply flex flex-col items-center justify-center py-12 text-center;
+}
+
+.empty-icon {
+  @apply text-gray-400 dark:text-gray-600 mb-4;
+}
+
+.empty-message {
+  @apply text-base font-medium text-gray-900 dark:text-gray-100 mb-2;
+}
+
+.empty-hint {
+  @apply text-sm text-gray-600 dark:text-gray-400;
+}
+
+.performances-list {
+  @apply space-y-3;
+}
+
+.performance-item {
+  @apply flex items-center gap-4 p-4 rounded-lg border border-gray-200 dark:border-gray-700 cursor-pointer;
+  transition: all 0.2s ease;
+
+  &:hover {
+    @apply bg-gray-50 dark:bg-gray-700/50 shadow-md;
+  }
+
+  &:focus {
+    @apply outline-none ring-2 ring-primary ring-inset;
+  }
+
+  &.top-three {
+    @apply bg-gradient-to-r from-yellow-50 to-transparent dark:from-yellow-900/20 dark:to-transparent;
+  }
+}
+
+.rank-badge {
+  @apply flex-shrink-0 w-10 h-10 flex items-center justify-center rounded-full bg-gray-100 dark:bg-gray-700 font-bold text-gray-700 dark:text-gray-300;
+
+  &.medal {
+    @apply bg-transparent;
+  }
+}
+
+.medal-icon {
+  @apply text-2xl;
+}
+
+.rank-number {
+  @apply text-lg;
+}
+
+.performance-info {
+  @apply flex-1;
+}
+
+.exercise-id {
+  @apply text-base font-semibold text-gray-900 dark:text-white mb-1;
+}
+
+.performance-meta {
+  @apply flex flex-wrap items-center gap-3;
+}
+
+.meta-item {
+  @apply flex items-center gap-1 text-sm text-gray-600 dark:text-gray-400;
+}
+
+.meta-icon {
+  @apply flex-shrink-0;
+}
+
+.score-badge {
+  @apply flex-shrink-0 px-4 py-2 rounded-lg bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 font-bold text-lg;
+
+  &.perfect {
+    @apply bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-300;
+  }
+}
+
+.nav-icon {
+  @apply flex-shrink-0 text-gray-400 dark:text-gray-500;
+}
+
+// Responsive adjustments
+@media (max-width: 768px) {
+  .best-performances {
+    @apply p-4;
+  }
+
+  .performance-item {
+    @apply flex-wrap;
+  }
+
+  .score-badge {
+    @apply w-full justify-center;
+  }
+}
+
+// Dark mode specific adjustments
+@media (prefers-color-scheme: dark) {
+  .performance-item.top-three {
+    border-color: rgba(251, 191, 36, 0.3);
+  }
+}

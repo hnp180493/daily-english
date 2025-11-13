@@ -1,0 +1,102 @@
+<div class="weak-areas-analysis">
+  <div class="widget-header">
+    <h3 class="widget-title">Weak Areas</h3>
+    <p class="widget-subtitle">Patterns where you need more practice</p>
+  </div>
+
+  @if (data().length === 0) {
+    <div class="empty-state">
+      <svg class="empty-icon" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+      </svg>
+      <p class="empty-message">Not enough data yet</p>
+      <p class="empty-hint">Complete at least 10 exercises to see your weak areas</p>
+    </div>
+  } @else {
+    <div class="weak-areas-list">
+      @for (area of data(); track area.pattern; let i = $index) {
+        <div class="weak-area-card">
+          <div 
+            class="weak-area-header"
+            [class.expanded]="isExpanded(i)"
+            (click)="toggleExpand(i)"
+            (keydown)="handleKeyDown($event, i)"
+            tabindex="0"
+            role="button"
+            [attr.aria-expanded]="isExpanded(i)"
+            [attr.aria-label]="'Weak area: ' + area.pattern + '. Click to ' + (isExpanded(i) ? 'collapse' : 'expand')">
+            
+            <div class="area-info">
+              <h4 class="area-pattern">{{ area.pattern }}</h4>
+              <div class="area-stats">
+                <span class="stat-item">
+                  <svg class="stat-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                  </svg>
+                  {{ area.occurrenceCount }} occurrences
+                </span>
+                <span class="stat-item">
+                  <svg class="stat-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                  </svg>
+                  {{ area.averageRetryCount }} avg retries
+                </span>
+              </div>
+            </div>
+
+            <div class="area-accuracy" [class]="getAccuracyBgClass(area.averageAccuracy)">
+              <span class="accuracy-value" [class]="getAccuracyColorClass(area.averageAccuracy)">
+                {{ area.averageAccuracy }}%
+              </span>
+            </div>
+
+            <svg 
+              class="expand-icon" 
+              [class.rotated]="isExpanded(i)"
+              width="20" 
+              height="20" 
+              viewBox="0 0 24 24" 
+              fill="none" 
+              stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+            </svg>
+          </div>
+
+          @if (isExpanded(i)) {
+            <div class="weak-area-content">
+              <div class="recommendation">
+                <svg class="recommendation-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                </svg>
+                <p class="recommendation-text">{{ area.recommendation }}</p>
+              </div>
+
+              @if (area.exampleSentences.length > 0) {
+                <div class="examples-section">
+                  <h5 class="examples-title">Example Sentences</h5>
+                  <div class="examples-list">
+                    @for (example of area.exampleSentences; track example.original) {
+                      <div class="example-item">
+                        <div class="example-original">
+                          <span class="example-label">Original:</span>
+                          <span class="example-text">{{ example.original }}</span>
+                        </div>
+                        <div class="example-translation">
+                          <span class="example-label">Your translation:</span>
+                          <span class="example-text">{{ example.userTranslation }}</span>
+                        </div>
+                        <div class="example-score" [class]="getAccuracyColorClass(example.accuracyScore)">
+                          Score: {{ example.accuracyScore }}%
+                        </div>
+                      </div>
+                    }
+                  </div>
+                </div>
+              }
+            </div>
+          }
+        </div>
+      }
+    </div>
+  }
+</div>

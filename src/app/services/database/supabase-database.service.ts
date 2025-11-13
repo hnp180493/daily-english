@@ -1,10 +1,11 @@
 import { Injectable } from '@angular/core';
 import { Observable, from, throwError } from 'rxjs';
-import { catchError } from 'rxjs/operators';
+import { catchError, map } from 'rxjs/operators';
 import { supabaseClient } from '../supabase.client';
 import { UserProgress, CustomExercise } from '../../models/exercise.model';
 import { UserAchievementData } from '../../models/achievement.model';
 import { ReviewData, ReviewDataWithMetadata } from '../../models/review.model';
+import { ExerciseHistoryRecord } from '../../models/exercise-history.model';
 import {
   IDatabase,
   FavoriteData,
@@ -537,6 +538,116 @@ export class SupabaseDatabase implements IDatabase {
         .eq('exercise_id', exerciseId)
         .then(({ error }) => {
           if (error) throw error;
+        })
+    ).pipe(catchError(this.handleError));
+  }
+
+  // Exercise History Operations
+  insertExerciseHistory(record: ExerciseHistoryRecord): Observable<void> {
+    return from(
+      this.supabase
+        .from('user_exercise_history')
+        .insert({
+          user_id: record.userId,
+          exercise_id: record.exerciseId,
+          completed_at: record.completedAt.toISOString(),
+          final_score: record.finalScore,
+          time_spent_seconds: record.timeSpentSeconds,
+          hints_used: record.hintsUsed,
+          sentence_attempts: record.sentenceAttempts,
+          penalty_metrics: record.penaltyMetrics
+        })
+        .then(({ error }) => {
+          if (error) throw error;
+        })
+    ).pipe(catchError(this.handleError));
+  }
+
+  loadRecentHistory(userId: string, limit: number): Observable<ExerciseHistoryRecord[]> {
+    return from(
+      this.supabase
+        .from('user_exercise_history')
+        .select('*')
+        .eq('user_id', userId)
+        .order('completed_at', { ascending: false })
+        .limit(limit)
+        .then(({ data, error }) => {
+          if (error) throw error;
+          if (!data) return [];
+
+          return data.map((row) => ({
+            id: row.id,
+            userId: row.user_id,
+            exerciseId: row.exercise_id,
+            completedAt: new Date(row.completed_at),
+            finalScore: row.final_score,
+            timeSpentSeconds: row.time_spent_seconds,
+            hintsUsed: row.hints_used,
+            sentenceAttempts: row.sentence_attempts,
+            penaltyMetrics: row.penalty_metrics,
+            createdAt: new Date(row.created_at)
+          }));
+        })
+    ).pipe(catchError(this.handleError));
+  }
+
+  loadExerciseHistory(userId: string, exerciseId: string): Observable<ExerciseHistoryRecord[]> {
+    return from(
+      this.supabase
+        .from('user_exercise_history')
+        .select('*')
+        .eq('user_id', userId)
+        .eq('exercise_id', exerciseId)
+        .order('completed_at', { ascending: false })
+        .then(({ data, error }) => {
+          if (error) throw error;
+          if (!data) return [];
+
+          return data.map((row) => ({
+            id: row.id,
+            userId: row.user_id,
+            exerciseId: row.exercise_id,
+            completedAt: new Date(row.completed_at),
+            finalScore: row.final_score,
+            timeSpentSeconds: row.time_spent_seconds,
+            hintsUsed: row.hints_used,
+            sentenceAttempts: row.sentence_attempts,
+            penaltyMetrics: row.penalty_metrics,
+            createdAt: new Date(row.created_at)
+          }));
+        })
+    ).pipe(catchError(this.handleError));
+  }
+
+  loadHistoryForDateRange(
+    userId: string,
+    startDate: Date,
+    endDate: Date
+  ): Observable<ExerciseHistoryRecord[]> {
+    return from(
+      this.supabase
+        .from('user_exercise_history')
+        .select('*')
+        .eq('user_id', userId)
+        .gte('completed_at', startDate.toISOString())
+        .lte('completed_at', endDate.toISOString())
+        .order('completed_at', { ascending: false })
+        .then(({ data, error }) => {
+          if (error) throw error;
+          if (!data) return [];
+
+          return data.map((row) => ({
+            id: row.id,
+            userId: row.user_id,
+            exerciseId: row.exercise_id,
+            completedAt: new Date(row.completed_at),
+            finalScore: row.final_score,
+            timeSpentSeconds: row.time_spent_seconds,
+            hintsUsed: row.hints_used,
+            sentenceAttempts: row.sentence_attempts,
+            penaltyMetrics: row.penalty_metrics,
+            createdAt: new Date(row.created_at)
+          }));
         })
     ).pipe(catchError(this.handleError));
   }

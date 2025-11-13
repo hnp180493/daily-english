@@ -1,0 +1,123 @@
+.practice-stats-widget {
+  @apply bg-white dark:bg-gray-800 rounded-lg shadow-md p-6;
+}
+
+.widget-header {
+  @apply mb-6;
+}
+
+.widget-title {
+  @apply text-xl font-semibold text-gray-900 dark:text-white mb-1;
+}
+
+.widget-subtitle {
+  @apply text-sm text-gray-600 dark:text-gray-400;
+}
+
+.empty-state {
+  @apply flex flex-col items-center justify-center py-12 text-center;
+}
+
+.empty-icon {
+  @apply text-gray-400 dark:text-gray-600 mb-4;
+}
+
+.empty-message {
+  @apply text-base font-medium text-gray-900 dark:text-gray-100 mb-2;
+}
+
+.empty-hint {
+  @apply text-sm text-gray-600 dark:text-gray-400;
+}
+
+.stats-grid {
+  @apply grid gap-4 mb-6;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+}
+
+.stat-card {
+  @apply p-5 rounded-lg text-white text-center;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+
+  &.stat-card-secondary {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  }
+
+  &.stat-card-tertiary {
+    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+  }
+
+  &.stat-card-quaternary {
+    background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+  }
+}
+
+.stat-header {
+  @apply flex items-center justify-center gap-2;
+}
+
+.stat-value {
+  @apply text-3xl font-bold mb-1;
+}
+
+.stat-label {
+  @apply text-sm opacity-90;
+}
+
+.trend-badge {
+  @apply text-2xl font-bold;
+}
+
+.trend-text {
+  @apply text-xs mt-2 font-medium;
+}
+
+.hints-section {
+  @apply mt-6;
+}
+
+.hints-card {
+  @apply flex items-center gap-4 p-4 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50;
+}
+
+.hints-icon {
+  @apply flex-shrink-0 w-12 h-12 flex items-center justify-center rounded-full bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400;
+}
+
+.hints-content {
+  @apply flex-1;
+}
+
+.hints-label {
+  @apply text-sm font-medium text-gray-600 dark:text-gray-400 mb-1;
+}
+
+.hints-value {
+  @apply text-2xl font-bold text-gray-900 dark:text-white;
+}
+
+// Responsive adjustments
+@media (max-width: 768px) {
+  .practice-stats-widget {
+    @apply p-4;
+  }
+
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .stat-value {
+    @apply text-2xl;
+  }
+
+  .trend-badge {
+    @apply text-xl;
+  }
+}
+
+// Dark mode specific adjustments
+@media (prefers-color-scheme: dark) {
+  .stat-card {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  }
+}

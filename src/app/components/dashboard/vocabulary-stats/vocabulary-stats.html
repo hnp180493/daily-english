@@ -1,46 +1,42 @@
-<div class="vocabulary-section">
-  <h2>Learning Overview</h2>
-
-  <div class="vocab-counters">
-    <div class="counter-card">
-      <span class="icon">📚</span>
-      <div>
-        <label>Total Exercises</label>
-        <strong>{{ analytics().totalExercises }}</strong>
-      </div>
-    </div>
-    <div class="counter-card">
-      <span class="icon">🔄</span>
-      <div>
-        <label>Need Review</label>
-        <strong>{{ analytics().exercisesNeedingReview.length }}</strong>
-      </div>
-    </div>
+<div class="vocabulary-card">
+  <div class="card-header">
+    <h3 class="card-title">📚 Learning Overview</h3>
   </div>
 
-  <div class="vocab-card">
-    <h3>Most Frequent Words</h3>
-    @if (analytics().vocabularyStats.wordCloud.length > 0) {
-      <div class="word-cloud-container">
-        <div class="word-cloud">
-          @for (word of analytics().vocabularyStats.wordCloud; track word.text) {
-            <span 
-              class="word-cloud-item"
-              [style.font-size.px]="word.size"
-              [title]="word.frequency + ' occurrences'"
-              [attr.aria-label]="word.text + ', ' + word.frequency + ' occurrences'"
-              (click)="showWordDetails(word)"
-              tabindex="0"
-              role="button">
-              {{ word.text }}
-            </span>
-          }
+  <div class="card-content">
+    <div class="vocab-counters">
+      <div class="counter-item">
+        <div class="counter-label">Total Exercises</div>
+        <div class="counter-value">{{ analytics().totalExercises }}</div>
+      </div>
+      <div class="counter-item">
+        <div class="counter-label">Need Review</div>
+        <div class="counter-value">{{ analytics().exercisesNeedingReview.length }}</div>
+      </div>
+    </div>
+
+    <div class="word-cloud-section">
+      <h4 class="subsection-title">Most Frequent Words</h4>
+      @if (analytics().vocabularyStats.wordCloud.length > 0) {
+        <div class="word-cloud-container">
+          <div class="word-cloud">
+            @for (word of analytics().vocabularyStats.wordCloud; track word.text) {
+              <span 
+                class="word-cloud-item"
+                [style.font-size.px]="word.size"
+                [title]="word.frequency + ' occurrences'"
+                [attr.aria-label]="word.text + ', ' + word.frequency + ' occurrences'"
+                (click)="showWordDetails(word)"
+                tabindex="0"
+                role="button">
+                {{ word.text }}
+              </span>
+            }
+          </div>
         </div>
-      </div>
-    } @else {
-      <p class="empty-message">No vocabulary data available yet</p>
-    }
+      } @else {
+        <p class="empty-message">No vocabulary data available yet</p>
+      }
+    </div>
   </div>
-
-
 </div>

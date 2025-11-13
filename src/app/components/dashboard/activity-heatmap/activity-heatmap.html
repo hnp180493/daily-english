@@ -6,22 +6,22 @@
       <span class="icon">🔥</span>
       <div>
         <label>Current Streak</label>
-        <strong>{{ analytics().currentStreak }} days</strong>
+        <strong>{{ heatmapData().currentStreak }} days</strong>
       </div>
     </div>
     <div class="stat-card">
       <span class="icon">🏆</span>
       <div>
         <label>Longest Streak</label>
-        <strong>{{ analytics().longestStreak }} days</strong>
+        <strong>{{ heatmapData().longestStreak }} days</strong>
       </div>
     </div>
   </div>
 
   <div class="heatmap-container">
-    @if (analytics().heatmapData.length > 0) {
+    @if (heatmapData().weeks.length > 0) {
       <div class="heatmap-grid">
-        @for (week of analytics().heatmapData; track week.weekNumber) {
+        @for (week of heatmapData().weeks; track week.weekNumber) {
           <div class="heatmap-week">
             @for (day of week.days; track day.date) {
               <div 
@@ -83,6 +83,14 @@
               <div class="summary-stat">
                 <span class="stat-label">Average Score</span>
                 <span class="stat-value">{{ selectedDay()!.averageScore }}%</span>
+              </div>
+              <div class="summary-stat">
+                <span class="stat-label">Time Spent</span>
+                <span class="stat-value">{{ formatTime(selectedDay()!.totalTimeSpentSeconds) }}</span>
+              </div>
+              <div class="summary-stat">
+                <span class="stat-label">Hints Used</span>
+                <span class="stat-value">{{ selectedDay()!.totalHintsUsed }}</span>
               </div>
             </div>
 

@@ -1,0 +1,64 @@
+<div class="best-performances">
+  <div class="widget-header">
+    <h3 class="widget-title">Best Performances</h3>
+    <p class="widget-subtitle">Your top scoring exercises</p>
+  </div>
+
+  @if (data().length === 0) {
+    <div class="empty-state">
+      <svg class="empty-icon" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
+      </svg>
+      <p class="empty-message">No performances yet</p>
+      <p class="empty-hint">Complete exercises to see your best performances!</p>
+    </div>
+  } @else {
+    <div class="performances-list">
+      @for (perf of data(); track perf.exerciseId) {
+        <div 
+          class="performance-item"
+          [class.top-three]="perf.rank <= 3"
+          (click)="navigateToExercise(perf.exerciseId)"
+          (keydown)="handleKeyDown($event, perf.exerciseId)"
+          tabindex="0"
+          role="button"
+          [attr.aria-label]="'Exercise ' + perf.exerciseId + ', rank ' + perf.rank + ', score ' + perf.score + '%'">
+          
+          <div class="rank-badge" [class.medal]="perf.rank <= 3">
+            @if (perf.rank <= 3) {
+              <span class="medal-icon">{{ getMedalIcon(perf.rank) }}</span>
+            } @else {
+              <span class="rank-number">{{ perf.rank }}</span>
+            }
+          </div>
+
+          <div class="performance-info">
+            <div class="exercise-id">Exercise {{ perf.exerciseId }}</div>
+            <div class="performance-meta">
+              <span class="meta-item">
+                <svg class="meta-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+                {{ formatDate(perf.completedAt) }}
+              </span>
+              <span class="meta-item">
+                <svg class="meta-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                {{ formatTime(perf.timeSpentSeconds) }}
+              </span>
+            </div>
+          </div>
+
+          <div class="score-badge" [class.perfect]="perf.score === 100">
+            {{ perf.score }}%
+          </div>
+
+          <svg class="nav-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+          </svg>
+        </div>
+      }
+    </div>
+  }
+</div>

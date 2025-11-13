@@ -1,0 +1,59 @@
+<div class="most-practiced">
+  <div class="widget-header">
+    <h3 class="widget-title">Most Practiced</h3>
+    <p class="widget-subtitle">Exercises you practice most frequently</p>
+  </div>
+
+  @if (data().length === 0) {
+    <div class="empty-state">
+      <svg class="empty-icon" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+      </svg>
+      <p class="empty-message">No practice data yet</p>
+      <p class="empty-hint">Complete exercises to see which ones you practice most!</p>
+    </div>
+  } @else {
+    <div class="practiced-list">
+      @for (practice of data(); track practice.exerciseId) {
+        <div 
+          class="practice-item"
+          (click)="navigateToExercise(practice.exerciseId)"
+          (keydown)="handleKeyDown($event, practice.exerciseId)"
+          tabindex="0"
+          role="button"
+          [attr.aria-label]="'Exercise ' + practice.exerciseId + ', ' + practice.attemptCount + ' attempts, average score ' + practice.averageScore + '%'">
+          
+          <div class="practice-info">
+            <div class="exercise-id">Exercise {{ practice.exerciseId }}</div>
+            <div class="practice-meta">
+              <span class="meta-item">
+                <svg class="meta-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                </svg>
+                {{ practice.attemptCount }} attempt{{ practice.attemptCount !== 1 ? 's' : '' }}
+              </span>
+              <span class="meta-item">
+                <svg class="meta-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                </svg>
+                Avg: {{ practice.averageScore }}%
+              </span>
+            </div>
+          </div>
+
+          <div class="improvement-indicator" [class]="getImprovementColorClass(practice.improvementPercentage)">
+            <span class="improvement-icon">{{ getImprovementIcon(practice.improvementPercentage) }}</span>
+            <span class="improvement-text">{{ getImprovementText(practice.improvementPercentage) }}</span>
+            @if (practice.improvementPercentage !== 0) {
+              <span class="improvement-value">{{ practice.improvementPercentage > 0 ? practice.improvementPercentage : -practice.improvementPercentage }}%</span>
+            }
+          </div>
+
+          <svg class="nav-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+          </svg>
+        </div>
+      }
+    </div>
+  }
+</div>

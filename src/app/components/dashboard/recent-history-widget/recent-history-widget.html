@@ -1,0 +1,41 @@
+<div class="recent-history-widget">
+  <h3 class="widget-title">Recent Exercise History</h3>
+
+  @if (isLoading()) {
+    <div class="loading-state">
+      <div class="skeleton-item" *ngFor="let i of [1,2,3]"></div>
+    </div>
+  } @else if (isEmpty()) {
+    <div class="empty-state">
+      <p class="empty-message">No exercise history yet</p>
+      <p class="empty-hint">Complete some exercises to see your history here!</p>
+    </div>
+  } @else {
+    <div class="history-list">
+      @for (record of history(); track record.id) {
+        <div class="history-item" (click)="viewExercise(record.exerciseId)">
+          <div class="history-header">
+            <span class="exercise-title">{{ record.exerciseId }}</span>
+            <span class="completion-date">{{ formatDate(record.completedAt) }}</span>
+          </div>
+          <div class="history-details">
+            <div class="detail-item">
+              <span class="detail-label">Score:</span>
+              <span class="detail-value score" [class.high-score]="record.finalScore >= 90" [class.medium-score]="record.finalScore >= 75 && record.finalScore < 90" [class.low-score]="record.finalScore < 75">
+                {{ record.finalScore }}%
+              </span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">Time:</span>
+              <span class="detail-value">{{ formatTimeSpent(record.timeSpentSeconds) }}</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">Hints:</span>
+              <span class="detail-value">{{ record.hintsUsed }}</span>
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+  }
+</div>
