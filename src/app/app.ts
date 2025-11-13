@@ -6,6 +6,7 @@ import { ToastContainer } from './components/toast-container/toast-container';
 import { ToastService } from './services/toast.service';
 import { ReviewService } from './services/review.service';
 import { NotificationTestUtility } from './services/notification-test.utility';
+import { NavigationOptimizerService } from './services/navigation-optimizer.service';
 
 @Component({
   selector: 'app-root',
@@ -18,6 +19,7 @@ export class App implements OnInit {
   
   private toastService = inject(ToastService);
   private reviewService = inject(ReviewService);
+  private navigationOptimizer = inject(NavigationOptimizerService);
   
   ngOnInit(): void {
     // Setup test functions in development

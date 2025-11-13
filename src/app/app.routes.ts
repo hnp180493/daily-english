@@ -39,6 +39,7 @@ export const routes: Routes = [
     loadComponent: () => import('./components/home/home').then((m) => m.HomeComponent),
     canActivate: [authGuard],
     data: {
+      preload: 'high',
       seo: {
         title: 'Trang chủ - Daily English',
         description:
@@ -92,6 +93,7 @@ export const routes: Routes = [
       import('./components/exercise-list/exercise-list').then((m) => m.ExerciseListComponent),
     canActivate: [authGuard],
     data: {
+      preload: 'high',
       seo: {
         title: 'Bài tập tiếng Anh - Daily English',
         description:
@@ -164,6 +166,9 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./components/exercise-detail/exercise-detail').then((m) => m.ExerciseDetailComponent),
     canActivate: [authGuard],
+    data: {
+      preload: 'high',
+    },
   },
   {
     path: 'profile',
@@ -182,6 +187,9 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./components/dashboard/dashboard').then((m) => m.DashboardComponent),
     canActivate: [authGuard],
+    data: {
+      preload: 'high',
+    },
   },
   {
     path: 'achievements',

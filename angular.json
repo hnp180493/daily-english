@@ -46,6 +46,14 @@
                   "with": "src/environments/environment.prod.ts"
                 }
               ],
+              "optimization": {
+                "scripts": true,
+                "styles": {
+                  "minify": true,
+                  "inlineCritical": true
+                },
+                "fonts": true
+              },
               "budgets": [
                 {
                   "type": "initial",
@@ -58,7 +66,8 @@
                   "maximumError": "16kB"
                 }
               ],
-              "outputHashing": "all"
+              "outputHashing": "all",
+              "namedChunks": false
             },
             "development": {
               "optimization": false,

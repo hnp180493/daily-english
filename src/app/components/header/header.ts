@@ -94,8 +94,11 @@ export class HeaderComponent implements OnInit {
       
       // If points increased and not currently animating, start animation
       if (actualPoints > currentAnimated && !this.isAnimatingPoints) {
-        this.animateCount(currentAnimated, actualPoints, this.animatedPoints, () => {
-          this.isAnimatingPoints = false;
+        // Use requestAnimationFrame to avoid blocking navigation
+        requestAnimationFrame(() => {
+          this.animateCount(currentAnimated, actualPoints, this.animatedPoints, () => {
+            this.isAnimatingPoints = false;
+          });
         });
         this.isAnimatingPoints = true;
       }
@@ -114,20 +117,14 @@ export class HeaderComponent implements OnInit {
       
       // If count increased and not currently animating, start animation
       if (actualCount > currentAnimated && !this.isAnimatingAchievements) {
-        this.animateCount(currentAnimated, actualCount, this.animatedAchievementCount, () => {
-          this.isAnimatingAchievements = false;
+        // Use requestAnimationFrame to avoid blocking navigation
+        requestAnimationFrame(() => {
+          this.animateCount(currentAnimated, actualCount, this.animatedAchievementCount, () => {
+            this.isAnimatingAchievements = false;
+          });
         });
         this.isAnimatingAchievements = true;
       }
-    });
-    
-    // Debug: Watch for progress signal changes
-    effect(() => {
-      const progress = this.progressSignal();
-      console.log('[Header] Progress signal updated:', {
-        totalPoints: progress.totalPoints,
-        attempts: UserProgressHelper.getAttemptsCount(progress)
-      });
     });
   }
 
