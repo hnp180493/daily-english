@@ -99,7 +99,8 @@ OUTPUT FORMAT (RAW JSON ONLY)
 
 Rules for feedback:
 - If score = 100 → feedback may be empty.
-- If 90–99 → MUST include at least one constructive suggestion.
+- If score <= 50 or 0-99 → MUST include at least one constructive suggestion.
+
 - Indices refer to positions in the student's English translation string.
 
 ====================================================

@@ -309,19 +309,21 @@ export class ExerciseDetailComponent implements OnInit {
   private loadProgress(exerciseId: string): boolean {
     const state = this.persistenceService.loadProgress(exerciseId);
     if (state) {
-      // Find the first incomplete sentence
-      const firstIncomplete = state.sentences.findIndex(s => !s.isCompleted);
+      // Find the first incomplete sentence OR sentence with score < 90
+      const firstIncomplete = state.sentences.findIndex(s => 
+        !s.isCompleted || (s.accuracyScore !== undefined && s.accuracyScore < 90)
+      );
 
-      // If there's an incomplete sentence, set currentIndex to it
+      // If there's an incomplete or failed sentence, set currentIndex to it
       if (firstIncomplete !== -1) {
         state.currentIndex = firstIncomplete;
-        console.log('[ExerciseDetail] Resuming at first incomplete sentence:', firstIncomplete);
+        // console.log('[ExerciseDetail] Resuming at first incomplete/failed sentence:', firstIncomplete);
         this.stateService.setState(state);
         return true;
       } else {
-        // All sentences completed - clear progress and don't load
-        // This prevents "cheating" by redoing the last sentence
-        console.log('[ExerciseDetail] All sentences completed, clearing progress');
+        // All sentences completed with passing scores - clear progress and don't load
+        // This prevents "cheating" by redoing the exercise after passing
+        console.log('[ExerciseDetail] All sentences passed, clearing progress');
         this.persistenceService.clearProgress(exerciseId);
         return false;
       }
