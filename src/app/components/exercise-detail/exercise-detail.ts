@@ -627,7 +627,8 @@ export class ExerciseDetailComponent implements OnInit {
     this.router.navigate([], {
       relativeTo: this.route,
       queryParams: { mode: 'review' },
-      queryParamsHandling: 'merge'
+      queryParamsHandling: 'merge',
+      replaceUrl: true
     });
   }
 

@@ -20,15 +20,26 @@ export class ProgressService {
 
   private isInitialized = false;
 
+  private currentUserId: string | null = null;
+
   constructor() {
+    // console.log('[ProgressService] Constructor called');
     // Subscribe to auth changes using effect
     effect(() => {
       const user = this.authService.currentUser();
-      if (user && !this.isInitialized) {
-        // Initialize user progress from Firestore only once
-        this.isInitialized = true;
+      const userId = user?.uid || null;
+      
+      // console.log('[ProgressService] Effect triggered, user:', user?.email, 'isInitialized:', this.isInitialized, 'currentUserId:', this.currentUserId, 'newUserId:', userId);
+      
+      // Only initialize if user changed
+      if (userId && userId !== this.currentUserId) {
+        this.currentUserId = userId;
+        this.isInitialized = false; // Reset for new user
         this.initializeUserProgress();
-      } else if (!user) {
+        this.isInitialized = true;
+      } else if (!userId && this.currentUserId) {
+        // User logged out
+        this.currentUserId = null;
         this.isInitialized = false;
         this.stopFirestoreSync();
         // Reset to default progress when logged out
@@ -79,18 +90,18 @@ export class ProgressService {
       switchMap(cloudProgress => {
         if (cloudProgress) {
           // Data exists in Firestore, no migration needed
-          console.log('[ProgressService] Data already exists in Firestore, skipping migration');
+          // console.log('[ProgressService] Data already exists in Firestore, skipping migration');
           return of(undefined);
         }
 
         // Check for localStorage data to migrate
         const localData = this.checkLocalStorageData(userId);
         if (localData) {
-          console.log('[ProgressService] Migrating localStorage data to Firestore');
+          // console.log('[ProgressService] Migrating localStorage data to Firestore');
           return this.databaseService.saveProgressAuto(localData).pipe(
             tap(() => {
               this.clearLocalStorageData(userId);
-              console.log('[ProgressService] Migration completed successfully');
+              // console.log('[ProgressService] Migration completed successfully');
             })
           );
         }
@@ -279,15 +290,15 @@ export class ProgressService {
     const today = this.getDateString(new Date());
     const yesterday = this.getDateString(this.subtractDays(new Date(), 1));
     
-    console.log('=== CALCULATE STREAK ===');
-    console.log('Today:', today);
-    console.log('Yesterday:', yesterday);
-    console.log('Last streak date:', progress.lastStreakDate);
-    console.log('Current streak in data:', progress.currentStreak);
-    console.log('Comparison:', {
-      'lastStreakDate === today': progress.lastStreakDate === today,
-      'lastStreakDate === yesterday': progress.lastStreakDate === yesterday
-    });
+    // console.log('=== CALCULATE STREAK ===');
+    // console.log('Today:', today);
+    // console.log('Yesterday:', yesterday);
+    // console.log('Last streak date:', progress.lastStreakDate);
+    // console.log('Current streak in data:', progress.currentStreak);
+    // console.log('Comparison:', {
+    //   'lastStreakDate === today': progress.lastStreakDate === today,
+    //   'lastStreakDate === yesterday': progress.lastStreakDate === yesterday
+    // });
     
     // If last streak date is today or yesterday, return current streak
     if (progress.lastStreakDate === today || progress.lastStreakDate === yesterday) {

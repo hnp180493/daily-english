@@ -242,7 +242,7 @@ export class ExerciseStateService {
       const updated = sentences.map((s, index) => {
         const sentAttempt = attempt.sentenceAttempts?.find((sa: any) => sa.sentenceIndex === index);
         if (sentAttempt) {
-          console.log(`[ExerciseStateService] Loading sentence ${index}:`, sentAttempt.userInput);
+          // console.log(`[ExerciseStateService] Loading sentence ${index}:`, sentAttempt.userInput);
           
           // Extract suggestion from feedback if score <= 90
           let suggestion: string | undefined;

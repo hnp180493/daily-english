@@ -38,7 +38,7 @@ export const cacheInterceptor: HttpInterceptorFn = (req, next) => {
           response: event.clone(),
           timestamp: now,
         });
-        console.log('[Cache] Stored:', req.url);
+        // console.log('[Cache] Stored:', req.url);
       }
     })
   );

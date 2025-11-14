@@ -26,15 +26,26 @@ export class FavoriteService {
 
   private isInitialized = false;
 
+  private currentUserId: string | null = null;
+
   constructor() {
+    // console.log('[FavoriteService] Constructor called');
     // Reload favorites when user changes
     effect(() => {
       const user = this.authService.currentUser();
-      if (user && !this.isInitialized) {
-        // Initialize favorites only once per user session
-        this.isInitialized = true;
+      const userId = user?.uid || null;
+      
+      // console.log('[FavoriteService] Effect triggered, user:', user?.email, 'isInitialized:', this.isInitialized, 'currentUserId:', this.currentUserId, 'newUserId:', userId);
+      
+      // Only initialize if user changed
+      if (userId && userId !== this.currentUserId) {
+        this.currentUserId = userId;
+        this.isInitialized = false; // Reset for new user
         this.initializeFavorites();
-      } else if (!user) {
+        this.isInitialized = true;
+      } else if (!userId && this.currentUserId) {
+        // User logged out
+        this.currentUserId = null;
         this.isInitialized = false;
         this.favorites.set([]);
       }

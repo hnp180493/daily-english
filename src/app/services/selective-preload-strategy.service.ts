@@ -21,15 +21,15 @@ export class SelectivePreloadStrategy implements PreloadingStrategy {
     
     if (preloadData === 'high') {
       // Preload immediately for high priority routes
-      console.log('[Preload] Loading high priority:', route.path);
+      // console.log('[Preload] Loading high priority:', route.path);
       return load();
     }
     
     // Default: preload after 2 seconds for other routes
-    console.log('[Preload] Scheduling:', route.path);
+    // console.log('[Preload] Scheduling:', route.path);
     return timer(2000).pipe(
       mergeMap(() => {
-        console.log('[Preload] Loading:', route.path);
+        // console.log('[Preload] Loading:', route.path);
         return load();
       })
     );

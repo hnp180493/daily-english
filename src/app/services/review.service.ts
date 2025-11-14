@@ -52,17 +52,29 @@ export class ReviewService {
   // Guard against duplicate scheduleNextReview calls
   private schedulingInProgress = new Map<string, boolean>();
 
+  private currentUserId: string | null = null;
+
   constructor() {
+    // console.log('[ReviewService] Constructor called');
     // Trigger migration check when user logs in
     effect(() => {
       const user = this.authService.currentUser();
-      if (user && !this.migrationCompleted) {
+      const userId = user?.uid || null;
+      
+      // console.log('[ReviewService] Effect triggered, user:', user?.email, 'migrationCompleted:', this.migrationCompleted, 'currentUserId:', this.currentUserId, 'newUserId:', userId);
+      
+      // Only initialize if user changed
+      if (userId && userId !== this.currentUserId) {
+        this.currentUserId = userId;
+        this.migrationCompleted = false; // Reset for new user
         this.checkAndMigrateReviewData();
         // Initialize notifications after migration (only once)
         if (!this.notificationInitialized) {
           setTimeout(() => this.initializeNotifications(), 2000);
         }
-      } else if (!user) {
+      } else if (!userId && this.currentUserId) {
+        // User logged out
+        this.currentUserId = null;
         this.migrationCompleted = false;
         this.cleanupNotifications();
       }
@@ -81,6 +93,12 @@ export class ReviewService {
    * This runs once per user session on initialization
    */
   private checkAndMigrateReviewData(): void {
+    // Guard against multiple simultaneous calls
+    if (this.migrationCompleted) {
+      console.log('[ReviewService] Migration already completed, skipping');
+      return;
+    }
+
     console.log('[ReviewService] Checking if review data migration is needed...');
 
     combineLatest([
@@ -606,7 +624,7 @@ export class ReviewService {
       this.reviewDataCache.set(rd.exerciseId, rd);
     });
 
-    console.log(`[ReviewService] Cache updated with ${reviewDataList.length} entries`);
+    // console.log(`[ReviewService] Cache updated with ${reviewDataList.length} entries`);
   }
 
   /**
@@ -617,7 +635,7 @@ export class ReviewService {
     this.allReviewDataCache = null;
     this.cacheTimestamp = 0;
     this.reviewDataCache.clear();
-    console.log('[ReviewService] Cache invalidated');
+    // console.log('[ReviewService] Cache invalidated');
   }
 
   /**

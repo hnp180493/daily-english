@@ -23,7 +23,7 @@ export class AchievementStoreService {
     return this.databaseService.loadAchievementsAuto().pipe(
       tap((data) => {
         if (data) {
-          console.log('[AchievementStoreService] Data loaded from Firestore');
+          // console.log('[AchievementStoreService] Data loaded from Supabase');
         }
       }),
       catchError((error: Error) => {
@@ -39,7 +39,7 @@ export class AchievementStoreService {
   saveAchievementData(data: UserAchievementData): Observable<void> {
     return this.databaseService.saveAchievementsAuto(data).pipe(
       tap(() => {
-        console.log('[AchievementStoreService] Data saved to Firestore');
+        console.log('[AchievementStoreService] Data saved to Supabase');
       }),
       catchError((error: Error) => {
         console.error('[AchievementStoreService] Failed to save data:', error);

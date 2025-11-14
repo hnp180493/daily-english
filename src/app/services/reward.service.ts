@@ -18,15 +18,26 @@ export class RewardService {
   private unlockedRewards = signal<UserRewards>(this.getDefaultRewards());
   private isInitialized = false;
 
+  private currentUserId: string | null = null;
+
   constructor() {
+    // console.log('[RewardService] Constructor called');
     // Reload rewards when user changes
     effect(() => {
       const user = this.authService.currentUser();
-      if (user && !this.isInitialized) {
-        // Initialize rewards only once per user session
-        this.isInitialized = true;
+      const userId = user?.uid || null;
+      
+      // console.log('[RewardService] Effect triggered, user:', user?.email, 'isInitialized:', this.isInitialized, 'currentUserId:', this.currentUserId, 'newUserId:', userId);
+      
+      // Only initialize if user changed
+      if (userId && userId !== this.currentUserId) {
+        this.currentUserId = userId;
+        this.isInitialized = false; // Reset for new user
         this.initializeRewards();
-      } else if (!user) {
+        this.isInitialized = true;
+      } else if (!userId && this.currentUserId) {
+        // User logged out
+        this.currentUserId = null;
         this.isInitialized = false;
         this.unlockedRewards.set(this.getDefaultRewards());
       }

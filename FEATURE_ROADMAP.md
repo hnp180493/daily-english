@@ -570,7 +570,7 @@ Những tính năng nhỏ có thể implement nhanh:
 - API key encryption
 
 ### Scalability
-- Firestore query optimization
+- Supbase query optimization
 - Caching strategy
 - CDN cho static assets
 - Background jobs cho heavy tasks

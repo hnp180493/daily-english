@@ -182,30 +182,32 @@
         <!-- Right Column: Dictionary, Feedback, Achievements -->
         <div class="right-column">
           <!-- Dictionary -->
-          <div class="section-card dictionary-card">
-            <!-- <h3 class="section-title">📚 Dictionary</h3> -->
-            <div class="dictionary-content">
-              @if (isStreaming()) {
-                <div class="streaming-indicator">
-                  <div class="streaming-dots">
-                    <span class="dot"></span>
-                    <span class="dot"></span>
-                    <span class="dot"></span>
+          @if(!isReviewMode()) {
+            <div class="section-card dictionary-card">
+              <!-- <h3 class="section-title">📚 Dictionary</h3> -->
+              <div class="dictionary-content">
+                @if (isStreaming()) {
+                  <div class="streaming-indicator">
+                    <div class="streaming-dots">
+                      <span class="dot"></span>
+                      <span class="dot"></span>
+                      <span class="dot"></span>
+                    </div>
+                    <p class="streaming-text">Analyzing your translation...</p>
                   </div>
-                  <p class="streaming-text">Analyzing your translation...</p>
-                </div>
-              } @else if (accuracyScore()) {
-                <div class="accuracy-badge">
-                  <span class="accuracy-icon">✓</span>
-                  <span class="accuracy-text">{{ accuracyScore() }}% Accuracy</span>
-                </div>
-              } @else {
-                <div class="dictionary-placeholder">
-                  <p class="placeholder-text">Type your answer and hit Submit to check your result!</p>
-                </div>
-              }
+                } @else if (accuracyScore()) {
+                  <div class="accuracy-badge">
+                    <span class="accuracy-icon">✓</span>
+                    <span class="accuracy-text">{{ accuracyScore() }}% Accuracy</span>
+                  </div>
+                } @else {
+                  <div class="dictionary-placeholder">
+                    <p class="placeholder-text">Type your answer and hit Submit to check your result!</p>
+                  </div>
+                }
+              </div>
             </div>
-          </div>
+          }
 
           <!-- Penalty Score Display -->
           <app-penalty-score

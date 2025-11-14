@@ -1205,11 +1205,11 @@ export class VietnameseSeoService {
    * Log info message
    */
   private logInfo(message: string, data?: any): void {
-    if (data) {
-      console.log(`[Vietnamese SEO]: ${message}`, data);
-    } else {
-      console.log(`[Vietnamese SEO]: ${message}`);
-    }
+    // if (data) {
+    //   console.log(`[Vietnamese SEO]: ${message}`, data);
+    // } else {
+    //   console.log(`[Vietnamese SEO]: ${message}`);
+    // }
   }
 
   /**

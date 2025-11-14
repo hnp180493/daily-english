@@ -67,8 +67,20 @@ export class AiProviderConfig implements OnInit {
 
   loadConfig(): void {
     const saved = this.configService.getConfig();
+    console.log('Loading config from service:', saved);
     if (saved) {
-      this.config.set(saved);
+      // Ensure openrouter config exists with defaults if not present
+      const configWithDefaults = {
+        ...saved,
+        openrouter: saved.openrouter || {
+          apiKey: '',
+          modelName: 'mistralai/mistral-7b-instruct:free',
+          siteUrl: '',
+          siteName: ''
+        }
+      };
+      console.log('Setting config with defaults:', configWithDefaults);
+      this.config.set(configWithDefaults);
     }
   }
 

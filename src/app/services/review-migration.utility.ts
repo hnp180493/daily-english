@@ -77,21 +77,9 @@ export class ReviewMigrationUtility {
    * @returns True if migration is needed
    */
   static isMigrationNeeded(existingReviewData: ReviewDataWithMetadata[], progress: UserProgress): boolean {
-    // Migration needed if:
-    // 1. No review data exists
-    // 2. Review data count is less than exercise history count
-    const exerciseCount = Object.keys(progress.exerciseHistory).length;
-    const reviewCount = existingReviewData.length;
-
-    const needed = reviewCount === 0 && exerciseCount > 0;
-    
-    if (needed) {
-      console.log(`[ReviewMigration] Migration needed: ${exerciseCount} exercises, ${reviewCount} review entries`);
-    } else {
-      console.log(`[ReviewMigration] No migration needed: ${reviewCount} review entries exist`);
-    }
-
-    return needed;
+    // Migration no longer needed as exerciseHistory has been removed
+    console.log('[ReviewMigration] No migration needed - exerciseHistory removed');
+    return false;
   }
 
   /**

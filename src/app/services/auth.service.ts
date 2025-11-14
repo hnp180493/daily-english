@@ -36,7 +36,7 @@ export class AuthService {
       return;
     }
 
-    console.log('[Auth] 🚀 Initializing auth service...');
+    // console.log('[Auth] 🚀 Initializing auth service...');
     
     // Subscribe to auth changes FIRST (before getSession)
     // This ensures we catch the SIGNED_IN event from URL hash processing
