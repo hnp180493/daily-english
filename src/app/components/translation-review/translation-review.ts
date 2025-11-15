@@ -16,6 +16,7 @@ export class TranslationReview {
   isExerciseComplete = input<boolean>(false);
 
   practiceAgain = output<void>();
+  practiceDictation = output<void>();
   quit = output<void>();
   playSentence = output<number>();
 }

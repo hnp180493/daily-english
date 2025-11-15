@@ -1,0 +1,9 @@
+.setting-row {
+  select {
+    cursor: pointer;
+    
+    &:hover {
+      opacity: 0.9;
+    }
+  }
+}

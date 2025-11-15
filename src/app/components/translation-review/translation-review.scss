@@ -52,6 +52,16 @@
   }
 }
 
+.dictation-btn {
+  background-color: #9c27b0;
+  color: white;
+
+  &:hover {
+    background-color: #7b1fa2;
+    transform: scale(1.05);
+  }
+}
+
 .quit-btn {
   background-color: #6a6a8a;
   color: #ffffff;

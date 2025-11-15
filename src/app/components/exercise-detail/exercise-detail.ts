@@ -564,6 +564,13 @@ export class ExerciseDetailComponent implements OnInit, OnDestroy {
     this.focusInput();
   }
 
+  onPracticeDictation(): void {
+    const ex = this.exercise();
+    if (!ex) return;
+    
+    this.router.navigate(['/exercises', ex.id, 'dictation']);
+  }
+
   private focusInput(): void {
     setTimeout(() => {
       const inputEl = this.translationInput();

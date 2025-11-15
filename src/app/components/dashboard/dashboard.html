@@ -95,7 +95,11 @@
               <div class="history-row">
                 <app-recent-history-widget />
               </div>
-
+              @if (userProgress()?.dictationHistory) {
+                <div class="dictation-row">
+                  <app-dictation-stats-widget [dictationHistory]="userProgress()!.dictationHistory" />
+                </div>
+              }
             }
           </div>
         </section>

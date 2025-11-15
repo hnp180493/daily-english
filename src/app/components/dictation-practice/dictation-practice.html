@@ -1,0 +1,340 @@
+<div class="dictation-practice-container min-h-screen bg-gray-50 dark:bg-gray-900 py-8">
+  <div class="max-w-4xl mx-auto px-4">
+    
+    <!-- Loading State -->
+    @if (isLoading()) {
+    <div class="text-center py-12" role="status" aria-live="polite">
+      <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto" aria-hidden="true"></div>
+      <p class="mt-4 text-gray-600 dark:text-gray-400">Loading dictation practice...</p>
+    </div>
+    }
+    
+    <!-- Error State -->
+    @if (error() && !isLoading()) {
+    <div 
+      class="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-6 text-center"
+      role="alert"
+      aria-live="assertive">
+      <div class="text-red-600 dark:text-red-400 text-lg font-semibold mb-2">
+        {{ error() }}
+      </div>
+      <button 
+        (click)="goBack()"
+        class="mt-4 px-6 py-2 bg-primary text-white rounded-lg hover:bg-primary-dark transition"
+        aria-label="Go back to exercise">
+        Go Back
+      </button>
+    </div>
+    }
+    
+    <!-- Main Content -->
+    @if (!isLoading() && !error()) {
+    
+    <!-- Header -->
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 mb-6">
+      <div class="flex items-center justify-between mb-4">
+        <h1 class="text-2xl font-bold text-gray-800 dark:text-gray-200">
+          🎧 Dictation Practice
+        </h1>
+        <div class="flex items-center gap-3">
+          <button 
+            (click)="openSettings()"
+            class="p-2 text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 transition"
+            aria-label="Open settings">
+            <span class="text-2xl">⚙️</span>
+          </button>
+          <button 
+            (click)="goBack()"
+            class="text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200"
+            aria-label="Close dictation practice">
+            ✕
+          </button>
+        </div>
+      </div>
+      
+      @if (exercise()) {
+      <h2 class="text-lg text-gray-700 dark:text-gray-300 mb-2">
+        {{ exercise()!.title }}
+      </h2>
+      }
+      
+      <!-- Progress Bar -->
+      <div class="mt-4" role="region" aria-label="Practice progress">
+        <div class="flex justify-between text-sm text-gray-600 dark:text-gray-400 mb-2">
+          <span>Progress</span>
+          <span aria-live="polite">{{ currentSentenceIndex() + 1 }} / {{ sentences().length }}</span>
+        </div>
+        <div 
+          class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2"
+          role="progressbar"
+          [attr.aria-valuenow]="progressPercentage()"
+          aria-valuemin="0"
+          aria-valuemax="100"
+          [attr.aria-label]="'Progress: ' + progressPercentage().toFixed(0) + ' percent complete'">
+          <div 
+            class="bg-primary h-2 rounded-full transition-all duration-300"
+            [style.width.%]="progressPercentage()">
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Completion Screen -->
+    @if (isComplete()) {
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-8 text-center">
+      <div class="text-6xl mb-4">🎉</div>
+      <h2 class="text-2xl font-bold text-gray-800 dark:text-gray-200 mb-4">
+        Dictation Practice Complete!
+      </h2>
+      
+      <div class="grid grid-cols-2 gap-4 max-w-md mx-auto mb-6">
+        <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
+          <div class="text-sm text-gray-600 dark:text-gray-400 mb-1">Overall Accuracy</div>
+          <div class="text-2xl font-bold text-primary">
+            {{ overallAccuracy().toFixed(1) }}%
+          </div>
+        </div>
+        
+        <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
+          <div class="text-sm text-gray-600 dark:text-gray-400 mb-1">Sentences Completed</div>
+          <div class="text-2xl font-bold text-primary">
+            {{ completedSentencesCount() }} / {{ sentences().length }}
+          </div>
+        </div>
+      </div>
+      
+      <div class="flex gap-4 justify-center">
+        <button 
+          (click)="retry()"
+          class="px-6 py-3 bg-primary text-white rounded-lg hover:bg-primary-dark transition"
+          aria-label="Retry dictation practice">
+          Try Again
+        </button>
+        <button 
+          (click)="goBack()"
+          class="px-6 py-3 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition"
+          aria-label="Return to exercise page">
+          Back to Exercise
+        </button>
+      </div>
+    </div>
+    }
+    
+    <!-- Practice Interface -->
+    @if (!isComplete()) {
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 mb-6">
+      
+      <!-- Audio Controls -->
+      <div class="audio-controls mb-6" role="region" aria-label="Audio playback controls">
+        <div class="flex items-center justify-center gap-4 mb-4">
+          <button 
+            (click)="previousSentence()"
+            [disabled]="!canGoPrevious()"
+            class="p-3 rounded-full bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed transition"
+            aria-label="Previous sentence"
+            [attr.aria-disabled]="!canGoPrevious()">
+            <span aria-hidden="true">◄◄</span>
+          </button>
+          
+          @if (!isPlaying()) {
+          <button 
+            (click)="playAudio()"
+            class="p-4 rounded-full bg-primary text-white hover:bg-primary-dark transition text-2xl"
+            aria-label="Play audio">
+            <span aria-hidden="true">▶</span>
+          </button>
+          } @else {
+          <button 
+            (click)="pauseAudio()"
+            class="p-4 rounded-full bg-primary text-white hover:bg-primary-dark transition text-2xl"
+            aria-label="Pause audio">
+            <span aria-hidden="true">⏸</span>
+          </button>
+          }
+          
+          <button 
+            (click)="nextSentence()"
+            [disabled]="!canGoNext()"
+            class="p-3 rounded-full bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed transition"
+            aria-label="Next sentence"
+            [attr.aria-disabled]="!canGoNext()">
+            <span aria-hidden="true">►►</span>
+          </button>
+        </div>
+        
+        <!-- Speed Control -->
+        <div class="flex items-center justify-center gap-2" role="group" aria-label="Playback speed controls">
+          <span class="text-sm text-gray-600 dark:text-gray-400" id="speed-label">Speed:</span>
+          @for (speed of [0.5, 0.75, 1.0, 1.25, 1.5]; track speed) {
+          <button 
+            (click)="adjustSpeed(speed)"
+            [class.bg-primary]="playbackSpeed() === speed"
+            [class.text-white]="playbackSpeed() === speed"
+            [class.bg-gray-200]="playbackSpeed() !== speed"
+            [class.dark:bg-gray-700]="playbackSpeed() !== speed"
+            class="px-3 py-1 rounded text-sm hover:opacity-80 transition"
+            [attr.aria-pressed]="playbackSpeed() === speed"
+            [attr.aria-label]="'Set playback speed to ' + speed + 'x'"
+            aria-labelledby="speed-label">
+            {{ speed }}x
+          </button>
+          }
+        </div>
+      </div>
+      
+      <!-- Sentence Counter -->
+      <div class="text-center mb-4" role="status" aria-live="polite">
+        <span class="text-lg font-semibold text-gray-700 dark:text-gray-300">
+          Sentence {{ currentSentenceIndex() + 1 }} of {{ sentences().length }}
+        </span>
+      </div>
+      
+      <!-- Input Area -->
+      <div class="mb-4">
+        <label 
+          for="dictation-input"
+          class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+          Type what you hear:
+        </label>
+        <div class="relative">
+          <!-- Background highlight layer (behind textarea) -->
+          @if (showFeedback() && currentSentence() && currentSentence()!.feedback && currentAccuracy() < PASSING_SCORE) {
+          <div 
+            class="absolute inset-0 pointer-events-none overflow-hidden whitespace-pre-wrap break-words rounded-lg z-10"
+            style="font-family: monospace; font-size: 14px; line-height: 1.5; letter-spacing: 0.5px; padding: 0.75rem 1rem;"
+            aria-hidden="true"
+            [innerHTML]="getHighlightedText()">
+          </div>
+          }
+          
+          <textarea
+            #dictationInput
+            id="dictation-input"
+            [(ngModel)]="userInput"
+            (keydown.enter)="handleEnterKey($any($event))"
+            [disabled]="showFeedback() && currentAccuracy() >= PASSING_SCORE"
+            rows="4"
+            [class.opacity-0]="showFeedback() && currentAccuracy() >= PASSING_SCORE"
+            [style.background]="showFeedback() && currentAccuracy() < PASSING_SCORE ? 'transparent' : ''"
+            [style.color]="showFeedback() && currentAccuracy() < PASSING_SCORE ? 'transparent' : ''"
+            [style.caret-color]="showFeedback() && currentAccuracy() < PASSING_SCORE ? 'white' : 'auto'"
+            [style.position]="'relative'"
+            [style.z-index]="showFeedback() && currentAccuracy() < PASSING_SCORE ? '5' : '10'"
+            style="font-family: monospace; font-size: 14px; line-height: 1.5; letter-spacing: 0.5px;"
+            class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200 disabled:opacity-50"
+            placeholder="Start typing..."
+            aria-label="Type the sentence you hear"
+            [attr.aria-describedby]="showFeedback() ? 'feedback-region' : null">
+          </textarea>
+          
+          <!-- Foreground overlay (when passed) -->
+          @if (showFeedback() && currentSentence() && currentSentence()!.feedback && currentAccuracy() >= PASSING_SCORE) {
+          <div 
+            class="absolute inset-0 px-4 py-3 pointer-events-none overflow-auto whitespace-pre-wrap break-words rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 z-20"
+            style="font-family: monospace; font-size: 14px; line-height: 1.5; letter-spacing: 0.5px;"
+            aria-hidden="true"
+            [innerHTML]="getHighlightedText()">
+          </div>
+          }
+        </div>
+      </div>
+      
+      <!-- Action Buttons -->
+      <div class="flex gap-3 justify-center flex-wrap" role="group" aria-label="Dictation actions">
+        @if (!showFeedback() || (showFeedback() && currentAccuracy() < PASSING_SCORE)) {
+        <button 
+          (click)="submitAnswer()"
+          [disabled]="!userInput().trim()"
+          [class.submit-animation]="isSubmitting()"
+          class="px-6 py-3 bg-primary text-white rounded-lg hover:bg-primary-dark disabled:opacity-50 disabled:cursor-not-allowed transition"
+          aria-label="Check your answer">
+          {{ showFeedback() ? 'Check Again' : 'Check Answer' }}
+        </button>
+        <button 
+          (click)="playAudio()"
+          class="px-6 py-3 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition"
+          aria-label="Replay audio">
+          <span aria-hidden="true">🔊</span> Replay
+        </button>
+        @if (showFeedback() && currentAccuracy() < PASSING_SCORE) {
+        <button 
+          (click)="retryAnswer()"
+          class="px-6 py-3 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 transition"
+          aria-label="Clear and retry">
+          Clear & Retry
+        </button>
+        }
+        @if (!showFeedback()) {
+        <button 
+          (click)="skipSentence()"
+          class="px-6 py-3 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition"
+          aria-label="Skip this sentence">
+          Skip
+        </button>
+        }
+        } @else {
+        @if (canGoNext()) {
+        <button 
+          (click)="nextSentence()"
+          aria-label="Continue to next sentence"
+          class="px-6 py-3 bg-primary text-white rounded-lg hover:bg-primary-dark transition">
+          Next Sentence →
+        </button>
+        } @else if (currentAccuracy() >= PASSING_SCORE) {
+        <button 
+          (click)="completeSession()"
+          aria-label="Complete dictation practice"
+          class="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition">
+          Complete Practice
+        </button>
+        }
+        }
+      </div>
+      
+      <!-- Feedback Display -->
+      @if (showFeedback() && currentSentence() && currentSentence()!.feedback) {
+      <app-dictation-feedback
+        [feedback]="currentSentence()!.feedback"
+        [originalText]="currentSentence()!.original"
+        [userText]="currentSentence()!.userInput"
+        [showAnswer]="currentAccuracy() >= PASSING_SCORE || settings().showAnswerWhenWrong">
+      </app-dictation-feedback>
+      }
+    </div>
+    
+    <!-- Shortcut Tips -->
+    @if (settings().showShortcutTips && !isComplete()) {
+    <div class="bg-gray-100 dark:bg-gray-800 rounded-lg p-4 text-sm text-gray-600 dark:text-gray-400">
+      <div class="flex flex-wrap gap-4 justify-center">
+        <div class="flex items-center gap-2">
+          <kbd class="px-2 py-1 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded text-xs font-mono">
+            {{ getKeyLabel(settings().playPauseKey) }}
+          </kbd>
+          <span>Play/Pause</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <kbd class="px-2 py-1 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded text-xs font-mono">
+            {{ getKeyLabel(settings().replayKey) }}
+          </kbd>
+          <span>Replay</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <kbd class="px-2 py-1 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded text-xs font-mono">
+            Enter
+          </kbd>
+          <span>Submit</span>
+        </div>
+      </div>
+    </div>
+    }
+    
+    }
+    
+    }
+  </div>
+  
+  <!-- Settings Modal -->
+  @if (showSettings()) {
+  <app-dictation-settings (close)="closeSettings()"></app-dictation-settings>
+  }
+</div>

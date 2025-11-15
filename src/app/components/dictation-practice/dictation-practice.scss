@@ -1,0 +1,87 @@
+.dictation-practice-container {
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.audio-controls {
+  button {
+    transition: all 0.2s ease;
+    
+    &:hover:not(:disabled) {
+      transform: scale(1.05);
+    }
+    
+    &:active:not(:disabled) {
+      transform: scale(0.95);
+    }
+  }
+}
+
+textarea {
+  resize: vertical;
+  min-height: 100px;
+  
+  &:focus {
+    outline: none;
+  }
+}
+
+// Smooth transitions for all interactive elements
+button, .progress-bar {
+  transition: all 0.3s ease;
+}
+
+// Submit button animation
+@keyframes submitPulse {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(79, 70, 229, 0.7);
+  }
+  50% {
+    transform: scale(1.05);
+    box-shadow: 0 0 0 10px rgba(79, 70, 229, 0);
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(79, 70, 229, 0);
+  }
+}
+
+.submit-animation {
+  animation: submitPulse 0.4s ease-out;
+}
+
+// Dark mode specific adjustments
+@media (prefers-color-scheme: dark) {
+  textarea {
+    &::placeholder {
+      color: rgba(255, 255, 255, 0.5);
+    }
+  }
+}
+
+// Responsive adjustments
+@media (max-width: 640px) {
+  .audio-controls {
+    button {
+      padding: 0.5rem;
+      font-size: 0.875rem;
+    }
+  }
+  
+  .flex.gap-3 {
+    flex-direction: column;
+    
+    button {
+      width: 100%;
+    }
+  }
+}

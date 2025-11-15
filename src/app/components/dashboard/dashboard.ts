@@ -25,6 +25,7 @@ import { BestPerformancesComponent } from './best-performances/best-performances
 import { MostPracticedComponent } from './most-practiced/most-practiced';
 import { LearningVelocityComponent } from './learning-velocity/learning-velocity';
 import { HintsUsageAnalysisComponent } from './hints-usage-analysis/hints-usage-analysis';
+import { DictationStatsWidgetComponent } from './dictation-stats-widget/dictation-stats-widget';
 import { UserProgressHelper } from '../../models/exercise.model';
 
 @Component({
@@ -45,7 +46,8 @@ import { UserProgressHelper } from '../../models/exercise.model';
     BestPerformancesComponent,
     MostPracticedComponent,
     LearningVelocityComponent,
-    HintsUsageAnalysisComponent
+    HintsUsageAnalysisComponent,
+    DictationStatsWidgetComponent
   ],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.scss',

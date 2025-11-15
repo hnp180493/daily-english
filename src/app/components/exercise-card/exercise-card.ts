@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { Exercise, ExerciseStatus } from '../../models/exercise.model';
 import { FavoriteService } from '../../services/favorite.service';
+import { ProgressService } from '../../services/progress.service';
 
 @Component({
   selector: 'app-exercise-card',
@@ -13,6 +14,7 @@ import { FavoriteService } from '../../services/favorite.service';
 })
 export class ExerciseCardComponent {
   private favoriteService = inject(FavoriteService);
+  private progressService = inject(ProgressService);
   private router = inject(Router);
   
   exercise = input.required<Exercise>();
@@ -81,5 +83,23 @@ export class ExerciseCardComponent {
   toggleFavorite(event: Event): void {
     event.stopPropagation();
     this.favoriteService.toggleFavorite(this.exercise().id);
+  }
+  
+  onPracticeDictation(event: Event): void {
+    event.stopPropagation();
+    const exerciseId = this.exercise().id;
+    this.router.navigate(['/exercises', exerciseId, 'dictation']);
+  }
+  
+  // Check if dictation is available (translation completed)
+  hasDictationAvailable(): boolean {
+    // For now, return false - will be implemented when needed
+    return false;
+  }
+  
+  // Check if dictation has been completed
+  hasDictationCompleted(): boolean {
+    // For now, return false - will be implemented when needed
+    return false;
   }
 }

@@ -27,15 +27,22 @@ export class ExerciseListComponent {
   isLoading = signal(true);
   currentPage = signal(0);
   pageSize = 6;
+  
+  // Computed signal for dictation filter
+  dictationFilter = computed(() => {
+    const params = this.queryParams() as Record<string, string>;
+    return params['dictation'] || null;
+  });
 
   // Subscribe to progress changes to make status reactive
   private progress$ = this.progressService.getUserProgress();
-  private progressSignal = toSignal(this.progress$, { initialValue: { exerciseHistory: {}, totalCredits: 0, totalPoints: 0, lastActivityDate: new Date(), currentStreak: 0, longestStreak: 0, lastStreakDate: '', achievements: [] } });
+  private progressSignal = toSignal(this.progress$, { initialValue: { exerciseHistory: {}, dictationHistory: {}, totalCredits: 0, totalPoints: 0, lastActivityDate: new Date(), currentStreak: 0, longestStreak: 0, lastStreakDate: '', achievements: [] } });
 
   // Filter exercises based on query parameters
   exercises = computed(() => {
     const all = this.allExercises();
     const params = this.queryParams() as Record<string, string>;
+    const progress = this.progressSignal();
     
     let filtered = all;
     
@@ -45,6 +52,21 @@ export class ExerciseListComponent {
     
     if (params['level']) {
       filtered = filtered.filter(ex => ex.level === params['level']);
+    }
+    
+    // Filter for exercises with dictation available
+    if (params['dictation'] === 'available') {
+      filtered = filtered.filter(ex => {
+        const exerciseAttempt = progress.exerciseHistory[ex.id];
+        return exerciseAttempt && exerciseAttempt.userInput && exerciseAttempt.userInput.trim().length > 0;
+      });
+    }
+    
+    // Filter for exercises with dictation completed
+    if (params['dictation'] === 'completed') {
+      filtered = filtered.filter(ex => {
+        return progress.dictationHistory && progress.dictationHistory[ex.id];
+      });
     }
     
     return filtered;
@@ -106,5 +128,22 @@ export class ExerciseListComponent {
 
   goToPage(page: number): void {
     this.currentPage.set(page);
+  }
+
+  setDictationFilter(filter: 'available' | 'completed' | null): void {
+    const currentParams = this.queryParams();
+    const newParams = { ...currentParams };
+    
+    if (filter) {
+      newParams['dictation'] = filter;
+    } else {
+      delete newParams['dictation'];
+    }
+    
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: newParams,
+      queryParamsHandling: 'merge'
+    });
   }
 }

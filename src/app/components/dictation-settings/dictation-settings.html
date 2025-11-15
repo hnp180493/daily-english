@@ -1,0 +1,158 @@
+<!-- Settings Modal Overlay -->
+<div 
+  class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
+  (click)="closeModal()"
+  role="dialog"
+  aria-modal="true"
+  aria-labelledby="settings-title">
+  
+  <!-- Settings Modal -->
+  <div 
+    class="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto"
+    (click)="$event.stopPropagation()">
+    
+    <!-- Header -->
+    <div class="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
+      <div class="flex items-center gap-3">
+        <span class="text-3xl" aria-hidden="true">⚙️</span>
+        <h2 id="settings-title" class="text-2xl font-bold text-gray-800 dark:text-gray-200">
+          Settings
+        </h2>
+      </div>
+      <button 
+        (click)="closeModal()"
+        class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 text-2xl"
+        aria-label="Close settings">
+        ✕
+      </button>
+    </div>
+    
+    <!-- Settings Content -->
+    <div class="p-6 space-y-6">
+      
+      <!-- Replay Key -->
+      <div class="setting-row">
+        <label 
+          for="replay-key"
+          class="block text-lg font-semibold text-gray-800 dark:text-gray-200 mb-2">
+          Replay Key
+        </label>
+        <select
+          id="replay-key"
+          [value]="settings().replayKey"
+          (change)="updateReplayKey($any($event.target).value)"
+          class="w-full px-4 py-3 bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-lg border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-primary focus:border-transparent">
+          @for (key of availableKeys; track key.value) {
+          <option [value]="key.value" [selected]="settings().replayKey === key.value">{{ key.label }}</option>
+          }
+        </select>
+      </div>
+      
+      <!-- Play/Pause Key -->
+      <div class="setting-row">
+        <label 
+          for="play-pause-key"
+          class="block text-lg font-semibold text-gray-800 dark:text-gray-200 mb-2">
+          Play/Pause Key
+        </label>
+        <select
+          id="play-pause-key"
+          [value]="settings().playPauseKey"
+          (change)="updatePlayPauseKey($any($event.target).value)"
+          class="w-full px-4 py-3 bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-lg border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-primary focus:border-transparent">
+          @for (key of availableKeys; track key.value) {
+          <option [value]="key.value" [selected]="settings().playPauseKey === key.value">{{ key.label }}</option>
+          }
+        </select>
+      </div>
+      
+      <!-- Auto Replay -->
+      <div class="setting-row">
+        <label 
+          for="auto-replay"
+          class="block text-lg font-semibold text-gray-800 dark:text-gray-200 mb-2">
+          Auto Replay
+        </label>
+        <select
+          id="auto-replay"
+          [value]="settings().autoReplay"
+          (change)="updateAutoReplay(+$any($event.target).value)"
+          class="w-full px-4 py-3 bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-lg border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-primary focus:border-transparent">
+          @for (option of autoReplayOptions; track option.value) {
+          <option [value]="option.value" [selected]="settings().autoReplay === option.value">{{ option.label }}</option>
+          }
+        </select>
+      </div>
+      
+      <!-- Seconds between replays -->
+      <div class="setting-row">
+        <label 
+          for="seconds-between"
+          class="block text-lg font-semibold text-gray-800 dark:text-gray-200 mb-2">
+          Seconds between replays
+        </label>
+        <select
+          id="seconds-between"
+          [value]="settings().secondsBetweenReplays"
+          (change)="updateSecondsBetweenReplays(+$any($event.target).value)"
+          class="w-full px-4 py-3 bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-lg border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-primary focus:border-transparent">
+          @for (option of secondsOptions; track option.value) {
+          <option [value]="option.value" [selected]="settings().secondsBetweenReplays === option.value">{{ option.label }}</option>
+          }
+        </select>
+      </div>
+      
+      <!-- Shortcut Key Tips -->
+      <div class="setting-row">
+        <label 
+          for="shortcut-tips"
+          class="block text-lg font-semibold text-gray-800 dark:text-gray-200 mb-2">
+          Shortcut Key Tips
+        </label>
+        <select
+          id="shortcut-tips"
+          [value]="settings().showShortcutTips"
+          (change)="updateShowShortcutTips($any($event.target).value === 'true')"
+          class="w-full px-4 py-3 bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-lg border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-primary focus:border-transparent">
+          @for (option of showShortcutTipsOptions; track option.value) {
+          <option [value]="option.value" [selected]="settings().showShortcutTips === option.value">{{ option.label }}</option>
+          }
+        </select>
+      </div>
+      
+      <!-- Show Answer When Wrong -->
+      <div class="setting-row">
+        <label 
+          for="show-answer"
+          class="block text-lg font-semibold text-gray-800 dark:text-gray-200 mb-2">
+          Show Answer When Wrong
+        </label>
+        <select
+          id="show-answer"
+          [value]="settings().showAnswerWhenWrong"
+          (change)="updateShowAnswerWhenWrong($any($event.target).value === 'true')"
+          class="w-full px-4 py-3 bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-lg border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-primary focus:border-transparent">
+          @for (option of showShortcutTipsOptions; track option.value) {
+          <option [value]="option.value" [selected]="settings().showAnswerWhenWrong === option.value">{{ option.label }}</option>
+          }
+        </select>
+      </div>
+      
+    </div>
+    
+    <!-- Footer -->
+    <div class="flex items-center justify-between p-6 border-t border-gray-200 dark:border-gray-700">
+      <button 
+        (click)="resetToDefaults()"
+        class="px-4 py-2 text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 transition">
+        Reset to Defaults
+      </button>
+      <button 
+        (click)="closeModal()"
+        class="px-6 py-3 bg-primary text-white rounded-lg hover:bg-primary-dark transition">
+        Done
+      </button>
+    </div>
+    
+  </div>
+</div>

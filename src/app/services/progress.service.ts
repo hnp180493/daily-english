@@ -2,6 +2,7 @@ import { Injectable, inject, effect, signal } from '@angular/core';
 import { BehaviorSubject, Observable, of } from 'rxjs';
 import { switchMap, tap, catchError } from 'rxjs/operators';
 import { ExerciseAttempt, UserProgress, ExerciseStatus } from '../models/exercise.model';
+import { DictationPracticeAttempt } from '../models/dictation.model';
 import { DatabaseService } from './database/database.service';
 import { UnsubscribeFunction } from './database/database.interface';
 import { AuthService } from './auth.service';
@@ -170,6 +171,11 @@ export class ProgressService {
     // Ensure exerciseHistory exists
     if (!progress.exerciseHistory) {
       progress.exerciseHistory = {};
+    }
+    
+    // Ensure dictationHistory exists
+    if (!progress.dictationHistory) {
+      progress.dictationHistory = {};
     }
     
     // Migrate streak fields if missing
@@ -448,6 +454,7 @@ export class ProgressService {
   private getDefaultProgress(): UserProgress {
     return {
       exerciseHistory: {},
+      dictationHistory: {},
       totalCredits: 0,
       totalPoints: 0,
       lastActivityDate: new Date(),
@@ -456,6 +463,46 @@ export class ProgressService {
       lastStreakDate: '',
       achievements: []
     };
+  }
+
+  recordDictationAttempt(attempt: DictationPracticeAttempt): void {
+    const current = this.progress$.value;
+    const streakUpdate = this.updateStreak(current);
+    
+    console.log('=== RECORDING DICTATION ATTEMPT ===');
+    console.log('Exercise ID:', attempt.exerciseId);
+    console.log('Overall accuracy:', attempt.overallAccuracy);
+    
+    // Update dictation history - only keep latest attempt per exercise
+    const updatedDictationHistory = {
+      ...current.dictationHistory,
+      [attempt.exerciseId]: attempt
+    };
+    
+    const updated: UserProgress = {
+      ...current,
+      dictationHistory: updatedDictationHistory,
+      lastActivityDate: new Date(),
+      currentStreak: streakUpdate.currentStreak,
+      lastStreakDate: streakUpdate.lastStreakDate,
+      longestStreak: streakUpdate.longestStreak || current.longestStreak || 0
+    };
+
+    console.log('Updated dictation history');
+    
+    // Update both BehaviorSubject and Signal
+    this.progress$.next(updated);
+    this.progressSignal.set(updated);
+    
+    this.checkAchievements(updated);
+
+    console.log('=== END RECORDING DICTATION ATTEMPT ===');
+
+    // Save to Firestore
+    this.databaseService.saveProgressAuto(updated).subscribe({
+      next: () => console.log('[ProgressService] Dictation progress saved to Firestore'),
+      error: (error) => console.error('[ProgressService] Failed to save dictation progress:', error)
+    });
   }
 
   private checkAchievements(progress: UserProgress): void {
@@ -482,6 +529,26 @@ export class ProgressService {
     }
     if (streak >= 7 && !progress.achievements.includes('7-day-streak')) {
       newAchievements.push('7-day-streak');
+    }
+    
+    // Dictation-specific achievements
+    const dictationAttempts = Object.values(progress.dictationHistory || {});
+    
+    // First dictation achievement
+    if (dictationAttempts.length === 1 && !progress.achievements.includes('first-dictation')) {
+      newAchievements.push('first-dictation');
+    }
+    
+    // Dictation master achievement (10 dictations with 90%+ accuracy)
+    const highAccuracyDictations = dictationAttempts.filter(a => a.overallAccuracy >= 90);
+    if (highAccuracyDictations.length >= 10 && !progress.achievements.includes('dictation-master')) {
+      newAchievements.push('dictation-master');
+    }
+    
+    // Perfect dictation achievement (100% accuracy)
+    const perfectDictations = dictationAttempts.filter(a => a.overallAccuracy === 100);
+    if (perfectDictations.length >= 1 && !progress.achievements.includes('perfect-dictation')) {
+      newAchievements.push('perfect-dictation');
     }
 
     if (newAchievements.length > 0) {

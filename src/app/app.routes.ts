@@ -171,6 +171,19 @@ export const routes: Routes = [
     },
   },
   {
+    path: 'exercises/:id/dictation',
+    loadComponent: () =>
+      import('./components/dictation-practice/dictation-practice').then((m) => m.DictationPracticeComponent),
+    canActivate: [authGuard],
+    data: {
+      seo: {
+        title: 'Dictation Practice - Daily English',
+        description: 'Practice dictation with your translated text',
+        noindex: true,
+      } as RouteSeoData,
+    },
+  },
+  {
     path: 'profile',
     loadComponent: () =>
       import('./components/profile/profile').then((m) => m.ProfileComponent),

@@ -6,8 +6,73 @@
 }
 
 .list-header {
-  margin-bottom: 3rem;
+  margin-bottom: 2rem;
   text-align: center;
+}
+
+.filter-section {
+  margin-bottom: 2rem;
+  padding: 1.5rem;
+  background: rgba(26, 31, 58, 0.6);
+  backdrop-filter: blur(10px);
+  border: 2px solid rgba(167, 139, 250, 0.2);
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.filter-label {
+  display: block;
+  color: #E2E8F0;
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+.filter-buttons {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.filter-btn {
+  background: rgba(26, 31, 58, 0.6);
+  backdrop-filter: blur(10px);
+  color: #E2E8F0;
+  border: 2px solid rgba(167, 139, 250, 0.2);
+  border-radius: 12px;
+  padding: 0.75rem 1.5rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+
+  &:hover {
+    border-color: rgba(167, 139, 250, 0.5);
+    color: #A78BFA;
+    transform: translateY(-2px);
+    box-shadow: 0 0 15px rgba(167, 139, 250, 0.3), 0 4px 12px rgba(0, 0, 0, 0.3);
+  }
+
+  &.active {
+    background: #8B5CF6;
+    color: #FFFFFF;
+    border-color: transparent;
+    box-shadow: 0 0 20px rgba(139, 92, 246, 0.5), 0 4px 12px rgba(0, 0, 0, 0.4);
+  }
+
+  &:focus {
+    outline: 3px solid #6366F1;
+    outline-offset: 2px;
+  }
+}
+
+// Dark mode support
+@media (prefers-color-scheme: dark) {
+  .filter-section {
+    background: rgba(15, 23, 42, 0.8);
+    border-color: rgba(167, 139, 250, 0.3);
+  }
 }
 
 .page-title {

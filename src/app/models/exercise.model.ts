@@ -68,6 +68,7 @@ export interface FeedbackItem {
 export interface UserProgress {
   // Optimized: Store only the latest attempt per exercise
   exerciseHistory: { [exerciseId: string]: ExerciseAttempt };
+  dictationHistory: { [exerciseId: string]: import('./dictation.model').DictationPracticeAttempt };
   totalCredits: number;
   totalPoints: number;
   lastActivityDate: Date;

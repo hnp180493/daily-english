@@ -5,12 +5,14 @@
       <button class="action-btn practice-again-btn" (click)="practiceAgain.emit()">
         🔄 Practice Again
       </button>
+      <button class="action-btn dictation-btn" (click)="practiceDictation.emit()">
+        🎧 Practice Dictation
+      </button>
       <button class="action-btn quit-btn" (click)="quit.emit()">
         ← Back to Exercises
       </button>
     </div>
-  </div>
-  
+  </div>  
   <div class="review-sentences-list">
     @for (sentence of sentences(); track $index; let i = $index) {
       <div class="review-sentence-item" 

@@ -6,6 +6,31 @@
     }
   </header>
 
+  <!-- Dictation Filter -->
+  <div class="filter-section">
+    <label class="filter-label">Dictation Status:</label>
+    <div class="filter-buttons">
+      <button 
+        class="filter-btn"
+        [class.active]="!dictationFilter()"
+        (click)="setDictationFilter(null)">
+        All Exercises
+      </button>
+      <button 
+        class="filter-btn"
+        [class.active]="dictationFilter() === 'available'"
+        (click)="setDictationFilter('available')">
+        🎧 Dictation Available
+      </button>
+      <button 
+        class="filter-btn"
+        [class.active]="dictationFilter() === 'completed'"
+        (click)="setDictationFilter('completed')">
+        ✓ Dictation Completed
+      </button>
+    </div>
+  </div>
+
   @if (isLoading()) {
     <app-loading-spinner [message]="'Đang tải bài tập...'" />
   } @else if (paginatedExercises().length > 0) {
