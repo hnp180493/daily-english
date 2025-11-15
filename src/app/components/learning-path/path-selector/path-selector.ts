@@ -85,6 +85,7 @@ export class PathSelector implements OnInit {
   // Computed signals for reactive updates
   pathProgress = computed(() => this.curriculumService.pathProgress());
   
+  // Computed progress for current path
   currentPathProgress = computed(() => {
     const progress = this.pathProgress();
     const currentPath = this.currentPath();
@@ -112,6 +113,27 @@ export class PathSelector implements OnInit {
     return result;
   });
 
+  // Computed map of all path progress percentages
+  pathProgressMap = computed(() => {
+    const progress = this.pathProgress();
+    const allPaths = this.paths();
+    const currentPathId = this.currentPath()?.id;
+    
+    const map = new Map<string, number>();
+    
+    for (const path of allPaths) {
+      if (path.id === currentPathId) {
+        // Use the detailed calculation for current path
+        map.set(path.id, this.currentPathProgress());
+      } else {
+        // Other paths show 0 progress
+        map.set(path.id, 0);
+      }
+    }
+    
+    return map;
+  });
+
   isPathLocked(path: LearningPath): boolean {
     return !this.curriculumService.isPathUnlocked(path);
   }
@@ -121,9 +143,6 @@ export class PathSelector implements OnInit {
   }
 
   getPathProgress(pathId: string): number {
-    if (this.isPathActive(pathId)) {
-      return this.currentPathProgress();
-    }
-    return 0;
+    return this.pathProgressMap().get(pathId) ?? 0;
   }
 }

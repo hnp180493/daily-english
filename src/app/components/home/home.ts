@@ -41,6 +41,27 @@ export class HomeComponent implements OnInit {
   weeklyGoal = signal<any>(null);
   currentStreak = toSignal(this.streakService.getCurrentStreak(), { initialValue: 0 });
 
+  // Computed signal for path progress percentage
+  pathProgressPercentage = computed(() => {
+    const progress = this.pathProgress();
+    const path = this.currentPath();
+    
+    if (!progress || !path) return 0;
+    
+    let totalExercises = 0;
+    let completedExercises = 0;
+
+    for (const module of path.modules) {
+      totalExercises += module.exerciseIds.length;
+      const moduleProgress = progress.moduleProgress[module.id];
+      if (moduleProgress) {
+        completedExercises += moduleProgress.completedExercises.length;
+      }
+    }
+
+    return totalExercises === 0 ? 0 : Math.round((completedExercises / totalExercises) * 100);
+  });
+
   levels = [DifficultyLevel.BEGINNER, DifficultyLevel.INTERMEDIATE, DifficultyLevel.ADVANCED];
   categories = Object.values(ExerciseCategory);
   selectedLevel = signal<DifficultyLevel | null>(null);

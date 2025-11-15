@@ -30,42 +30,62 @@ export class ProgressDashboard implements OnInit {
 
   isLoading = signal(true);
   performance = signal<PerformanceAnalysis | null>(null);
-  recentActivity = signal<RecentActivity[]>([]);
+  
+  // Store user progress from ProgressService
+  private userProgressSignal = signal<any>(null);
+  private longestStreakSignal = signal(0);
 
+  // Computed signals for reactive data
   currentPath = computed(() => this.curriculumService.currentPath());
+  pathProgress = computed(() => this.curriculumService.pathProgress());
   pathCompletion = computed(() => this.curriculumService.calculatePathCompletion());
-  totalExercises = signal(0);
-  averageScore = signal(0);
-  longestStreak = signal(0);
+  
+  totalExercises = computed(() => {
+    const progress = this.userProgressSignal();
+    if (!progress) return 0;
+    return Object.keys(progress.exerciseHistory || {}).length;
+  });
+
+  averageScore = computed(() => {
+    const progress = this.userProgressSignal();
+    if (!progress) return 0;
+    
+    const history = Object.values(progress.exerciseHistory || {});
+    if (history.length === 0) return 0;
+    
+    const totalScore = history.reduce((sum: number, h: any) => sum + h.accuracyScore, 0);
+    return Math.round(totalScore / history.length);
+  });
+
+  recentActivity = computed(() => {
+    const progress = this.userProgressSignal();
+    if (!progress) return [];
+    
+    const history = Object.values(progress.exerciseHistory || {});
+    return history
+      .slice(-5)
+      .reverse()
+      .map((h: any) => ({
+        id: h.exerciseId,
+        exerciseTitle: h.exerciseId,
+        date: new Date(h.timestamp),
+        score: h.accuracyScore
+      }));
+  });
+  
+  longestStreak = computed(() => this.longestStreakSignal());
 
   async ngOnInit(): Promise<void> {
     await this.loadDashboardData();
     
-    // Subscribe to progress updates
+    // Subscribe to user progress updates
     this.progressService.getUserProgress().subscribe(progress => {
-      const history = Object.values(progress.exerciseHistory || {});
-      this.totalExercises.set(history.length);
-      
-      if (history.length > 0) {
-        const totalScore = history.reduce((sum: number, h: any) => sum + h.accuracyScore, 0);
-        this.averageScore.set(Math.round(totalScore / history.length));
-      }
-      
-      const recent = history
-        .slice(-5)
-        .reverse()
-        .map((h: any) => ({
-          id: h.exerciseId,
-          exerciseTitle: h.exerciseId,
-          date: new Date(h.timestamp),
-          score: h.accuracyScore
-        }));
-      this.recentActivity.set(recent);
+      this.userProgressSignal.set(progress);
     });
     
     // Subscribe to streak updates
     this.streakService.getLongestStreak().subscribe(streak => {
-      this.longestStreak.set(streak || 0);
+      this.longestStreakSignal.set(streak || 0);
     });
   }
 
@@ -106,27 +126,9 @@ export class ProgressDashboard implements OnInit {
         console.log('[ProgressDashboard] Performance analysis skipped or failed');
       }
 
-      // Process progress result
+      // Process user progress result
       if (progressResult.status === 'fulfilled' && progressResult.value) {
-        const progress = progressResult.value;
-        const history = Object.values(progress.exerciseHistory || {});
-        this.totalExercises.set(history.length);
-        
-        if (history.length > 0) {
-          const totalScore = history.reduce((sum: number, h: any) => sum + h.accuracyScore, 0);
-          this.averageScore.set(Math.round(totalScore / history.length));
-        }
-        
-        const recent = history
-          .slice(-5)
-          .reverse()
-          .map((h: any) => ({
-            id: h.exerciseId,
-            exerciseTitle: h.exerciseId,
-            date: new Date(h.timestamp),
-            score: h.accuracyScore
-          }));
-        this.recentActivity.set(recent);
+        this.userProgressSignal.set(progressResult.value);
         console.log('[ProgressDashboard] User progress loaded');
       } else {
         console.log('[ProgressDashboard] User progress skipped or failed');
@@ -134,10 +136,10 @@ export class ProgressDashboard implements OnInit {
 
       // Process streak result
       if (streakResult.status === 'fulfilled') {
-        this.longestStreak.set(streakResult.value || 0);
+        this.longestStreakSignal.set(streakResult.value || 0);
         console.log('[ProgressDashboard] Longest streak loaded');
       } else {
-        this.longestStreak.set(0);
+        this.longestStreakSignal.set(0);
         console.log('[ProgressDashboard] Longest streak skipped or failed');
       }
       
@@ -150,15 +152,16 @@ export class ProgressDashboard implements OnInit {
     }
   }
 
-  estimatedCompletion(): string | null {
-    const progress = this.curriculumService.pathProgress();
+  // Computed estimated completion date
+  estimatedCompletion = computed(() => {
+    const progress = this.pathProgress();
     if (!progress || !progress.startDate) return null;
 
     const path = this.currentPath();
     if (!path) return null;
 
     const startDate = new Date(progress.startDate);
-    const estimatedWeeks = 12; // Default estimate
+    const estimatedWeeks = path.durationWeeks || 12; // Use path duration or default
     const completionDate = new Date(startDate);
     completionDate.setDate(completionDate.getDate() + estimatedWeeks * 7);
 
@@ -167,15 +170,27 @@ export class ProgressDashboard implements OnInit {
       month: 'long', 
       day: 'numeric' 
     });
-  }
+  });
 
+  // Computed category list
+  categoryList = computed(() => {
+    const perf = this.performance();
+    if (!perf) return [];
+
+    return Object.entries(perf.categoryScores).map(([name, score]) => ({
+      name,
+      score: Math.round(score)
+    }));
+  });
+
+  // Methods that use computed signals internally
   isModuleCompleted(moduleId: string): boolean {
-    const progress = this.curriculumService.pathProgress();
+    const progress = this.pathProgress();
     return progress?.completedModules.includes(moduleId) ?? false;
   }
 
   isModuleCurrent(moduleId: string): boolean {
-    const progress = this.curriculumService.pathProgress();
+    const progress = this.pathProgress();
     return progress?.currentModuleId === moduleId;
   }
 
@@ -184,13 +199,7 @@ export class ProgressDashboard implements OnInit {
   }
 
   getCategoryList(): Array<{ name: string; score: number }> {
-    const perf = this.performance();
-    if (!perf) return [];
-
-    return Object.entries(perf.categoryScores).map(([name, score]) => ({
-      name,
-      score: Math.round(score)
-    }));
+    return this.categoryList();
   }
 
   formatDate(date: Date): string {

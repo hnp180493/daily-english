@@ -46,7 +46,7 @@
       </div>
       <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-4 mb-4">
         <div 
-          class="bg-gradient-to-r from-primary-500 to-secondary-500 h-4 rounded-full transition-all duration-500"
+          class="bg-gradient-to-r from-purple-500 to-pink-500 h-4 rounded-full transition-all duration-500"
           [style.width.%]="pathCompletion()">
         </div>
       </div>
@@ -70,7 +70,7 @@
                   </svg>
                 </div>
               } @else if (isModuleCurrent(module.id)) {
-                <div class="w-10 h-10 rounded-full bg-primary-600 flex items-center justify-center text-white font-bold">
+                <div class="w-10 h-10 rounded-full bg-indigo-600 flex items-center justify-center text-white font-bold">
                   {{ i + 1 }}
                 </div>
               } @else {
@@ -90,7 +90,7 @@
                   </div>
                   <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
                     <div 
-                      class="bg-primary-600 h-2 rounded-full transition-all duration-300"
+                      class="bg-indigo-600 h-2 rounded-full transition-all duration-300"
                       [style.width.%]="getModuleProgress(module.id)">
                     </div>
                   </div>

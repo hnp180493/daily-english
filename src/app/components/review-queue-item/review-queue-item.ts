@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy, input, output } from '@angular/core';
+import { Component, ChangeDetectionStrategy, input, output, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReviewQueueItem as ReviewQueueItemModel, UrgencyLevel } from '../../models/review.model';
 
@@ -19,6 +19,12 @@ export class ReviewQueueItem {
 
   // Expose UrgencyLevel enum to template
   UrgencyLevel = UrgencyLevel;
+
+  // Computed signal for formatted date
+  formattedDate = computed(() => this.formatDate(this.item().nextReviewDate));
+  
+  // Computed signal to check if overdue
+  isOverdue = computed(() => this.formattedDate() === 'Overdue');
 
   onStartReview(): void {
     this.startReview.emit(this.item().exerciseId);

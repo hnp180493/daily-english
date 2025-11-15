@@ -44,9 +44,9 @@ export class LearningPath implements OnInit {
     const path = await this.curriculumService.getUserCurrentPath();
     this.hasActivePath.set(!!path);
     
-    if (path) {
-      this.activeTab.set('challenge');
-    }
+    // if (path) {
+    //   this.activeTab.set('challenge');
+    // }
   }
 
   async loadCertificates(): Promise<void> {

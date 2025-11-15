@@ -24,7 +24,10 @@ export class GoalTracker implements OnInit {
   isLoading = signal(true);
   achievementRate = signal<number | null>(null);
 
-  completedExercises = computed(() => this.currentGoal()?.completedExercises || 0);
+  completedExercises = computed(() => {
+    let completed = this.currentGoal()?.completedExercises || 0;
+    return completed;
+  });
   progressPercentage = computed(() => {
     const goal = this.currentGoal();
     if (!goal || goal.targetExercises === 0) return 0;
@@ -144,17 +147,21 @@ export class GoalTracker implements OnInit {
     console.log('[GoalTracker] All attempts:', allAttempts.map((h: any) => ({
       id: h.exerciseId,
       timestamp: h.timestamp,
+      score: h.accuracyScore,
       date: new Date(h.timestamp).toISOString()
     })));
 
+    // Only count exercises with score >= 60 that were completed this week
     const completedThisWeek = allAttempts.filter((h: any) => {
       const date = new Date(h.timestamp);
       const inRange = date >= weekStart && date < weekEnd;
-      console.log('[GoalTracker] Exercise', h.exerciseId, 'at', date.toISOString(), 'in range?', inRange);
-      return inRange;
+      const passingScore = h.accuracyScore >= 60;
+      console.log('[GoalTracker] Exercise', h.exerciseId, 'at', date.toISOString(), 
+                  'score:', h.accuracyScore, 'in range?', inRange, 'passing?', passingScore);
+      return inRange && passingScore;
     }).length;
 
-    console.log('[GoalTracker] Completed this week:', completedThisWeek);
+    console.log('[GoalTracker] Completed this week (score >= 60):', completedThisWeek);
     console.log('[GoalTracker] Previous count:', goal.completedExercises);
 
     goal.completedExercises = completedThisWeek;

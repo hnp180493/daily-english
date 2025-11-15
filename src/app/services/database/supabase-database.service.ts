@@ -807,6 +807,8 @@ export class SupabaseDatabase implements IDatabase {
           is_achieved: goal.isAchieved,
           bonus_points_earned: goal.bonusPointsEarned,
           updated_at: new Date().toISOString()
+        }, {
+          onConflict: 'user_id,week_start_date'
         })
         .then(({ error }) => {
           if (error) throw error;

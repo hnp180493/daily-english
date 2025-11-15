@@ -600,11 +600,11 @@ export class CurriculumService {
     return true;
   }
 
-  incrementWeeklyGoalProgress(): Observable<void> {
-    return from(this.incrementWeeklyGoalProgressAsync());
+  incrementWeeklyGoalProgress(score: number = 0): Observable<void> {
+    return from(this.recalculateWeeklyGoalProgressAsync());
   }
 
-  private async incrementWeeklyGoalProgressAsync(): Promise<void> {
+  private async recalculateWeeklyGoalProgressAsync(): Promise<void> {
     const userId = this.auth.getUserId();
     if (!userId) return;
 
@@ -620,30 +620,39 @@ export class CurriculumService {
     const goal = await this.db.loadWeeklyGoalByDate(userId, weekStartDate).toPromise();
 
     if (!goal) {
-      // Create new goal with default target
-      const newGoal = {
-        userId,
-        weekStartDate,
-        targetExercises: 10,
-        completedExercises: 1,
-        isAchieved: false,
-        bonusPointsEarned: 0,
-      };
-      await this.db.saveWeeklyGoalAuto(newGoal).toPromise();
+      // Don't create goal automatically - user should set it in goal-tracker
+      console.log('[CurriculumService] No weekly goal set for this week, skipping update');
       return;
     }
 
-    // Increment completed exercises
+    // Recalculate from exercise history
+    const progress = await this.db.loadProgressAuto().toPromise();
+    const history = progress?.exerciseHistory || {};
+    
+    const weekStart = new Date(weekStartDate);
+    weekStart.setHours(0, 0, 0, 0);
+    const weekEnd = new Date(weekStart);
+    weekEnd.setDate(weekEnd.getDate() + 7);
+    weekEnd.setHours(23, 59, 59, 999);
+
+    // Count exercises with score >= 60 completed this week
+    const completedThisWeek = Object.values(history).filter((h: any) => {
+      const date = new Date(h.timestamp);
+      return date >= weekStart && date < weekEnd && h.accuracyScore >= 60;
+    }).length;
+
+    // Update goal
     const updatedGoal = {
       ...goal,
-      completedExercises: goal.completedExercises + 1,
-      isAchieved: goal.completedExercises + 1 >= goal.targetExercises,
+      completedExercises: completedThisWeek,
+      isAchieved: completedThisWeek >= goal.targetExercises,
       bonusPointsEarned:
-        goal.completedExercises + 1 >= goal.targetExercises && !goal.isAchieved
+        completedThisWeek >= goal.targetExercises && !goal.isAchieved
           ? 500
           : goal.bonusPointsEarned,
     };
 
+    console.log('[CurriculumService] Recalculated weekly goal:', updatedGoal);
     await this.db.saveWeeklyGoalAuto(updatedGoal).toPromise();
   }
 
@@ -662,18 +671,7 @@ export class CurriculumService {
 
     const goal = await this.db.loadWeeklyGoalByDate(userId, weekStartDate).toPromise();
 
-    if (!goal) {
-      // Return default goal
-      return {
-        userId,
-        weekStartDate,
-        targetExercises: 10,
-        completedExercises: 0,
-        isAchieved: false,
-        bonusPointsEarned: 0,
-      };
-    }
-
-    return goal;
+    // Return null if no goal set - user needs to set it in goal-tracker
+    return goal || null;
   }
 }

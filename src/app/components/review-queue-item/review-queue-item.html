@@ -1,4 +1,10 @@
-<div class="review-queue-item bg-gray-800 rounded-lg shadow-md p-4 hover:shadow-lg transition-all border border-gray-700 hover:border-indigo-500" role="article">
+<div 
+  class="review-queue-item bg-gray-800 rounded-lg shadow-md p-4 hover:shadow-lg transition-all border hover:border-indigo-500" 
+  [class.border-gray-700]="!isOverdue()"
+  [class.border-red-500]="isOverdue()"
+  [class.border-2]="isOverdue()"
+  [class.bg-red-950/20]="isOverdue()"
+  role="article">
   <!-- Compact Header Row -->
   <div class="flex items-center justify-between mb-3">
     <!-- Title and badges -->
@@ -44,8 +50,21 @@
     <!-- Next review date -->
     <div class="flex items-center gap-1.5">
       <span class="text-gray-500">Next Review</span>
-      <span class="font-semibold text-gray-200" role="status">
-        {{ formatDate(item().nextReviewDate) }}
+      <span 
+        class="font-semibold" 
+        [class.text-gray-200]="!isOverdue()"
+        [class.text-red-400]="isOverdue()"
+        [class.font-bold]="isOverdue()"
+        [class.overdue-pulse]="isOverdue()"
+        role="status">
+        @if (isOverdue()) {
+          <span class="inline-flex items-center gap-1">
+            <span class="text-red-500">⚠️</span>
+            {{ formattedDate() }}
+          </span>
+        } @else {
+          {{ formattedDate() }}
+        }
       </span>
     </div>
 

@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy, OnInit, viewChild, inject, signal, computed, effect } from '@angular/core';
+import { Component, ChangeDetectionStrategy, OnInit, OnDestroy, viewChild, inject, signal, computed, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -46,9 +46,12 @@ import { PENALTY_CONSTANTS } from '../../models/penalty.constants';
   ],
   templateUrl: './exercise-detail.html',
   styleUrl: './exercise-detail.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  host: {
+    '(document:keydown)': 'onKeyDown($event)'
+  }
 })
-export class ExerciseDetailComponent implements OnInit {
+export class ExerciseDetailComponent implements OnInit, OnDestroy {
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private location = inject(Location);
@@ -408,15 +411,42 @@ export class ExerciseDetailComponent implements OnInit {
   }
 
   onKeyDown(event: KeyboardEvent): void {
+    // Ignore if user is typing in textarea or input
+    const target = event.target as HTMLElement;
+    if (target.tagName === 'TEXTAREA' || target.tagName === 'INPUT') {
+      // Only handle Enter and R when in textarea
+      if (target.tagName === 'TEXTAREA') {
+        if (event.key === 'Enter' && !event.shiftKey) {
+          event.preventDefault();
+          this.canProceedToNext() ? this.onNextSentence() : this.onSubmit();
+        } else if (event.key === 'r' || event.key === 'R') {
+          if (this.canProceedToNext() || this.hasThreeConsecutiveFailures()) {
+            event.preventDefault();
+            this.onRetrySentence();
+          }
+        }
+      }
+      return;
+    }
+
+    // Handle keyboard shortcuts when not typing
     if (event.key === 'Enter' && !event.shiftKey) {
       event.preventDefault();
-      this.canProceedToNext() ? this.onNextSentence() : this.onSubmit();
+      if (this.canProceedToNext()) {
+        this.onNextSentence();
+      } else if (!this.isReviewMode() && !this.isExerciseComplete()) {
+        this.onSubmit();
+      }
     } else if (event.key === 'r' || event.key === 'R') {
       if (this.canProceedToNext() || this.hasThreeConsecutiveFailures()) {
         event.preventDefault();
         this.onRetrySentence();
       }
     }
+  }
+
+  ngOnDestroy(): void {
+    // Cleanup if needed
   }
 
   onInputChange(): void {
@@ -623,9 +653,9 @@ export class ExerciseDetailComponent implements OnInit {
       error: (err) => console.warn('[ExerciseDetail] Daily challenge check failed:', err)
     });
     
-    // Update weekly goal progress
-    this.curriculumService.incrementWeeklyGoalProgress().subscribe({
-      next: () => console.log('[ExerciseDetail] Weekly goal progress updated'),
+    // Update weekly goal progress (only if score >= 60)
+    this.curriculumService.incrementWeeklyGoalProgress(finalScore).subscribe({
+      next: () => console.log('[ExerciseDetail] Weekly goal progress updated with score:', finalScore),
       error: (err) => console.warn('[ExerciseDetail] Weekly goal update failed:', err)
     });
     
