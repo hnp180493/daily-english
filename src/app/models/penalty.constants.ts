@@ -7,5 +7,5 @@ export const PENALTY_CONSTANTS = {
   INCORRECT_ATTEMPT_PENALTY: 4,
   
   /** Points deducted per retry */
-  RETRY_PENALTY: 5
+  RETRY_PENALTY: 2
 } as const;

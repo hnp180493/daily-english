@@ -6,6 +6,10 @@ import { UserProgress, CustomExercise } from '../../models/exercise.model';
 import { UserAchievementData } from '../../models/achievement.model';
 import { ReviewData, ReviewDataWithMetadata } from '../../models/review.model';
 import { ExerciseHistoryRecord } from '../../models/exercise-history.model';
+import { UserPathProgress } from '../../models/learning-path.model';
+import { DailyChallenge } from '../../models/daily-challenge.model';
+import { WeeklyGoal } from '../../models/weekly-goal.model';
+import { NotificationPreferences } from '../notification.service';
 import {
   IDatabase,
   FavoriteData,
@@ -665,5 +669,239 @@ export class SupabaseDatabase implements IDatabase {
     }
 
     return throwError(() => new Error('Database operation failed'));
+  }
+
+  // Learning Path Operations
+  saveLearningPathProgress(userId: string, progress: UserPathProgress): Observable<void> {
+    return from(
+      this.supabase
+        .from('learning_path_progress')
+        .upsert({
+          user_id: userId,
+          current_path_id: progress.currentPathId,
+          current_module_id: progress.currentModuleId,
+          start_date: progress.startDate.toISOString(),
+          completed_modules: progress.completedModules,
+          module_progress: progress.moduleProgress,
+          path_completions: progress.pathCompletions,
+          updated_at: new Date().toISOString()
+        }, {
+          onConflict: 'user_id'
+        })
+        .then(({ error }) => {
+          if (error) throw error;
+        })
+    ).pipe(catchError(this.handleError));
+  }
+
+  loadLearningPathProgress(userId: string): Observable<UserPathProgress | null> {
+    return from(
+      this.supabase
+        .from('learning_path_progress')
+        .select('*')
+        .eq('user_id', userId)
+        .maybeSingle()
+        .then(({ data, error }) => {
+          if (error) throw error;
+          if (!data) return null;
+
+          return {
+            userId: data.user_id,
+            currentPathId: data.current_path_id,
+            currentModuleId: data.current_module_id,
+            startDate: new Date(data.start_date),
+            completedModules: data.completed_modules || [],
+            moduleProgress: data.module_progress || {},
+            pathCompletions: data.path_completions || []
+          } as UserPathProgress;
+        })
+    ).pipe(catchError(this.handleError));
+  }
+
+  // Daily Challenge Operations
+  saveDailyChallenge(userId: string, challenge: DailyChallenge): Observable<void> {
+    return from(
+      this.supabase
+        .from('daily_challenges')
+        .upsert({
+          id: challenge.id,
+          user_id: userId,
+          date: challenge.date,
+          exercise_id: challenge.exerciseId,
+          is_completed: challenge.isCompleted,
+          completed_at: challenge.completedAt?.toISOString(),
+          score: challenge.score,
+          bonus_points: challenge.bonusPoints,
+          is_weekend_challenge: challenge.isWeekendChallenge
+        })
+        .then(({ error }) => {
+          if (error) throw error;
+        })
+    ).pipe(catchError(this.handleError));
+  }
+
+  loadDailyChallenge(userId: string, challengeId: string): Observable<DailyChallenge | null> {
+    return from(
+      this.supabase
+        .from('daily_challenges')
+        .select('*')
+        .eq('user_id', userId)
+        .eq('id', challengeId)
+        .maybeSingle()
+        .then(({ data, error }) => {
+          if (error) throw error;
+          if (!data) return null;
+
+          return {
+            id: data.id,
+            userId: data.user_id,
+            date: data.date,
+            exerciseId: data.exercise_id,
+            isCompleted: data.is_completed,
+            completedAt: data.completed_at ? new Date(data.completed_at) : undefined,
+            score: data.score,
+            bonusPoints: data.bonus_points,
+            isWeekendChallenge: data.is_weekend_challenge
+          } as DailyChallenge;
+        })
+    ).pipe(catchError(this.handleError));
+  }
+
+  loadDailyChallengeByDate(userId: string, date: string): Observable<DailyChallenge | null> {
+    return from(
+      this.supabase
+        .from('daily_challenges')
+        .select('*')
+        .eq('user_id', userId)
+        .eq('date', date)
+        .maybeSingle()
+        .then(({ data, error }) => {
+          if (error) throw error;
+          if (!data) return null;
+
+          return {
+            id: data.id,
+            userId: data.user_id,
+            date: data.date,
+            exerciseId: data.exercise_id,
+            isCompleted: data.is_completed,
+            completedAt: data.completed_at ? new Date(data.completed_at) : undefined,
+            score: data.score,
+            bonusPoints: data.bonus_points,
+            isWeekendChallenge: data.is_weekend_challenge
+          } as DailyChallenge;
+        })
+    ).pipe(catchError(this.handleError));
+  }
+
+  // Weekly Goal Operations
+  saveWeeklyGoal(userId: string, goal: WeeklyGoal): Observable<void> {
+    return from(
+      this.supabase
+        .from('weekly_goals')
+        .upsert({
+          user_id: userId,
+          week_start_date: goal.weekStartDate,
+          target_exercises: goal.targetExercises,
+          completed_exercises: goal.completedExercises,
+          is_achieved: goal.isAchieved,
+          bonus_points_earned: goal.bonusPointsEarned,
+          updated_at: new Date().toISOString()
+        })
+        .then(({ error }) => {
+          if (error) throw error;
+        })
+    ).pipe(catchError(this.handleError));
+  }
+
+  loadWeeklyGoal(userId: string, goalId: string): Observable<WeeklyGoal | null> {
+    return from(
+      this.supabase
+        .from('weekly_goals')
+        .select('*')
+        .eq('user_id', userId)
+        .eq('id', goalId)
+        .maybeSingle()
+        .then(({ data, error }) => {
+          if (error) throw error;
+          if (!data) return null;
+
+          return {
+            userId: data.user_id,
+            weekStartDate: data.week_start_date,
+            targetExercises: data.target_exercises,
+            completedExercises: data.completed_exercises,
+            isAchieved: data.is_achieved,
+            bonusPointsEarned: data.bonus_points_earned
+          } as WeeklyGoal;
+        })
+    ).pipe(catchError(this.handleError));
+  }
+
+  loadWeeklyGoalByDate(userId: string, weekStartDate: string): Observable<WeeklyGoal | null> {
+    return from(
+      this.supabase
+        .from('weekly_goals')
+        .select('*')
+        .eq('user_id', userId)
+        .eq('week_start_date', weekStartDate)
+        .maybeSingle()
+        .then(({ data, error }) => {
+          if (error) throw error;
+          if (!data) return null;
+
+          return {
+            userId: data.user_id,
+            weekStartDate: data.week_start_date,
+            targetExercises: data.target_exercises,
+            completedExercises: data.completed_exercises,
+            isAchieved: data.is_achieved,
+            bonusPointsEarned: data.bonus_points_earned
+          } as WeeklyGoal;
+        })
+    ).pipe(catchError(this.handleError));
+  }
+
+  // Notification Preferences Operations
+  saveNotificationPreferences(userId: string, preferences: NotificationPreferences): Observable<void> {
+    return from(
+      this.supabase
+        .from('notification_preferences')
+        .upsert({
+          user_id: userId,
+          enabled: preferences.enabled,
+          reminder_time: preferences.reminderTime,
+          daily_challenge_reminder: preferences.dailyChallengeReminder,
+          goal_progress_reminder: preferences.goalProgressReminder,
+          streak_reminder: preferences.streakReminder,
+          updated_at: new Date().toISOString()
+        })
+        .then(({ error }) => {
+          if (error) throw error;
+        })
+    ).pipe(catchError(this.handleError));
+  }
+
+  loadNotificationPreferences(userId: string): Observable<NotificationPreferences | null> {
+    return from(
+      this.supabase
+        .from('notification_preferences')
+        .select('*')
+        .eq('user_id', userId)
+        .maybeSingle()
+        .then(({ data, error }) => {
+          if (error) throw error;
+          if (!data) return null;
+
+          return {
+            userId: data.user_id,
+            enabled: data.enabled,
+            reminderTime: data.reminder_time,
+            dailyChallengeReminder: data.daily_challenge_reminder,
+            goalProgressReminder: data.goal_progress_reminder,
+            streakReminder: data.streak_reminder
+          } as NotificationPreferences;
+        })
+    ).pipe(catchError(this.handleError));
   }
 }

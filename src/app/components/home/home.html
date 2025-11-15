@@ -2,6 +2,88 @@
   @if (isLoading()) {
     <app-loading-spinner [message]="'Đang tải...'" />
   } @else {
+    <!-- Learning Path Widgets (only for authenticated users) -->
+    @if (isAuthenticated()) {
+      <section class="learning-path-widgets">
+        <!-- Daily Challenge Widget -->
+        @if (dailyChallenge(); as challenge) {
+          <div class="widget daily-challenge-widget" (click)="navigateToDailyChallenge()">
+            <div class="widget-header">
+              <h3>🎯 Daily Challenge</h3>
+              @if (currentStreak() >= 7) {
+                <span class="streak-badge">🔥 {{ currentStreak() }} days</span>
+              }
+            </div>
+            @if (challenge.isCompleted) {
+              <div class="challenge-completed">
+                <span class="checkmark">✓</span>
+                <p>Challenge completed! Come back tomorrow.</p>
+              </div>
+            } @else {
+              <div class="challenge-active">
+                <p class="challenge-title">{{ challenge.exercise?.title || 'New Challenge' }}</p>
+                <button class="challenge-btn">Start Challenge →</button>
+              </div>
+            }
+          </div>
+        }
+
+        <!-- Weekly Goal Widget -->
+        @if (weeklyGoal(); as goal) {
+          <div class="widget weekly-goal-widget" (click)="navigateToLearningPath()">
+            <div class="widget-header">
+              <h3>📊 Weekly Goal</h3>
+            </div>
+            <div class="goal-progress">
+              <div class="progress-ring">
+                <svg viewBox="0 0 100 100">
+                  <circle cx="50" cy="50" r="45" class="progress-bg" />
+                  <circle 
+                    cx="50" 
+                    cy="50" 
+                    r="45" 
+                    class="progress-fill"
+                    [style.stroke-dashoffset]="283 - (283 * (goal.completedExercises / goal.targetExercises))" />
+                </svg>
+                <div class="progress-text">
+                  <span class="progress-value">{{ goal.completedExercises }}/{{ goal.targetExercises }}</span>
+                </div>
+              </div>
+              <p class="goal-label">Exercises this week</p>
+            </div>
+          </div>
+        }
+
+        <!-- Continue Learning Widget -->
+        @if (currentPath() && currentModule()) {
+          <div class="widget continue-learning-widget" (click)="navigateToCurrentModule()">
+            <div class="widget-header">
+              <h3>📚 Continue Learning</h3>
+            </div>
+            <div class="path-info">
+              <p class="path-name">{{ currentPath()?.name }}</p>
+              <p class="module-name">{{ currentModule()?.name }}</p>
+              <div class="path-progress-bar">
+                <div 
+                  class="path-progress-fill"
+                  [style.width.%]="(pathProgress()?.completedModules?.length || 0) / (currentPath()?.modules?.length || 1) * 100">
+                </div>
+              </div>
+              <button class="continue-btn">Continue →</button>
+            </div>
+          </div>
+        } @else if (isAuthenticated()) {
+          <div class="widget start-path-widget" (click)="navigateToLearningPath()">
+            <div class="widget-header">
+              <h3>🚀 Start Your Learning Path</h3>
+            </div>
+            <p class="start-path-text">Choose a structured learning path to guide your progress</p>
+            <button class="start-path-btn">Choose Path →</button>
+          </div>
+        }
+      </section>
+    }
+
     <section class="level-selection">
       <h2 class="section-title">SENTENCE WRITING</h2>
       <h3 class="section-subtitle">Choose Your Level</h3>

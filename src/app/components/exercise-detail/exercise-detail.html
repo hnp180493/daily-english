@@ -93,7 +93,7 @@
                 class="translation-textarea"
                 [ngModel]="userInput()"
                 (ngModelChange)="userInput.set($event); onInputChange()"
-                [disabled]="isSubmitting()"
+                [disabled]="isSubmitting() || hasThreeConsecutiveFailures()"
                 [readonly]="canProceedToNext()"
                 placeholder="Enter your English translation here... (Only highlighted sentence)"
                 rows="3"></textarea>

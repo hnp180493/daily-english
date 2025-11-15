@@ -72,6 +72,7 @@ export interface UserProgress {
   totalPoints: number;
   lastActivityDate: Date;
   currentStreak: number;
+  longestStreak: number;
   lastStreakDate: string; // ISO date string (YYYY-MM-DD)
   achievements: string[];
 }

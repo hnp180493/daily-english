@@ -186,6 +186,11 @@ export class ProgressService {
       }
     }
     
+    // Initialize longestStreak if missing
+    if (progress.longestStreak === undefined) {
+      progress.longestStreak = progress.currentStreak || 0;
+    }
+    
     return progress;
   }
 
@@ -244,7 +249,8 @@ export class ProgressService {
       totalPoints: current.totalPoints + attempt.pointsEarned,
       lastActivityDate: new Date(),
       currentStreak: streakUpdate.currentStreak,
-      lastStreakDate: streakUpdate.lastStreakDate
+      lastStreakDate: streakUpdate.lastStreakDate,
+      longestStreak: streakUpdate.longestStreak || current.longestStreak || 0
     };
 
     console.log('New totalPoints:', updated.totalPoints);
@@ -311,7 +317,7 @@ export class ProgressService {
     return 0;
   }
 
-  private updateStreak(progress: UserProgress): { currentStreak: number; lastStreakDate: string } {
+  private updateStreak(progress: UserProgress): { currentStreak: number; lastStreakDate: string; longestStreak?: number } {
     const today = this.getDateString(new Date());
     const yesterday = this.getDateString(this.subtractDays(new Date(), 1));
     
@@ -321,10 +327,16 @@ export class ProgressService {
     console.log('Last streak date:', progress.lastStreakDate);
     console.log('Current streak:', progress.currentStreak);
     
+    const currentLongest = progress.longestStreak || 0;
+    
     // First time or no previous streak data
     if (!progress.lastStreakDate) {
       console.log('→ First time, setting streak to 1');
-      return { currentStreak: 1, lastStreakDate: today };
+      return { 
+        currentStreak: 1, 
+        lastStreakDate: today,
+        longestStreak: Math.max(1, currentLongest)
+      };
     }
     
     // Check if today is a NEW day (today > lastStreakDate)
@@ -333,19 +345,32 @@ export class ProgressService {
     if (!isNewDay) {
       // Same day - keep current streak, update lastStreakDate
       console.log('→ Same day, keeping streak:', progress.currentStreak);
-      return { currentStreak: progress.currentStreak, lastStreakDate: today };
+      return { 
+        currentStreak: progress.currentStreak, 
+        lastStreakDate: today,
+        longestStreak: currentLongest
+      };
     }
     
     // New day - check if it's consecutive
     if (progress.lastStreakDate === yesterday) {
       // Consecutive day - increase streak
-      console.log('→ Consecutive day, increasing streak to:', progress.currentStreak + 1);
-      return { currentStreak: progress.currentStreak + 1, lastStreakDate: today };
+      const newStreak = progress.currentStreak + 1;
+      console.log('→ Consecutive day, increasing streak to:', newStreak);
+      return { 
+        currentStreak: newStreak, 
+        lastStreakDate: today,
+        longestStreak: Math.max(newStreak, currentLongest)
+      };
     }
     
     // Streak broken - reset to 1
     console.log('→ Streak broken (missed days), resetting to 1');
-    return { currentStreak: 1, lastStreakDate: today };
+    return { 
+      currentStreak: 1, 
+      lastStreakDate: today,
+      longestStreak: currentLongest
+    };
   }
 
   private getDateString(date: Date): string {
@@ -427,6 +452,7 @@ export class ProgressService {
       totalPoints: 0,
       lastActivityDate: new Date(),
       currentStreak: 0,
+      longestStreak: 0,
       lastStreakDate: '',
       achievements: []
     };

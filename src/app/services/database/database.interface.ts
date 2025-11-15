@@ -2,6 +2,10 @@ import { Observable } from 'rxjs';
 import { UserProgress, CustomExercise } from '../../models/exercise.model';
 import { UserAchievementData, AchievementProgress } from '../../models/achievement.model';
 import { ReviewData, ReviewDataWithMetadata } from '../../models/review.model';
+import { UserPathProgress } from '../../models/learning-path.model';
+import { DailyChallenge } from '../../models/daily-challenge.model';
+import { WeeklyGoal } from '../../models/weekly-goal.model';
+import { NotificationPreferences } from '../notification.service';
 
 export interface FavoriteData {
   exerciseId: string;
@@ -73,4 +77,22 @@ export interface IDatabase {
   loadAllReviewData(userId: string): Observable<ReviewDataWithMetadata[]>;
   updateReviewSchedule(userId: string, exerciseId: string, nextReviewDate: Date, interval: number, easinessFactor: number): Observable<void>;
   deleteReviewData(userId: string, exerciseId: string): Observable<void>;
+
+  // Learning Path Operations
+  saveLearningPathProgress(userId: string, progress: UserPathProgress): Observable<void>;
+  loadLearningPathProgress(userId: string): Observable<UserPathProgress | null>;
+
+  // Daily Challenge Operations
+  saveDailyChallenge(userId: string, challenge: DailyChallenge): Observable<void>;
+  loadDailyChallenge(userId: string, challengeId: string): Observable<DailyChallenge | null>;
+  loadDailyChallengeByDate(userId: string, date: string): Observable<DailyChallenge | null>;
+
+  // Weekly Goal Operations
+  saveWeeklyGoal(userId: string, goal: WeeklyGoal): Observable<void>;
+  loadWeeklyGoal(userId: string, goalId: string): Observable<WeeklyGoal | null>;
+  loadWeeklyGoalByDate(userId: string, weekStartDate: string): Observable<WeeklyGoal | null>;
+
+  // Notification Preferences Operations
+  saveNotificationPreferences(userId: string, preferences: NotificationPreferences): Observable<void>;
+  loadNotificationPreferences(userId: string): Observable<NotificationPreferences | null>;
 }

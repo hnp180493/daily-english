@@ -1,0 +1,185 @@
+{
+  "id": "advanced-path",
+  "name": "Advanced Path",
+  "level": "advanced",
+  "duration": "6 months",
+  "durationWeeks": 24,
+  "description": "Master English with expert-level challenges in business, technical writing, literary analysis, and professional communication",
+  "unlockRequirement": "Complete Intermediate Path",
+  "modules": [
+    {
+      "id": "advanced-module-1",
+      "name": "Business English Mastery",
+      "weekRange": "Week 1-4",
+      "startWeek": 1,
+      "endWeek": 4,
+      "topics": [
+        "Executive communication",
+        "Strategic planning documents",
+        "Board presentations",
+        "International business"
+      ],
+      "exerciseIds": [
+        "ex-401",
+        "ex-405",
+        "ex-409",
+        "ex-413",
+        "ex-417",
+        "ex-421",
+        "ex-425",
+        "ex-429",
+        "ex-433",
+        "ex-437",
+        "ex-441",
+        "ex-445"
+      ],
+      "translationSupport": "none",
+      "requiredScore": 80
+    },
+    {
+      "id": "advanced-module-2",
+      "name": "Technical Writing",
+      "weekRange": "Week 5-8",
+      "startWeek": 5,
+      "endWeek": 8,
+      "topics": [
+        "Technical documentation",
+        "API documentation",
+        "User manuals",
+        "Scientific papers"
+      ],
+      "exerciseIds": [
+        "ex-449",
+        "ex-453",
+        "ex-457",
+        "ex-461",
+        "ex-465",
+        "ex-469",
+        "ex-473",
+        "ex-477",
+        "ex-481",
+        "ex-485",
+        "ex-489",
+        "ex-493"
+      ],
+      "translationSupport": "none",
+      "requiredScore": 80
+    },
+    {
+      "id": "advanced-module-3",
+      "name": "Literary Analysis",
+      "weekRange": "Week 9-12",
+      "startWeek": 9,
+      "endWeek": 12,
+      "topics": [
+        "Poetry interpretation",
+        "Novel analysis",
+        "Literary criticism",
+        "Creative writing"
+      ],
+      "exerciseIds": [
+        "ex-497",
+        "ex-501",
+        "ex-505",
+        "ex-509",
+        "ex-513",
+        "ex-517",
+        "ex-521",
+        "ex-525",
+        "ex-529",
+        "ex-533",
+        "ex-537",
+        "ex-541"
+      ],
+      "translationSupport": "none",
+      "requiredScore": 85
+    },
+    {
+      "id": "advanced-module-4",
+      "name": "Debate & Argumentation",
+      "weekRange": "Week 13-16",
+      "startWeek": 13,
+      "endWeek": 16,
+      "topics": [
+        "Logical reasoning",
+        "Persuasive writing",
+        "Counter-arguments",
+        "Rhetorical devices"
+      ],
+      "exerciseIds": [
+        "ex-545",
+        "ex-549",
+        "ex-553",
+        "ex-557",
+        "ex-561",
+        "ex-565",
+        "ex-569",
+        "ex-573",
+        "ex-577",
+        "ex-581",
+        "ex-585",
+        "ex-589"
+      ],
+      "translationSupport": "none",
+      "requiredScore": 85
+    },
+    {
+      "id": "advanced-module-5",
+      "name": "Research & Analysis",
+      "weekRange": "Week 17-20",
+      "startWeek": 17,
+      "endWeek": 20,
+      "topics": [
+        "Research methodology",
+        "Data analysis",
+        "Academic publishing",
+        "Peer review"
+      ],
+      "exerciseIds": [
+        "ex-593",
+        "ex-597",
+        "ex-601",
+        "ex-605",
+        "ex-609",
+        "ex-613",
+        "ex-617",
+        "ex-621",
+        "ex-625",
+        "ex-629",
+        "ex-633",
+        "ex-637"
+      ],
+      "translationSupport": "none",
+      "requiredScore": 85
+    },
+    {
+      "id": "advanced-module-6",
+      "name": "Presentation & Public Speaking",
+      "weekRange": "Week 21-24",
+      "startWeek": 21,
+      "endWeek": 24,
+      "topics": [
+        "Conference presentations",
+        "TED-style talks",
+        "Panel discussions",
+        "Media interviews"
+      ],
+      "exerciseIds": [
+        "ex-641",
+        "ex-645",
+        "ex-649",
+        "ex-653",
+        "ex-657",
+        "ex-661",
+        "ex-665",
+        "ex-669",
+        "ex-673",
+        "ex-677",
+        "ex-681",
+        "ex-685"
+      ],
+      "translationSupport": "none",
+      "requiredScore": 90
+    }
+  ]
+}

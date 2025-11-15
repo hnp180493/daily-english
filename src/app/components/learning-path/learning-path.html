@@ -1,0 +1,90 @@
+<div class="learning-path-page min-h-screen bg-gray-50 dark:bg-gray-900">
+  <div class="container mx-auto px-4 py-8">
+    @if (!hasActivePath()) {
+      <app-path-selector></app-path-selector>
+    } @else {
+      <div class="mb-6">
+        <nav class="flex space-x-1 bg-white dark:bg-gray-800 rounded-lg shadow p-1 overflow-x-auto">
+          <button
+            (click)="setTab('overview')"
+            [class]="'flex-1 py-3 px-4 rounded-md font-medium transition-colors duration-200 whitespace-nowrap ' + getTabClass('overview')">
+            Path Overview
+          </button>
+          <button
+            (click)="setTab('exercises')"
+            [class]="'flex-1 py-3 px-4 rounded-md font-medium transition-colors duration-200 whitespace-nowrap ' + getTabClass('exercises')">
+            Exercise List
+          </button>
+          <button
+            (click)="setTab('challenge')"
+            [class]="'flex-1 py-3 px-4 rounded-md font-medium transition-colors duration-200 whitespace-nowrap ' + getTabClass('challenge')">
+            Daily Challenge
+          </button>
+          <button
+            (click)="setTab('progress')"
+            [class]="'flex-1 py-3 px-4 rounded-md font-medium transition-colors duration-200 whitespace-nowrap ' + getTabClass('progress')">
+            Progress
+          </button>
+          <button
+            (click)="setTab('goals')"
+            [class]="'flex-1 py-3 px-4 rounded-md font-medium transition-colors duration-200 whitespace-nowrap ' + getTabClass('goals')">
+            Weekly Goals
+          </button>
+          @if (certificates().length > 0) {
+            <button
+              (click)="setTab('certificates')"
+              [class]="'flex-1 py-3 px-4 rounded-md font-medium transition-colors duration-200 whitespace-nowrap ' + getTabClass('certificates')">
+              Certificates
+            </button>
+          }
+        </nav>
+      </div>
+
+      <div class="tab-content">
+        @if (isTabActive('overview')) {
+          <app-path-selector></app-path-selector>
+        }
+        @if (isTabActive('exercises')) {
+          <app-exercise-list></app-exercise-list>
+        }
+        @if (isTabActive('challenge')) {
+          <app-daily-challenge></app-daily-challenge>
+        }
+        @if (isTabActive('progress')) {
+          <app-progress-dashboard></app-progress-dashboard>
+        }
+        @if (isTabActive('goals')) {
+          <app-goal-tracker></app-goal-tracker>
+        }
+        @if (isTabActive('certificates')) {
+          @if (selectedCertificate()) {
+            <app-certificate [completion]="selectedCertificate()!"></app-certificate>
+          } @else {
+            <div class="certificates-list">
+              <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-6">Your Certificates</h2>
+              <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                @for (cert of certificates(); track cert.certificateId) {
+                  <div 
+                    class="certificate-card bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 cursor-pointer hover:shadow-xl transition-shadow"
+                    (click)="viewCertificate(cert)">
+                    <div class="text-4xl mb-4">🎓</div>
+                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">{{ cert.pathName }}</h3>
+                    <p class="text-sm text-gray-600 dark:text-gray-400 mb-2">
+                      Completed: {{ cert.completedAt | date:'mediumDate' }}
+                    </p>
+                    <p class="text-sm text-gray-600 dark:text-gray-400">
+                      Score: {{ cert.finalScore }}%
+                    </p>
+                    <button class="mt-4 w-full py-2 bg-primary-600 text-white rounded-md hover:bg-primary-700 transition-colors">
+                      View Certificate
+                    </button>
+                  </div>
+                }
+              </div>
+            </div>
+          }
+        }
+      </div>
+    }
+  </div>
+</div>

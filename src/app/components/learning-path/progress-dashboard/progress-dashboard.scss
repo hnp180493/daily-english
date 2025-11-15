@@ -1,0 +1,12 @@
+.progress-dashboard-container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.stat-card {
+  transition: transform 0.2s ease-in-out;
+
+  &:hover {
+    transform: translateY(-2px);
+  }
+}

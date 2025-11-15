@@ -126,3 +126,231 @@
     font-size: 1rem;
   }
 }
+
+// Learning Path Widgets
+.learning-path-widgets {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 3rem;
+  animation: fadeInUp 0.6s ease-out;
+}
+
+.widget {
+  background: rgba(30, 41, 59, 0.6);
+  border: 1px solid rgba(139, 92, 246, 0.2);
+  border-radius: 16px;
+  padding: 1.5rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+
+  &:hover {
+    transform: translateY(-4px);
+    border-color: rgba(139, 92, 246, 0.4);
+    box-shadow: 0 8px 24px rgba(139, 92, 246, 0.2);
+  }
+}
+
+.widget-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+
+  h3 {
+    color: #E2E8F0;
+    font-size: 1.125rem;
+    font-weight: 600;
+    margin: 0;
+  }
+}
+
+.streak-badge {
+  background: linear-gradient(135deg, #F59E0B, #EF4444);
+  color: white;
+  padding: 0.25rem 0.75rem;
+  border-radius: 12px;
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.daily-challenge-widget {
+  .challenge-completed {
+    text-align: center;
+    padding: 1rem 0;
+
+    .checkmark {
+      display: inline-block;
+      width: 48px;
+      height: 48px;
+      background: #10B981;
+      border-radius: 50%;
+      color: white;
+      font-size: 2rem;
+      line-height: 48px;
+      margin-bottom: 0.5rem;
+    }
+
+    p {
+      color: #94A3B8;
+      margin: 0;
+    }
+  }
+
+  .challenge-active {
+    .challenge-title {
+      color: #E2E8F0;
+      font-size: 1rem;
+      margin: 0 0 1rem 0;
+    }
+
+    .challenge-btn {
+      width: 100%;
+      padding: 0.75rem;
+      background: linear-gradient(135deg, #8B5CF6, #6366F1);
+      color: white;
+      border: none;
+      border-radius: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+
+      &:hover {
+        transform: scale(1.02);
+        box-shadow: 0 4px 12px rgba(139, 92, 246, 0.4);
+      }
+    }
+  }
+}
+
+.weekly-goal-widget {
+  .goal-progress {
+    text-align: center;
+
+    .progress-ring {
+      position: relative;
+      width: 100px;
+      height: 100px;
+      margin: 0 auto 0.5rem;
+
+      svg {
+        transform: rotate(-90deg);
+        width: 100%;
+        height: 100%;
+      }
+
+      .progress-bg {
+        fill: none;
+        stroke: rgba(139, 92, 246, 0.2);
+        stroke-width: 8;
+      }
+
+      .progress-fill {
+        fill: none;
+        stroke: #8B5CF6;
+        stroke-width: 8;
+        stroke-linecap: round;
+        stroke-dasharray: 283;
+        transition: stroke-dashoffset 0.5s ease;
+      }
+
+      .progress-text {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+
+        .progress-value {
+          color: #E2E8F0;
+          font-size: 1.25rem;
+          font-weight: 700;
+        }
+      }
+    }
+
+    .goal-label {
+      color: #94A3B8;
+      font-size: 0.875rem;
+      margin: 0;
+    }
+  }
+}
+
+.continue-learning-widget,
+.start-path-widget {
+  .path-info {
+    .path-name {
+      color: #A78BFA;
+      font-size: 1rem;
+      font-weight: 600;
+      margin: 0 0 0.25rem 0;
+    }
+
+    .module-name {
+      color: #94A3B8;
+      font-size: 0.875rem;
+      margin: 0 0 1rem 0;
+    }
+
+    .path-progress-bar {
+      width: 100%;
+      height: 6px;
+      background: rgba(139, 92, 246, 0.2);
+      border-radius: 3px;
+      overflow: hidden;
+      margin-bottom: 1rem;
+
+      .path-progress-fill {
+        height: 100%;
+        background: linear-gradient(90deg, #8B5CF6, #6366F1);
+        transition: width 0.5s ease;
+      }
+    }
+
+    .continue-btn {
+      width: 100%;
+      padding: 0.75rem;
+      background: rgba(139, 92, 246, 0.2);
+      color: #A78BFA;
+      border: 1px solid rgba(139, 92, 246, 0.3);
+      border-radius: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+
+      &:hover {
+        background: rgba(139, 92, 246, 0.3);
+        border-color: rgba(139, 92, 246, 0.5);
+      }
+    }
+  }
+
+  .start-path-text {
+    color: #94A3B8;
+    font-size: 0.875rem;
+    margin: 0 0 1rem 0;
+  }
+
+  .start-path-btn {
+    width: 100%;
+    padding: 0.75rem;
+    background: linear-gradient(135deg, #8B5CF6, #6366F1);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+
+    &:hover {
+      transform: scale(1.02);
+      box-shadow: 0 4px 12px rgba(139, 92, 246, 0.4);
+    }
+  }
+}
+
+@media (max-width: 767px) {
+  .learning-path-widgets {
+    grid-template-columns: 1fr;
+  }
+}

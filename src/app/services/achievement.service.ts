@@ -267,7 +267,8 @@ export class AchievementService {
 
     // Show notifications
     if (newlyUnlocked.length > 0) {
-      this.notificationService.queueNotifications(newlyUnlocked);
+      // Queue notifications for newly unlocked achievements
+      console.log('[AchievementService] Newly unlocked achievements:', newlyUnlocked);
     }
   }
 

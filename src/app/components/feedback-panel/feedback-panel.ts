@@ -14,9 +14,44 @@ export class FeedbackPanelComponent {
   accuracyScore = input<number>(0);
   userInput = input<string>('');
 
+  typeLabels = computed(() => {
+    const labels: { [key: string]: string } = {
+      grammar: 'Grammar',
+      vocabulary: 'Vocabulary',
+      structure: 'Structure',
+      spelling: 'Spelling',
+      suggestion: 'Suggestions',
+      meaning: 'Meaning',
+      tense: 'Tense',
+    };
+    return labels;
+  });
+
+  typeIcons = computed(() => {
+    const icons: { [key: string]: string } = {
+      grammar: '📝',
+      tense: '📝',
+      vocabulary: '📚',
+      meaning: '📚',
+      structure: '🏗️',
+      spelling: '✍️',
+      suggestion: '💡'
+    };
+    return icons;
+  });
+
+  formattedFeedback = computed(() => {
+    return this.feedback().map(item => ({
+      ...item,
+      formattedSuggestion: this.formatSuggestionText(item.suggestion),
+      formattedExplanation: item.explanation ? this.formatExplanationText(item.explanation) : ''
+    }));
+  });
+
   groupedFeedback = computed(() => {
-    const groups: { [key: string]: FeedbackItem[] } = {};
-    this.feedback().forEach(item => {
+    type FormattedItem = ReturnType<typeof this.formattedFeedback>[number];
+    const groups: { [key: string]: FormattedItem[] } = {};
+    this.formattedFeedback().forEach(item => {
       if (!groups[item.type]) {
         groups[item.type] = [];
       }
@@ -27,47 +62,18 @@ export class FeedbackPanelComponent {
 
   feedbackTypes = computed(() => Object.keys(this.groupedFeedback()));
 
-  getTypeLabel(type: string): string {
-    const labels: { [key: string]: string } = {
-      grammar: 'Grammar',
-      vocabulary: 'Vocabulary',
-      structure: 'Structure',
-      spelling: 'Spelling',
-      suggestion: 'Suggestions'
-    };
-    return labels[type] || type;
-  }
-
-  getTypeIcon(type: string): string {
-    const icons: { [key: string]: string } = {
-      grammar: '📝',
-      vocabulary: '📚',
-      structure: '🏗️',
-      spelling: '✍️',
-      suggestion: '💡'
-    };
-    return icons[type] || '📌';
-  }
-
-  formatSuggestion(item: FeedbackItem): string {
-    let text = item.suggestion;
-
+  private formatSuggestionText(text: string): string {
     // Highlight words in green (correct) and red (incorrect) without strikethrough
     // Pattern: word(incorrect) -> <span class="correct">word</span><span class="incorrect">incorrect</span>
-    text = text.replace(/(\w+)\s*\(([^)]+)\)/g, '<span class="text-green">$1</span> <span class="text-red">($2)</span>');
-
-    return text;
+    return text.replace(/(\w+)\s*\(([^)]+)\)/g, '<span class="text-green">$1</span> <span class="text-red">($2)</span>');
   }
 
-  formatExplanation(explanation: string): string {
+  private formatExplanationText(explanation: string): string {
     // Highlight important words in orange/yellow
     let formatted = explanation;
 
-    // Highlight words in quotes or important terms
-    formatted = formatted.replace(/['"]([^'"]+)['"]/g, '<span class="text-orange">$1</span>');
-    // Use negative lookahead/lookbehind to avoid breaking contractions
-    // Match whole words including contractions (e.g., It's, you've, isn't)
-    formatted = formatted.replace(/(?<!\w)(It's|it's|you've|youve|isn't|isnt|wasn't|wasnt|It\s+is|it\s+is|brewed|brew|coffee|ate|a\s+toast|a\s+cup\s+of)(?!\w)/gi, '<span class="text-orange">$1</span>');
+    // First, highlight words in quotes (keep the quotes)
+    formatted = formatted.replace(/(['"])([^'"]+)\1/g, '<span class="text-orange">$1$2$1</span>');
 
     return formatted;
   }

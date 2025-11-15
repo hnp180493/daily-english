@@ -11,8 +11,8 @@
       @for (type of feedbackTypes(); track type) {
       <div class="feedback-group">
         <h4 class="group-title">
-          <span class="type-icon">{{ getTypeIcon(type) }}</span>
-          {{ getTypeLabel(type) }}
+          <span class="type-icon">{{ typeIcons()[type] || '📌' }}</span>
+          {{ typeLabels()[type] || type }}
         </h4>
 
         <div class="feedback-items">
@@ -21,14 +21,14 @@
             <!-- Suggestion Line with Highlighting -->
             <div class="suggestion-line">
               <span class="label-pink">Suggestion:</span>
-              <span class="suggestion-text" [innerHTML]="formatSuggestion(item)"></span>
+              <span class="suggestion-text" [innerHTML]="item.formattedSuggestion"></span>
             </div>
 
             <!-- Suggested Improvements -->
             @if (item.explanation) {
             <div class="improvements-section">
               <div class="improvements-label">Suggested improvements:</div>
-              <div class="improvement-text" [innerHTML]="formatExplanation(item.explanation)"></div>
+              <div class="improvement-text" [innerHTML]="item.formattedExplanation"></div>
             </div>
             }
           </div>

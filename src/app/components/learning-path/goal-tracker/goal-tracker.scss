@@ -1,0 +1,8 @@
+.goal-tracker-container {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+svg circle {
+  transition: stroke-dashoffset 0.5s ease-in-out;
+}

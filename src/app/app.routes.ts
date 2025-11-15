@@ -258,6 +258,37 @@ export const routes: Routes = [
     },
   },
   {
+    path: 'learning-path',
+    loadComponent: () =>
+      import('./components/learning-path/learning-path').then((m) => m.LearningPath),
+    canActivate: [authGuard],
+    data: {
+      preload: 'high',
+      seo: {
+        title: 'Lộ trình học tập - Daily English',
+        description:
+          'Theo dõi lộ trình học tập có cấu trúc, hoàn thành thử thách hàng ngày và đạt mục tiêu tuần với hệ thống học tập thông minh',
+        keywords: ['lộ trình học', 'thử thách hàng ngày', 'mục tiêu học tập', 'học có hệ thống'],
+        vietnamese: {
+          title: 'Lộ trình học tập - Daily English',
+          description:
+            'Lộ trình học tập có cấu trúc từ cơ bản đến nâng cao. Hoàn thành thử thách hàng ngày, đặt mục tiêu tuần và theo dõi tiến độ của bạn.',
+          keywords: [
+            'lộ trình học tiếng anh',
+            'thử thách hàng ngày',
+            'mục tiêu học tập',
+            'học có hệ thống',
+            'tiến độ học tập',
+          ],
+          breadcrumbs: [
+            { name: 'Trang chủ', url: '/' },
+            { name: 'Lộ trình học tập', url: '/learning-path' },
+          ],
+        },
+      } as VietnameseRouteSeoData,
+    },
+  },
+  {
     path: 'guide',
     loadComponent: () => import('./components/guide/guide').then((m) => m.GuideComponent),
     data: {

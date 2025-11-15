@@ -25,6 +25,8 @@ import { ExerciseSeoService } from '../../services/exercise-seo.service';
 import { ExerciseRecordingService } from '../../services/exercise-recording.service';
 import { ReviewService } from '../../services/review.service';
 import { ExerciseHistoryService } from '../../services/exercise-history.service';
+import { CurriculumService } from '../../services/curriculum.service';
+import { StreakService } from '../../services/streak.service';
 import { TTSSettings } from '../tts-settings/tts-settings';
 import { PenaltyScore } from '../penalty-score/penalty-score';
 import { PENALTY_CONSTANTS } from '../../models/penalty.constants';
@@ -61,6 +63,8 @@ export class ExerciseDetailComponent implements OnInit {
   private recordingService = inject(ExerciseRecordingService);
   private reviewService = inject(ReviewService);
   private exerciseHistoryService = inject(ExerciseHistoryService);
+  private curriculumService = inject(CurriculumService);
+  private streakService = inject(StreakService);
 
   stateService = inject(ExerciseStateService);
   submissionService = inject(ExerciseSubmissionService);
@@ -574,13 +578,61 @@ export class ExerciseDetailComponent implements OnInit {
     if (!ex) return;
 
     console.log('[ExerciseDetail] Exercise completed, recording attempt...');
-    this.recordingService.recordAttempt(ex, this.hintsShown(), this.exercisePoints());
+    
+    // Calculate final score with penalties
+    const sentences = this.sentences();
+    const penalties = this.stateService.getPenaltyMetrics();
+    const completedSents = sentences.filter(s => s.isCompleted);
+    const avgAccuracy = completedSents.length > 0
+      ? completedSents.reduce((sum, s) => sum + (s.accuracyScore || 0), 0) / completedSents.length
+      : 0;
+    const totalPenalty = (penalties.totalIncorrectAttempts * PENALTY_CONSTANTS.INCORRECT_ATTEMPT_PENALTY) + 
+                        (penalties.totalRetries * PENALTY_CONSTANTS.RETRY_PENALTY);
+    
+    const finalScore = Math.max(0, Math.round(avgAccuracy - totalPenalty));
+    
+    // Apply streak multiplier to points
+    const basePoints = this.exercisePoints();
+    const streakMultiplier = this.streakService.getStreakMultiplier();
+    const bonusPoints = streakMultiplier > 1.0 ? Math.round(basePoints * (streakMultiplier - 1.0)) : 0;
+    
+    console.log('[ExerciseDetail] Points calculation:', {
+      basePoints,
+      streakMultiplier,
+      bonusPoints,
+      totalPoints: basePoints + bonusPoints
+    });
+    
+    // Record attempt with streak bonus
+    this.recordingService.recordAttempt(ex, this.hintsShown(), basePoints + bonusPoints);
+    
+    // Update learning path progress
+    this.curriculumService.updateModuleProgress(ex.id, finalScore, basePoints + bonusPoints).subscribe({
+      next: () => console.log('[ExerciseDetail] Module progress updated'),
+      error: (err) => console.warn('[ExerciseDetail] Module progress update failed:', err)
+    });
+    
+    // Check if this was a daily challenge
+    const today = new Date().toISOString().split('T')[0];
+    this.curriculumService.checkAndCompleteDailyChallenge(ex.id, today, finalScore).subscribe({
+      next: (completed) => {
+        if (completed) {
+          console.log('[ExerciseDetail] Daily challenge completed!');
+        }
+      },
+      error: (err) => console.warn('[ExerciseDetail] Daily challenge check failed:', err)
+    });
+    
+    // Update weekly goal progress
+    this.curriculumService.incrementWeeklyGoalProgress().subscribe({
+      next: () => console.log('[ExerciseDetail] Weekly goal progress updated'),
+      error: (err) => console.warn('[ExerciseDetail] Weekly goal update failed:', err)
+    });
     
     // NOTE: scheduleNextReview is now handled in ExerciseSubmissionService
     // when all sentences are completed, so we don't call it here to avoid duplication
     
     // Update review data with incorrect sentence indices
-    const sentences = this.sentences();
     const incorrectIndices = sentences
       .map((s, index) => ({ index, score: s.accuracyScore || 0 }))
       .filter(item => item.score < 75)
@@ -596,25 +648,17 @@ export class ExerciseDetailComponent implements OnInit {
       ? Math.floor((new Date().getTime() - this.exerciseStartTime.getTime()) / 1000)
       : 0;
     
-    const penalties = this.stateService.getPenaltyMetrics();
-    const completedSents = sentences.filter(s => s.isCompleted);
-    const avgAccuracy = completedSents.length > 0
-      ? completedSents.reduce((sum, s) => sum + (s.accuracyScore || 0), 0) / completedSents.length
-      : 0;
-    const totalPenalty = (penalties.totalIncorrectAttempts * PENALTY_CONSTANTS.INCORRECT_ATTEMPT_PENALTY) + 
-                        (penalties.totalRetries * PENALTY_CONSTANTS.RETRY_PENALTY);
-    
     const penaltyMetrics = {
       baseScore: Math.round(avgAccuracy),
       totalIncorrectAttempts: penalties.totalIncorrectAttempts,
       totalRetries: penalties.totalRetries,
       totalPenalty,
-      finalScore: Math.max(0, Math.round(avgAccuracy - totalPenalty))
+      finalScore
     };
 
     this.exerciseHistoryService.recordExerciseAttempt(
       ex.id,
-      penaltyMetrics.finalScore,
+      finalScore,
       timeSpent,
       this.hintsShown(),
       sentences,

@@ -1,0 +1,127 @@
+{
+  "id": "intermediate-path",
+  "name": "Intermediate Path",
+  "level": "intermediate",
+  "duration": "4 months",
+  "durationWeeks": 16,
+  "description": "Advance your English skills with complex grammar, professional communication, and academic writing",
+  "unlockRequirement": "Complete Beginner Path",
+  "modules": [
+    {
+      "id": "intermediate-module-1",
+      "name": "Advanced Grammar & Expressions",
+      "weekRange": "Week 1-4",
+      "startWeek": 1,
+      "endWeek": 4,
+      "topics": [
+        "Complex sentence structures",
+        "Conditional sentences",
+        "Passive voice",
+        "Idiomatic expressions"
+      ],
+      "exerciseIds": [
+        "ex-201",
+        "ex-205",
+        "ex-209",
+        "ex-213",
+        "ex-217",
+        "ex-221",
+        "ex-225",
+        "ex-229",
+        "ex-233",
+        "ex-237",
+        "ex-241",
+        "ex-245"
+      ],
+      "translationSupport": "minimal",
+      "requiredScore": 70
+    },
+    {
+      "id": "intermediate-module-2",
+      "name": "Professional Communication",
+      "weekRange": "Week 5-8",
+      "startWeek": 5,
+      "endWeek": 8,
+      "topics": [
+        "Business emails",
+        "Meeting discussions",
+        "Presentations",
+        "Negotiations"
+      ],
+      "exerciseIds": [
+        "ex-249",
+        "ex-253",
+        "ex-257",
+        "ex-261",
+        "ex-265",
+        "ex-269",
+        "ex-273",
+        "ex-277",
+        "ex-281",
+        "ex-285",
+        "ex-289",
+        "ex-293"
+      ],
+      "translationSupport": "minimal",
+      "requiredScore": 75
+    },
+    {
+      "id": "intermediate-module-3",
+      "name": "Academic Writing",
+      "weekRange": "Week 9-12",
+      "startWeek": 9,
+      "endWeek": 12,
+      "topics": [
+        "Essay structure",
+        "Research papers",
+        "Citations and references",
+        "Critical analysis"
+      ],
+      "exerciseIds": [
+        "ex-297",
+        "ex-301",
+        "ex-305",
+        "ex-309",
+        "ex-313",
+        "ex-317",
+        "ex-321",
+        "ex-325",
+        "ex-329",
+        "ex-333",
+        "ex-337",
+        "ex-341"
+      ],
+      "translationSupport": "minimal",
+      "requiredScore": 75
+    },
+    {
+      "id": "intermediate-module-4",
+      "name": "Business Contexts",
+      "weekRange": "Week 13-16",
+      "startWeek": 13,
+      "endWeek": 16,
+      "topics": [
+        "Marketing and sales",
+        "Financial reports",
+        "Project management",
+        "Corporate culture"
+      ],
+      "exerciseIds": [
+        "ex-345",
+        "ex-349",
+        "ex-353",
+        "ex-357",
+        "ex-361",
+        "ex-365",
+        "ex-369",
+        "ex-373",
+        "ex-377",
+        "ex-381",
+        "ex-385",
+        "ex-389"
+      ],
+      "translationSupport": "minimal",
+      "requiredScore": 80
+    }
+  ]
+}

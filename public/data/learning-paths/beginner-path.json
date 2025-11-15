@@ -1,0 +1,97 @@
+{
+  "id": "beginner-path",
+  "name": "Beginner Path",
+  "level": "beginner",
+  "duration": "3 months",
+  "durationWeeks": 12,
+  "description": "Build a strong foundation in English with daily life topics and essential grammar",
+  "modules": [
+    {
+      "id": "beginner-module-1",
+      "name": "Daily Life Basics",
+      "weekRange": "Week 1-4",
+      "startWeek": 1,
+      "endWeek": 4,
+      "topics": [
+        "Greetings and introductions",
+        "Family and relationships",
+        "Daily routines",
+        "Food and dining"
+      ],
+      "exerciseIds": [
+        "ex-001",
+        "ex-002",
+        "ex-007",
+        "ex-011",
+        "ex-015",
+        "ex-019",
+        "ex-023",
+        "ex-027",
+        "ex-031",
+        "ex-035",
+        "ex-039",
+        "ex-043"
+      ],
+      "translationSupport": "full",
+      "requiredScore": 60
+    },
+    {
+      "id": "beginner-module-2",
+      "name": "Travel & Transportation",
+      "weekRange": "Week 5-8",
+      "startWeek": 5,
+      "endWeek": 8,
+      "topics": [
+        "Directions and locations",
+        "Public transportation",
+        "Hotels and accommodation",
+        "Tourist attractions"
+      ],
+      "exerciseIds": [
+        "ex-047",
+        "ex-051",
+        "ex-055",
+        "ex-059",
+        "ex-063",
+        "ex-067",
+        "ex-071",
+        "ex-075",
+        "ex-079",
+        "ex-083",
+        "ex-087",
+        "ex-091"
+      ],
+      "translationSupport": "partial",
+      "requiredScore": 65
+    },
+    {
+      "id": "beginner-module-3",
+      "name": "Education & Work",
+      "weekRange": "Week 9-12",
+      "startWeek": 9,
+      "endWeek": 12,
+      "topics": [
+        "School and learning",
+        "Jobs and careers",
+        "Office communication",
+        "Professional etiquette"
+      ],
+      "exerciseIds": [
+        "ex-095",
+        "ex-099",
+        "ex-103",
+        "ex-107",
+        "ex-111",
+        "ex-115",
+        "ex-119",
+        "ex-123",
+        "ex-127",
+        "ex-131",
+        "ex-135",
+        "ex-139"
+      ],
+      "translationSupport": "partial",
+      "requiredScore": 70
+    }
+  ]
+}

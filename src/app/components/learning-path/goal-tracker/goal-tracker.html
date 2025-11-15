@@ -1,0 +1,129 @@
+<div class="goal-tracker-container p-6">
+  <h2 class="text-3xl font-bold mb-6 text-gray-900 dark:text-white">Weekly Goal</h2>
+
+  @if (isLoading()) {
+    <div class="flex justify-center items-center py-12">
+      <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600"></div>
+    </div>
+  } @else {
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-8">
+      @if (!currentGoal()) {
+        <div class="text-center mb-6">
+          <h3 class="text-xl font-semibold mb-4 text-gray-900 dark:text-white">Set Your Weekly Goal</h3>
+          <p class="text-gray-600 dark:text-gray-400 mb-6">
+            How many exercises do you want to complete this week?
+          </p>
+          <div class="flex items-center justify-center gap-4">
+            <input
+              type="number"
+              [value]="targetExercises()"
+              (input)="onTargetChange($event)"
+              min="3"
+              max="50"
+              class="w-24 px-4 py-2 text-center text-2xl font-bold border-2 border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:border-primary-500"
+            />
+            <span class="text-gray-600 dark:text-gray-400">exercises</span>
+          </div>
+          <button
+            (click)="setGoal()"
+            [disabled]="targetExercises() < 3 || targetExercises() > 50"
+            class="mt-6 px-6 py-3 bg-primary-600 hover:bg-primary-700 disabled:bg-gray-400 text-white font-semibold rounded-lg transition-colors duration-200">
+            Set Goal
+          </button>
+        </div>
+      } @else {
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div class="flex items-center justify-center">
+            <div class="relative w-64 h-64">
+              <svg class="transform -rotate-90 w-64 h-64">
+                <circle
+                  cx="128"
+                  cy="128"
+                  r="120"
+                  stroke="currentColor"
+                  stroke-width="16"
+                  fill="transparent"
+                  class="text-gray-200 dark:text-gray-700"
+                />
+                <circle
+                  cx="128"
+                  cy="128"
+                  r="120"
+                  stroke="currentColor"
+                  stroke-width="16"
+                  fill="transparent"
+                  [attr.stroke-dasharray]="753.98"
+                  [attr.stroke-dashoffset]="753.98 * (1 - progressPercentage() / 100)"
+                  [class]="getProgressColor()"
+                  class="transition-all duration-500"
+                  stroke-linecap="round"
+                />
+              </svg>
+              <div class="absolute inset-0 flex flex-col items-center justify-center">
+                <div class="text-5xl font-bold text-gray-900 dark:text-white">
+                  {{ progressPercentage() }}%
+                </div>
+                <div class="text-sm text-gray-600 dark:text-gray-400 mt-2">
+                  {{ completedExercises() }} / {{ currentGoal()?.targetExercises }}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="flex flex-col justify-center">
+            @if (isGoalAchieved()) {
+              <div class="text-center mb-6">
+                <div class="mb-4">
+                  <svg class="w-20 h-20 mx-auto text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                  </svg>
+                </div>
+                <h3 class="text-2xl font-bold text-green-600 mb-2">Goal Achieved!</h3>
+                <p class="text-gray-600 dark:text-gray-400">
+                  You earned {{ currentGoal()?.bonusPointsEarned || 500 }} bonus points!
+                </p>
+              </div>
+            } @else {
+              <div class="space-y-4">
+                <div>
+                  <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-2">
+                    {{ getMotivationalMessage() }}
+                  </h3>
+                  <p class="text-gray-600 dark:text-gray-400">
+                    {{ getRemainingExercises() }} more to go!
+                  </p>
+                </div>
+
+                <div class="bg-gray-100 dark:bg-gray-700 rounded-lg p-4">
+                  <div class="flex items-center justify-between mb-2">
+                    <span class="text-sm text-gray-600 dark:text-gray-400">Days remaining</span>
+                    <span class="font-bold text-gray-900 dark:text-white">{{ daysRemaining() }}</span>
+                  </div>
+                  <div class="flex items-center justify-between">
+                    <span class="text-sm text-gray-600 dark:text-gray-400">Bonus reward</span>
+                    <span class="font-bold text-primary-600">+500 points</span>
+                  </div>
+                </div>
+              </div>
+            }
+
+            @if (achievementRate() !== null) {
+              <div class="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
+                <p class="text-sm text-gray-600 dark:text-gray-400 mb-2">Historical Achievement Rate</p>
+                <div class="flex items-center gap-2">
+                  <div class="flex-grow bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+                    <div 
+                      class="bg-secondary-600 h-2 rounded-full transition-all duration-300"
+                      [style.width.%]="achievementRate()">
+                    </div>
+                  </div>
+                  <span class="font-semibold text-gray-900 dark:text-white">{{ achievementRate() }}%</span>
+                </div>
+              </div>
+            }
+          </div>
+        </div>
+      }
+    </div>
+  }
+</div>

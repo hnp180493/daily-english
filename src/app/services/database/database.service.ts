@@ -6,6 +6,10 @@ import { UserProgress, CustomExercise } from '../../models/exercise.model';
 import { UserAchievementData } from '../../models/achievement.model';
 import { ReviewData, ReviewDataWithMetadata } from '../../models/review.model';
 import { ExerciseHistoryRecord } from '../../models/exercise-history.model';
+import { UserPathProgress } from '../../models/learning-path.model';
+import { DailyChallenge } from '../../models/daily-challenge.model';
+import { WeeklyGoal } from '../../models/weekly-goal.model';
+import { NotificationPreferences } from '../notification.service';
 import { IDatabase, FavoriteData, UserProfile, UserRewards, UnsubscribeFunction } from './database.interface';
 import { SupabaseDatabase } from './supabase-database.service';
 
@@ -415,5 +419,131 @@ export class DatabaseService implements IDatabase {
       return of([]);
     }
     return this.database.loadHistoryForDateRange(userId, startDate, endDate);
+  }
+
+  // Learning Path Operations
+  saveLearningPathProgress(userId: string, progress: UserPathProgress): Observable<void> {
+    if (!userId) return of(undefined);
+    return this.database.saveLearningPathProgress(userId, progress);
+  }
+
+  loadLearningPathProgress(userId: string): Observable<UserPathProgress | null> {
+    if (!userId) return of(null);
+    return this.database.loadLearningPathProgress(userId);
+  }
+
+  saveLearningPathProgressAuto(progress: UserPathProgress): Observable<void> {
+    const userId = this.authService.getUserId();
+    if (!userId) return of(undefined);
+    return this.saveWithRetry(this.saveLearningPathProgress(userId, progress));
+  }
+
+  loadLearningPathProgressAuto(): Observable<UserPathProgress | null> {
+    const userId = this.authService.getUserId();
+    if (!userId) return of(null);
+    return this.loadLearningPathProgress(userId);
+  }
+
+  // Daily Challenge Operations
+  saveDailyChallenge(userId: string, challenge: DailyChallenge): Observable<void> {
+    if (!userId) return of(undefined);
+    return this.database.saveDailyChallenge(userId, challenge);
+  }
+
+  loadDailyChallenge(userId: string, challengeId: string): Observable<DailyChallenge | null> {
+    if (!userId) return of(null);
+    return this.database.loadDailyChallenge(userId, challengeId);
+  }
+
+  loadDailyChallengeByDate(userId: string, date: string): Observable<DailyChallenge | null> {
+    if (!userId) return of(null);
+    return this.database.loadDailyChallengeByDate(userId, date);
+  }
+
+  saveDailyChallengeAuto(challenge: DailyChallenge): Observable<void> {
+    const userId = this.authService.getUserId();
+    if (!userId) return of(undefined);
+    return this.saveWithRetry(this.saveDailyChallenge(userId, challenge));
+  }
+
+  loadTodaysDailyChallengeAuto(): Observable<DailyChallenge | null> {
+    const userId = this.authService.getUserId();
+    if (!userId) return of(null);
+    const today = new Date().toISOString().split('T')[0];
+    return this.loadDailyChallengeByDate(userId, today);
+  }
+
+  // Weekly Goal Operations
+  saveWeeklyGoal(userId: string, goal: WeeklyGoal): Observable<void> {
+    if (!userId) return of(undefined);
+    return this.database.saveWeeklyGoal(userId, goal);
+  }
+
+  loadWeeklyGoal(userId: string, goalId: string): Observable<WeeklyGoal | null> {
+    if (!userId) return of(null);
+    return this.database.loadWeeklyGoal(userId, goalId);
+  }
+
+  loadWeeklyGoalByDate(userId: string, weekStartDate: string): Observable<WeeklyGoal | null> {
+    if (!userId) return of(null);
+    return this.database.loadWeeklyGoalByDate(userId, weekStartDate);
+  }
+
+  saveWeeklyGoalAuto(goal: WeeklyGoal): Observable<void> {
+    const userId = this.authService.getUserId();
+    if (!userId) return of(undefined);
+    return this.saveWithRetry(this.saveWeeklyGoal(userId, goal));
+  }
+
+  loadCurrentWeeklyGoalAuto(): Observable<WeeklyGoal | null> {
+    const userId = this.authService.getUserId();
+    if (!userId) return of(null);
+    
+    // Calculate Monday of current week
+    const now = new Date();
+    const dayOfWeek = now.getDay();
+    const diff = dayOfWeek === 0 ? -6 : 1 - dayOfWeek; // Adjust when day is Sunday
+    const monday = new Date(now);
+    monday.setDate(now.getDate() + diff);
+    monday.setHours(0, 0, 0, 0);
+    const weekStartDate = monday.toISOString().split('T')[0];
+    
+    return this.loadWeeklyGoalByDate(userId, weekStartDate);
+  }
+
+  // Notification Preferences Operations
+  saveNotificationPreferences(userId: string, preferences: NotificationPreferences): Observable<void> {
+    if (!userId) return of(undefined);
+    return this.database.saveNotificationPreferences(userId, preferences);
+  }
+
+  loadNotificationPreferences(userId: string): Observable<NotificationPreferences | null> {
+    if (!userId) return of(null);
+    return this.database.loadNotificationPreferences(userId);
+  }
+
+  saveNotificationPreferencesAuto(preferences: NotificationPreferences): Observable<void> {
+    const userId = this.authService.getUserId();
+    if (!userId) return of(undefined);
+    return this.saveWithRetry(this.saveNotificationPreferences(userId, preferences));
+  }
+
+  loadNotificationPreferencesAuto(): Observable<NotificationPreferences | null> {
+    const userId = this.authService.getUserId();
+    if (!userId) return of(null);
+    return this.loadNotificationPreferences(userId);
+  }
+
+  // Additional helper methods for learning path components
+  loadDailyChallengeByDateAuto(date: string): Observable<DailyChallenge | null> {
+    const userId = this.authService.getUserId();
+    if (!userId) return of(null);
+    return this.loadDailyChallengeByDate(userId, date);
+  }
+
+  loadWeeklyGoalByDateAuto(weekStartDate: string): Observable<WeeklyGoal | null> {
+    const userId = this.authService.getUserId();
+    if (!userId) return of(null);
+    return this.loadWeeklyGoalByDate(userId, weekStartDate);
   }
 }

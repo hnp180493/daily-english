@@ -1,0 +1,68 @@
+<div class="certificate-container">
+  <div id="certificate" class="certificate">
+    <div class="certificate-border">
+      <div class="certificate-content">
+        <!-- Header -->
+        <div class="certificate-header">
+          <div class="logo">🎓</div>
+          <h1 class="certificate-title">Certificate of Completion</h1>
+        </div>
+
+        <!-- Body -->
+        <div class="certificate-body">
+          <p class="awarded-to">This certificate is proudly awarded to</p>
+          <h2 class="recipient-name">{{ userName() }}</h2>
+          
+          <p class="completion-text">
+            for successfully completing the
+          </p>
+          
+          <h3 class="path-name">{{ completion().pathName }}</h3>
+          
+          <div class="completion-details">
+            <div class="detail-item">
+              <span class="detail-label">Modules Completed</span>
+              <span class="detail-value">{{ completion().modulesCompleted }}</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">Final Score</span>
+              <span class="detail-value">{{ completion().finalScore }}%</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">Total Points</span>
+              <span class="detail-value">{{ completion().totalPoints }}</span>
+            </div>
+          </div>
+
+          <p class="completion-date">
+            Completed on {{ formatDate(completion().completedAt) }}
+          </p>
+        </div>
+
+        <!-- Footer -->
+        <div class="certificate-footer">
+          <div class="signature-line">
+            <div class="signature">English Learning Platform</div>
+            <div class="signature-label">Authorized by</div>
+          </div>
+          
+          <div class="certificate-id">
+            Certificate ID: {{ completion().certificateId }}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Action Buttons -->
+  <div class="certificate-actions">
+    <button class="action-btn download-btn" (click)="downloadCertificate()">
+      <span class="btn-icon">⬇️</span>
+      Download Certificate
+    </button>
+    <button class="action-btn share-btn" (click)="shareCertificate()">
+      <span class="btn-icon">🔗</span>
+      Share Achievement
+    </button>
+  </div>
+</div>

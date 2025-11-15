@@ -1,27 +1,45 @@
-import { Component, ChangeDetectionStrategy, inject, signal, computed, effect } from '@angular/core';
+import { Component, ChangeDetectionStrategy, OnInit, inject, signal, computed, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router } from '@angular/router';
+import { Router, RouterModule, NavigationEnd } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
+import { filter } from 'rxjs/operators';
 import { DifficultyLevel, ExerciseCategory } from '../../models/exercise.model';
 import { ExerciseService } from '../../services/exercise.service';
 import { CustomExerciseService } from '../../services/custom-exercise.service';
+import { CurriculumService } from '../../services/curriculum.service';
+import { AdaptiveEngineService } from '../../services/adaptive-engine.service';
+import { StreakService } from '../../services/streak.service';
+import { AuthService } from '../../services/auth.service';
 import { LevelCardComponent } from '../level-card/level-card';
 import { CategoryCardComponent } from '../category-card/category-card';
 import { LoadingSpinnerComponent } from '../loading-spinner/loading-spinner';
 
 @Component({
   selector: 'app-home',
-  imports: [CommonModule, LevelCardComponent, CategoryCardComponent, LoadingSpinnerComponent],
+  imports: [CommonModule, RouterModule, LevelCardComponent, CategoryCardComponent, LoadingSpinnerComponent],
   templateUrl: './home.html',
   styleUrl: './home.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class HomeComponent {
+export class HomeComponent implements OnInit {
   private exerciseService = inject(ExerciseService);
   private customExerciseService = inject(CustomExerciseService);
+  private curriculumService = inject(CurriculumService);
+  private adaptiveEngineService = inject(AdaptiveEngineService);
+  private streakService = inject(StreakService);
+  private authService = inject(AuthService);
   private router = inject(Router);
   
   isLoading = signal(true);
+  isAuthenticated = computed(() => this.authService.isAuthenticated());
+  
+  // Learning path data
+  currentPath = this.curriculumService.currentPath;
+  currentModule = this.curriculumService.currentModule;
+  pathProgress = this.curriculumService.pathProgress;
+  dailyChallenge = signal<any>(null);
+  weeklyGoal = signal<any>(null);
+  currentStreak = toSignal(this.streakService.getCurrentStreak(), { initialValue: 0 });
 
   levels = [DifficultyLevel.BEGINNER, DifficultyLevel.INTERMEDIATE, DifficultyLevel.ADVANCED];
   categories = Object.values(ExerciseCategory);
@@ -58,6 +76,93 @@ export class HomeComponent {
       const customExercises = this.allCustomExercises();
       setTimeout(() => this.isLoading.set(false), 300);
     });
+
+    // Reload learning path data when navigating back to home
+    this.router.events.pipe(
+      filter(event => event instanceof NavigationEnd)
+    ).subscribe((event: any) => {
+      if (event.url === '/' || event.url === '/home') {
+        if (this.isAuthenticated()) {
+          this.loadLearningPathData();
+        }
+      }
+    });
+  }
+
+  async ngOnInit(): Promise<void> {
+    // Load learning path data if authenticated
+    if (this.isAuthenticated()) {
+      await this.loadLearningPathData();
+    }
+  }
+
+  private async loadLearningPathData(): Promise<void> {
+    try {
+      // Load current path progress
+      await this.curriculumService.getUserCurrentPath();
+      
+      // Load current module if path exists
+      if (this.currentPath()) {
+        await this.curriculumService.getCurrentModule();
+        
+        // Debug: Log progress data
+        const progress = this.pathProgress();
+        const module = this.currentModule();
+        if (progress && module) {
+          console.log('[Home] Current module:', module.id);
+          console.log('[Home] Module progress:', progress.moduleProgress[module.id]);
+        }
+      }
+      
+      // Load today's daily challenge
+      const challenge = await this.adaptiveEngineService.getTodaysDailyChallenge();
+      this.dailyChallenge.set(challenge);
+      
+      // Load current weekly goal
+      const goal = await this.curriculumService.getCurrentWeeklyGoal();
+      this.weeklyGoal.set(goal);
+    } catch (error) {
+      console.error('Error loading learning path data:', error);
+    }
+  }
+
+  navigateToLearningPath(): void {
+    this.router.navigate(['/learning-path']);
+  }
+
+  navigateToDailyChallenge(): void {
+    const challenge = this.dailyChallenge();
+    if (challenge?.exercise) {
+      this.router.navigate(['/exercise', challenge.exercise.id]);
+    }
+  }
+
+  navigateToCurrentModule(): void {
+    const module = this.currentModule();
+    if (!module || !module.exerciseIds || module.exerciseIds.length === 0) {
+      console.warn('[Home] No module or exercises found');
+      return;
+    }
+    
+    // Find first incomplete exercise in current module
+    const progress = this.pathProgress();
+    const completedExercises = progress?.moduleProgress[module.id]?.completedExercises || [];
+    
+    console.log('[Home] Module:', module.id);
+    console.log('[Home] Total exercises:', module.exerciseIds.length);
+    console.log('[Home] Completed exercises:', completedExercises);
+    
+    const firstIncomplete = module.exerciseIds.find((exId: string) => !completedExercises.includes(exId));
+    
+    console.log('[Home] First incomplete exercise:', firstIncomplete);
+    
+    if (firstIncomplete) {
+      this.router.navigate(['/exercise', firstIncomplete]);
+    } else if (module.exerciseIds.length > 0) {
+      // All exercises completed, go to first one
+      console.log('[Home] All exercises completed, going to first one');
+      this.router.navigate(['/exercise', module.exerciseIds[0]]);
+    }
   }
 
   onLevelSelect(level: DifficultyLevel): void {
