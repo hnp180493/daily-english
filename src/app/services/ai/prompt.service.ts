@@ -9,9 +9,11 @@ export class PromptService {
     userInput: string,
     sourceText: string,
     context: ExerciseContext,
-    fullContext?: string,
-    translatedContext?: string
+    fullContext: string,
+    translatedContext: string,
   ): string {
+
+    let englishText: string = context.englishText;
 
     return `You are a strict English teacher evaluating a Vietnamese → English translation.
 Always output RAW JSON only.
@@ -60,7 +62,7 @@ OUTPUT FORMAT (RAW JSON)
 INPUT
 ====================================================
 Full Paragraph (VN): ${fullContext}
-User translated context (EN): ${translatedContext}
+Full Paragraph (EN): ${englishText}
 Current Sentence (VN): ${sourceText}
 Student Translation (EN): ${userInput}
 `;

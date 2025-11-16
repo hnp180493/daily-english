@@ -131,19 +131,17 @@ export class ExerciseListComponent {
   }
 
   setDictationFilter(filter: 'available' | 'completed' | null): void {
-    const currentParams = this.queryParams();
-    const newParams = { ...currentParams };
+    const currentParams = { ...this.queryParams() };
     
     if (filter) {
-      newParams['dictation'] = filter;
+      currentParams['dictation'] = filter;
     } else {
-      delete newParams['dictation'];
+      delete currentParams['dictation'];
     }
     
     this.router.navigate([], {
       relativeTo: this.route,
-      queryParams: newParams,
-      queryParamsHandling: 'merge'
+      queryParams: currentParams
     });
   }
 }

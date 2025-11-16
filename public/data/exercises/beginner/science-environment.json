@@ -6,6 +6,7 @@
     "category": "science-environment",
     "description": "Describe a nature walk",
     "sourceText": "Tôi đi dạo trong rừng. Không khí thật trong lành. Tôi nghe tiếng chim hót líu lo. Tôi thấy nhiều loài hoa đẹp đang nở rộ. Có một con suối nhỏ chảy róc rách. Nước suối trong vắt và mát lạnh. Tôi ngồi nghỉ bên bờ suối. Tôi cảm thấy thư giãn và bình yên trong lòng. Thiên nhiên thật kỳ diệu.",
+    "englishText": "I walk in the forest. The air is very fresh. I hear birds chirping cheerfully. I see many beautiful flowers blooming. There is a small stream flowing gently. The stream water is clear and cool. I sit and rest by the stream. I feel relaxed and peaceful inside. Nature is truly wonderful.",
     "highlightedSentences": [
       "The air is very fresh"
     ],
@@ -27,6 +28,7 @@
     "category": "science-environment",
     "description": "Describe new technology",
     "sourceText": "Tôi vừa mới mua một chiếc điện thoại thông minh. Nó có màn hình lớn và hiển thị rất đẹp. Camera chụp ảnh rất sắc nét. Tôi có thể chụp những bức ảnh chất lượng cao. Pin dùng được cả ngày mà không cần sạc. Tôi dùng nó để nhắn tin, gọi điện và lướt mạng. Tôi cũng xem video và chơi game trên đó. Tôi rất hài lòng với chiếc điện thoại mới này.",
+    "englishText": "I just bought a new smartphone. It has a large screen and beautiful display. The camera takes very sharp photos. I can take high quality photos. The battery lasts all day without charging. I use it to text, call and browse the internet. I also watch videos and play games on it. I am very satisfied with this new phone.",
     "highlightedSentences": [
       "I just bought a new phone"
     ],
@@ -48,6 +50,7 @@
     "category": "science-environment",
     "description": "Describe environmental action",
     "sourceText": "Gia đình tôi có thói quen tái chế rác. Chúng tôi có các thùng riêng biệt cho giấy, nhựa và kim loại. Chúng tôi rửa sạch các hộp đựng trước khi bỏ vào thùng tái chế. Mỗi tuần chúng tôi mang rác tái chế đến trung tâm thu gom. Tái chế giúp bảo vệ môi trường rất nhiều. Đó tuy là việc nhỏ nhưng rất có ý nghĩa.",
+    "englishText": "My family has a habit of recycling trash. We have separate bins for paper, plastic and metal. We wash containers clean before putting them in the recycling bin. Every week we take recyclables to the collection center. Recycling helps protect the environment a lot. It is a small thing but very meaningful.",
     "highlightedSentences": [
       "My family recycles trash"
     ],
@@ -68,6 +71,7 @@
     "category": "science-environment",
     "description": "Describe weather patterns",
     "sourceText": "Thời tiết thay đổi theo từng mùa trong năm. Mùa xuân ấm áp và hoa nở khắp nơi. Mùa hè nóng bức và nắng gắt. Mùa thu mát mẻ và gió nhẹ. Mùa đông lạnh giá và đôi khi có tuyết rơi. Tôi thích mùa xuân nhất vì thời tiết dễ chịu. Thời tiết ảnh hưởng khá nhiều đến tâm trạng của tôi.",
+    "englishText": "The weather changes with the seasons of the year. Spring is warm and flowers bloom everywhere. Summer is hot and sunny. Autumn is cool with gentle breezes. Winter is cold and sometimes has snow. I like spring the most because the weather is pleasant. Weather affects my mood quite a lot.",
     "highlightedSentences": [
       "The weather changes with the seasons"
     ],
@@ -88,6 +92,7 @@
     "category": "science-environment",
     "description": "Describe environmental action",
     "sourceText": "Hôm nay tôi trồng một cây xanh trong vườn. Tôi đào một cái hố sâu. Tôi đặt cây vào hố và lấp đất. Tôi tưới nước cho cây. Trồng cây giúp không khí trong lành. Cây xanh rất quan trọng cho môi trường. Tôi sẽ chăm sóc cây mỗi ngày.",
+    "englishText": "Today I plant a tree in the garden. I dig a deep hole. I place the tree in the hole and cover it with soil. I water the tree. Planting trees helps keep the air fresh. Trees are very important for the environment. I will take care of the tree every day.",
     "highlightedSentences": [
       "I plant a tree in the garden today"
     ],
@@ -110,6 +115,7 @@
     "category": "science-environment",
     "description": "Learn about renewable energy",
     "sourceText": "Nhà tôi có tấm pin mặt trời trên mái. Pin mặt trời tạo ra điện từ ánh sáng mặt trời. Chúng tôi tiết kiệm được nhiều tiền điện. Năng lượng mặt trời sạch và thân thiện với môi trường. Tôi tự hào vì gia đình tôi bảo vệ hành tinh. Nhiều nhà hàng xóm cũng lắp pin mặt trời.",
+    "englishText": "My house has solar panels on the roof. Solar panels generate electricity from sunlight. We save a lot of money on electricity. Solar energy is clean and environmentally friendly. I am proud that my family protects the planet. Many neighbors also install solar panels.",
     "highlightedSentences": [
       "My house has solar panels on the roof"
     ],
@@ -133,6 +139,7 @@
     "category": "science-environment",
     "description": "Describe astronomy interest",
     "sourceText": "Tôi thích ngắm sao vào ban đêm. Tôi ra sân thượng với kính thiên văn. Tôi nhìn thấy mặt trăng và các vì sao. Bầu trời đêm rất đẹp và bí ẩn. Tôi học tên các chòm sao. Tôi mơ ước được đi du hành vũ trụ. Khoa học thiên văn rất thú vị.",
+    "englishText": "I like watching stars at night. I go to the rooftop with a telescope. I see the moon and stars. The night sky is very beautiful and mysterious. I learn the names of constellations. I dream of traveling to space. Astronomy is very interesting.",
     "highlightedSentences": [
       "I like watching stars at night"
     ],
@@ -155,6 +162,7 @@
     "category": "science-environment",
     "description": "Discuss energy conservation",
     "sourceText": "Tôi luôn tắt đèn khi ra khỏi phòng. Tôi rút phích cắm các thiết bị không dùng. Tôi sử dụng bóng đèn LED tiết kiệm điện. Tôi không để tủ lạnh mở lâu. Tiết kiệm điện giúp giảm hóa đơn. Nó cũng tốt cho môi trường. Mọi người nên tiết kiệm năng lượng.",
+    "englishText": "I always turn off lights when leaving the room. I unplug devices that are not in use. I use energy-saving LED bulbs. I don't leave the refrigerator open for long. Saving electricity helps reduce bills. It is also good for the environment. Everyone should save energy.",
     "highlightedSentences": [
       "I always turn off lights when leaving the room"
     ],
@@ -178,6 +186,7 @@
     "category": "science-environment",
     "description": "Describe weather and seasons",
     "sourceText": "Mùa mưa đã đến. Trời mưa gần như mỗi ngày. Tôi luôn mang theo ô khi ra ngoài. Đường phố ướt và trơn trượt. Cây cối xanh tươi sau mưa. Không khí mát mẻ và dễ chịu. Tôi thích nghe tiếng mưa rơi.",
+    "englishText": "The rainy season has arrived. It rains almost every day. I always bring an umbrella when going out. The streets are wet and slippery. Trees are green and fresh after rain. The air is cool and pleasant. I like listening to the sound of rain falling.",
     "highlightedSentences": [
       "The rainy season has arrived"
     ],
@@ -199,6 +208,7 @@
     "category": "science-environment",
     "description": "Describe zoo visit",
     "sourceText": "Hôm nay tôi đi sở thú. Tôi thấy nhiều loài động vật. Có sư tử, voi, khỉ và gấu trúc. Tôi thích nhất là gấu trúc. Chúng rất dễ thương và đáng yêu. Tôi học được nhiều điều về động vật. Tôi chụp nhiều bức ảnh đẹp.",
+    "englishText": "Today I go to the zoo. I see many kinds of animals. There are lions, elephants, monkeys and pandas. I like pandas the most. They are very cute and adorable. I learn many things about animals. I take many beautiful photos.",
     "highlightedSentences": [
       "I go to the zoo today"
     ],

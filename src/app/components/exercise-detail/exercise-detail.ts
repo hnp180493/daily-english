@@ -30,6 +30,7 @@ import { StreakService } from '../../services/streak.service';
 import { TTSSettings } from '../tts-settings/tts-settings';
 import { PenaltyScore } from '../penalty-score/penalty-score';
 import { PENALTY_CONSTANTS } from '../../models/penalty.constants';
+import { ExerciseContext } from '../../models/ai.model';
 
 @Component({
   selector: 'app-exercise-detail',
@@ -203,8 +204,8 @@ export class ExerciseDetailComponent implements OnInit, OnDestroy {
 
     const avgAccuracy = completedSents.reduce((sum, s) => sum + (s.accuracyScore || 0), 0) / completedSents.length;
     const penalties = this.stateService.getPenaltyMetrics();
-    const totalPenalty = (penalties.totalIncorrectAttempts * PENALTY_CONSTANTS.INCORRECT_ATTEMPT_PENALTY) + 
-                        (penalties.totalRetries * PENALTY_CONSTANTS.RETRY_PENALTY);
+    const totalPenalty = (penalties.totalIncorrectAttempts * PENALTY_CONSTANTS.INCORRECT_ATTEMPT_PENALTY) +
+      (penalties.totalRetries * PENALTY_CONSTANTS.RETRY_PENALTY);
     const currentScore = Math.max(0, avgAccuracy - totalPenalty);
 
     return {
@@ -317,7 +318,7 @@ export class ExerciseDetailComponent implements OnInit, OnDestroy {
     const state = this.persistenceService.loadProgress(exerciseId);
     if (state) {
       // Find the first incomplete sentence OR sentence with score < 90
-      const firstIncomplete = state.sentences.findIndex(s => 
+      const firstIncomplete = state.sentences.findIndex(s =>
         !s.isCompleted || (s.accuracyScore !== undefined && s.accuracyScore < 90)
       );
 
@@ -480,8 +481,9 @@ export class ExerciseDetailComponent implements OnInit, OnDestroy {
       ...ex,
       sourceText: currentSentence.original,
       fullContext: ex.sourceText,
-      translatedContext: translatedContext || undefined
-    };
+      translatedContext: translatedContext || undefined,
+      englishText: ''
+    } as ExerciseContext;
 
     this.aiService.generateHint(
       currentSentence.original,
@@ -567,7 +569,7 @@ export class ExerciseDetailComponent implements OnInit, OnDestroy {
   onPracticeDictation(): void {
     const ex = this.exercise();
     if (!ex) return;
-    
+
     this.router.navigate(['/exercises', ex.id, 'dictation']);
   }
 
@@ -615,7 +617,7 @@ export class ExerciseDetailComponent implements OnInit, OnDestroy {
     if (!ex) return;
 
     console.log('[ExerciseDetail] Exercise completed, recording attempt...');
-    
+
     // Calculate final score with penalties
     const sentences = this.sentences();
     const penalties = this.stateService.getPenaltyMetrics();
@@ -623,32 +625,32 @@ export class ExerciseDetailComponent implements OnInit, OnDestroy {
     const avgAccuracy = completedSents.length > 0
       ? completedSents.reduce((sum, s) => sum + (s.accuracyScore || 0), 0) / completedSents.length
       : 0;
-    const totalPenalty = (penalties.totalIncorrectAttempts * PENALTY_CONSTANTS.INCORRECT_ATTEMPT_PENALTY) + 
-                        (penalties.totalRetries * PENALTY_CONSTANTS.RETRY_PENALTY);
-    
+    const totalPenalty = (penalties.totalIncorrectAttempts * PENALTY_CONSTANTS.INCORRECT_ATTEMPT_PENALTY) +
+      (penalties.totalRetries * PENALTY_CONSTANTS.RETRY_PENALTY);
+
     const finalScore = Math.max(0, Math.round(avgAccuracy - totalPenalty));
-    
+
     // Apply streak multiplier to points
     const basePoints = this.exercisePoints();
     const streakMultiplier = this.streakService.getStreakMultiplier();
     const bonusPoints = streakMultiplier > 1.0 ? Math.round(basePoints * (streakMultiplier - 1.0)) : 0;
-    
+
     console.log('[ExerciseDetail] Points calculation:', {
       basePoints,
       streakMultiplier,
       bonusPoints,
       totalPoints: basePoints + bonusPoints
     });
-    
+
     // Record attempt with streak bonus
     this.recordingService.recordAttempt(ex, this.hintsShown(), basePoints + bonusPoints);
-    
+
     // Update learning path progress
     this.curriculumService.updateModuleProgress(ex.id, finalScore, basePoints + bonusPoints).subscribe({
       next: () => console.log('[ExerciseDetail] Module progress updated'),
       error: (err) => console.warn('[ExerciseDetail] Module progress update failed:', err)
     });
-    
+
     // Check if this was a daily challenge
     const today = new Date().toISOString().split('T')[0];
     this.curriculumService.checkAndCompleteDailyChallenge(ex.id, today, finalScore).subscribe({
@@ -659,32 +661,32 @@ export class ExerciseDetailComponent implements OnInit, OnDestroy {
       },
       error: (err) => console.warn('[ExerciseDetail] Daily challenge check failed:', err)
     });
-    
+
     // Update weekly goal progress (only if score >= 60)
     this.curriculumService.incrementWeeklyGoalProgress(finalScore).subscribe({
       next: () => console.log('[ExerciseDetail] Weekly goal progress updated with score:', finalScore),
       error: (err) => console.warn('[ExerciseDetail] Weekly goal update failed:', err)
     });
-    
+
     // NOTE: scheduleNextReview is now handled in ExerciseSubmissionService
     // when all sentences are completed, so we don't call it here to avoid duplication
-    
+
     // Update review data with incorrect sentence indices
     const incorrectIndices = sentences
       .map((s, index) => ({ index, score: s.accuracyScore || 0 }))
       .filter(item => item.score < 75)
       .map(item => item.index);
-    
+
     if (incorrectIndices.length > 0) {
       // Store incorrect indices for quick review mode
       console.log('[ExerciseDetail] Incorrect sentence indices:', incorrectIndices);
     }
 
     // Record exercise history (optional - won't block completion if it fails)
-    const timeSpent = this.exerciseStartTime 
+    const timeSpent = this.exerciseStartTime
       ? Math.floor((new Date().getTime() - this.exerciseStartTime.getTime()) / 1000)
       : 0;
-    
+
     const penaltyMetrics = {
       baseScore: Math.round(avgAccuracy),
       totalIncorrectAttempts: penalties.totalIncorrectAttempts,
@@ -703,7 +705,7 @@ export class ExerciseDetailComponent implements OnInit, OnDestroy {
     ).subscribe({
       error: (err) => console.warn('[ExerciseDetail] History recording failed:', err)
     });
-    
+
     this.clearProgress();
     this.isReviewMode.set(true);
 
@@ -718,7 +720,7 @@ export class ExerciseDetailComponent implements OnInit, OnDestroy {
   exitQuickReview(): void {
     this.quickReviewMode.set(false);
     this.incorrectSentenceIndices.set([]);
-    
+
     // Navigate to regular exercise mode
     this.router.navigate([], {
       relativeTo: this.route,

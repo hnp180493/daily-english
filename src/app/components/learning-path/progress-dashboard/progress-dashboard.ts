@@ -69,7 +69,8 @@ export class ProgressDashboard implements OnInit {
         id: h.exerciseId,
         exerciseTitle: h.exerciseId,
         date: new Date(h.timestamp),
-        score: h.accuracyScore
+        score: h.accuracyScore,
+        language: h.language // Include language if available
       }));
   });
   

@@ -6,6 +6,7 @@
     "category": "travel-transportation",
     "description": "Share the excitement of flying for the first time",
     "sourceText": "Đây là lần đầu tiên tôi đi máy bay. Tôi rất phấn khích và hồi hộp. Tôi ngồi bên cửa sổ và nhìn xuống bên dưới. Tôi thấy những đám mây trắng xóa trôi nổi. Mọi thứ trông thật nhỏ bé từ trên cao. Các tiếp viên hàng không rất lịch sự và chu đáo. Họ phục vụ đồ ăn nhẹ và nước uống. Tôi cảm thấy như mình đang bay lượn trên bầu trời. Đây thực sự là một trải nghiệm tuyệt vời.",
+    "englishText": "This is my first time on a plane. I am very excited and nervous. I sit by the window and look down below. I see white clouds floating. Everything looks so small from up high. The flight attendants are very polite and attentive. They serve snacks and drinks. I feel like I am soaring in the sky. This is truly a wonderful experience.",
     "highlightedSentences": [
       "This is my first time on a plane"
     ],
@@ -27,6 +28,7 @@
     "category": "travel-transportation",
     "description": "Describe airport procedures",
     "sourceText": "Hôm nay tôi ra sân bay. Tôi đến sớm để làm thủ tục check-in. Tôi gửi hành lý ký gửi và giữ lại hành lý xách tay. Tôi đi qua khu vực kiểm tra an ninh. Sau đó tôi chờ ở cổng lên máy bay. Tôi mua một ly cà phê để uống. Tôi đọc sách trong lúc chờ đợi. Chuyến bay của tôi sẽ khởi hành đúng giờ.",
+    "englishText": "Today I go to the airport. I arrive early to check in. I check my luggage and keep my carry-on. I go through the security checkpoint. Then I wait at the boarding gate. I buy a cup of coffee to drink. I read a book while waiting. My flight will depart on time.",
     "highlightedSentences": [
       "I arrive early to check in"
     ],
@@ -48,6 +50,7 @@
     "category": "travel-transportation",
     "description": "Describe train travel",
     "sourceText": "Tôi rất thích đi du lịch bằng tàu hỏa. Tôi thường ngồi bên cửa sổ và ngắm cảnh bên ngoài. Tôi thấy những cánh đồng bát ngát và những ngôi làng yên bình. Tàu hỏa rất thoải mái và rộng rãi. Tôi có thể tự do đi lại và ăn uống. Tôi thường gặp những người thú vị trên tàu. Đi tàu hỏa thực sự là một trải nghiệm thư giãn.",
+    "englishText": "I really like to travel by train. I usually sit by the window and watch the scenery outside. I see vast fields and peaceful villages. The train is very comfortable and spacious. I can freely move around and eat. I often meet interesting people on the train. Traveling by train is truly a relaxing experience.",
     "highlightedSentences": [
       "I like to travel by train"
     ],
@@ -69,6 +72,7 @@
     "category": "travel-transportation",
     "description": "Share driving experience",
     "sourceText": "Cuối tuần này, tôi đi du lịch bằng ô tô với bạn bè. Chúng tôi lái xe ra bãi biển. Chúng tôi dừng lại ở các địa điểm đẹp dọc đường để chụp ảnh. Chúng tôi vừa nghe nhạc vừa hát theo trong xe. Chúng tôi mang theo nhiều đồ ăn nhẹ và nước uống. Đó thực sự là một chuyến đi vui vẻ và đáng nhớ.",
+    "englishText": "This weekend, I travel by car with friends. We drive to the beach. We stop at beautiful spots along the way to take photos. We listen to music and sing along in the car. We bring lots of snacks and drinks. It is truly a fun and memorable trip.",
     "highlightedSentences": [
       "We drive to the beach"
     ],
@@ -90,6 +94,7 @@
     "category": "travel-transportation",
     "description": "Describe public transport",
     "sourceText": "Tôi đi làm bằng xe buýt mỗi ngày. Tôi đợi xe ở trạm gần nhà. Xe buýt đến đúng giờ. Tôi lên xe và mua vé. Tôi ngồi bên cửa sổ và ngắm cảnh. Xe buýt rất tiện lợi và rẻ. Tôi đến nơi làm việc sau 30 phút.",
+    "englishText": "I go to work by bus every day. I wait for the bus at the stop near my house. The bus arrives on time. I get on and buy a ticket. I sit by the window and watch the scenery. The bus is very convenient and cheap. I arrive at work after 30 minutes.",
     "highlightedSentences": [
       "I go to work by bus every day"
     ],
@@ -114,6 +119,7 @@
     "category": "travel-transportation",
     "description": "Describe cycling",
     "sourceText": "Tôi đi xe đạp đến trường. Đi xe đạp tốt cho sức khỏe. Tôi đạp xe qua công viên và cầu. Tôi đội mũ bảo hiểm để an toàn. Tôi thích cảm giác gió thổi vào mặt. Đi xe đạp cũng bảo vệ môi trường. Tôi đến trường trong 15 phút.",
+    "englishText": "I ride a bicycle to school. Riding a bicycle is good for health. I cycle through the park and over the bridge. I wear a helmet for safety. I like the feeling of wind blowing on my face. Cycling also protects the environment. I arrive at school in 15 minutes.",
     "highlightedSentences": [
       "I ride a bicycle to school"
     ],
@@ -129,33 +135,13 @@
     ]
   },
   {
-    "id": "ex-155",
-    "title": "Taxi Ride",
-    "level": "beginner",
-    "category": "travel-transportation",
-    "description": "Describe taxi experience",
-    "sourceText": "Hôm nay trời mưa nên tôi bắt taxi. Tôi gọi taxi qua ứng dụng điện thoại. Taxi đến sau 5 phút. Tôi nói với tài xế địa chỉ đến. Tài xế lái xe cẩn thận. Tôi thanh toán bằng tiền mặt. Tôi cho tài xế tiền boa nhỏ.",
-    "highlightedSentences": [
-      "I take a taxi because it's raining"
-    ],
-    "hints": [
-      "Use present simple for current action",
-      "Consider 'because' clause"
-    ],
-    "expectedKeywords": [
-      "take",
-      "taxi",
-      "because",
-      "raining"
-    ]
-  },
-  {
     "id": "ex-156",
     "title": "Walking to the Market",
     "level": "beginner",
     "category": "travel-transportation",
     "description": "Describe walking",
     "sourceText": "Chợ rất gần nhà tôi. Tôi đi bộ đến chợ mỗi sáng. Tôi đi qua con đường nhỏ yên tĩnh. Tôi chào hàng xóm dọc đường. Đi bộ giúp tôi tập thể dục. Tôi mất 10 phút để đến chợ. Đi bộ rất tốt cho sức khỏe.",
+    "englishText": "The market is very close to my house. I walk to the market every morning. I go through a small quiet street. I greet neighbors along the way. Walking helps me exercise. It takes me 10 minutes to reach the market. Walking is very good for health.",
     "highlightedSentences": [
       "I walk to the market every morning"
     ],
@@ -172,12 +158,35 @@
     ]
   },
   {
+    "id": "ex-155",
+    "title": "Taxi Ride",
+    "level": "beginner",
+    "category": "travel-transportation",
+    "description": "Describe taxi experience",
+    "sourceText": "Hôm nay trời mưa nên tôi bắt taxi. Tôi gọi taxi qua ứng dụng điện thoại. Taxi đến sau 5 phút. Tôi nói với tài xế địa chỉ đến. Tài xế lái xe cẩn thận. Tôi thanh toán bằng tiền mặt. Tôi cho tài xế tiền boa nhỏ.",
+    "englishText": "Today it's raining so I take a taxi. I call a taxi through a phone app. The taxi arrives after 5 minutes. I tell the driver the destination address. The driver drives carefully. I pay with cash. I give the driver a small tip.",
+    "highlightedSentences": [
+      "I take a taxi because it's raining"
+    ],
+    "hints": [
+      "Use present simple for current action",
+      "Consider 'because' clause"
+    ],
+    "expectedKeywords": [
+      "take",
+      "taxi",
+      "because",
+      "raining"
+    ]
+  },
+  {
     "id": "ex-157",
     "title": "Subway System",
     "level": "beginner",
     "category": "travel-transportation",
     "description": "Learn about metro",
     "sourceText": "Tôi đi tàu điện ngầm ở thành phố lớn. Tàu điện ngầm rất nhanh và tiện lợi. Tôi mua vé tại máy tự động. Tôi đợi tàu ở sân ga. Tàu đến sau vài phút. Tôi lên tàu và tìm chỗ ngồi. Tàu điện ngầm giúp tránh kẹt xe.",
+    "englishText": "I take the subway in the big city. The subway is very fast and convenient. I buy a ticket at the automatic machine. I wait for the train at the platform. The train arrives after a few minutes. I board the train and find a seat. The subway helps avoid traffic jams.",
     "highlightedSentences": [
       "I take the subway in the big city"
     ],

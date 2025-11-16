@@ -6,6 +6,7 @@
     "category": "society-services",
     "description": "Handle customer inquiries",
     "sourceText": "Xin chào quý khách, Cảm ơn quý khách đã liên hệ với chúng tôi. Tôi hiểu rằng quý khách đang gặp vấn đề với đơn hàng. Tôi thành thật xin lỗi về sự bất tiện này. Chúng tôi sẽ giải quyết vấn đề ngay lập tức. Tôi đã kiểm tra hệ thống và tìm thấy đơn hàng của quý khách. Chúng tôi sẽ gửi lại sản phẩm hoàn toàn miễn phí. Quý khách sẽ nhận được hàng trong vòng 3-5 ngày làm việc. Xin chân thành cảm ơn sự kiên nhẫn và thông cảm của quý khách.",
+    "englishText": "Hello, thank you for contacting us. I understand that you are having an issue with your order. I sincerely apologize for this inconvenience. We will resolve the issue immediately. I have checked the system and found your order. We will resend the product completely free of charge. You will receive it within 3-5 business days. Thank you sincerely for your patience and understanding.",
     "highlightedSentences": [
       "I apologize for the inconvenience"
     ],
@@ -27,6 +28,7 @@
     "category": "society-services",
     "description": "Discuss volunteer work",
     "sourceText": "Tôi tham gia hoạt động tình nguyện tại một tổ chức từ thiện địa phương mỗi tháng. Chúng tôi giúp đỡ những người vô gia cư bằng cách phục vụ bữa ăn miễn phí. Tôi cũng dạy tiếng Anh cho những người nhập cư mới. Công việc tình nguyện mang lại cho tôi cảm giác sống có ý nghĩa. Tôi được gặp gỡ nhiều người tuyệt vời và học hỏi được rất nhiều điều. Đóng góp cho cộng đồng thực sự rất có giá trị.",
+    "englishText": "I volunteer at a local charity organization every month. We help homeless people by serving free meals. I also teach English to new immigrants. Volunteer work gives me a sense of living meaningfully. I get to meet many wonderful people and learn so much. Contributing to the community is truly valuable.",
     "highlightedSentences": [
       "I volunteer at a local charity every month"
     ],
@@ -49,6 +51,7 @@
     "category": "society-services",
     "description": "Discuss healthcare access",
     "sourceText": "Hệ thống y tế công cộng ở nước tôi cung cấp dịch vụ chăm sóc sức khỏe cơ bản cho tất cả công dân. Mọi người đều có thể đến bệnh viện công khi cần thiết. Chi phí được chi trả bằng nguồn thuế. Tuy nhiên, thời gian chờ đợi đôi khi khá lâu. Một số người chọn mua bảo hiểm y tế tư nhân để được phục vụ nhanh hơn và chu đáo hơn.",
+    "englishText": "The public healthcare system in my country provides basic healthcare services for all citizens. Everyone can go to public hospitals when needed. Costs are covered by tax revenue. However, waiting times are sometimes quite long. Some people choose to buy private health insurance for faster and more attentive service.",
     "highlightedSentences": [
       "The public healthcare system in my country provides basic healthcare for all citizens"
     ],
@@ -73,6 +76,7 @@
     "category": "society-services",
     "description": "Discuss emergency preparedness",
     "sourceText": "Dịch vụ khẩn cấp đóng vai trò vô cùng quan trọng trong cộng đồng. Cảnh sát, lính cứu hỏa và nhân viên y tế cấp cứu luôn sẵn sàng hỗ trợ 24/7. Họ phản ứng cực kỳ nhanh chóng trong các tình huống nguy hiểm. Chúng ta nên thuộc lòng số điện thoại khẩn cấp và biết cách gọi trợ giúp. Chúng ta cũng nên học các kỹ năng sơ cứu cơ bản. Chuẩn bị tốt cho tình huống khẩn cấp có thể cứu sống con người.",
+    "englishText": "Emergency services play an extremely important role in the community. Police, firefighters, and emergency medical personnel are always ready to assist 24/7. They respond extremely quickly in dangerous situations. We should memorize emergency phone numbers and know how to call for help. We should also learn basic first aid skills. Being well prepared for emergencies can save lives.",
     "highlightedSentences": [
       "Emergency services play a vital role in the community"
     ],
@@ -97,6 +101,7 @@
     "category": "society-services",
     "description": "Discuss government support",
     "sourceText": "Các chương trình phúc lợi xã hội giúp đỡ những người gặp khó khăn trong cộng đồng. Chính phủ cung cấp hỗ trợ tài chính cho người thất nghiệp và người già. Có các chương trình hỗ trợ nhà ở cho người thu nhập thấp. Trẻ em từ gia đình nghèo được hỗ trợ học phí và bữa ăn học đường. Người khuyết tật nhận được các dịch vụ chăm sóc đặc biệt. Những chương trình này giúp giảm bất bình đẳng và tạo cơ hội cho mọi người. Phúc lợi xã hội là dấu hiệu của một xã hội văn minh và nhân đạo.",
+    "englishText": "Social welfare programs help people in difficulty in the community. The government provides financial support for the unemployed and elderly. There are housing assistance programs for low-income people. Children from poor families receive tuition and school meal support. People with disabilities receive special care services. These programs help reduce inequality and create opportunities for everyone. Social welfare is a sign of a civilized and humane society.",
     "highlightedSentences": [
       "Social welfare programs help people in need"
     ],
@@ -121,6 +126,7 @@
     "category": "society-services",
     "description": "Discuss e-government",
     "sourceText": "Chính phủ điện tử đang làm cho dịch vụ công trở nên tiện lợi hơn bao giờ hết. Công dân có thể nộp thuế trực tuyến mà không cần đến cơ quan thuế. Chúng ta có thể đăng ký giấy tờ tùy thân qua internet. Chúng ta có thể thanh toán hóa đơn điện nước bằng ứng dụng di động. Hệ thống trực tuyến giảm thời gian chờ đợi và giấy tờ hành chính. Tuy nhiên, chúng ta cần đảm bảo an ninh thông tin và bảo vệ dữ liệu cá nhân. Chính phủ điện tử giúp nâng cao hiệu quả và minh bạch.",
+    "englishText": "E-government is making public services more convenient than ever. Citizens can file taxes online without going to the tax office. We can register identity documents via the internet. We can pay electricity and water bills using mobile apps. Online systems reduce waiting time and paperwork. However, we need to ensure information security and protect personal data. E-government helps improve efficiency and transparency.",
     "highlightedSentences": [
       "E-government is making public services more convenient than ever"
     ],
@@ -145,6 +151,7 @@
     "category": "society-services",
     "description": "Discuss law enforcement",
     "sourceText": "Mô hình cảnh sát cộng đồng tập trung vào xây dựng mối quan hệ với người dân. Cảnh sát tuần tra thường xuyên trong khu phố và làm quen với cư dân. Họ tham gia các sự kiện cộng đồng và lắng nghe mối quan tâm của người dân. Cách tiếp cận này giúp ngăn ngừa tội phạm thay vì chỉ phản ứng sau khi xảy ra. Người dân cảm thấy an toàn hơn và tin tưởng cảnh sát hơn. Sự hợp tác giữa cảnh sát và cộng đồng tạo ra môi trường sống an toàn cho tất cả.",
+    "englishText": "The community policing model focuses on building relationships with residents. Police patrol regularly in neighborhoods and get to know residents. They participate in community events and listen to people's concerns. This approach helps prevent crime rather than just reacting after it occurs. People feel safer and trust the police more. Cooperation between police and community creates a safe living environment for all.",
     "highlightedSentences": [
       "Community policing focuses on building relationships with residents"
     ],
@@ -168,6 +175,7 @@
     "category": "society-services",
     "description": "Discuss library services",
     "sourceText": "Thư viện công cộng cung cấp nhiều hơn là chỉ sách để mượn. Chúng cung cấp truy cập internet miễn phí cho những người không có máy tính. Chúng tổ chức các lớp học kỹ năng và workshop miễn phí. Trẻ em có thể tham gia các chương trình đọc sách và hoạt động giáo dục. Người lớn tuổi có thể tham gia các câu lạc bộ và hoạt động xã hội. Thư viện là trung tâm học tập và giao lưu cộng đồng. Chúng đóng vai trò quan trọng trong việc thu hẹp khoảng cách kỹ thuật số.",
+    "englishText": "Public libraries provide more than just books to borrow. They provide free internet access for people without computers. They organize free skill classes and workshops. Children can participate in reading programs and educational activities. Older adults can join clubs and social activities. Libraries are community learning and social centers. They play an important role in bridging the digital divide.",
     "highlightedSentences": [
       "Public libraries provide more than just books to borrow"
     ],
@@ -192,6 +200,7 @@
     "category": "society-services",
     "description": "Discuss sanitation services",
     "sourceText": "Hệ thống quản lý rác thải là dịch vụ công thiết yếu cho thành phố. Rác được thu gom định kỳ từ mỗi hộ gia đình và doanh nghiệp. Rác được phân loại thành rác hữu cơ, rác tái chế và rác thải nguy hại. Rác hữu cơ được chuyển thành phân compost để bón cho cây. Rác tái chế được xử lý và tái sử dụng làm nguyên liệu mới. Rác thải nguy hại được xử lý đặc biệt để bảo vệ môi trường. Quản lý rác thải hiệu quả giúp giữ thành phố sạch sẽ và bảo vệ sức khỏe cộng đồng.",
+    "englishText": "Waste management system is an essential public service for cities. Waste is collected regularly from each household and business. Waste is sorted into organic waste, recyclables, and hazardous waste. Organic waste is converted into compost for fertilizing plants. Recyclables are processed and reused as new materials. Hazardous waste is specially treated to protect the environment. Effective waste management helps keep cities clean and protects community health.",
     "highlightedSentences": [
       "Waste management system is an essential public service"
     ],
@@ -217,6 +226,7 @@
     "category": "society-services",
     "description": "Discuss schooling",
     "sourceText": "Hệ thống giáo dục công lập cung cấp giáo dục miễn phí cho tất cả trẻ em. Mọi đứa trẻ đều có quyền được đến trường bất kể hoàn cảnh gia đình. Chính phủ tài trợ cho trường học, giáo viên và tài liệu học tập. Chương trình giảng dạy được thiết kế để phát triển toàn diện học sinh. Giáo dục công lập giúp tạo cơ hội bình đẳng cho mọi người. Tuy nhiên, chất lượng giáo dục vẫn cần được cải thiện liên tục. Đầu tư vào giáo dục là đầu tư vào tương lai của đất nước.",
+    "englishText": "The public education system provides free education for all children. Every child has the right to attend school regardless of family circumstances. The government funds schools, teachers, and learning materials. The curriculum is designed to develop students holistically. Public education helps create equal opportunities for everyone. However, education quality still needs continuous improvement. Investing in education is investing in the country's future.",
     "highlightedSentences": [
       "Public education system provides free education for all children"
     ],
@@ -242,6 +252,7 @@
     "category": "society-services",
     "description": "Discuss consumer rights",
     "sourceText": "Luật bảo vệ người tiêu dùng giúp đảm bảo giao dịch công bằng. Người tiêu dùng có quyền được cung cấp thông tin chính xác về sản phẩm. Chúng ta có quyền đổi trả hàng lỗi hoặc không đúng mô tả. Chúng ta có quyền khiếu nại khi bị lừa đảo hoặc gian lận. Các cơ quan bảo vệ người tiêu dùng điều tra và xử lý vi phạm. Doanh nghiệp vi phạm có thể bị phạt nặng hoặc đình chỉ hoạt động. Luật bảo vệ người tiêu dùng tạo môi trường kinh doanh lành mạnh.",
+    "englishText": "Consumer protection laws help ensure fair transactions. Consumers have the right to be provided accurate information about products. We have the right to return defective or misdescribed goods. We have the right to complain when deceived or defrauded. Consumer protection agencies investigate and handle violations. Violating businesses can be heavily fined or suspended. Consumer protection laws create a healthy business environment.",
     "highlightedSentences": [
       "Consumer protection laws ensure fair transactions"
     ],
@@ -265,6 +276,7 @@
     "category": "society-services",
     "description": "Discuss community organization",
     "sourceText": "Hội đồng khu phố giúp cư dân giải quyết các vấn đề chung. Chúng tôi họp định kỳ mỗi tháng để thảo luận về an ninh và môi trường. Chúng tôi tổ chức các hoạt động cộng đồng như dọn dẹp công viên và lễ hội đường phố. Chúng tôi làm việc với chính quyền địa phương để cải thiện cơ sở hạ tầng. Chúng tôi tạo ra các quy tắc chung để duy trì môi trường sống tốt. Sự tham gia tích cực của cư dân làm cho khu phố trở nên tốt đẹp hơn. Đoàn kết cộng đồng là sức mạnh của chúng ta.",
+    "englishText": "The neighborhood association helps residents solve common problems. We meet monthly to discuss security and environment. We organize community activities like park cleanups and street festivals. We work with local government to improve infrastructure. We create common rules to maintain a good living environment. Active resident participation makes the neighborhood better. Community unity is our strength.",
     "highlightedSentences": [
       "Neighborhood association helps residents solve common problems"
     ],
@@ -289,6 +301,7 @@
     "category": "society-services",
     "description": "Discuss transit systems",
     "sourceText": "Hệ thống giao thông công cộng là xương sống của thành phố hiện đại. Xe buýt, tàu điện ngầm và tàu điện kết nối các khu vực khác nhau. Hệ thống được thiết kế để di chuyển hiệu quả và giảm tắc nghẽn giao thông. Giá vé được trợ cấp để người dân có thu nhập thấp cũng có thể sử dụng. Nhiều thành phố đang đầu tư vào xe buýt điện và tàu điện xanh. Giao thông công cộng tốt giảm ô nhiễm không khí và cải thiện chất lượng cuộc sống. Đầu tư vào giao thông công cộng là đầu tư vào tương lai bền vững.",
+    "englishText": "Public transportation system is the backbone of modern cities. Buses, subways, and trams connect different areas. The system is designed for efficient movement and reducing traffic congestion. Fares are subsidized so low-income people can also use it. Many cities are investing in electric buses and green trains. Good public transportation reduces air pollution and improves quality of life. Investing in public transportation is investing in a sustainable future.",
     "highlightedSentences": [
       "Public transportation system is the backbone of modern cities"
     ],
@@ -314,6 +327,7 @@
     "category": "society-services",
     "description": "Discuss affordable housing",
     "sourceText": "Chương trình nhà ở xã hội giúp người thu nhập thấp có nơi ở ổn định. Chính phủ xây dựng hoặc trợ cấp nhà ở với giá phải chăng. Gia đình đủ điều kiện có thể thuê hoặc mua nhà với giá ưu đãi. Chương trình ưu tiên người già, người khuyết tật và gia đình có trẻ nhỏ. Nhà ở xã hội thường được xây dựng gần trường học và bệnh viện. Có nơi ở ổn định giúp mọi người tập trung vào công việc và giáo dục. Nhà ở là quyền cơ bản mà mọi người đều xứng đáng có được.",
+    "englishText": "Social housing programs help low-income people have stable housing. The government builds or subsidizes affordable housing. Eligible families can rent or buy homes at preferential prices. The program prioritizes the elderly, disabled, and families with young children. Social housing is often built near schools and hospitals. Having stable housing helps people focus on work and education. Housing is a basic right that everyone deserves.",
     "highlightedSentences": [
       "Social housing programs help low-income people have stable housing"
     ],
@@ -339,6 +353,7 @@
     "category": "society-services",
     "description": "Discuss citizen participation",
     "sourceText": "Tham gia công dân là trách nhiệm quan trọng trong xã hội dân chủ. Chúng ta nên bỏ phiếu trong các cuộc bầu cử để chọn người đại diện. Chúng ta nên tham dự các cuộc họp công khai và bày tỏ ý kiến. Chúng ta có thể tham gia các tổ chức phi lợi nhuận và hoạt động tình nguyện. Chúng ta nên theo dõi tin tức và hiểu biết về các vấn đề xã hội. Tham gia tích cực giúp tạo ra những thay đổi tích cực trong cộng đồng. Dân chủ chỉ hoạt động tốt khi công dân tham gia tích cực.",
+    "englishText": "Civic engagement is an important responsibility in democratic society. We should vote in elections to choose representatives. We should attend public meetings and express opinions. We can join non-profit organizations and volunteer activities. We should follow news and understand social issues. Active participation helps create positive changes in the community. Democracy only works well when citizens actively participate.",
     "highlightedSentences": [
       "Civic engagement is an important responsibility in democratic society"
     ],

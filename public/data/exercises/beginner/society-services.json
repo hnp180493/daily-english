@@ -6,6 +6,7 @@
     "category": "society-services",
     "description": "Describe a shopping trip",
     "sourceText": "Hôm nay tôi đi siêu thị mua đồ. Tôi cần mua rau củ, trái cây và thịt. Tôi mang theo danh sách mua sắm để khỏi quên. Siêu thị đông người lắm. Tôi tìm được tất cả những thứ mình cần. Tôi xếp hàng chờ thanh toán. Tổng cộng là 500.000 đồng. Tôi thanh toán bằng thẻ tín dụng. Sau đó tôi mang đồ về nhà.",
+    "englishText": "Today I go to the supermarket to shop. I need to buy vegetables, fruits and meat. I bring a shopping list so I don't forget. The supermarket is very crowded. I find everything I need. I queue to pay. The total is 500,000 dong. I pay by credit card. Then I bring the items home.",
     "highlightedSentences": [
       "I need to buy vegetables, fruits and meat"
     ],
@@ -26,6 +27,7 @@
     "category": "society-services",
     "description": "Describe postal service",
     "sourceText": "Hôm nay tôi đến bưu điện. Tôi cần gửi một kiện hàng cho bạn. Tôi xếp hàng và chờ đến lượt. Nhân viên bưu điện giúp tôi đóng gói cẩn thận. Tôi thanh toán phí dịch vụ. Họ nói kiện hàng sẽ đến nơi trong ba ngày. Tôi nhận được biên lai để theo dõi.",
+    "englishText": "Today I go to the post office. I need to send a package to my friend. I queue and wait for my turn. The postal worker helps me pack carefully. I pay the service fee. They say the package will arrive in three days. I receive a receipt to track it.",
     "highlightedSentences": [
       "I need to send a package"
     ],
@@ -46,6 +48,7 @@
     "category": "society-services",
     "description": "Learn banking vocabulary",
     "sourceText": "Tôi có một tài khoản ngân hàng. Mỗi tháng tôi gửi tiền vào tài khoản tiết kiệm. Tôi dùng thẻ ATM để rút tiền khi cần. Tôi thường xuyên kiểm tra số dư qua ứng dụng ngân hàng. Tôi thanh toán hóa đơn điện nước qua dịch vụ ngân hàng trực tuyến. Ngân hàng giúp tôi bảo quản tiền một cách an toàn.",
+    "englishText": "I have a bank account. Every month I deposit money into my savings account. I use an ATM card to withdraw money when needed. I regularly check my balance through the banking app. I pay electricity and water bills through online banking services. The bank helps me keep money safely.",
     "highlightedSentences": [
       "I have a bank account"
     ],
@@ -65,6 +68,7 @@
     "category": "society-services",
     "description": "Describe library visit",
     "sourceText": "Tôi thường xuyên đến thư viện. Tôi mượn sách và đĩa DVD về xem. Tôi có thẻ thành viên thư viện. Tôi hay sử dụng máy tính ở khu vực công cộng. Thư viện có phòng đọc yên tĩnh rất thoải mái. Thủ thư luôn nhiệt tình giúp tôi tìm sách. Thư viện thực sự là một nguồn tài nguyên quý giá.",
+    "englishText": "I often go to the library. I borrow books and DVDs to watch. I have a library membership card. I often use computers in the public area. The library has a very comfortable quiet reading room. The librarian is always enthusiastic to help me find books. The library is truly a valuable resource.",
     "highlightedSentences": [
       "I often go to the library"
     ],
@@ -85,6 +89,7 @@
     "category": "society-services",
     "description": "Describe volunteer activity",
     "sourceText": "Hôm nay là ngày dọn dẹp cộng đồng. Tôi tham gia cùng hàng xóm. Chúng tôi nhặt rác ở công viên. Chúng tôi quét lá và cắt cỏ. Mọi người làm việc chăm chỉ. Công viên trở nên sạch sẽ và đẹp đẽ. Tôi vui vì giúp đỡ cộng đồng.",
+    "englishText": "Today is community clean-up day. I participate with neighbors. We pick up trash in the park. We sweep leaves and cut grass. Everyone works hard. The park becomes clean and beautiful. I am happy to help the community.",
     "highlightedSentences": [
       "Today is community clean-up day"
     ],
@@ -107,6 +112,7 @@
     "category": "society-services",
     "description": "Learn emergency procedures",
     "sourceText": "Tôi biết số điện thoại khẩn cấp. Số 113 là công an. Số 114 là cứu hỏa. Số 115 là cấp cứu y tế. Trong tình huống khẩn cấp, tôi giữ bình tĩnh. Tôi gọi số phù hợp và nói rõ địa chỉ. Biết số khẩn cấp rất quan trọng.",
+    "englishText": "I know the emergency phone numbers. Number 113 is police. Number 114 is fire department. Number 115 is medical emergency. In an emergency situation, I stay calm. I call the appropriate number and state the address clearly. Knowing emergency numbers is very important.",
     "highlightedSentences": [
       "I know the emergency phone numbers"
     ],
@@ -128,6 +134,7 @@
     "category": "society-services",
     "description": "Describe online services",
     "sourceText": "Tôi thanh toán hóa đơn qua mạng. Tôi đăng nhập vào tài khoản ngân hàng. Tôi chọn hóa đơn cần thanh toán. Tôi nhập số tiền và xác nhận. Thanh toán trực tuyến rất tiện lợi. Tôi không cần đến ngân hàng. Tôi tiết kiệm được nhiều thời gian.",
+    "englishText": "I pay bills online. I log into my bank account. I select the bills to pay. I enter the amount and confirm. Online payment is very convenient. I don't need to go to the bank. I save a lot of time.",
     "highlightedSentences": [
       "I pay bills online"
     ],
@@ -148,6 +155,7 @@
     "category": "society-services",
     "description": "Describe public service",
     "sourceText": "Hôm nay tôi đến đồn công an. Tôi cần làm giấy tờ cá nhân. Công an viên rất lịch sự và hữu ích. Họ hướng dẫn tôi điền đơn. Tôi nộp hồ sơ và chờ đợi. Họ nói tôi quay lại sau một tuần. Dịch vụ công rất chuyên nghiệp.",
+    "englishText": "Today I go to the police station. I need to process personal documents. The police officers are very polite and helpful. They guide me to fill out the form. I submit my documents and wait. They tell me to come back in a week. Public service is very professional.",
     "highlightedSentences": [
       "I go to the police station today"
     ],
@@ -170,6 +178,7 @@
     "category": "society-services",
     "description": "Learn about public services",
     "sourceText": "Công viên có Wi-Fi miễn phí. Tôi kết nối điện thoại với mạng. Tôi lướt web và kiểm tra email. Wi-Fi công cộng rất hữu ích. Tôi có thể làm việc ở ngoài trời. Tôi tiết kiệm được dung lượng 3G. Dịch vụ này rất tiện lợi.",
+    "englishText": "The park has free Wi-Fi. I connect my phone to the network. I browse the web and check email. Public Wi-Fi is very useful. I can work outdoors. I save mobile data. This service is very convenient.",
     "highlightedSentences": [
       "The park has free Wi-Fi"
     ],
@@ -191,6 +200,7 @@
     "category": "society-services",
     "description": "Describe community safety",
     "sourceText": "Khu phố tôi có nhóm tuần tra an ninh. Hàng xóm thay phiên nhau canh gác. Chúng tôi giúp nhau giữ an toàn. Chúng tôi báo cáo hoạt động đáng ngờ. Tội phạm giảm rất nhiều. Mọi người cảm thấy an tâm hơn. Đoàn kết làm khu phố an toàn.",
+    "englishText": "My neighborhood has a security patrol group. Neighbors take turns keeping watch. We help each other stay safe. We report suspicious activities. Crime has decreased a lot. Everyone feels more secure. Unity makes the neighborhood safe.",
     "highlightedSentences": [
       "My neighborhood has a security patrol group"
     ],

@@ -11,10 +11,11 @@ import { ExerciseService } from '../../services/exercise.service';
 import { DictationSettingsService } from '../../services/dictation-settings.service';
 import { DictationFeedbackComponent } from '../dictation-feedback/dictation-feedback';
 import { DictationSettingsComponent } from '../dictation-settings/dictation-settings';
+import { TTSSettings } from '../tts-settings/tts-settings';
 
 @Component({
   selector: 'app-dictation-practice',
-  imports: [CommonModule, FormsModule, DictationFeedbackComponent, DictationSettingsComponent],
+  imports: [CommonModule, FormsModule, DictationFeedbackComponent, DictationSettingsComponent, TTSSettings],
   templateUrl: './dictation-practice.html',
   styleUrl: './dictation-practice.scss',
   changeDetection: ChangeDetectionStrategy.OnPush

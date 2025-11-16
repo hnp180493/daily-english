@@ -22,6 +22,7 @@ export interface Exercise {
   category: ExerciseCategory;
   description: string;
   sourceText: string;
+  englishText: string;
   highlightedSentences: string[];
   hints: string[];
   expectedKeywords?: string[];

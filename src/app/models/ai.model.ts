@@ -32,8 +32,9 @@ export interface ExerciseContext {
   level: DifficultyLevel;
   category: ExerciseCategory;
   hints: string[];
-  fullContext?: string; // Full paragraph for context when analyzing individual sentences
-  translatedContext?: string; // Student's translation so far (for tense/style consistency)
+  fullContext: string; // Full paragraph for context when analyzing individual sentences
+  translatedContext: string; // Student's translation so far (for tense/style consistency)
+  englishText: string; // Reference English translation
 }
 
 export interface AIResponse {

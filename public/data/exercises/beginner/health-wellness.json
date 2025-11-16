@@ -6,6 +6,7 @@
     "category": "health-wellness",
     "description": "Describe a medical checkup experience",
     "sourceText": "Hôm nay tôi đi khám bác sĩ. Tôi cảm thấy không được khỏe. Tôi bị ho và sốt nhẹ. Bác sĩ khám tôi rất kỹ lưỡng. Ông ấy nói tôi bị cảm cúm thông thường. Ông ấy kê đơn thuốc và dặn tôi về nhà nghỉ ngơi. Tôi cần nghỉ ngơi nhiều và uống đủ nước. Tôi hy vọng mình sẽ mau khỏi.",
+    "englishText": "Today I go to see the doctor. I don't feel well. I have a cough and mild fever. The doctor examines me very thoroughly. He says I have a common cold. He prescribes medicine and tells me to go home and rest. I need to rest a lot and drink enough water. I hope I will recover soon.",
     "highlightedSentences": [
       "I don't feel well"
     ],
@@ -26,6 +27,7 @@
     "category": "health-wellness",
     "description": "Describe fitness routine",
     "sourceText": "Tôi đang tập luyện để chạy marathon. Mỗi ngày tôi chạy bộ 5 km. Tôi cũng tập gym ba buổi mỗi tuần. Tôi ăn uống lành mạnh và khoa học. Tôi uống nhiều nước mỗi ngày. Tôi ngủ đủ 8 tiếng mỗi đêm. Tôi cảm thấy cơ thể mình ngày càng khỏe mạnh hơn. Tôi hoàn toàn sẵn sàng cho cuộc thi.",
+    "englishText": "I am training for a marathon. Every day I run 5 km. I also go to the gym three times a week. I eat healthy and scientifically. I drink a lot of water every day. I sleep 8 hours every night. I feel my body is getting stronger and stronger. I am completely ready for the race.",
     "highlightedSentences": [
       "I am training for a marathon"
     ],
@@ -47,6 +49,7 @@
     "category": "health-wellness",
     "description": "Describe fitness routine",
     "sourceText": "Tôi vừa mới mua thẻ tập gym. Tôi đến phòng gym ba lần mỗi tuần. Tôi tập cardio và nâng tạ để tăng cơ. Huấn luyện viên hướng dẫn tôi các bài tập phù hợp. Tôi cảm thấy mình khỏe mạnh hơn rất nhiều. Tôi có nhiều năng lượng hơn trước. Tập gym thực sự tốt cho sức khỏe của tôi.",
+    "englishText": "I just bought a gym membership. I go to the gym three times a week. I do cardio and lift weights to build muscle. The trainer guides me through suitable exercises. I feel much healthier. I have more energy than before. Going to the gym is really good for my health.",
     "highlightedSentences": [
       "I just bought a gym membership"
     ],
@@ -67,6 +70,7 @@
     "category": "health-wellness",
     "description": "Discuss nutrition",
     "sourceText": "Tôi luôn cố gắng ăn uống lành mạnh. Tôi ăn nhiều rau xanh và trái cây tươi. Tôi uống ít nhất 2 lít nước mỗi ngày. Tôi hạn chế đồ ăn nhanh và đồ ngọt. Tôi thích tự nấu ăn ở nhà hơn là ăn ngoài. Ăn uống lành mạnh giúp tôi luôn cảm thấy tràn đầy năng lượng.",
+    "englishText": "I always try to eat healthy. I eat lots of green vegetables and fresh fruits. I drink at least 2 liters of water every day. I limit fast food and sweets. I prefer cooking at home rather than eating out. Eating healthy helps me always feel full of energy.",
     "highlightedSentences": [
       "I try to eat healthy"
     ],
@@ -87,6 +91,7 @@
     "category": "health-wellness",
     "description": "Describe yoga routine",
     "sourceText": "Mỗi sáng tôi tập yoga 30 phút. Tôi trải thảm yoga trên sàn nhà. Tôi làm các động tác duỗi người. Tôi tập thở sâu và thư giãn. Yoga giúp cơ thể tôi dẻo dai. Tôi cảm thấy tỉnh táo và sảng khoái. Tập yoga là cách tốt để bắt đầu ngày mới.",
+    "englishText": "Every morning I practice yoga for 30 minutes. I spread the yoga mat on the floor. I do stretching movements. I practice deep breathing and relaxation. Yoga helps my body become flexible. I feel alert and refreshed. Practicing yoga is a good way to start a new day.",
     "highlightedSentences": [
       "I practice yoga every morning"
     ],
@@ -108,6 +113,7 @@
     "category": "health-wellness",
     "description": "Discuss sleep habits",
     "sourceText": "Tôi cố gắng ngủ đủ 8 tiếng mỗi đêm. Tôi đi ngủ lúc 10 giờ tối. Tôi tắt điện thoại trước khi ngủ. Tôi đọc sách để thư giãn. Phòng ngủ của tôi tối và yên tĩnh. Ngủ đủ giấc giúp tôi khỏe mạnh. Tôi thức dậy vào buổi sáng đầy năng lượng.",
+    "englishText": "I try to sleep 8 hours every night. I go to bed at 10 PM. I turn off my phone before sleeping. I read books to relax. My bedroom is dark and quiet. Getting enough sleep helps me stay healthy. I wake up in the morning full of energy.",
     "highlightedSentences": [
       "I try to sleep 8 hours every night"
     ],
@@ -131,6 +137,7 @@
     "category": "health-wellness",
     "description": "Describe dentist visit",
     "sourceText": "Hôm nay tôi đi khám răng. Nha sĩ kiểm tra răng của tôi. Tôi không có sâu răng. Nha sĩ làm sạch răng cho tôi. Nha sĩ dặn tôi đánh răng hai lần mỗi ngày. Tôi nên dùng chỉ nha khoa. Tôi hẹn khám lại sau 6 tháng.",
+    "englishText": "Today I go to the dentist. The dentist checks my teeth. I don't have any cavities. The dentist cleans my teeth. The dentist tells me to brush my teeth twice a day. I should use dental floss. I schedule a checkup in 6 months.",
     "highlightedSentences": [
       "I go to the dentist today"
     ],
@@ -152,6 +159,7 @@
     "category": "health-wellness",
     "description": "Discuss hydration",
     "sourceText": "Tôi luôn mang theo chai nước đi làm. Tôi uống nước thường xuyên trong ngày. Tôi đặt báo thức nhắc uống nước. Uống đủ nước rất quan trọng. Nước giúp cơ thể hoạt động tốt. Da tôi trở nên mịn màng hơn. Tôi cảm thấy khỏe mạnh và tràn đầy sinh lực.",
+    "englishText": "I always bring a water bottle to work. I drink water regularly throughout the day. I set alarms to remind me to drink water. Drinking enough water is very important. Water helps the body function well. My skin becomes smoother. I feel healthy and full of vitality.",
     "highlightedSentences": [
       "I always bring a water bottle to work"
     ],
@@ -175,6 +183,7 @@
     "category": "health-wellness",
     "description": "Describe walking habit",
     "sourceText": "Tôi đi bộ 30 phút mỗi ngày. Tôi đi bộ sau bữa tối. Tôi đi bộ quanh khu phố. Đi bộ giúp tiêu hóa tốt. Tôi nghe nhạc khi đi bộ. Tôi gặp hàng xóm và chào hỏi. Đi bộ là bài tập đơn giản nhưng rất tốt.",
+    "englishText": "I walk 30 minutes every day. I walk after dinner. I walk around the neighborhood. Walking helps digestion. I listen to music while walking. I meet neighbors and greet them. Walking is a simple but very good exercise.",
     "highlightedSentences": [
       "I walk 30 minutes every day"
     ],
@@ -196,6 +205,7 @@
     "category": "health-wellness",
     "description": "Discuss relaxation methods",
     "sourceText": "Khi căng thẳng, tôi có nhiều cách thư giãn. Tôi nghe nhạc nhẹ nhàng. Tôi tắm nước ấm. Tôi uống trà thảo mộc. Tôi nói chuyện với bạn bè. Tôi viết nhật ký. Những hoạt động này giúp tôi bình tĩnh. Tôi cảm thấy tốt hơn sau đó.",
+    "englishText": "When stressed, I have many ways to relax. I listen to gentle music. I take a warm bath. I drink herbal tea. I talk with friends. I write in my journal. These activities help me calm down. I feel better afterwards.",
     "highlightedSentences": [
       "I have many ways to relax when stressed"
     ],
@@ -220,6 +230,7 @@
     "category": "health-wellness",
     "description": "Describe supplement routine",
     "sourceText": "Tôi uống vitamin mỗi sáng. Tôi uống vitamin C và vitamin D. Bác sĩ khuyên tôi nên uống vitamin. Vitamin giúp tăng cường sức đề kháng. Tôi ít bị ốm hơn trước. Tôi mua vitamin ở hiệu thuốc. Tôi nhớ uống vitamin đều đặn.",
+    "englishText": "I take vitamins every morning. I take vitamin C and vitamin D. The doctor advises me to take vitamins. Vitamins help strengthen immunity. I get sick less than before. I buy vitamins at the pharmacy. I remember to take vitamins regularly.",
     "highlightedSentences": [
       "I take vitamins every morning"
     ],
@@ -241,6 +252,7 @@
     "category": "health-wellness",
     "description": "Discuss eye health",
     "sourceText": "Tôi làm việc với máy tính nhiều giờ. Mắt tôi thường mỏi và khô. Tôi nghỉ giải lao 5 phút mỗi giờ. Tôi nhìn xa để thư giãn mắt. Tôi nhỏ thuốc nhỏ mắt khi cần. Tôi đeo kính chống ánh sáng xanh. Chăm sóc mắt rất quan trọng.",
+    "englishText": "I work with computers for many hours. My eyes often get tired and dry. I take a 5-minute break every hour. I look far away to relax my eyes. I use eye drops when needed. I wear blue light blocking glasses. Taking care of eyes is very important.",
     "highlightedSentences": [
       "I work with computers for many hours"
     ],
@@ -264,6 +276,7 @@
     "category": "health-wellness",
     "description": "Describe morning meal",
     "sourceText": "Tôi không bao giờ bỏ bữa sáng. Tôi ăn sáng lúc 7 giờ. Tôi ăn yến mạch với sữa. Tôi thêm chuối và hạt chia. Tôi uống một ly nước cam. Bữa sáng cho tôi năng lượng. Tôi sẵn sàng cho một ngày làm việc.",
+    "englishText": "I never skip breakfast. I eat breakfast at 7 o'clock. I eat oatmeal with milk. I add banana and chia seeds. I drink a glass of orange juice. Breakfast gives me energy. I am ready for a working day.",
     "highlightedSentences": [
       "I never skip breakfast"
     ],
@@ -284,6 +297,7 @@
     "category": "health-wellness",
     "description": "Describe mindfulness activity",
     "sourceText": "Tôi thiền 10 phút mỗi tối. Tôi ngồi yên và nhắm mắt. Tôi tập trung vào hơi thở. Tôi để tâm trí thư giãn. Thiền giúp tôi ngủ ngon hơn. Tôi bớt lo lắng và căng thẳng. Thiền rất tốt cho sức khỏe tinh thần.",
+    "englishText": "I meditate 10 minutes every evening. I sit still and close my eyes. I focus on my breathing. I let my mind relax. Meditation helps me sleep better. I worry and stress less. Meditation is very good for mental health.",
     "highlightedSentences": [
       "I meditate 10 minutes every evening"
     ],

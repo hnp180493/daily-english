@@ -95,8 +95,9 @@ export class AIUnifiedService implements AIProvider {
       level: exercise.level,
       category: exercise.category,
       hints: exercise.hints,
-      fullContext: exercise.fullContext,
-      translatedContext: exercise.translatedContext
+      fullContext: exercise.fullContext || exercise.sourceText,
+      translatedContext: exercise.translatedContext || '',
+      englishText: exercise.englishText
     };
 
     return this.analyzeText(userInput, exercise.sourceText, context).pipe(
@@ -117,8 +118,9 @@ export class AIUnifiedService implements AIProvider {
       level: exercise.level,
       category: exercise.category,
       hints: exercise.hints,
-      fullContext: exercise.fullContext,
-      translatedContext: exercise.translatedContext
+      fullContext: exercise.fullContext || exercise.sourceText,
+      translatedContext: exercise.translatedContext || '',
+      englishText: exercise.englishText
     };
 
     return this.analyzeTextStream(userInput, exercise.sourceText, context).pipe(
@@ -144,8 +146,9 @@ export class AIUnifiedService implements AIProvider {
       level: exercise.level,
       category: exercise.category,
       hints: exercise.hints,
-      fullContext: exercise.fullContext,
-      translatedContext: exercise.translatedContext
+      fullContext: exercise.fullContext || exercise.sourceText,
+      translatedContext: exercise.translatedContext || '',
+      englishText: exercise.englishText
     };
 
     return this.generateHint(sourceText, userInput, previousHints, context).pipe(

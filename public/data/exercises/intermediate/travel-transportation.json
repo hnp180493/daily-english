@@ -6,6 +6,7 @@
     "category": "travel-transportation",
     "description": "Translate a story about preparing for a journey",
     "sourceText": "Tôi thực sự rất háo hức cho chuyến đi sắp tới này. Tôi cảm thấy một sự phấn khích đặc biệt khó tả. Tôi đã chuẩn bị mọi thứ thật kỹ lưỡng. Tôi đã sắp xếp gọn gàng quần áo và đồ dùng cá nhân vào vali. Tôi đã kiểm tra kỹ vé máy bay và hộ chiếu. Tôi không thể chờ đợi để được khám phá những vùng đất mới. Tôi hy vọng chuyến đi sẽ diễn ra thật suôn sẻ và thuận lợi.",
+    "englishText": "I am really excited about this upcoming trip. I feel a special excitement that is hard to describe. I have prepared everything very thoroughly. I have neatly packed my clothes and personal items in my suitcase. I have carefully checked my plane ticket and passport. I cannot wait to explore new places. I hope the trip will go smoothly and favorably.",
     "highlightedSentences": [
       "I cannot wait to explore new places"
     ],
@@ -27,6 +28,7 @@
     "category": "travel-transportation",
     "description": "Share independent travel story",
     "sourceText": "Lần đầu tiên tôi đi du lịch một mình thực sự là một trải nghiệm đáng nhớ. Tôi đã lên kế hoạch cẩn thận nhưng vẫn để ngỏ cho những điều bất ngờ. Tôi gặp gỡ nhiều người thú vị đến từ khắp nơi trên thế giới. Tôi học được cách tin tưởng vào bản thân và tự mình đưa ra quyết định.",
+    "englishText": "My first solo travel was truly a memorable experience. I planned carefully but still left room for surprises. I met many interesting people from all over the world. I learned to trust myself and make my own decisions.",
     "highlightedSentences": [
       "My first solo travel was a memorable experience"
     ],
@@ -48,6 +50,7 @@
     "category": "travel-transportation",
     "description": "Discuss urban mobility",
     "sourceText": "Tôi đã chuyển từ việc tự lái xe sang sử dụng phương tiện công cộng. Ban đầu, tôi khá lo lắng về sự bất tiện. Nhưng tôi nhanh chóng nhận ra rất nhiều lợi ích. Tôi tiết kiệm được tiền xăng và phí đỗ xe. Tôi có thể thoải mái đọc sách hoặc làm việc trong lúc di chuyển. Tôi cũng góp phần giảm lượng khí thải carbon ra môi trường.",
+    "englishText": "I have switched from driving myself to using public transportation. Initially, I was quite worried about the inconvenience. But I quickly realized many benefits. I save money on gas and parking fees. I can comfortably read books or work while commuting. I also contribute to reducing carbon emissions into the environment.",
     "highlightedSentences": [
       "I have switched from driving to using public transportation"
     ],
@@ -70,6 +73,7 @@
     "category": "travel-transportation",
     "description": "Explore authentic travel experiences",
     "sourceText": "Tôi thích du lịch theo phong cách hòa mình vào văn hóa địa phương. Thay vì ở khách sạn sang trọng, tôi chọn thuê nhà dân homestay. Tôi ăn uống ở các quán ăn bình dân thay vì nhà hàng du lịch đắt đỏ. Tôi học một số cụm từ giao tiếp cơ bản bằng ngôn ngữ địa phương. Tôi tích cực tham gia các lễ hội và sự kiện cộng đồng.",
+    "englishText": "I prefer to travel in a style that immerses me in local culture. Instead of staying in luxury hotels, I choose to rent homestays. I eat at local eateries instead of expensive tourist restaurants. I learn some basic communication phrases in the local language. I actively participate in festivals and community events.",
     "highlightedSentences": [
       "I prefer to travel in a way that immerses me in local culture"
     ],
@@ -92,6 +96,7 @@
     "category": "travel-transportation",
     "description": "Discuss affordable travel",
     "sourceText": "Du lịch tiết kiệm không có nghĩa là hy sinh trải nghiệm. Tôi đặt vé máy bay sớm để được giá tốt nhất. Tôi ở nhà trọ hoặc hostel thay vì khách sạn đắt tiền. Tôi nấu ăn tự phục vụ thay vì ăn nhà hàng mỗi bữa. Tôi sử dụng phương tiện công cộng thay vì taxi. Tôi tìm các hoạt động miễn phí như tham quan công viên và bảo tàng. Du lịch thông minh giúp tôi đi nhiều nơi hơn với cùng ngân sách.",
+    "englishText": "Budget travel doesn't mean sacrificing experiences. I book flights early to get the best prices. I stay in guesthouses or hostels instead of expensive hotels. I cook my own meals instead of eating at restaurants every meal. I use public transportation instead of taxis. I look for free activities like visiting parks and museums. Smart travel helps me visit more places with the same budget.",
     "highlightedSentences": [
       "Budget travel doesn't mean sacrificing experiences"
     ],
@@ -115,6 +120,7 @@
     "category": "travel-transportation",
     "description": "Discuss responsible travel",
     "sourceText": "Du lịch bền vững đang trở thành xu hướng quan trọng. Chúng ta nên tôn trọng văn hóa và môi trường địa phương. Chúng ta nên chọn các tour du lịch có trách nhiệm với môi trường. Chúng ta nên hạn chế sử dụng nhựa và giảm thiểu rác thải. Chúng ta nên ủng hộ doanh nghiệp địa phương thay vì chuỗi quốc tế. Chúng ta nên tìm hiểu và tuân thủ phong tục địa phương. Du lịch có trách nhiệm giúp bảo vệ điểm đến cho thế hệ tương lai.",
+    "englishText": "Sustainable tourism is becoming an important trend. We should respect local culture and environment. We should choose environmentally responsible tours. We should limit plastic use and minimize waste. We should support local businesses instead of international chains. We should learn about and follow local customs. Responsible travel helps protect destinations for future generations.",
     "highlightedSentences": [
       "Sustainable tourism is becoming an important trend"
     ],
@@ -138,6 +144,7 @@
     "category": "travel-transportation",
     "description": "Discuss capturing memories",
     "sourceText": "Nhiếp ảnh du lịch giúp tôi lưu giữ những kỷ niệm đẹp. Tôi luôn mang theo máy ảnh trong mọi chuyến đi. Tôi chụp ảnh phong cảnh, kiến trúc và con người địa phương. Tôi cố gắng chụp vào golden hour để có ánh sáng đẹp nhất. Tôi xin phép trước khi chụp ảnh người dân địa phương. Tôi chỉnh sửa ảnh nhẹ nhàng để giữ được vẻ tự nhiên. Những bức ảnh giúp tôi nhớ lại chuyến đi và chia sẻ với người khác.",
+    "englishText": "Travel photography helps me preserve beautiful memories. I always bring my camera on every trip. I photograph landscapes, architecture, and local people. I try to shoot during golden hour to get the best light. I ask permission before photographing local people. I edit photos lightly to maintain their natural look. The photos help me recall trips and share them with others.",
     "highlightedSentences": [
       "Travel photography helps me preserve beautiful memories"
     ],
@@ -162,6 +169,7 @@
     "category": "travel-transportation",
     "description": "Discuss communication challenges",
     "sourceText": "Rào cản ngôn ngữ là thách thức phổ biến khi du lịch nước ngoài. Tôi học một số cụm từ cơ bản trước khi đi. Tôi sử dụng ứng dụng dịch thuật trên điện thoại khi cần. Tôi dùng ngôn ngữ cơ thể và cử chỉ để giao tiếp. Tôi mang theo sổ tay và bút để vẽ hoặc viết. Người dân địa phương thường rất kiên nhẫn và sẵn lòng giúp đỡ. Vượt qua rào cản ngôn ngữ tạo ra những kết nối đáng nhớ.",
+    "englishText": "Language barriers are a common challenge when traveling abroad. I learn some basic phrases before going. I use translation apps on my phone when needed. I use body language and gestures to communicate. I carry a notebook and pen to draw or write. Local people are usually very patient and willing to help. Overcoming language barriers creates memorable connections.",
     "highlightedSentences": [
       "Language barriers are a common challenge when traveling abroad"
     ],
@@ -186,6 +194,7 @@
     "category": "travel-transportation",
     "description": "Discuss travel protection",
     "sourceText": "Bảo hiểm du lịch là khoản đầu tư quan trọng cho mọi chuyến đi. Nó bảo vệ chúng ta khỏi các chi phí y tế bất ngờ ở nước ngoài. Nó bồi thường khi hành lý bị mất hoặc chuyến bay bị hủy. Nó cung cấp hỗ trợ khẩn cấp 24/7 khi cần thiết. Tôi luôn mua bảo hiểm trước mỗi chuyến đi quốc tế. Chi phí bảo hiểm nhỏ so với rủi ro có thể xảy ra. Du lịch an toàn là du lịch có bảo hiểm.",
+    "englishText": "Travel insurance is an important investment for every trip. It protects us from unexpected medical expenses abroad. It compensates when luggage is lost or flights are cancelled. It provides 24/7 emergency assistance when needed. I always buy insurance before every international trip. The insurance cost is small compared to potential risks. Safe travel is insured travel.",
     "highlightedSentences": [
       "Travel insurance is an important investment for every trip"
     ],
@@ -211,6 +220,7 @@
     "category": "travel-transportation",
     "description": "Discuss airport procedures",
     "sourceText": "Sân bay quốc tế có thể gây choáng ngợp cho người lần đầu đi. Tôi luôn đến sân bay sớm ít nhất 3 tiếng trước giờ bay. Tôi check-in trực tuyến để tiết kiệm thời gian. Tôi chuẩn bị hộ chiếu và boarding pass sẵn sàng. Tôi tuân thủ quy định về hành lý xách tay và chất lỏng. Tôi đi qua kiểm tra an ninh một cách nhanh chóng và hợp tác. Tôi theo dõi thông tin chuyến bay trên màn hình. Chuẩn bị kỹ giúp trải nghiệm sân bay suôn sẻ hơn.",
+    "englishText": "International airports can be overwhelming for first-time travelers. I always arrive at the airport at least 3 hours before departure. I check in online to save time. I prepare my passport and boarding pass ready. I comply with regulations about carry-on luggage and liquids. I go through security checks quickly and cooperatively. I monitor flight information on screens. Good preparation makes the airport experience smoother.",
     "highlightedSentences": [
       "I always arrive at the airport at least 3 hours before departure"
     ],
@@ -236,6 +246,7 @@
     "category": "travel-transportation",
     "description": "Discuss car travel",
     "sourceText": "Chuyến đi bằng ô tô cho phép tự do khám phá theo tốc độ riêng. Tôi lập kế hoạch tuyến đường và đánh dấu các điểm dừng thú vị. Tôi kiểm tra xe kỹ lưỡng trước khi khởi hành. Tôi chuẩn bị đồ ăn nhẹ, nước uống và nhạc cho đường dài. Tôi đặt chỗ nghỉ trước hoặc để ngỏ tùy hứng. Tôi dừng lại thường xuyên để nghỉ ngơi và ngắm cảnh. Road trip tạo ra những kỷ niệm tuyệt vời và phiêu lưu bất ngờ.",
+    "englishText": "Road trips allow freedom to explore at your own pace. I plan the route and mark interesting stops. I check the car thoroughly before departure. I prepare snacks, drinks, and music for the long drive. I book accommodations in advance or leave it open spontaneously. I stop frequently to rest and enjoy the scenery. Road trips create wonderful memories and unexpected adventures.",
     "highlightedSentences": [
       "Road trips allow freedom to explore at your own pace"
     ],
@@ -262,6 +273,7 @@
     "category": "travel-transportation",
     "description": "Discuss sharing experiences",
     "sourceText": "Tôi viết blog du lịch để chia sẻ trải nghiệm và lời khuyên. Tôi viết về những địa điểm đã đến và những điều đã học được. Tôi đăng ảnh đẹp và mô tả chi tiết về mỗi nơi. Tôi cung cấp thông tin hữu ích về chi phí, lưu trú và ăn uống. Tôi chia sẻ cả những trải nghiệm tốt và không tốt một cách trung thực. Nhiều người đọc blog của tôi trước khi lên kế hoạch du lịch. Viết blog giúp tôi ghi nhớ chuyến đi và kết nối với cộng đồng du lịch.",
+    "englishText": "I write a travel blog to share experiences and tips. I write about places I've visited and things I've learned. I post beautiful photos and detailed descriptions of each place. I provide useful information about costs, accommodation, and dining. I share both good and bad experiences honestly. Many people read my blog before planning their trips. Blogging helps me remember trips and connect with the travel community.",
     "highlightedSentences": [
       "I write a travel blog to share experiences and tips"
     ],
@@ -287,6 +299,7 @@
     "category": "travel-transportation",
     "description": "Discuss time zone adjustment",
     "sourceText": "Jet lag là thách thức khi bay qua nhiều múi giờ. Tôi cố gắng điều chỉnh giấc ngủ vài ngày trước chuyến bay. Tôi uống nhiều nước và tránh rượu trên máy bay. Tôi cố gắng ngủ theo giờ địa phương ngay khi đến nơi. Tôi ra ngoài ánh sáng mặt trời để điều chỉnh đồng hồ sinh học. Tôi tránh ngủ trưa dài trong những ngày đầu. Tôi dùng melatonin nếu cần thiết. Thường mất vài ngày để cơ thể thích nghi hoàn toàn.",
+    "englishText": "Jet lag is a challenge when flying across multiple time zones. I try to adjust my sleep schedule a few days before the flight. I drink plenty of water and avoid alcohol on the plane. I try to sleep according to local time as soon as I arrive. I go out in sunlight to adjust my biological clock. I avoid long naps in the first few days. I use melatonin if necessary. It usually takes a few days for the body to fully adapt.",
     "highlightedSentences": [
       "Jet lag is a challenge when flying across multiple time zones"
     ],
@@ -313,6 +326,7 @@
     "category": "travel-transportation",
     "description": "Discuss staying safe",
     "sourceText": "An toàn là ưu tiên hàng đầu khi du lịch. Tôi nghiên cứu về điểm đến trước khi đi để biết khu vực an toàn. Tôi giữ hộ chiếu và tiền trong túi an toàn bên trong. Tôi không đeo trang sức đắt tiền hoặc khoe của cải. Tôi luôn để người thân biết lịch trình của mình. Tôi tránh đi một mình vào ban đêm ở nơi xa lạ. Tôi tin vào trực giác và tránh xa tình huống đáng ngờ. Cẩn thận không làm giảm niềm vui mà giúp du lịch an toàn hơn.",
+    "englishText": "Safety is the top priority when traveling. I research the destination beforehand to know safe areas. I keep my passport and money in a secure inner pocket. I don't wear expensive jewelry or show off wealth. I always let relatives know my itinerary. I avoid going alone at night in unfamiliar places. I trust my instincts and stay away from suspicious situations. Being careful doesn't reduce enjoyment but makes travel safer.",
     "highlightedSentences": [
       "Safety is the top priority when traveling"
     ],
@@ -337,6 +351,7 @@
     "category": "travel-transportation",
     "description": "Discuss traveling with others",
     "sourceText": "Du lịch cùng bạn bè tạo ra những kỷ niệm đáng nhớ. Chúng tôi lên kế hoạch cùng nhau và thỏa thuận về ngân sách. Chúng tôi chia sẻ chi phí lưu trú và phương tiện di chuyển. Chúng tôi thay phiên nhau lái xe và chọn nhà hàng. Đôi khi chúng tôi có ý kiến khác nhau nhưng luôn thỏa hiệp. Chúng tôi có thể chia sẻ trải nghiệm và cười cùng nhau. Du lịch nhóm vừa tiết kiệm vừa vui vẻ hơn. Tuy nhiên, điều quan trọng là chọn bạn đồng hành phù hợp.",
+    "englishText": "Traveling with friends creates memorable experiences. We plan together and agree on the budget. We share accommodation and transportation costs. We take turns driving and choosing restaurants. Sometimes we have different opinions but always compromise. We can share experiences and laugh together. Group travel is both economical and more fun. However, it's important to choose compatible travel companions.",
     "highlightedSentences": [
       "Traveling with friends creates memorable experiences"
     ],
@@ -360,6 +375,7 @@
     "category": "travel-transportation",
     "description": "Discuss timing advantages",
     "sourceText": "Du lịch ngoài mùa cao điểm có nhiều lợi ích bất ngờ. Giá vé máy bay và khách sạn rẻ hơn đáng kể. Các điểm tham quan ít đông đúc hơn nhiều. Chúng ta có thể tận hưởng trải nghiệm yên tĩnh và thư thái hơn. Người dân địa phương có nhiều thời gian để trò chuyện và giúp đỡ. Thời tiết có thể không hoàn hảo nhưng vẫn có thể tận hưởng. Tôi thích du lịch ngoài mùa vì trải nghiệm chân thực hơn. Đó là cách thông minh để tiết kiệm tiền và tránh đám đông.",
+    "englishText": "Off-season travel has many unexpected benefits. Flight and hotel prices are significantly cheaper. Tourist attractions are much less crowded. We can enjoy a quieter and more relaxed experience. Local people have more time to chat and help. The weather may not be perfect but still enjoyable. I prefer off-season travel because of more authentic experiences. It's a smart way to save money and avoid crowds.",
     "highlightedSentences": [
       "Off-season travel has many unexpected benefits"
     ],
@@ -383,6 +399,7 @@
     "category": "travel-transportation",
     "description": "Discuss luggage preparation",
     "sourceText": "Đóng gói hành lý hiệu quả là kỹ năng quan trọng cho du khách. Tôi làm danh sách kiểm tra để không quên đồ quan trọng. Tôi chọn quần áo có thể mix-match và mặc nhiều lần. Tôi cuộn quần áo thay vì gấp để tiết kiệm không gian. Tôi đựng đồ lỏng trong túi zip để tránh rò rỉ. Tôi mang theo bộ quần áo thay trong hành lý xách tay phòng mất vali. Tôi để lại không gian cho đồ mua về. Đóng gói thông minh giúp du lịch thoải mái và tiện lợi hơn.",
+    "englishText": "Efficient packing is an important skill for travelers. I make a checklist to not forget important items. I choose clothes that can be mixed and matched and worn multiple times. I roll clothes instead of folding to save space. I put liquids in zip bags to prevent leaks. I bring a change of clothes in carry-on luggage in case the suitcase is lost. I leave space for souvenirs. Smart packing makes travel more comfortable and convenient.",
     "highlightedSentences": [
       "Efficient packing is an important skill for travelers"
     ],
