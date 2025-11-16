@@ -208,9 +208,10 @@ Tài liệu này đề xuất các tính năng mới để phát triển ứng d
 - OCR từ image (future)
 
 **Management:**
-- My Exercises library
+- Custom Exercises library (localStorage only)
 - Edit/delete custom exercises
-- Duplicate và modify
+- Duplicate and modify
+- Import/Export for backup and sync
 - Export/import JSON
 
 **Community Sharing:**

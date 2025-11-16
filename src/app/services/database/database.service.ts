@@ -130,41 +130,9 @@ export class DatabaseService implements IDatabase {
     return this.database.subscribeToFavorites(userId, callback);
   }
 
-  // Custom Exercise Operations
-  saveCustomExercise(userId: string, exercise: CustomExercise): Observable<void> {
-    if (!userId) {
-      console.log('[DatabaseService] No userId provided, skipping save');
-      return of(undefined);
-    }
-    return this.database.saveCustomExercise(userId, exercise);
-  }
-
-  loadCustomExercises(userId: string): Observable<CustomExercise[]> {
-    if (!userId) {
-      console.log('[DatabaseService] No userId provided, returning empty array');
-      return of([]);
-    }
-    return this.database.loadCustomExercises(userId);
-  }
-
-  deleteCustomExercise(userId: string, exerciseId: string): Observable<void> {
-    if (!userId) {
-      console.log('[DatabaseService] No userId provided, skipping delete');
-      return of(undefined);
-    }
-    return this.database.deleteCustomExercise(userId, exerciseId);
-  }
-
-  subscribeToCustomExercises(
-    userId: string,
-    callback: (exercises: CustomExercise[]) => void
-  ): UnsubscribeFunction {
-    if (!userId) {
-      console.log('[DatabaseService] No userId provided, returning no-op unsubscribe');
-      return () => {};
-    }
-    return this.database.subscribeToCustomExercises(userId, callback);
-  }
+  // Custom Exercise Operations - REMOVED
+  // Custom exercises are now stored in localStorage only
+  // See CustomExerciseService for implementation
 
   // Convenience methods that automatically get userId from AuthService
   saveUserProfileAuto(): Observable<void> {
@@ -222,31 +190,8 @@ export class DatabaseService implements IDatabase {
     return this.subscribeToFavorites(userId, callback);
   }
 
-  saveCustomExerciseAuto(exercise: CustomExercise): Observable<void> {
-    const userId = this.authService.getUserId();
-    if (!userId) return of(undefined);
-    return this.saveCustomExercise(userId, exercise);
-  }
-
-  loadCustomExercisesAuto(): Observable<CustomExercise[]> {
-    const userId = this.authService.getUserId();
-    if (!userId) return of([]);
-    return this.loadCustomExercises(userId);
-  }
-
-  deleteCustomExerciseAuto(exerciseId: string): Observable<void> {
-    const userId = this.authService.getUserId();
-    if (!userId) return of(undefined);
-    return this.deleteCustomExercise(userId, exerciseId);
-  }
-
-  subscribeToCustomExercisesAuto(
-    callback: (exercises: CustomExercise[]) => void
-  ): UnsubscribeFunction {
-    const userId = this.authService.getUserId();
-    if (!userId) return () => {};
-    return this.subscribeToCustomExercises(userId, callback);
-  }
+  // Custom Exercise Auto methods - REMOVED
+  // Custom exercises are now stored in localStorage only
 
   loadUserProfileAuto(): Observable<UserProfile | null> {
     const userId = this.authService.getUserId();
@@ -545,5 +490,15 @@ export class DatabaseService implements IDatabase {
     const userId = this.authService.getUserId();
     if (!userId) return of(null);
     return this.loadWeeklyGoalByDate(userId, weekStartDate);
+  }
+
+  // User Count Operations
+  getTotalUserCount(): Observable<number> {
+    return this.database.getTotalUserCount();
+  }
+
+  checkUserExists(userId: string): Observable<boolean> {
+    if (!userId) return of(false);
+    return this.database.checkUserExists(userId);
   }
 }

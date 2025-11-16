@@ -12,6 +12,7 @@ import { DictationSettingsService } from '../../services/dictation-settings.serv
 import { DictationFeedbackComponent } from '../dictation-feedback/dictation-feedback';
 import { DictationSettingsComponent } from '../dictation-settings/dictation-settings';
 import { TTSSettings } from '../tts-settings/tts-settings';
+import { SeoService } from '../../services/seo.service';
 
 @Component({
   selector: 'app-dictation-practice',
@@ -35,6 +36,7 @@ export class DictationPracticeComponent implements OnInit, OnDestroy {
   private progressService = inject(ProgressService);
   private exerciseService = inject(ExerciseService);
   private settingsService = inject(DictationSettingsService);
+  private seoService = inject(SeoService);
   
   // Signals for reactive state
   exercise = signal<Exercise | null>(null);
@@ -125,6 +127,7 @@ export class DictationPracticeComponent implements OnInit, OnDestroy {
         }
         
         this.exercise.set(ex);
+        this.updateDictationSeo(ex);
         this.loadTranslatedText(exerciseId);
       },
       error: (err) => {
@@ -133,6 +136,51 @@ export class DictationPracticeComponent implements OnInit, OnDestroy {
         this.isLoading.set(false);
       }
     });
+  }
+  
+  private updateDictationSeo(exercise: Exercise): void {
+    // Update SEO for dictation practice page
+    const title = `Luyện Nghe Chính Tả: ${exercise.title}`;
+    const description = `Luyện nghe và chính tả tiếng Anh với bài tập ${exercise.title}. Cải thiện kỹ năng nghe hiểu và viết chính xác qua phương pháp dictation practice.`;
+    
+    this.seoService.updateTags({
+      title,
+      description,
+      keywords: [
+        'luyện nghe tiếng anh',
+        'dictation practice',
+        'chính tả tiếng anh',
+        'luyện nghe chính tả',
+        'bài tập nghe',
+        exercise.category,
+        exercise.level
+      ],
+      type: 'article',
+      image: 'https://dailyenglish.qzz.io/og-image-dictation.png'
+    });
+    
+    // Add structured data for dictation practice
+    const dictationSchema = {
+      '@context': 'https://schema.org',
+      '@type': 'LearningResource',
+      name: title,
+      description,
+      educationalLevel: exercise.level,
+      learningResourceType: 'Dictation Exercise',
+      inLanguage: 'en',
+      teaches: 'English Listening and Writing Skills',
+      educationalUse: 'Practice',
+      interactivityType: 'active',
+      typicalAgeRange: '13-99',
+      isAccessibleForFree: true,
+      provider: {
+        '@type': 'Organization',
+        name: 'Daily English',
+        url: 'https://dailyenglish.qzz.io'
+      }
+    };
+    
+    this.seoService.setStructuredData(dictationSchema);
   }
   
   ngOnDestroy(): void {

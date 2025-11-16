@@ -53,14 +53,9 @@ export interface IDatabase {
     callback: (favorites: FavoriteData[] | null) => void
   ): UnsubscribeFunction;
 
-  // Custom Exercise Operations
-  saveCustomExercise(userId: string, exercise: CustomExercise): Observable<void>;
-  loadCustomExercises(userId: string): Observable<CustomExercise[]>;
-  deleteCustomExercise(userId: string, exerciseId: string): Observable<void>;
-  subscribeToCustomExercises(
-    userId: string,
-    callback: (exercises: CustomExercise[]) => void
-  ): UnsubscribeFunction;
+  // Custom Exercise Operations - REMOVED
+  // Custom exercises are now stored in localStorage only
+  // See CustomExerciseService for implementation
 
   // Achievement Operations
   saveAchievements(userId: string, data: UserAchievementData): Observable<void>;
@@ -95,4 +90,8 @@ export interface IDatabase {
   // Notification Preferences Operations
   saveNotificationPreferences(userId: string, preferences: NotificationPreferences): Observable<void>;
   loadNotificationPreferences(userId: string): Observable<NotificationPreferences | null>;
+
+  // User Count Operations
+  getTotalUserCount(): Observable<number>;
+  checkUserExists(userId: string): Observable<boolean>;
 }

@@ -1,9 +1,15 @@
 import { Injectable, inject, signal } from '@angular/core';
-import { from, Observable } from 'rxjs';
-import { tap } from 'rxjs/operators';
+import { Router } from '@angular/router';
+import { from, Observable, of } from 'rxjs';
+import { tap, switchMap, map } from 'rxjs/operators';
 import { supabaseClient } from './supabase.client';
 import { DatabaseService } from './database/database.service';
+import { ModalService } from './modal.service';
+import { RegistrationLimitModal } from '../components/registration-limit-modal/registration-limit-modal';
 import type { User as SupabaseUser } from '@supabase/supabase-js';
+
+// Maximum number of users allowed to register
+const MAX_USER_LIMIT = 400;
 
 // App User interface matching Firebase User structure
 interface User {
@@ -20,6 +26,8 @@ interface User {
 export class AuthService {
   private supabase = supabaseClient;
   private databaseService = inject(DatabaseService);
+  private modalService = inject(ModalService);
+  private router = inject(Router);
   
   currentUser = signal<User | null>(null);
   isAuthenticated = signal(false);
@@ -117,17 +125,44 @@ export class AuthService {
 
   private saveUserProfile(supabaseUser: SupabaseUser): void {
     const userId = supabaseUser.id;
-    const profile = {
-      email: supabaseUser.email || null,
-      displayName: supabaseUser.user_metadata?.['full_name'] || supabaseUser.user_metadata?.['name'] || null,
-      photoURL: supabaseUser.user_metadata?.['avatar_url'] || supabaseUser.user_metadata?.['picture'] || null,
-      createdAt: new Date(),
-      lastLogin: new Date()
-    };
     
-    this.databaseService.saveUserProfile(userId, profile).subscribe({
-      next: () => console.log('[Auth] ✓ Profile saved'),
-      error: (error) => console.error('[Auth] ❌ Profile save failed:', error.message)
+    // Check if user can register before saving profile
+    this.canRegisterNewUser(userId).subscribe({
+      next: (canRegister) => {
+        if (!canRegister) {
+          console.error(`[Auth] ❌ Registration limit reached (${MAX_USER_LIMIT} users). Cannot create new account.`);
+          // Sign out the user since they can't register
+          this.signOut().subscribe({
+            next: () => {
+              console.log('[Auth] User signed out due to registration limit');
+              // Redirect to login page
+              this.router.navigate(['/login']);
+              // Show modal to user after a short delay to ensure navigation completes
+              setTimeout(() => {
+                this.showRegistrationLimitModal();
+              }, 100);
+            }
+          });
+          return;
+        }
+
+        // User can register, save profile
+        const profile = {
+          email: supabaseUser.email || null,
+          displayName: supabaseUser.user_metadata?.['full_name'] || supabaseUser.user_metadata?.['name'] || null,
+          photoURL: supabaseUser.user_metadata?.['avatar_url'] || supabaseUser.user_metadata?.['picture'] || null,
+          createdAt: new Date(),
+          lastLogin: new Date()
+        };
+        
+        this.databaseService.saveUserProfile(userId, profile).subscribe({
+          next: () => console.log('[Auth] ✓ Profile saved'),
+          error: (error) => console.error('[Auth] ❌ Profile save failed:', error.message)
+        });
+      },
+      error: (error) => {
+        console.error('[Auth] ❌ Error checking registration limit:', error);
+      }
     });
   }
 
@@ -147,6 +182,39 @@ export class AuthService {
         }
       }).then(({ error }) => {
         if (error) throw error;
+      })
+    );
+  }
+
+  /**
+   * Check if new user registration is allowed
+   * Returns true if user can register (existing user or under limit)
+   */
+  canRegisterNewUser(userId: string): Observable<boolean> {
+    return this.databaseService.checkUserExists(userId).pipe(
+      tap(exists => {
+        if (exists) {
+          console.log('[Auth] ✓ Existing user, allowing login');
+        }
+      }),
+      // If user exists, allow them
+      // If user doesn't exist, check total count
+      switchMap(exists => {
+        if (exists) {
+          return of(true);
+        }
+        
+        return this.databaseService.getTotalUserCount().pipe(
+          map(count => {
+            const canRegister = count < MAX_USER_LIMIT;
+            if (!canRegister) {
+              console.log(`[Auth] ❌ Registration limit reached: ${count}/${MAX_USER_LIMIT}`);
+            } else {
+              console.log(`[Auth] ✓ Registration allowed, current count: ${count}/${MAX_USER_LIMIT}`);
+            }
+            return canRegister;
+          })
+        );
       })
     );
   }
@@ -182,5 +250,15 @@ export class AuthService {
 
   getPhotoURL(): string | null {
     return this.currentUser()?.photoURL || null;
+  }
+
+  private showRegistrationLimitModal(): void {
+    const modalRef = this.modalService.open(RegistrationLimitModal);
+    if (modalRef) {
+      // Subscribe to close event
+      modalRef.instance.close.subscribe(() => {
+        this.modalService.close();
+      });
+    }
   }
 }

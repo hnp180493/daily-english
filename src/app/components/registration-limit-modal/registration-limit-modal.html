@@ -1,0 +1,42 @@
+<div class="modal-overlay" (click)="onClose()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <div class="icon-container">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path
+            d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+          />
+        </svg>
+      </div>
+      <h2 class="modal-title">Đã Đạt Giới Hạn Đăng Ký</h2>
+    </div>
+
+    <div class="modal-body">
+      <p class="message">
+        Xin lỗi! Hệ thống hiện đã đạt giới hạn <strong>400 người dùng</strong> và không thể tạo
+        tài khoản mới.
+      </p>
+
+      <div class="info-box">
+        <h3 class="info-title">🙏 Lý do giới hạn:</h3>
+        <ul class="info-list">
+          <li>
+            Chúng tôi đang sử dụng <strong>database miễn phí</strong> với dung lượng và tài nguyên
+            có giới hạn
+          </li>
+          <li>Để đảm bảo trải nghiệm tốt cho người dùng hiện tại, chúng tôi phải giới hạn số lượng</li>
+          <li>Người dùng đã đăng ký vẫn có thể đăng nhập và sử dụng bình thường</li>
+        </ul>
+      </div>
+
+      <p class="hint">
+        Mong bạn thông cảm! Chúng tôi đang nỗ lực nâng cấp hệ thống để phục vụ nhiều người dùng
+        hơn trong tương lai.
+      </p>
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn btn-primary" (click)="onClose()">Đã hiểu</button>
+    </div>
+  </div>
+</div>

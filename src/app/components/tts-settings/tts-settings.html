@@ -1,10 +1,13 @@
-<div class="tts-settings">
+<section class="tts-settings" aria-label="Text-to-speech voice settings">
   <button
     type="button"
     (click)="toggle()"
     class="flex items-center gap-2 text-sm text-gray-600 hover:text-primary transition-colors"
+    [attr.aria-expanded]="isOpen()"
+    aria-controls="tts-settings-panel"
+    aria-label="Toggle voice settings panel"
   >
-    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
         d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -13,28 +16,34 @@
   </button>
 
   @if (isOpen()) {
-    <div class="mt-4 p-4 bg-white border-2 border-gray-200 rounded-lg shadow-lg space-y-4 relative">
+    <div 
+      id="tts-settings-panel"
+      role="region"
+      aria-label="Voice settings configuration panel"
+      class="mt-4 p-4 bg-white border-2 border-gray-200 rounded-lg shadow-lg space-y-4 relative">
       <!-- Close Button -->
       <button
         type="button"
         (click)="toggle()"
         class="absolute top-2 right-2 text-gray-400 hover:text-gray-600 transition-colors"
-        aria-label="Close settings"
+        aria-label="Close voice settings panel"
       >
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
         </svg>
       </button>
 
       <!-- Voice Selection -->
-      <div>
-        <label class="block text-sm font-medium text-gray-700 mb-2">
+      <div role="group" aria-labelledby="voice-label">
+        <label id="voice-label" for="voice-select" class="block text-sm font-medium text-gray-700 mb-2">
           Voice
         </label>
         <select
+          id="voice-select"
           [(ngModel)]="currentVoiceName"
           (change)="onVoiceChange($any($event.target).value)"
           class="w-full px-3 py-2 text-gray-700 font-medium bg-white border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary"
+          aria-describedby="voice-description"
         >
           @for (voice of availableVoices(); track voice.name) {
             <option [value]="voice.name">
@@ -42,14 +51,16 @@
             </option>
           }
         </select>
+        <span id="voice-description" class="sr-only">Select a voice for text-to-speech playback</span>
       </div>
 
       <!-- Rate -->
-      <div>
-        <label class="block text-sm font-medium text-gray-700 mb-2">
+      <div role="group" aria-labelledby="rate-label">
+        <label id="rate-label" for="rate-slider" class="block text-sm font-medium text-gray-700 mb-2">
           Speed: {{ settings().rate.toFixed(2) }}x
         </label>
         <input
+          id="rate-slider"
           type="range"
           min="0.5"
           max="2.0"
@@ -57,20 +68,27 @@
           [value]="settings().rate"
           (input)="onRateChange($any($event.target).value)"
           class="w-full"
+          aria-valuemin="0.5"
+          aria-valuemax="2.0"
+          [attr.aria-valuenow]="settings().rate"
+          [attr.aria-valuetext]="settings().rate.toFixed(2) + ' times normal speed'"
+          aria-describedby="rate-description"
         />
-        <div class="flex justify-between text-xs text-gray-500 mt-1">
+        <div class="flex justify-between text-xs text-gray-500 mt-1" aria-hidden="true">
           <span>Slow</span>
           <span>Normal</span>
           <span>Fast</span>
         </div>
+        <span id="rate-description" class="sr-only">Adjust speech rate from 0.5 to 2.0 times normal speed</span>
       </div>
 
       <!-- Pitch -->
-      <div>
-        <label class="block text-sm font-medium text-gray-700 mb-2">
+      <div role="group" aria-labelledby="pitch-label">
+        <label id="pitch-label" for="pitch-slider" class="block text-sm font-medium text-gray-700 mb-2">
           Pitch: {{ settings().pitch.toFixed(2) }}
         </label>
         <input
+          id="pitch-slider"
           type="range"
           min="0.5"
           max="2.0"
@@ -78,20 +96,27 @@
           [value]="settings().pitch"
           (input)="onPitchChange($any($event.target).value)"
           class="w-full"
+          aria-valuemin="0.5"
+          aria-valuemax="2.0"
+          [attr.aria-valuenow]="settings().pitch"
+          [attr.aria-valuetext]="settings().pitch.toFixed(2) + ' pitch level'"
+          aria-describedby="pitch-description"
         />
-        <div class="flex justify-between text-xs text-gray-500 mt-1">
+        <div class="flex justify-between text-xs text-gray-500 mt-1" aria-hidden="true">
           <span>Low</span>
           <span>Normal</span>
           <span>High</span>
         </div>
+        <span id="pitch-description" class="sr-only">Adjust voice pitch from low to high</span>
       </div>
 
       <!-- Volume -->
-      <div>
-        <label class="block text-sm font-medium text-gray-700 mb-2">
+      <div role="group" aria-labelledby="volume-label">
+        <label id="volume-label" for="volume-slider" class="block text-sm font-medium text-gray-700 mb-2">
           Volume: {{ (settings().volume * 100).toFixed(0) }}%
         </label>
         <input
+          id="volume-slider"
           type="range"
           min="0"
           max="1"
@@ -99,19 +124,26 @@
           [value]="settings().volume"
           (input)="onVolumeChange($any($event.target).value)"
           class="w-full"
+          aria-valuemin="0"
+          aria-valuemax="100"
+          [attr.aria-valuenow]="settings().volume * 100"
+          [attr.aria-valuetext]="(settings().volume * 100).toFixed(0) + ' percent volume'"
+          aria-describedby="volume-description"
         />
+        <span id="volume-description" class="sr-only">Adjust playback volume from 0 to 100 percent</span>
       </div>
 
       <!-- Presets -->
-      <div>
-        <label class="block text-sm font-medium text-gray-700 mb-2">
+      <div role="group" aria-labelledby="presets-label">
+        <label id="presets-label" class="block text-sm font-medium text-gray-700 mb-2">
           Quick Presets
         </label>
-        <div class="grid grid-cols-3 gap-2">
+        <div class="grid grid-cols-3 gap-2" role="group" aria-label="Voice preset buttons">
           <button
             type="button"
             (click)="applyPreset('natural')"
             class="px-3 py-2 text-sm text-gray-700 font-medium bg-white border-2 border-gray-300 rounded-lg hover:bg-gray-50 hover:border-primary transition-colors"
+            aria-label="Apply natural voice preset"
           >
             Natural
           </button>
@@ -119,6 +151,7 @@
             type="button"
             (click)="applyPreset('clear')"
             class="px-3 py-2 text-sm text-gray-700 font-medium bg-white border-2 border-gray-300 rounded-lg hover:bg-gray-50 hover:border-primary transition-colors"
+            aria-label="Apply clear voice preset"
           >
             Clear
           </button>
@@ -126,6 +159,7 @@
             type="button"
             (click)="applyPreset('expressive')"
             class="px-3 py-2 text-sm text-gray-700 font-medium bg-white border-2 border-gray-300 rounded-lg hover:bg-gray-50 hover:border-primary transition-colors"
+            aria-label="Apply expressive voice preset"
           >
             Expressive
           </button>
@@ -137,9 +171,10 @@
         type="button"
         (click)="testVoice()"
         class="w-full px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors"
+        aria-label="Test current voice settings with sample text"
       >
-        🔊 Test Voice
+        <span aria-hidden="true">🔊</span> Test Voice
       </button>
     </div>
   }
-</div>
+</section>

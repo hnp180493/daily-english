@@ -213,111 +213,9 @@ export class SupabaseDatabase implements IDatabase {
     };
   }
 
-  // Custom Exercise Operations
-  saveCustomExercise(userId: string, exercise: CustomExercise): Observable<void> {
-    return from(
-      this.supabase
-        .from('custom_exercises')
-        .upsert({
-          id: exercise.id,
-          user_id: userId,
-          data: exercise,
-          created_at: exercise.createdAt.toISOString(),
-          updated_at: exercise.updatedAt.toISOString()
-        })
-        .then(({ error }) => {
-          if (error) throw error;
-        })
-    ).pipe(catchError(this.handleError));
-  }
-
-  loadCustomExercises(userId: string): Observable<CustomExercise[]> {
-    return from(
-      this.supabase
-        .from('custom_exercises')
-        .select('*')
-        .eq('user_id', userId)
-        .then(({ data, error }) => {
-          if (error) throw error;
-          if (!data) return [];
-
-          return data.map((row) => {
-            const exercise = row.data as CustomExercise;
-            return {
-              ...exercise,
-              id: row.id,
-              createdAt: new Date(row.created_at),
-              updatedAt: new Date(row.updated_at)
-            };
-          });
-        })
-    ).pipe(catchError(this.handleError));
-  }
-
-  deleteCustomExercise(userId: string, exerciseId: string): Observable<void> {
-    return from(
-      this.supabase
-        .from('custom_exercises')
-        .delete()
-        .eq('id', exerciseId)
-        .eq('user_id', userId)
-        .then(({ error }) => {
-          if (error) throw error;
-        })
-    ).pipe(catchError(this.handleError));
-  }
-
-  subscribeToCustomExercises(
-    userId: string,
-    callback: (exercises: CustomExercise[]) => void
-  ): UnsubscribeFunction {
-    const channel = this.supabase
-      .channel(`custom_exercises:${userId}`)
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'custom_exercises',
-          filter: `user_id=eq.${userId}`
-        },
-        async () => {
-          // Reload all exercises
-          const { data, error } = await this.supabase
-            .from('custom_exercises')
-            .select('*')
-            .eq('user_id', userId);
-
-          if (error) {
-            console.error('[SupabaseDatabase] Error loading custom exercises:', error);
-            callback([]);
-            return;
-          }
-
-          if (!data) {
-            callback([]);
-            return;
-          }
-
-          callback(
-            data.map((row) => {
-              const exercise = row.data as CustomExercise;
-              return {
-                ...exercise,
-                id: row.id,
-                createdAt: new Date(row.created_at),
-                updatedAt: new Date(row.updated_at)
-              };
-            })
-          );
-        }
-      )
-      .subscribe();
-
-    return () => {
-      this.supabase.removeChannel(channel);
-    };
-  }
+  // Custom Exercise Operations - REMOVED
+  // Custom exercises are now stored in localStorage only
+  // See CustomExerciseService for implementation
 
   // Achievement Operations
   saveAchievements(userId: string, data: UserAchievementData): Observable<void> {
@@ -903,6 +801,32 @@ export class SupabaseDatabase implements IDatabase {
             goalProgressReminder: data.goal_progress_reminder,
             streakReminder: data.streak_reminder
           } as NotificationPreferences;
+        })
+    ).pipe(catchError(this.handleError));
+  }
+
+  // User Count Operations
+  getTotalUserCount(): Observable<number> {
+    return from(
+      this.supabase
+        .rpc('get_total_user_count')
+        .then(({ data, error }) => {
+          if (error) throw error;
+          return data as number;
+        })
+    ).pipe(catchError(this.handleError));
+  }
+
+  checkUserExists(userId: string): Observable<boolean> {
+    return from(
+      this.supabase
+        .from('users')
+        .select('id')
+        .eq('id', userId)
+        .maybeSingle()
+        .then(({ data, error }) => {
+          if (error) throw error;
+          return data !== null;
         })
     ).pipe(catchError(this.handleError));
   }

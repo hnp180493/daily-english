@@ -15,19 +15,65 @@ export class ExerciseSeoService {
     const description = exercise.description || 
       `Luyện tập dịch tiếng Anh: ${exercise.sourceText.substring(0, 120)}...`;
     
+    // Enhanced keywords with bilingual content
+    const keywords = [
+      'bài tập tiếng anh',
+      'luyện dịch',
+      'vietnamese to english',
+      'translation practice',
+      'bilingual exercise',
+      'học tiếng anh',
+      exercise.category,
+      exercise.level
+    ];
+    
     this.seoService.updateTags({
       title: `${title} - Daily English`,
       description,
-      keywords: ['bài tập tiếng anh', 'luyện dịch', exercise.category],
+      keywords,
       type: 'article',
     });
 
     const difficultyLevel = exercise.level || 'Beginner';
-    const learningResourceSchema = this.seoService.generateLearningResourceSchema(
-      title,
+    
+    // Enhanced learning resource schema with bilingual content
+    const learningResourceSchema = {
+      '@context': 'https://schema.org',
+      '@type': 'LearningResource',
+      name: title,
       description,
-      difficultyLevel
-    );
+      educationalLevel: difficultyLevel,
+      learningResourceType: 'Translation Exercise',
+      inLanguage: ['vi', 'en'],
+      teaches: 'English Language Translation',
+      educationalUse: 'Practice',
+      interactivityType: 'active',
+      typicalAgeRange: '13-99',
+      isAccessibleForFree: true,
+      hasPart: [
+        {
+          '@type': 'Text',
+          inLanguage: 'vi',
+          text: exercise.sourceText.substring(0, 200) + '...'
+        },
+        {
+          '@type': 'Text',
+          inLanguage: 'en',
+          text: exercise.englishText ? exercise.englishText.substring(0, 200) + '...' : ''
+        }
+      ],
+      provider: {
+        '@type': 'Organization',
+        name: 'Daily English',
+        url: 'https://dailyenglish.qzz.io'
+      },
+      about: {
+        '@type': 'Thing',
+        name: 'English Language Learning',
+        description: 'Vietnamese to English translation practice with AI feedback'
+      }
+    };
+    
     this.seoService.setStructuredData(learningResourceSchema);
   }
 

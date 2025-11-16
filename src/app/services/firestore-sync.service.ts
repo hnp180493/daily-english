@@ -61,20 +61,7 @@ export class FirestoreSyncService {
     return this.databaseService.subscribeToFavoritesAuto(callback);
   }
 
-  // Custom exercise sync methods
-  saveCustomExercise(exercise: CustomExercise): Observable<void> {
-    return this.databaseService.saveCustomExerciseAuto(exercise);
-  }
-
-  loadCustomExercises(): Observable<CustomExercise[]> {
-    return this.databaseService.loadCustomExercisesAuto();
-  }
-
-  deleteCustomExercise(exerciseId: string): Observable<void> {
-    return this.databaseService.deleteCustomExerciseAuto(exerciseId);
-  }
-
-  subscribeToCustomExercises(callback: (exercises: CustomExercise[]) => void): Unsubscribe {
-    return this.databaseService.subscribeToCustomExercisesAuto(callback);
-  }
+  // Custom exercise sync methods - REMOVED
+  // Custom exercises are now stored in localStorage only
+  // See CustomExerciseService for implementation
 }

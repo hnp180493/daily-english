@@ -1,6 +1,6 @@
 import { Injectable, inject, effect } from '@angular/core';
 import { BehaviorSubject, Observable, from } from 'rxjs';
-import { map, catchError } from 'rxjs/operators';
+import { map } from 'rxjs/operators';
 import {
   CustomExercise,
   DifficultyLevel,
@@ -8,64 +8,41 @@ import {
   ValidationError
 } from '../models/exercise.model';
 import { AuthService } from './auth.service';
-import { DatabaseService } from './database/database.service';
 
 /**
  * CustomExerciseService
  * 
- * IMPORTANT: This service uses a dual-storage strategy with Firestore as primary and localStorage for offline support.
- * 
  * Storage Strategy:
- * - PRIMARY: Firestore (cloud database) - Source of truth for custom exercises
- * - SECONDARY: localStorage - Offline cache and backup
- * 
- * Why localStorage is retained here:
- * - Enables offline creation and editing of custom exercises
- * - Provides instant access without network latency
- * - Acts as a local cache for better performance
- * - Syncs with Firestore when online
+ * - Uses ONLY localStorage for custom exercises
+ * - No cloud sync - exercises are stored locally on the device
+ * - Users can export/import exercises for manual sync across devices
  * 
  * Data flow:
- * 1. User creates/edits exercise → Saved to BOTH localStorage AND Firestore
- * 2. User loads exercises → Loaded from Firestore, cached in localStorage
- * 3. Conflict resolution → Firestore data takes precedence (based on updatedAt timestamp)
- * 4. Offline mode → Uses localStorage, syncs to Firestore when connection restored
- * 
- * Sync behavior:
- * - On login: Load from Firestore, merge with localStorage, update both
- * - On create/update: Save to localStorage immediately, then sync to Firestore
- * - On delete: Remove from both localStorage and Firestore
- * - Merge strategy: Most recent updatedAt wins
- * 
- * This is one of TWO services that use localStorage (the other is ExercisePersistenceService).
- * All other user data (progress, achievements, favorites, rewards) is stored ONLY in Firestore.
+ * 1. User creates/edits exercise → Saved to localStorage only
+ * 2. User loads exercises → Loaded from localStorage
+ * 3. User can export exercises to JSON file for backup
+ * 4. User can import exercises from JSON file to restore or sync
  */
 @Injectable({
   providedIn: 'root'
 })
 export class CustomExerciseService {
   private authService = inject(AuthService);
-  private databaseService = inject(DatabaseService);
 
   // State management
   private exercises$ = new BehaviorSubject<CustomExercise[]>([]);
 
   // Storage key constants
   private readonly STORAGE_KEY_PREFIX = 'custom_exercises_';
-  private isInitialized = false;
 
   constructor() {
     this.loadFromLocalStorage();
 
-    // Listen to auth state changes and sync when user logs in
+    // Reload from localStorage when user changes
     effect(() => {
       const isAuth = this.authService.isAuthenticated();
-      if (isAuth && !this.isInitialized) {
-        // Load from Firestore only once per user session
-        this.isInitialized = true;
-        this.loadFromFirestore();
-      } else if (!isAuth) {
-        this.isInitialized = false;
+      if (isAuth) {
+        this.loadFromLocalStorage();
       }
     });
   }
@@ -135,11 +112,6 @@ export class CustomExerciseService {
         this.exercises$.next(updatedExercises);
         this.saveToLocalStorage(updatedExercises);
 
-        // Sync to database
-        this.syncToFirestore(newExercise).subscribe({
-          error: (error) => console.error('Failed to sync to database:', error)
-        });
-
         observer.next(newExercise);
         observer.complete();
       } catch (error) {
@@ -177,11 +149,6 @@ export class CustomExerciseService {
         this.exercises$.next(updatedExercises);
         this.saveToLocalStorage(updatedExercises);
 
-        // Sync to database
-        this.syncToFirestore(updatedExercise).subscribe({
-          error: (error) => console.error('Failed to sync to database:', error)
-        });
-
         observer.next(updatedExercise);
         observer.complete();
       } catch (error) {
@@ -202,11 +169,6 @@ export class CustomExerciseService {
 
         this.exercises$.next(updatedExercises);
         this.saveToLocalStorage(updatedExercises);
-
-        // Delete from database
-        this.databaseService.deleteCustomExerciseAuto(id).subscribe({
-          error: (error) => console.error('Failed to delete from database:', error)
-        });
 
         observer.next();
         observer.complete();
@@ -308,15 +270,12 @@ export class CustomExerciseService {
   }
 
   // LocalStorage persistence methods
-  /**
-   * Loads custom exercises from localStorage (offline cache)
-   * This provides instant access and offline support
-   */
   private loadFromLocalStorage(): void {
     try {
       const userId = this.authService.getUserId();
       if (!userId) {
         console.log('[CustomExerciseService] No user ID, skipping load');
+        this.exercises$.next([]);
         return;
       }
 
@@ -333,18 +292,15 @@ export class CustomExerciseService {
 
         this.exercises$.next(exercises);
         console.log(`[CustomExerciseService] Loaded ${exercises.length} exercises from localStorage`);
+      } else {
+        this.exercises$.next([]);
       }
     } catch (error) {
       console.error('[CustomExerciseService] Failed to load from localStorage:', error);
-      // Reset to empty state on parse error
       this.exercises$.next([]);
     }
   }
 
-  /**
-   * Saves custom exercises to localStorage (offline cache)
-   * This enables offline access and provides instant save without network latency
-   */
   private saveToLocalStorage(exercises: CustomExercise[]): void {
     try {
       const userId = this.authService.getUserId();
@@ -376,79 +332,78 @@ export class CustomExerciseService {
     return `${this.STORAGE_KEY_PREFIX}${userId}`;
   }
 
-  // Database sync methods
-  /**
-   * Syncs a custom exercise to Firestore (primary storage)
-   * Continues gracefully if sync fails (offline mode)
-   */
-  private syncToFirestore(exercise: CustomExercise): Observable<void> {
-    try {
-      return this.databaseService.saveCustomExerciseAuto(exercise).pipe(
-        catchError(error => {
-          console.error('[CustomExerciseService] Database sync failed:', error);
-          return from(Promise.resolve()); // Continue even if sync fails
-        })
-      );
-    } catch (error) {
-      console.error('[CustomExerciseService] Database sync error:', error);
-      return from(Promise.resolve());
-    }
+  // Import/Export functionality
+  exportExercises(): string {
+    const exercises = this.exercises$.value;
+    const exportData = {
+      version: '1.0',
+      exportDate: new Date().toISOString(),
+      exercises: exercises,
+      count: exercises.length
+    };
+    return JSON.stringify(exportData, null, 2);
   }
 
-  /**
-   * Loads custom exercises from Firestore and merges with localStorage
-   * Firestore is the source of truth - most recent updatedAt wins
-   */
-  private loadFromFirestore(): void {
-    try {
-      const userId = this.authService.getUserId();
-      if (!userId) {
-        console.log('[CustomExerciseService] No user ID, skipping database load');
-        return;
-      }
-
-      this.databaseService.loadCustomExercisesAuto().subscribe({
-        next: (cloudExercises) => {
-          if (cloudExercises && cloudExercises.length > 0) {
-            console.log(`[CustomExerciseService] Loaded ${cloudExercises.length} exercises from database`);
-
-            // Merge with local exercises (cloud takes precedence based on updatedAt)
-            const localExercises = this.exercises$.value;
-            const mergedExercises = this.mergeExercises(localExercises, cloudExercises);
-
-            this.exercises$.next(mergedExercises);
-            this.saveToLocalStorage(mergedExercises);
-          }
-        },
-        error: (error) => {
-          console.error('[CustomExerciseService] Failed to load from database:', error);
+  importExercises(jsonData: string): Observable<{ imported: number; skipped: number; errors: string[] }> {
+    return new Observable(observer => {
+      try {
+        const data = JSON.parse(jsonData);
+        
+        if (!data.exercises || !Array.isArray(data.exercises)) {
+          throw new Error('Invalid import format: exercises array not found');
         }
-      });
-    } catch (error) {
-      console.error('[CustomExerciseService] Database load error:', error);
-    }
-  }
 
-  /**
-   * Merges local and cloud exercises
-   * Conflict resolution: Most recent updatedAt timestamp wins
-   */
-  private mergeExercises(local: CustomExercise[], cloud: CustomExercise[]): CustomExercise[] {
-    const merged = new Map<string, CustomExercise>();
+        const currentExercises = this.exercises$.value;
+        const existingIds = new Set(currentExercises.map(ex => ex.id));
+        
+        let imported = 0;
+        let skipped = 0;
+        const errors: string[] = [];
+        const newExercises: CustomExercise[] = [];
 
-    // Add local exercises
-    local.forEach(ex => merged.set(ex.id, ex));
+        data.exercises.forEach((ex: any, index: number) => {
+          try {
+            // Convert date strings back to Date objects
+            const exercise: CustomExercise = {
+              ...ex,
+              createdAt: new Date(ex.createdAt),
+              updatedAt: new Date(ex.updatedAt),
+              isCustom: true
+            };
 
-    // Add/update with cloud exercises (cloud takes precedence on conflicts based on updatedAt)
-    cloud.forEach(ex => {
-      const existing = merged.get(ex.id);
-      if (!existing || ex.updatedAt > existing.updatedAt) {
-        merged.set(ex.id, ex);
+            // Validate the exercise
+            const validation = this.validateExercise(exercise);
+            if (!validation.isValid) {
+              errors.push(`Exercise ${index + 1}: ${validation.errors.map(e => e.message).join(', ')}`);
+              skipped++;
+              return;
+            }
+
+            // Skip if already exists
+            if (existingIds.has(exercise.id)) {
+              skipped++;
+              return;
+            }
+
+            newExercises.push(exercise);
+            imported++;
+          } catch (error) {
+            errors.push(`Exercise ${index + 1}: ${error instanceof Error ? error.message : 'Unknown error'}`);
+            skipped++;
+          }
+        });
+
+        if (newExercises.length > 0) {
+          const updatedExercises = [...currentExercises, ...newExercises];
+          this.exercises$.next(updatedExercises);
+          this.saveToLocalStorage(updatedExercises);
+        }
+
+        observer.next({ imported, skipped, errors });
+        observer.complete();
+      } catch (error) {
+        observer.error(error instanceof Error ? error : new Error('Failed to import exercises'));
       }
     });
-
-    return Array.from(merged.values()).sort((a, b) =>
-      b.updatedAt.getTime() - a.updatedAt.getTime()
-    );
   }
 }

@@ -29,6 +29,7 @@ export class CustomExerciseLibrary {
   selectedTags = signal<string[]>([]);
   deleteConfirmId = signal<string | null>(null);
   isLoading = signal(true);
+  showImportExportMenu = signal(false);
 
   constructor() {
     // Track loading state
@@ -62,6 +63,16 @@ export class CustomExerciseLibrary {
         this.selectedTags.set(tags);
       }
     });
+
+    // Close import/export menu when clicking outside
+    if (typeof document !== 'undefined') {
+      document.addEventListener('click', (event) => {
+        const target = event.target as HTMLElement;
+        if (!target.closest('.relative')) {
+          this.showImportExportMenu.set(false);
+        }
+      });
+    }
   }
 
   // Enums for template
@@ -181,5 +192,63 @@ export class CustomExerciseLibrary {
   truncateText(text: string, maxLength: number): string {
     if (text.length <= maxLength) return text;
     return text.substring(0, maxLength) + '...';
+  }
+
+  toggleImportExportMenu(): void {
+    this.showImportExportMenu.set(!this.showImportExportMenu());
+  }
+
+  exportExercises(): void {
+    try {
+      const jsonData = this.customExerciseService.exportExercises();
+      const blob = new Blob([jsonData], { type: 'application/json' });
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `custom-exercises-${new Date().toISOString().split('T')[0]}.json`;
+      link.click();
+      window.URL.revokeObjectURL(url);
+      this.toastService.success('Exercises exported successfully');
+      this.showImportExportMenu.set(false);
+    } catch (error) {
+      this.toastService.error('Failed to export exercises');
+    }
+  }
+
+  importExercises(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
+    
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      try {
+        const jsonData = e.target?.result as string;
+        this.customExerciseService.importExercises(jsonData).subscribe({
+          next: (result) => {
+            if (result.imported > 0) {
+              this.toastService.success(`Imported ${result.imported} exercise(s)`);
+            }
+            if (result.skipped > 0) {
+              this.toastService.warning(`Skipped ${result.skipped} duplicate(s)`);
+            }
+            if (result.errors.length > 0) {
+              console.error('Import errors:', result.errors);
+            }
+            this.showImportExportMenu.set(false);
+          },
+          error: (error) => {
+            this.toastService.error(`Import failed: ${error.message}`);
+          }
+        });
+      } catch (error) {
+        this.toastService.error('Invalid file format');
+      }
+    };
+    reader.readAsText(file);
+    
+    // Reset input
+    input.value = '';
   }
 }
