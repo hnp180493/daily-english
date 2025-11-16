@@ -9,6 +9,7 @@ import { TTSService } from '../../services/tts.service';
 import { ProgressService } from '../../services/progress.service';
 import { ExerciseService } from '../../services/exercise.service';
 import { DictationSettingsService } from '../../services/dictation-settings.service';
+import { PointsAnimationService } from '../../services/points-animation.service';
 import { DictationFeedbackComponent } from '../dictation-feedback/dictation-feedback';
 import { DictationSettingsComponent } from '../dictation-settings/dictation-settings';
 import { TTSSettings } from '../tts-settings/tts-settings';
@@ -24,6 +25,7 @@ import { SeoService } from '../../services/seo.service';
 export class DictationPracticeComponent implements OnInit, OnDestroy {
   // Constants
   readonly PASSING_SCORE = 100;
+  readonly DICTATION_COMPLETION_POINTS = 10;
   
   // ViewChild references
   @ViewChild('dictationInput') dictationInput?: ElementRef<HTMLTextAreaElement>;
@@ -36,6 +38,7 @@ export class DictationPracticeComponent implements OnInit, OnDestroy {
   private progressService = inject(ProgressService);
   private exerciseService = inject(ExerciseService);
   private settingsService = inject(DictationSettingsService);
+  private pointsAnimationService = inject(PointsAnimationService);
   private seoService = inject(SeoService);
   
   // Signals for reactive state
@@ -441,6 +444,18 @@ export class DictationPracticeComponent implements OnInit, OnDestroy {
     
     // Debounced save to avoid excessive writes
     this.debouncedSaveProgress();
+    
+    // Auto advance to next sentence if perfect score and setting is enabled
+    const settings = this.settings();
+    if (settings.autoNextOnPerfect && accuracy >= this.PASSING_SCORE) {
+      setTimeout(() => {
+        if (this.canGoNext()) {
+          this.nextSentence();
+        } else {
+          this.completeSession();
+        }
+      }, 600); // Brief delay to show feedback
+    }
   }
   
   retryAnswer(): void {
@@ -511,6 +526,7 @@ export class DictationPracticeComponent implements OnInit, OnDestroy {
       next: () => {
         console.log('Dictation attempt saved');
         this.progressService.recordDictationAttempt(attempt);
+        
         // Clear in-progress session after successful completion
         this.dictationService.clearInProgressSession(ex.id);
       },
@@ -520,6 +536,32 @@ export class DictationPracticeComponent implements OnInit, OnDestroy {
     });
     
     this.isComplete.set(true);
+    
+    // Award points after completion screen is rendered
+    setTimeout(() => {
+      this.awardCompletionPoints();
+    }, 100);
+  }
+  
+  private awardCompletionPoints(): void {
+    // Find the points earned card in completion screen
+    const sourceElement = document.querySelector('.points-earned-card') as HTMLElement
+      || document.querySelector('.completion-stats') as HTMLElement
+      || document.querySelector('.dictation-practice-container') as HTMLElement;
+    
+    if (!sourceElement) {
+      console.warn('No source element found for points animation');
+      // If no element found, just add points without animation
+      this.progressService.addBonusPoints(this.DICTATION_COMPLETION_POINTS);
+      return;
+    }
+    
+    console.log('Triggering points animation from:', sourceElement.className);
+    
+    // Trigger animation and add points after animation completes
+    this.pointsAnimationService.triggerPointsAnimation(this.DICTATION_COMPLETION_POINTS, sourceElement).then(() => {
+      this.progressService.addBonusPoints(this.DICTATION_COMPLETION_POINTS);
+    });
   }
   
   retry(): void {

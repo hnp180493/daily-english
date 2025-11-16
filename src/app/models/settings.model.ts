@@ -5,6 +5,7 @@ export interface DictationSettings {
   secondsBetweenReplays: number;
   showShortcutTips: boolean;
   showAnswerWhenWrong: boolean;
+  autoNextOnPerfect: boolean; // Auto advance to next sentence when 100% accuracy
 }
 
 export const DEFAULT_DICTATION_SETTINGS: DictationSettings = {
@@ -13,7 +14,8 @@ export const DEFAULT_DICTATION_SETTINGS: DictationSettings = {
   autoReplay: 0,
   secondsBetweenReplays: 0.5,
   showShortcutTips: true,
-  showAnswerWhenWrong: false
+  showAnswerWhenWrong: false,
+  autoNextOnPerfect: false
 };
 
 export const AVAILABLE_KEYS = [

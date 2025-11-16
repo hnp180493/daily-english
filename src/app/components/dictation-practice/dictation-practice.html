@@ -33,10 +33,20 @@
     <!-- Header -->
     <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 mb-6">
       <div class="flex items-center justify-between mb-4">
-        <h1 class="text-2xl font-bold text-gray-800 dark:text-gray-200">
-          🎧 Dictation Practice
-        </h1>
+        <div class="flex-1">
+          <h1 class="text-2xl font-bold text-gray-800 dark:text-gray-200">
+            🎧 Dictation Practice
+          </h1>
+          @if (exercise()) {
+          <h2 class="text-lg text-gray-700 dark:text-gray-300 mt-2">
+            {{ exercise()!.title }}
+          </h2>
+          }
+        </div>
         <div class="flex items-center gap-3">
+          <span class="stat-item">
+            ⭐ {{ DICTATION_COMPLETION_POINTS }} points
+          </span>
           <button 
             (click)="openSettings()"
             class="p-2 text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 transition"
@@ -51,12 +61,6 @@
           </button>
         </div>
       </div>
-      
-      @if (exercise()) {
-      <h2 class="text-lg text-gray-700 dark:text-gray-300 mb-2">
-        {{ exercise()!.title }}
-      </h2>
-      }
       
       <!-- Progress Bar -->
       <div class="mt-4" role="region" aria-label="Practice progress">
@@ -87,7 +91,7 @@
         Dictation Practice Complete!
       </h2>
       
-      <div class="grid grid-cols-2 gap-4 max-w-md mx-auto mb-6">
+      <div class="grid grid-cols-3 gap-4 max-w-2xl mx-auto mb-6 completion-stats">
         <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
           <div class="text-sm text-gray-600 dark:text-gray-400 mb-1">Overall Accuracy</div>
           <div class="text-2xl font-bold text-primary">
@@ -99,6 +103,13 @@
           <div class="text-sm text-gray-600 dark:text-gray-400 mb-1">Sentences Completed</div>
           <div class="text-2xl font-bold text-primary">
             {{ completedSentencesCount() }} / {{ sentences().length }}
+          </div>
+        </div>
+        
+        <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4 points-earned-card">
+          <div class="text-sm text-gray-600 dark:text-gray-400 mb-1">Points Earned</div>
+          <div class="text-2xl font-bold text-primary">
+            +{{ DICTATION_COMPLETION_POINTS }}
           </div>
         </div>
       </div>
@@ -278,32 +289,44 @@
         </button>
         }
         } @else {
-        @if (canGoNext()) {
-        <button 
-          (click)="nextSentence()"
-          aria-label="Continue to next sentence"
-          class="px-6 py-3 bg-primary text-white rounded-lg hover:bg-primary-dark transition">
-          Next Sentence →
-        </button>
-        } @else if (currentAccuracy() >= PASSING_SCORE) {
-        <button 
-          (click)="completeSession()"
-          aria-label="Complete dictation practice"
-          class="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition">
-          Complete Practice
-        </button>
+        <!-- Only show manual navigation buttons if auto next is disabled -->
+        @if (!settings().autoNextOnPerfect) {
+          @if (canGoNext()) {
+          <button 
+            (click)="nextSentence()"
+            aria-label="Continue to next sentence"
+            class="px-6 py-3 bg-primary text-white rounded-lg hover:bg-primary-dark transition">
+            Next Sentence →
+          </button>
+          } @else if (currentAccuracy() >= PASSING_SCORE) {
+          <button 
+            (click)="completeSession()"
+            aria-label="Complete dictation practice"
+            class="complete-btn px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition">
+            Complete Practice
+          </button>
+          }
+        } @else {
+          <!-- Show loading indicator when auto next is enabled -->
+          <div class="px-6 py-3 text-gray-600 dark:text-gray-400 flex items-center gap-2">
+            <span class="animate-pulse">⏳</span>
+            <span>Moving to next sentence...</span>
+          </div>
         }
         }
       </div>
       
       <!-- Feedback Display -->
       @if (showFeedback() && currentSentence() && currentSentence()!.feedback) {
-      <app-dictation-feedback
-        [feedback]="currentSentence()!.feedback"
-        [originalText]="currentSentence()!.original"
-        [userText]="currentSentence()!.userInput"
-        [showAnswer]="currentAccuracy() >= PASSING_SCORE || settings().showAnswerWhenWrong">
-      </app-dictation-feedback>
+        <!-- Only show feedback if not auto-advancing or if score is below passing -->
+        @if (!settings().autoNextOnPerfect || currentAccuracy() < PASSING_SCORE) {
+        <app-dictation-feedback
+          [feedback]="currentSentence()!.feedback"
+          [originalText]="currentSentence()!.original"
+          [userText]="currentSentence()!.userInput"
+          [showAnswer]="currentAccuracy() >= PASSING_SCORE || settings().showAnswerWhenWrong">
+        </app-dictation-feedback>
+        }
       }
     </div>
     

@@ -68,6 +68,39 @@ button, .progress-bar {
   }
 }
 
+// Points highlight animation for source element
+.points-highlight {
+  animation: pointsSourceHighlight 1s ease-out;
+}
+
+@keyframes pointsSourceHighlight {
+  0% {
+    box-shadow: 0 0 0 0 rgba(251, 191, 36, 0.7);
+    transform: scale(1);
+  }
+  50% {
+    box-shadow: 0 0 20px 10px rgba(251, 191, 36, 0.4);
+    transform: scale(1.05);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(251, 191, 36, 0);
+    transform: scale(1);
+  }
+}
+
+// Stat item style (matching exercise-detail)
+.stat-item {
+  color: #ffffff;
+  font-size: 0.9rem;
+  font-weight: 600;
+  background-color: #2a2d4a;
+  padding: 0.4rem 0.8rem;
+  border-radius: 16px;
+  transition: all 0.3s ease;
+}
+
+
+
 // Responsive adjustments
 @media (max-width: 640px) {
   .audio-controls {

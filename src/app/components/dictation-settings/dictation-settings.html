@@ -104,38 +104,71 @@
       
       <!-- Shortcut Key Tips -->
       <div class="setting-row">
-        <label 
-          for="shortcut-tips"
-          class="block text-lg font-semibold text-gray-800 dark:text-gray-200 mb-2">
-          Shortcut Key Tips
-        </label>
-        <select
-          id="shortcut-tips"
-          [value]="settings().showShortcutTips"
-          (change)="updateShowShortcutTips($any($event.target).value === 'true')"
-          class="w-full px-4 py-3 bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-lg border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-primary focus:border-transparent">
-          @for (option of showShortcutTipsOptions; track option.value) {
-          <option [value]="option.value" [selected]="settings().showShortcutTips === option.value">{{ option.label }}</option>
-          }
-        </select>
+        <div class="flex items-center justify-between">
+          <div>
+            <label 
+              for="shortcut-tips"
+              class="block text-lg font-semibold text-gray-800 dark:text-gray-200">
+              Shortcut Key Tips
+            </label>
+          </div>
+          <label class="toggle-switch">
+            <input
+              id="shortcut-tips"
+              type="checkbox"
+              [checked]="settings().showShortcutTips"
+              (change)="updateShowShortcutTips($any($event.target).checked)"
+              class="toggle-input">
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
       </div>
       
       <!-- Show Answer When Wrong -->
       <div class="setting-row">
-        <label 
-          for="show-answer"
-          class="block text-lg font-semibold text-gray-800 dark:text-gray-200 mb-2">
-          Show Answer When Wrong
-        </label>
-        <select
-          id="show-answer"
-          [value]="settings().showAnswerWhenWrong"
-          (change)="updateShowAnswerWhenWrong($any($event.target).value === 'true')"
-          class="w-full px-4 py-3 bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-lg border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-primary focus:border-transparent">
-          @for (option of showShortcutTipsOptions; track option.value) {
-          <option [value]="option.value" [selected]="settings().showAnswerWhenWrong === option.value">{{ option.label }}</option>
-          }
-        </select>
+        <div class="flex items-center justify-between">
+          <div>
+            <label 
+              for="show-answer"
+              class="block text-lg font-semibold text-gray-800 dark:text-gray-200">
+              Show Answer When Wrong
+            </label>
+          </div>
+          <label class="toggle-switch">
+            <input
+              id="show-answer"
+              type="checkbox"
+              [checked]="settings().showAnswerWhenWrong"
+              (change)="updateShowAnswerWhenWrong($any($event.target).checked)"
+              class="toggle-input">
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+      </div>
+      
+      <!-- Auto Next on Perfect -->
+      <div class="setting-row">
+        <div class="flex items-center justify-between">
+          <div class="flex-1">
+            <label 
+              for="auto-next"
+              class="block text-lg font-semibold text-gray-800 dark:text-gray-200">
+              Auto Next on 100% Accuracy
+            </label>
+            <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">
+              Automatically advance to the next sentence when you achieve 100% accuracy
+            </p>
+          </div>
+          <label class="toggle-switch ml-4">
+            <input
+              id="auto-next"
+              type="checkbox"
+              [checked]="settings().autoNextOnPerfect"
+              (change)="updateAutoNextOnPerfect($any($event.target).checked)"
+              class="toggle-input">
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
       </div>
       
     </div>

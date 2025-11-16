@@ -25,11 +25,6 @@ export class DictationSettingsComponent {
   availableKeys = AVAILABLE_KEYS;
   autoReplayOptions = AUTO_REPLAY_OPTIONS;
   secondsOptions = SECONDS_OPTIONS;
-  
-  showShortcutTipsOptions = [
-    { value: true, label: 'Show' },
-    { value: false, label: 'Hide' }
-  ];
 
   updateReplayKey(value: string): void {
     this.settingsService.updateSetting('replayKey', value);
@@ -53,6 +48,10 @@ export class DictationSettingsComponent {
 
   updateShowAnswerWhenWrong(value: boolean): void {
     this.settingsService.updateSetting('showAnswerWhenWrong', value);
+  }
+
+  updateAutoNextOnPerfect(value: boolean): void {
+    this.settingsService.updateSetting('autoNextOnPerfect', value);
   }
 
   resetToDefaults(): void {
