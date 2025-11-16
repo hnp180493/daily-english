@@ -21,9 +21,9 @@ export interface Exercise {
   level: DifficultyLevel;
   category: ExerciseCategory;
   description: string;
-  sourceText: string;
-  englishText: string;
-  highlightedSentences: string[];
+  sourceText: string; // Vietnamese text (source language for translation)
+  englishText: string; // English text (target language - the correct answer)
+  highlightedSentences: string[]; // Key sentences from sourceText for practice
   hints: string[];
   expectedKeywords?: string[];
   fullContext?: string; // Full paragraph for context when analyzing individual sentences
@@ -122,11 +122,13 @@ export interface ExerciseGenerationRequest {
   difficulty: DifficultyLevel;
   targetLanguage?: string;
   sourceLanguage?: string;
+  vocabularyWords?: string;
 }
 
 export interface ExerciseGenerationResponse {
   title: string;
   sourceText: string;
+  englishText?: string;
   suggestedSentences: string[];
   category?: string;
 }

@@ -40,6 +40,10 @@ Deduct points based on:
 Meaning errors apply only when the **main idea** is changed or lost.
 Minor differences in phrasing are acceptable and should not be penalized.
 
+If accuracyScore < 100:
+- You MUST include at least ONE feedback item.
+- Feedback must be specific to the user’s text.
+
 ====================================================
 OUTPUT FORMAT (RAW JSON)
 ====================================================

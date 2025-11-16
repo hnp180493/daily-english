@@ -442,6 +442,11 @@ export class DictationPracticeComponent implements OnInit, OnDestroy {
     this.currentAccuracy.set(accuracy);
     this.showFeedback.set(true);
     
+    // Move cursor to first missing word position if accuracy is not perfect
+    if (accuracy < this.PASSING_SCORE) {
+      this.moveCursorToMissingWord(sentence.original, input);
+    }
+    
     // Debounced save to avoid excessive writes
     this.debouncedSaveProgress();
     
@@ -456,6 +461,47 @@ export class DictationPracticeComponent implements OnInit, OnDestroy {
         }
       }, 600); // Brief delay to show feedback
     }
+  }
+  
+  private moveCursorToMissingWord(original: string, userInput: string): void {
+    const originalWords = original.toLowerCase().split(/\s+/);
+    const userWords = userInput.toLowerCase().split(/\s+/);
+    
+    let userIndex = 0;
+    let charPosition = 0;
+    
+    // Find first missing word position
+    for (let i = 0; i < originalWords.length; i++) {
+      const originalWord = originalWords[i].replace(/[.,!?;:"""''()[\]{}—–-]/g, '');
+      
+      if (userIndex < userWords.length) {
+        const userWord = userWords[userIndex].replace(/[.,!?;:"""''()[\]{}—–-]/g, '');
+        
+        if (originalWord === userWord) {
+          // Match found, move to next user word
+          charPosition += userWords[userIndex].length + 1;
+          userIndex++;
+        } else {
+          // Found first missing/wrong word - move cursor here
+          this.setCursorPosition(charPosition);
+          return;
+        }
+      } else {
+        // No more user words, cursor should be at end
+        this.setCursorPosition(charPosition);
+        return;
+      }
+    }
+  }
+  
+  private setCursorPosition(position: number): void {
+    setTimeout(() => {
+      const textarea = this.dictationInput?.nativeElement;
+      if (textarea) {
+        textarea.focus();
+        textarea.setSelectionRange(position, position);
+      }
+    }, 100);
   }
   
   retryAnswer(): void {

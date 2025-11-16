@@ -216,8 +216,8 @@
           <!-- Background highlight layer (behind textarea) -->
           @if (showFeedback() && currentSentence() && currentSentence()!.feedback && currentAccuracy() < PASSING_SCORE) {
           <div 
-            class="absolute inset-0 pointer-events-none overflow-hidden whitespace-pre-wrap break-words rounded-lg z-10"
-            style="font-family: monospace; font-size: 14px; line-height: 1.5; letter-spacing: 0.5px; padding: 0.75rem 1rem;"
+            class="absolute pointer-events-none overflow-hidden whitespace-pre-wrap break-words rounded-lg z-10"
+            style="font-family: monospace; font-size: 14px; line-height: 1.5; letter-spacing: 0.5px; padding: calc(0.75rem + 1px) calc(1rem + 1px); top: 0; left: 0; right: 0; bottom: 0;"
             aria-hidden="true"
             [innerHTML]="getHighlightedText()">
           </div>
@@ -246,8 +246,8 @@
           <!-- Foreground overlay (when passed) -->
           @if (showFeedback() && currentSentence() && currentSentence()!.feedback && currentAccuracy() >= PASSING_SCORE) {
           <div 
-            class="absolute inset-0 px-4 py-3 pointer-events-none overflow-auto whitespace-pre-wrap break-words rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 z-20"
-            style="font-family: monospace; font-size: 14px; line-height: 1.5; letter-spacing: 0.5px;"
+            class="absolute pointer-events-none overflow-auto whitespace-pre-wrap break-words rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 z-20"
+            style="font-family: monospace; font-size: 14px; line-height: 1.5; letter-spacing: 0.5px; padding: calc(0.75rem + 1px) calc(1rem + 1px); top: 0; left: 0; right: 0; bottom: 0;"
             aria-hidden="true"
             [innerHTML]="getHighlightedText()">
           </div>
