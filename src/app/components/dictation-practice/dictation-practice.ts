@@ -59,6 +59,9 @@ export class DictationPracticeComponent implements OnInit, OnDestroy {
   showSettings = signal<boolean>(false);
   isSubmitting = signal<boolean>(false);
   justSubmitted = signal<boolean>(false);
+  showOverview = signal<boolean>(false);
+  isPlayingOverview = signal<boolean>(false);
+  showOverviewText = signal<boolean>(false);
   
   settings = this.settingsService.settings;
   
@@ -110,8 +113,21 @@ export class DictationPracticeComponent implements OnInit, OnDestroy {
   completedSentencesCount = computed(() => {
     return this.sentences().filter(s => s.isCompleted).length;
   });
+  
+  fullExerciseText = computed(() => {
+    return this.sentences().map(s => s.original).join('. ') + '.';
+  });
+  
+  estimatedDuration = computed(() => {
+    const wordCount = this.sentences().map(s => s.original).join(' ').split(' ').length;
+    return (wordCount * 0.6 / 60).toFixed(1);
+  });
 
   ngOnInit(): void {
+    // Reset playback speed to 1.0 when entering dictation practice
+    this.playbackSpeed.set(1.0);
+    (this.ttsService as any).rate = 1.0;
+    
     const exerciseId = this.route.snapshot.paramMap.get('id');
     
     if (!exerciseId) {
@@ -188,6 +204,7 @@ export class DictationPracticeComponent implements OnInit, OnDestroy {
   
   ngOnDestroy(): void {
     this.stopAudio();
+    this.stopOverviewAudio();
     this.clearAutoReplay();
     
     // Clear debounce timer
@@ -332,7 +349,9 @@ export class DictationPracticeComponent implements OnInit, OnDestroy {
   
   adjustSpeed(speed: number): void {
     this.playbackSpeed.set(speed);
-    this.ttsService.setRate(speed);
+    // Set rate directly without saving to localStorage
+    const settings = this.ttsService.getSettings();
+    (this.ttsService as any).rate = speed;
   }
   
   nextSentence(): void {
@@ -701,6 +720,42 @@ export class DictationPracticeComponent implements OnInit, OnDestroy {
   
   closeSettings(): void {
     this.showSettings.set(false);
+  }
+  
+  toggleOverview(): void {
+    this.showOverview.update(v => !v);
+    
+    // Stop overview audio if collapsing
+    if (!this.showOverview()) {
+      this.stopOverviewAudio();
+      this.showOverviewText.set(false);
+    }
+  }
+  
+  toggleOverviewText(): void {
+    this.showOverviewText.update(v => !v);
+  }
+  
+  playOverviewAudio(): void {
+    const fullText = this.fullExerciseText();
+    
+    if (!fullText) return;
+    
+    this.isPlayingOverview.set(true);
+    
+    this.ttsService.speak(fullText, () => {
+      this.isPlayingOverview.set(false);
+    });
+  }
+  
+  stopOverviewAudio(): void {
+    this.ttsService.stop();
+    this.isPlayingOverview.set(false);
+  }
+  
+  pauseOverviewAudio(): void {
+    this.ttsService.pause();
+    this.isPlayingOverview.set(false);
   }
   
   @HostListener('document:keydown', ['$event'])
