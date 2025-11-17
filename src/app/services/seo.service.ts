@@ -303,7 +303,8 @@ export class SeoService {
     if (seoData.noindex) {
       this.meta.updateTag({ name: 'robots', content: 'noindex, nofollow' });
     } else {
-      this.meta.removeTag('name="robots"');
+      // Explicitly set index, follow for pages that should be indexed
+      this.meta.updateTag({ name: 'robots', content: 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1' });
     }
 
     // Update basic meta tags
