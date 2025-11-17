@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SEO Test - Daily English</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .test-section {
+            background: white;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        h1 { color: #4F46E5; }
+        h2 { color: #10B981; margin-top: 0; }
+        .success { color: #10B981; }
+        .warning { color: #F59E0B; }
+        .error { color: #EF4444; }
+        code {
+            background: #f3f4f6;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: monospace;
+        }
+        .command {
+            background: #1f2937;
+            color: #e5e7eb;
+            padding: 15px;
+            border-radius: 6px;
+            margin: 10px 0;
+            overflow-x: auto;
+        }
+        ul { line-height: 1.8; }
+        a { color: #4F46E5; text-decoration: none; }
+        a:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+    <h1>🔍 SEO Test & Checklist - Daily English</h1>
+    
+    <div class="test-section">
+        <h2>✅ Đã hoàn thành</h2>
+        <ul>
+            <li class="success">✓ Thêm meta tags đầy đủ (title, description, keywords)</li>
+            <li class="success">✓ Thêm Open Graph tags (Facebook, LinkedIn)</li>
+            <li class="success">✓ Thêm Twitter Card tags</li>
+            <li class="success">✓ Thêm JSON-LD structured data (3 schemas)</li>
+            <li class="success">✓ Cập nhật sitemap.xml với lastmod mới</li>
+            <li class="success">✓ Cập nhật sitemap-vi.xml với tất cả routes</li>
+            <li class="success">✓ Tạo BingSiteAuth.xml</li>
+            <li class="success">✓ Build production thành công</li>
+        </ul>
+    </div>
+
+    <div class="test-section">
+        <h2>🧪 Test Tools</h2>
+        <p>Sử dụng các công cụ sau để kiểm tra SEO:</p>
+        <ul>
+            <li><a href="https://search.google.com/test/rich-results" target="_blank">Google Rich Results Test</a> - Test structured data</li>
+            <li><a href="https://search.google.com/test/mobile-friendly" target="_blank">Google Mobile-Friendly Test</a> - Test mobile compatibility</li>
+            <li><a href="https://pagespeed.web.dev/" target="_blank">PageSpeed Insights</a> - Test performance</li>
+            <li><a href="https://validator.schema.org/" target="_blank">Schema Markup Validator</a> - Validate JSON-LD</li>
+            <li><a href="https://www.xml-sitemaps.com/validate-xml-sitemap.html" target="_blank">Sitemap Validator</a> - Validate sitemap</li>
+        </ul>
+    </div>
+
+    <div class="test-section">
+        <h2>📝 Next Steps</h2>
+        <ol>
+            <li><strong>Deploy code mới lên GitHub Pages</strong></li>
+            <li><strong>Submit sitemap lên Google Search Console:</strong>
+                <ul>
+                    <li>Truy cập: <a href="https://search.google.com/search-console" target="_blank">Google Search Console</a></li>
+                    <li>Thêm property: <code>dailyenglish.qzz.io</code></li>
+                    <li>Verify bằng meta tag (đã có trong index.html)</li>
+                    <li>Submit sitemap: <code>https://dailyenglish.qzz.io/sitemap.xml</code></li>
+                    <li>Submit sitemap tiếng Việt: <code>https://dailyenglish.qzz.io/sitemap-vi.xml</code></li>
+                </ul>
+            </li>
+            <li><strong>Request indexing cho các trang chính:</strong>
+                <ul>
+                    <li>https://dailyenglish.qzz.io/</li>
+                    <li>https://dailyenglish.qzz.io/home</li>
+                    <li>https://dailyenglish.qzz.io/exercises</li>
+                    <li>https://dailyenglish.qzz.io/guide</li>
+                </ul>
+            </li>
+            <li><strong>Submit lên Bing Webmaster Tools:</strong>
+                <ul>
+                    <li>Truy cập: <a href="https://www.bing.com/webmasters" target="_blank">Bing Webmaster Tools</a></li>
+                    <li>Verify và submit sitemap</li>
+                </ul>
+            </li>
+            <li><strong>Submit lên Cốc Cốc:</strong>
+                <ul>
+                    <li>Truy cập: <a href="https://webmaster.coccoc.com/" target="_blank">Cốc Cốc Webmaster</a></li>
+                    <li>Verify và submit sitemap</li>
+                </ul>
+            </li>
+        </ol>
+    </div>
+
+    <div class="test-section">
+        <h2>🔍 Kiểm tra sau khi deploy</h2>
+        <p>Chạy các lệnh sau để kiểm tra:</p>
+        
+        <div class="command">
+# Kiểm tra xem Google đã index chưa<br>
+site:dailyenglish.qzz.io
+        </div>
+
+        <div class="command">
+# Test với curl (giả lập Google bot)<br>
+curl -A "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)" https://dailyenglish.qzz.io/
+        </div>
+
+        <div class="command">
+# Kiểm tra sitemap<br>
+curl https://dailyenglish.qzz.io/sitemap.xml
+        </div>
+
+        <div class="command">
+# Kiểm tra robots.txt<br>
+curl https://dailyenglish.qzz.io/robots.txt
+        </div>
+    </div>
+
+    <div class="test-section">
+        <h2>⏱️ Thời gian chờ đợi</h2>
+        <ul>
+            <li class="warning">Google thường mất <strong>3-7 ngày</strong> để index trang mới</li>
+            <li class="warning">Có thể mất <strong>2-4 tuần</strong> để xuất hiện trong kết quả tìm kiếm</li>
+            <li class="success">Sử dụng "Request Indexing" trong Google Search Console để tăng tốc</li>
+        </ul>
+    </div>
+
+    <div class="test-section">
+        <h2>💡 Tips để tăng tốc indexing</h2>
+        <ul>
+            <li>Tạo backlinks từ các website khác (chia sẻ trên social media)</li>
+            <li>Cập nhật nội dung thường xuyên</li>
+            <li>Tối ưu hóa Core Web Vitals (tốc độ tải trang)</li>
+            <li>Tạo nội dung chất lượng với keywords phù hợp</li>
+            <li>Submit URL trực tiếp trong Google Search Console</li>
+        </ul>
+    </div>
+
+    <div class="test-section">
+        <h2>📊 Structured Data đã thêm</h2>
+        <ul>
+            <li><strong>WebSite Schema:</strong> Giúp Google hiểu website là gì</li>
+            <li><strong>EducationalOrganization Schema:</strong> Đánh dấu là tổ chức giáo dục</li>
+            <li><strong>WebApplication Schema:</strong> Đánh dấu là ứng dụng web giáo dục</li>
+        </ul>
+    </div>
+
+    <div class="test-section">
+        <h2>🎯 Keywords đã tối ưu</h2>
+        <p>Các keywords chính đã được thêm vào meta tags:</p>
+        <ul>
+            <li>học tiếng anh</li>
+            <li>học tiếng anh online</li>
+            <li>học tiếng anh miễn phí</li>
+            <li>luyện dịch tiếng anh</li>
+            <li>AI feedback</li>
+            <li>bài tập tiếng anh</li>
+            <li>học tiếng anh với AI</li>
+            <li>daily english</li>
+            <li>luyện dịch câu</li>
+        </ul>
+    </div>
+</body>
+</html>

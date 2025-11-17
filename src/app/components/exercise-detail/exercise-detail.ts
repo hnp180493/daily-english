@@ -177,20 +177,46 @@ export class ExerciseDetailComponent implements OnInit, OnDestroy {
   // Penalty metrics for review mode
   penaltyMetrics = computed(() => {
     const ex = this.exercise();
-    if (!ex || !this.isReviewMode()) return null;
+    if (!ex) return null;
 
-    const progress = this.progressSignal();
-    const attempt = progress.exerciseHistory[ex.id];
+    // Show immediately when exercise is complete
+    if (this.isExerciseComplete()) {
+      const sentences = this.sentences();
+      const penalties = this.stateService.getPenaltyMetrics();
+      const completedSents = sentences.filter(s => s.isCompleted);
+      const avgAccuracy = completedSents.length > 0
+        ? completedSents.reduce((sum, s) => sum + (s.accuracyScore || 0), 0) / completedSents.length
+        : 0;
+      const totalPenalty = (penalties.totalIncorrectAttempts * PENALTY_CONSTANTS.INCORRECT_ATTEMPT_PENALTY) +
+        (penalties.totalRetries * PENALTY_CONSTANTS.RETRY_PENALTY);
+      const finalScore = Math.max(0, Math.round(avgAccuracy - totalPenalty));
 
-    if (!attempt) return null;
+      return {
+        baseScore: Math.round(avgAccuracy),
+        totalIncorrectAttempts: penalties.totalIncorrectAttempts,
+        totalRetries: penalties.totalRetries,
+        totalPenalty,
+        finalScore
+      };
+    }
 
-    return {
-      baseScore: attempt.baseScore ?? attempt.accuracyScore,
-      totalIncorrectAttempts: attempt.totalIncorrectAttempts ?? 0,
-      totalRetries: attempt.totalRetries ?? 0,
-      totalPenalty: attempt.totalPenalty ?? 0,
-      finalScore: attempt.accuracyScore
-    };
+    // In review mode, load from saved history
+    if (this.isReviewMode()) {
+      const progress = this.progressSignal();
+      const attempt = progress.exerciseHistory[ex.id];
+
+      if (!attempt) return null;
+
+      return {
+        baseScore: attempt.baseScore ?? attempt.accuracyScore,
+        totalIncorrectAttempts: attempt.totalIncorrectAttempts ?? 0,
+        totalRetries: attempt.totalRetries ?? 0,
+        totalPenalty: attempt.totalPenalty ?? 0,
+        finalScore: attempt.accuracyScore
+      };
+    }
+
+    return null;
   });
 
   // Current penalty metrics during exercise
@@ -616,7 +642,8 @@ export class ExerciseDetailComponent implements OnInit, OnDestroy {
     const ex = this.exercise();
     if (!ex) return;
 
-    console.log('[ExerciseDetail] Exercise completed, recording attempt...');
+    const isCustom = this.isCustomExercise();
+    console.log('[ExerciseDetail] Exercise completed, isCustom:', isCustom);
 
     // Calculate final score with penalties
     const sentences = this.sentences();
@@ -630,81 +657,86 @@ export class ExerciseDetailComponent implements OnInit, OnDestroy {
 
     const finalScore = Math.max(0, Math.round(avgAccuracy - totalPenalty));
 
-    // Apply streak multiplier to points
-    const basePoints = this.exercisePoints();
-    const streakMultiplier = this.streakService.getStreakMultiplier();
-    const bonusPoints = streakMultiplier > 1.0 ? Math.round(basePoints * (streakMultiplier - 1.0)) : 0;
+    // Only save to cloud for regular exercises (not custom)
+    if (!isCustom) {
+      // Apply streak multiplier to points
+      const basePoints = this.exercisePoints();
+      const streakMultiplier = this.streakService.getStreakMultiplier();
+      const bonusPoints = streakMultiplier > 1.0 ? Math.round(basePoints * (streakMultiplier - 1.0)) : 0;
 
-    console.log('[ExerciseDetail] Points calculation:', {
-      basePoints,
-      streakMultiplier,
-      bonusPoints,
-      totalPoints: basePoints + bonusPoints
-    });
+      console.log('[ExerciseDetail] Points calculation:', {
+        basePoints,
+        streakMultiplier,
+        bonusPoints,
+        totalPoints: basePoints + bonusPoints
+      });
 
-    // Record attempt with streak bonus
-    this.recordingService.recordAttempt(ex, this.hintsShown(), basePoints + bonusPoints);
+      // Record attempt with streak bonus
+      this.recordingService.recordAttempt(ex, this.hintsShown(), basePoints + bonusPoints);
 
-    // Update learning path progress
-    this.curriculumService.updateModuleProgress(ex.id, finalScore, basePoints + bonusPoints).subscribe({
-      next: () => console.log('[ExerciseDetail] Module progress updated'),
-      error: (err) => console.warn('[ExerciseDetail] Module progress update failed:', err)
-    });
+      // Update learning path progress
+      this.curriculumService.updateModuleProgress(ex.id, finalScore, basePoints + bonusPoints).subscribe({
+        next: () => console.log('[ExerciseDetail] Module progress updated'),
+        error: (err) => console.warn('[ExerciseDetail] Module progress update failed:', err)
+      });
 
-    // Check if this was a daily challenge
-    const today = new Date().toISOString().split('T')[0];
-    this.curriculumService.checkAndCompleteDailyChallenge(ex.id, today, finalScore).subscribe({
-      next: (completed) => {
-        if (completed) {
-          console.log('[ExerciseDetail] Daily challenge completed!');
-        }
-      },
-      error: (err) => console.warn('[ExerciseDetail] Daily challenge check failed:', err)
-    });
+      // Check if this was a daily challenge
+      const today = new Date().toISOString().split('T')[0];
+      this.curriculumService.checkAndCompleteDailyChallenge(ex.id, today, finalScore).subscribe({
+        next: (completed) => {
+          if (completed) {
+            console.log('[ExerciseDetail] Daily challenge completed!');
+          }
+        },
+        error: (err) => console.warn('[ExerciseDetail] Daily challenge check failed:', err)
+      });
 
-    // Update weekly goal progress (only if score >= 60)
-    this.curriculumService.incrementWeeklyGoalProgress(finalScore).subscribe({
-      next: () => console.log('[ExerciseDetail] Weekly goal progress updated with score:', finalScore),
-      error: (err) => console.warn('[ExerciseDetail] Weekly goal update failed:', err)
-    });
+      // Update weekly goal progress (only if score >= 60)
+      this.curriculumService.incrementWeeklyGoalProgress(finalScore).subscribe({
+        next: () => console.log('[ExerciseDetail] Weekly goal progress updated with score:', finalScore),
+        error: (err) => console.warn('[ExerciseDetail] Weekly goal update failed:', err)
+      });
 
-    // NOTE: scheduleNextReview is now handled in ExerciseSubmissionService
-    // when all sentences are completed, so we don't call it here to avoid duplication
+      // NOTE: scheduleNextReview is now handled in ExerciseSubmissionService
+      // when all sentences are completed, so we don't call it here to avoid duplication
 
-    // Update review data with incorrect sentence indices
-    const incorrectIndices = sentences
-      .map((s, index) => ({ index, score: s.accuracyScore || 0 }))
-      .filter(item => item.score < 75)
-      .map(item => item.index);
+      // Update review data with incorrect sentence indices
+      const incorrectIndices = sentences
+        .map((s, index) => ({ index, score: s.accuracyScore || 0 }))
+        .filter(item => item.score < 75)
+        .map(item => item.index);
 
-    if (incorrectIndices.length > 0) {
-      // Store incorrect indices for quick review mode
-      console.log('[ExerciseDetail] Incorrect sentence indices:', incorrectIndices);
+      if (incorrectIndices.length > 0) {
+        // Store incorrect indices for quick review mode
+        console.log('[ExerciseDetail] Incorrect sentence indices:', incorrectIndices);
+      }
+
+      // Record exercise history (optional - won't block completion if it fails)
+      const timeSpent = this.exerciseStartTime
+        ? Math.floor((new Date().getTime() - this.exerciseStartTime.getTime()) / 1000)
+        : 0;
+
+      const penaltyMetrics = {
+        baseScore: Math.round(avgAccuracy),
+        totalIncorrectAttempts: penalties.totalIncorrectAttempts,
+        totalRetries: penalties.totalRetries,
+        totalPenalty,
+        finalScore
+      };
+
+      this.exerciseHistoryService.recordExerciseAttempt(
+        ex.id,
+        finalScore,
+        timeSpent,
+        this.hintsShown(),
+        sentences,
+        penaltyMetrics
+      ).subscribe({
+        error: (err) => console.warn('[ExerciseDetail] History recording failed:', err)
+      });
+    } else {
+      console.log('[ExerciseDetail] Custom exercise - skipping cloud save');
     }
-
-    // Record exercise history (optional - won't block completion if it fails)
-    const timeSpent = this.exerciseStartTime
-      ? Math.floor((new Date().getTime() - this.exerciseStartTime.getTime()) / 1000)
-      : 0;
-
-    const penaltyMetrics = {
-      baseScore: Math.round(avgAccuracy),
-      totalIncorrectAttempts: penalties.totalIncorrectAttempts,
-      totalRetries: penalties.totalRetries,
-      totalPenalty,
-      finalScore
-    };
-
-    this.exerciseHistoryService.recordExerciseAttempt(
-      ex.id,
-      finalScore,
-      timeSpent,
-      this.hintsShown(),
-      sentences,
-      penaltyMetrics
-    ).subscribe({
-      error: (err) => console.warn('[ExerciseDetail] History recording failed:', err)
-    });
 
     this.clearProgress();
     this.isReviewMode.set(true);

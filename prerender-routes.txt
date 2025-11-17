@@ -1,0 +1,10 @@
+/
+/home
+/exercises
+/guide
+/dashboard
+/favorites
+/achievements
+/review-queue
+/error-patterns
+/learning-path

@@ -200,7 +200,15 @@ export class DictationPracticeComponent implements OnInit, OnDestroy {
   }
   
   private loadTranslatedText(exerciseId: string): void {
-    this.dictationService.getTranslatedText(exerciseId).subscribe({
+    const ex = this.exercise();
+    if (!ex) {
+      this.error.set('Exercise not found');
+      this.isLoading.set(false);
+      return;
+    }
+    
+    // Pass englishText as fallback
+    this.dictationService.getTranslatedText(exerciseId, ex.englishText).subscribe({
       next: (text) => {
         if (!text) {
           this.error.set('No translation available. Please complete the translation exercise first.');

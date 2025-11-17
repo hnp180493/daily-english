@@ -6,27 +6,27 @@
     }
   </header>
 
-  <!-- Dictation Filter -->
+  <!-- Status Filter -->
   <div class="filter-section">
-    <label class="filter-label">Dictation Status:</label>
+    <label class="filter-label">Exercise Status:</label>
     <div class="filter-buttons">
       <button 
         class="filter-btn"
-        [class.active]="!dictationFilter()"
-        (click)="setDictationFilter(null)">
+        [class.active]="!statusFilter()"
+        (click)="setStatusFilter(null)">
         All Exercises
       </button>
       <button 
         class="filter-btn"
-        [class.active]="dictationFilter() === 'available'"
-        (click)="setDictationFilter('available')">
-        🎧 Dictation Available
+        [class.active]="statusFilter() === 'available'"
+        (click)="setStatusFilter('available')">
+        📝 Available
       </button>
       <button 
         class="filter-btn"
-        [class.active]="dictationFilter() === 'completed'"
-        (click)="setDictationFilter('completed')">
-        ✓ Dictation Completed
+        [class.active]="statusFilter() === 'completed'"
+        (click)="setStatusFilter('completed')">
+        ✓ Completed
       </button>
     </div>
   </div>

@@ -25,21 +25,31 @@ export class DictationPracticeService {
   private readonly CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
 
   /**
-   * Get translated text for an exercise from exercise history
+   * Get translated text for an exercise from exercise history or englishText
+   * Priority: 1) User's completed translation, 2) Exercise's englishText
    */
-  getTranslatedText(exerciseId: string): Observable<string | null> {
+  getTranslatedText(exerciseId: string, englishText?: string): Observable<string | null> {
     return this.databaseService.loadProgressAuto().pipe(
       map(progress => {
-        if (!progress || !progress.exerciseHistory) {
-          return null;
+        // Try to get user's completed translation first
+        if (progress && progress.exerciseHistory) {
+          const attempt = progress.exerciseHistory[exerciseId];
+          if (attempt?.userInput) {
+            return attempt.userInput;
+          }
         }
         
-        const attempt = progress.exerciseHistory[exerciseId];
-        return attempt?.userInput || null;
+        // Fallback to exercise's englishText if available
+        if (englishText) {
+          return englishText;
+        }
+        
+        return null;
       }),
       catchError(error => {
         console.error('[DictationPracticeService] Error loading translated text:', error);
-        return of(null);
+        // Still try to return englishText on error
+        return of(englishText || null);
       })
     );
   }

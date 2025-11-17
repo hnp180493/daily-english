@@ -11,6 +11,7 @@ import {
 import { DatabaseService } from './database/database.service';
 import { AuthService } from './auth.service';
 import { ExerciseService } from './exercise.service';
+import { ProgressService } from './progress.service';
 
 @Injectable({
   providedIn: 'root',
@@ -20,6 +21,7 @@ export class CurriculumService {
   private db = inject(DatabaseService);
   private auth = inject(AuthService);
   private exerciseService = inject(ExerciseService);
+  private progressService = inject(ProgressService);
 
   // Signals for reactive state
   currentPath = signal<LearningPath | null>(null);
@@ -587,16 +589,23 @@ export class CurriculumService {
       return false;
     }
 
+    const bonusPoints = challenge.bonusPoints || 100;
+
     // Mark as completed
     const updatedChallenge = {
       ...challenge,
       isCompleted: true,
       completedAt: new Date(),
       score,
-      bonusPoints: challenge.bonusPoints || 0,
+      bonusPoints,
     };
 
     await this.db.saveDailyChallengeAuto(updatedChallenge).toPromise();
+    
+    // Add bonus points to user progress
+    this.progressService.addBonusPoints(bonusPoints);
+    console.log('[CurriculumService] Daily challenge completed! Added', bonusPoints, 'bonus points');
+    
     return true;
   }
 
@@ -641,19 +650,27 @@ export class CurriculumService {
       return date >= weekStart && date < weekEnd && h.accuracyScore >= 60;
     }).length;
 
+    // Check if goal just achieved (wasn't achieved before, but is now)
+    const wasNotAchieved = !goal.isAchieved;
+    const isNowAchieved = completedThisWeek >= goal.targetExercises;
+    const justAchieved = wasNotAchieved && isNowAchieved;
+
     // Update goal
     const updatedGoal = {
       ...goal,
       completedExercises: completedThisWeek,
-      isAchieved: completedThisWeek >= goal.targetExercises,
-      bonusPointsEarned:
-        completedThisWeek >= goal.targetExercises && !goal.isAchieved
-          ? 500
-          : goal.bonusPointsEarned,
+      isAchieved: isNowAchieved,
+      bonusPointsEarned: isNowAchieved ? 500 : 0,
     };
 
     console.log('[CurriculumService] Recalculated weekly goal:', updatedGoal);
     await this.db.saveWeeklyGoalAuto(updatedGoal).toPromise();
+
+    // Add bonus points if goal just achieved
+    if (justAchieved) {
+      this.progressService.addBonusPoints(500);
+      console.log('[CurriculumService] Weekly goal achieved! Added 500 bonus points');
+    }
   }
 
   async getCurrentWeeklyGoal(): Promise<any> {

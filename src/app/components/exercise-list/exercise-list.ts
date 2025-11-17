@@ -28,10 +28,10 @@ export class ExerciseListComponent {
   currentPage = signal(0);
   pageSize = 6;
   
-  // Computed signal for dictation filter
-  dictationFilter = computed(() => {
+  // Computed signal for status filter
+  statusFilter = computed(() => {
     const params = this.queryParams() as Record<string, string>;
-    return params['dictation'] || null;
+    return params['status'] || null;
   });
 
   // Subscribe to progress changes to make status reactive
@@ -54,18 +54,19 @@ export class ExerciseListComponent {
       filtered = filtered.filter(ex => ex.level === params['level']);
     }
     
-    // Filter for exercises with dictation available
-    if (params['dictation'] === 'available') {
+    // Filter for available exercises (not started or not completed)
+    if (params['status'] === 'available') {
       filtered = filtered.filter(ex => {
         const exerciseAttempt = progress.exerciseHistory[ex.id];
-        return exerciseAttempt && exerciseAttempt.userInput && exerciseAttempt.userInput.trim().length > 0;
+        return !exerciseAttempt || !exerciseAttempt.accuracyScore || exerciseAttempt.accuracyScore < 90;
       });
     }
     
-    // Filter for exercises with dictation completed
-    if (params['dictation'] === 'completed') {
+    // Filter for completed exercises (score >= 90)
+    if (params['status'] === 'completed') {
       filtered = filtered.filter(ex => {
-        return progress.dictationHistory && progress.dictationHistory[ex.id];
+        const exerciseAttempt = progress.exerciseHistory[ex.id];
+        return exerciseAttempt && exerciseAttempt.accuracyScore && exerciseAttempt.accuracyScore >= 90;
       });
     }
     
@@ -130,13 +131,13 @@ export class ExerciseListComponent {
     this.currentPage.set(page);
   }
 
-  setDictationFilter(filter: 'available' | 'completed' | null): void {
+  setStatusFilter(filter: 'available' | 'completed' | null): void {
     const currentParams = { ...this.queryParams() };
     
     if (filter) {
-      currentParams['dictation'] = filter;
+      currentParams['status'] = filter;
     } else {
-      delete currentParams['dictation'];
+      delete currentParams['status'];
     }
     
     this.router.navigate([], {

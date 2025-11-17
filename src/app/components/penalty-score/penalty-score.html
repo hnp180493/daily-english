@@ -9,13 +9,13 @@
       </div>
       @if (penaltyMetrics()!.totalIncorrectAttempts > 0) {
         <div class="penalty-item penalty-negative">
-          <span class="penalty-label">Incorrect Attempts ({{ penaltyMetrics()!.totalIncorrectAttempts }} × {{ INCORRECT_PENALTY }}):</span>
+          <span class="penalty-label">Incorrect Attempts ({{ penaltyMetrics()!.totalIncorrectAttempts }} × {{ INCORRECT_PENALTY }}%):</span>
           <span class="penalty-value">-{{ penaltyMetrics()!.totalIncorrectAttempts * INCORRECT_PENALTY }}%</span>
         </div>
       }
       @if (penaltyMetrics()!.totalRetries > 0) {
         <div class="penalty-item penalty-negative">
-          <span class="penalty-label">Retries ({{ penaltyMetrics()!.totalRetries }} × {{ RETRY_PENALTY }}):</span>
+          <span class="penalty-label">Retries ({{ penaltyMetrics()!.totalRetries }} × {{ RETRY_PENALTY }}%):</span>
           <span class="penalty-value">-{{ penaltyMetrics()!.totalRetries * RETRY_PENALTY }}%</span>
         </div>
       }
