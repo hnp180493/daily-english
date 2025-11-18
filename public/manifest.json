@@ -1,0 +1,38 @@
+{
+  "name": "Daily English - Học tiếng Anh với AI",
+  "short_name": "Daily English",
+  "description": "Học tiếng Anh hiệu quả với 250+ bài tập dịch câu, phản hồi AI thông minh",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#1F2937",
+  "theme_color": "#4F46E5",
+  "orientation": "portrait-primary",
+  "lang": "vi",
+  "dir": "ltr",
+  "icons": [
+    {
+      "src": "/favicon.ico",
+      "sizes": "48x48",
+      "type": "image/x-icon",
+      "purpose": "any"
+    }
+  ],
+  "categories": ["education", "productivity"],
+  "screenshots": [],
+  "shortcuts": [
+    {
+      "name": "Bài tập",
+      "short_name": "Exercises",
+      "description": "Xem danh sách bài tập",
+      "url": "/exercises",
+      "icons": []
+    },
+    {
+      "name": "Lộ trình học tập",
+      "short_name": "Learning Path",
+      "description": "Theo dõi lộ trình học tập",
+      "url": "/learning-path",
+      "icons": []
+    }
+  ]
+}
