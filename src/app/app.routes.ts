@@ -19,7 +19,7 @@ export interface VietnameseRouteSeoData extends RouteSeoData {
 export const routes: Routes = [
   {
     path: '',
-    redirectTo: 'home',
+    redirectTo: 'login',
     pathMatch: 'full',
   },
   {
@@ -37,7 +37,6 @@ export const routes: Routes = [
   {
     path: 'home',
     loadComponent: () => import('./components/home/home').then((m) => m.HomeComponent),
-    canActivate: [authGuard],
     data: {
       preload: 'high',
       seo: {
@@ -91,7 +90,6 @@ export const routes: Routes = [
     path: 'exercises',
     loadComponent: () =>
       import('./components/exercise-list/exercise-list').then((m) => m.ExerciseListComponent),
-    canActivate: [authGuard],
     data: {
       preload: 'high',
       seo: {
@@ -147,25 +145,21 @@ export const routes: Routes = [
     path: 'exercises/custom',
     loadComponent: () =>
       import('./components/custom-exercise-library/custom-exercise-library').then((m) => m.CustomExerciseLibrary),
-    canActivate: [authGuard],
   },
   {
     path: 'exercise/create',
     loadComponent: () =>
       import('./components/exercise-creator/exercise-creator').then((m) => m.ExerciseCreator),
-    canActivate: [authGuard],
   },
   {
     path: 'exercise/edit/:id',
     loadComponent: () =>
       import('./components/exercise-creator/exercise-creator').then((m) => m.ExerciseCreator),
-    canActivate: [authGuard],
   },
   {
     path: 'exercise/:id',
     loadComponent: () =>
       import('./components/exercise-detail/exercise-detail').then((m) => m.ExerciseDetailComponent),
-    canActivate: [authGuard],
     data: {
       preload: 'high',
     },
@@ -174,7 +168,6 @@ export const routes: Routes = [
     path: 'exercises/:id/dictation',
     loadComponent: () =>
       import('./components/dictation-practice/dictation-practice').then((m) => m.DictationPracticeComponent),
-    canActivate: [authGuard],
     data: {
       seo: {
         title: 'Dictation Practice - Daily English',
@@ -187,34 +180,120 @@ export const routes: Routes = [
     path: 'profile',
     loadComponent: () =>
       import('./components/profile/profile').then((m) => m.ProfileComponent),
-    canActivate: [authGuard],
+    data: {
+      seo: {
+        title: 'Hồ sơ cá nhân - Daily English',
+        description:
+          'Quản lý thông tin cá nhân, cài đặt tài khoản và tùy chỉnh trải nghiệm học tập của bạn',
+        keywords: ['hồ sơ', 'tài khoản', 'cài đặt', 'profile'],
+        noindex: true,
+      } as RouteSeoData,
+    },
   },
   {
     path: 'favorites',
     loadComponent: () =>
       import('./components/favorites/favorites').then((m) => m.FavoritesComponent),
-    canActivate: [authGuard],
+    data: {
+      seo: {
+        title: 'Bài tập yêu thích - Daily English',
+        description:
+          'Danh sách các bài tập bạn đã đánh dấu yêu thích để dễ dàng truy cập và ôn tập lại',
+        keywords: ['yêu thích', 'bookmark', 'bài tập đã lưu', 'favorites'],
+        vietnamese: {
+          title: 'Bài tập yêu thích - Daily English',
+          description:
+            'Quản lý danh sách bài tập yêu thích của bạn. Dễ dàng truy cập và ôn tập các bài tập quan trọng.',
+          keywords: [
+            'bài tập yêu thích',
+            'bookmark tiếng anh',
+            'bài tập đã lưu',
+            'quản lý bài tập',
+          ],
+          breadcrumbs: [
+            { name: 'Trang chủ', url: '/' },
+            { name: 'Yêu thích', url: '/favorites' },
+          ],
+        },
+      } as VietnameseRouteSeoData,
+    },
   },
   {
     path: 'dashboard',
     loadComponent: () =>
       import('./components/dashboard/dashboard').then((m) => m.DashboardComponent),
-    canActivate: [authGuard],
     data: {
       preload: 'high',
+      seo: {
+        title: 'Bảng điều khiển - Daily English',
+        description:
+          'Theo dõi tiến độ học tập, xem thống kê chi tiết, phân tích điểm mạnh điểm yếu và lên kế hoạch học tập hiệu quả',
+        keywords: ['bảng điều khiển', 'thống kê học tập', 'tiến độ', 'phân tích', 'dashboard'],
+        vietnamese: {
+          title: 'Bảng điều khiển - Daily English',
+          description:
+            'Bảng điều khiển tổng quan với thống kê chi tiết về tiến độ học tập, điểm số, streak và phân tích điểm mạnh điểm yếu của bạn.',
+          keywords: [
+            'bảng điều khiển học tập',
+            'thống kê tiếng anh',
+            'tiến độ học tập',
+            'phân tích học tập',
+            'dashboard học tiếng anh',
+          ],
+          breadcrumbs: [
+            { name: 'Trang chủ', url: '/' },
+            { name: 'Bảng điều khiển', url: '/dashboard' },
+          ],
+        },
+      } as VietnameseRouteSeoData,
     },
   },
   {
     path: 'achievements',
     loadComponent: () =>
       import('./components/achievements/achievements').then((m) => m.Achievements),
-    canActivate: [authGuard],
+    data: {
+      seo: {
+        title: 'Thành tựu - Daily English',
+        description:
+          'Mở khóa thành tựu, nhận huy hiệu và theo dõi tiến độ học tập của bạn. Hoàn thành thử thách để nhận phần thưởng',
+        keywords: ['thành tựu', 'huy hiệu', 'phần thưởng', 'gamification', 'động lực học tập'],
+        vietnamese: {
+          title: 'Thành tựu - Daily English',
+          description:
+            'Hệ thống thành tựu với huy hiệu, điểm thưởng và thử thách đặc biệt. Theo dõi tiến độ và nhận động lực học tập mỗi ngày.',
+          keywords: [
+            'thành tựu tiếng anh',
+            'huy hiệu học tập',
+            'phần thưởng học tập',
+            'gamification',
+            'động lực học tiếng anh',
+            'streak học tập',
+          ],
+          breadcrumbs: [
+            { name: 'Trang chủ', url: '/' },
+            { name: 'Thành tựu', url: '/achievements' },
+          ],
+          faqs: [
+            {
+              question: 'Làm thế nào để mở khóa thành tựu?',
+              answer:
+                'Hoàn thành các bài tập, duy trì streak học tập hàng ngày, và đạt các mục tiêu để mở khóa thành tựu và nhận huy hiệu.',
+            },
+            {
+              question: 'Thành tựu có tác dụng gì?',
+              answer:
+                'Thành tựu giúp bạn theo dõi tiến độ, tạo động lực học tập và nhận phần thưởng như điểm thưởng, huy hiệu đặc biệt.',
+            },
+          ],
+        },
+      } as VietnameseRouteSeoData,
+    },
   },
   {
     path: 'review-queue',
     loadComponent: () =>
       import('./components/review-queue/review-queue').then((m) => m.ReviewQueueComponent),
-    canActivate: [authGuard],
     data: {
       seo: {
         title: 'Hàng đợi ôn tập - Daily English',
@@ -244,7 +323,6 @@ export const routes: Routes = [
     path: 'error-patterns',
     loadComponent: () =>
       import('./components/error-patterns/error-patterns').then((m) => m.ErrorPatternsComponent),
-    canActivate: [authGuard],
     data: {
       seo: {
         title: 'Phân tích lỗi - Daily English',
@@ -274,7 +352,6 @@ export const routes: Routes = [
     path: 'learning-path',
     loadComponent: () =>
       import('./components/learning-path/learning-path').then((m) => m.LearningPath),
-    canActivate: [authGuard],
     data: {
       preload: 'high',
       seo: {
@@ -344,6 +421,6 @@ export const routes: Routes = [
   },
   {
     path: '**',
-    redirectTo: 'login',
+    redirectTo: 'home',
   },
 ];

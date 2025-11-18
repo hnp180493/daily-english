@@ -97,17 +97,6 @@ export class HomeComponent implements OnInit {
       const customExercises = this.allCustomExercises();
       setTimeout(() => this.isLoading.set(false), 300);
     });
-
-    // Reload learning path data when navigating back to home
-    this.router.events.pipe(
-      filter(event => event instanceof NavigationEnd)
-    ).subscribe((event: any) => {
-      if (event.url === '/' || event.url === '/home') {
-        if (this.isAuthenticated()) {
-          this.loadLearningPathData();
-        }
-      }
-    });
   }
 
   async ngOnInit(): Promise<void> {
@@ -136,14 +125,24 @@ export class HomeComponent implements OnInit {
       }
       
       // Load today's daily challenge
-      const challenge = await this.adaptiveEngineService.getTodaysDailyChallenge();
-      this.dailyChallenge.set(challenge);
+      try {
+        const challenge = await this.adaptiveEngineService.getTodaysDailyChallenge();
+        this.dailyChallenge.set(challenge);
+      } catch (error) {
+        console.error('[Home] Error loading daily challenge:', error);
+        this.dailyChallenge.set(null);
+      }
       
       // Load current weekly goal
-      const goal = await this.curriculumService.getCurrentWeeklyGoal();
-      this.weeklyGoal.set(goal);
+      try {
+        const goal = await this.curriculumService.getCurrentWeeklyGoal();
+        this.weeklyGoal.set(goal);
+      } catch (error) {
+        console.error('[Home] Error loading weekly goal:', error);
+        this.weeklyGoal.set(null);
+      }
     } catch (error) {
-      console.error('Error loading learning path data:', error);
+      console.error('[Home] Error loading learning path data:', error);
     }
   }
 

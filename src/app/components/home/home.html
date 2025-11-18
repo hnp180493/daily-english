@@ -26,6 +26,16 @@
               </div>
             }
           </div>
+        } @else {
+          <div class="widget daily-challenge-widget inactive" (click)="navigateToLearningPath()">
+            <div class="widget-header">
+              <h3>🎯 Daily Challenge</h3>
+            </div>
+            <div class="challenge-inactive">
+              <p class="inactive-text">Join a learning path to unlock daily challenges</p>
+              <button class="activate-btn">Activate Now →</button>
+            </div>
+          </div>
         }
 
         <!-- Weekly Goal Widget -->
@@ -52,6 +62,16 @@
               <p class="goal-label">Exercises this week</p>
             </div>
           </div>
+        } @else {
+          <div class="widget weekly-goal-widget inactive" (click)="navigateToLearningPath()">
+            <div class="widget-header">
+              <h3>📊 Weekly Goal</h3>
+            </div>
+            <div class="goal-inactive">
+              <p class="inactive-text">Set weekly goals to track your progress</p>
+              <button class="activate-btn">Set Goal →</button>
+            </div>
+          </div>
         }
 
         <!-- Continue Learning Widget -->
@@ -72,7 +92,7 @@
               <button class="continue-btn">Continue →</button>
             </div>
           </div>
-        } @else if (isAuthenticated()) {
+        } @else {
           <div class="widget start-path-widget" (click)="navigateToLearningPath()">
             <div class="widget-header">
               <h3>🚀 Start Your Learning Path</h3>

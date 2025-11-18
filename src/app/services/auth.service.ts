@@ -6,6 +6,7 @@ import { supabaseClient } from './supabase.client';
 import { DatabaseService } from './database/database.service';
 import { ModalService } from './modal.service';
 import { RegistrationLimitModal } from '../components/registration-limit-modal/registration-limit-modal';
+import { LoginWarningModal } from '../components/login-warning-modal/login-warning-modal';
 import type { User as SupabaseUser } from '@supabase/supabase-js';
 
 // Maximum number of users allowed to register
@@ -173,6 +174,99 @@ export class AuthService {
   }
 
   signInWithGoogle(): Observable<void> {
+    // Check if user has guest data
+    const hasGuestData = this.hasGuestProgress();
+    
+    if (!hasGuestData) {
+      // No guest data, proceed directly with login
+      return this.proceedWithGoogleLogin();
+    }
+    
+    // Show warning modal before login
+    return this.showLoginWarning();
+  }
+
+  /**
+   * Check if user has guest progress data in localStorage
+   */
+  private hasGuestProgress(): boolean {
+    try {
+      const guestData = localStorage.getItem('guest_progress');
+      return guestData !== null && guestData !== '';
+    } catch (error) {
+      console.error('[Auth] Error checking guest progress:', error);
+      return false;
+    }
+  }
+
+  /**
+   * Show login warning modal and handle user response
+   */
+  private showLoginWarning(): Observable<void> {
+    return new Observable(observer => {
+      const modalRef = this.modalService.open(LoginWarningModal);
+      
+      if (!modalRef) {
+        // Modal failed to open, proceed with login anyway
+        console.warn('[Auth] Failed to open login warning modal');
+        this.proceedWithGoogleLogin().subscribe({
+          next: () => {
+            observer.next();
+            observer.complete();
+          },
+          error: (error) => observer.error(error)
+        });
+        return;
+      }
+
+      // Handle confirm - user wants to proceed with login
+      const confirmSub = modalRef.instance.confirm.subscribe(() => {
+        this.modalService.close();
+        
+        // Clear guest data before login
+        this.clearGuestData();
+        
+        // Proceed with Google login
+        this.proceedWithGoogleLogin().subscribe({
+          next: () => {
+            observer.next();
+            observer.complete();
+          },
+          error: (error) => observer.error(error)
+        });
+      });
+
+      // Handle cancel - user cancelled login
+      const cancelSub = modalRef.instance.cancel.subscribe(() => {
+        this.modalService.close();
+        observer.complete(); // Complete without error
+      });
+
+      // Cleanup subscriptions when observable is unsubscribed
+      return () => {
+        confirmSub.unsubscribe();
+        cancelSub.unsubscribe();
+      };
+    });
+  }
+
+  /**
+   * Clear guest progress data from localStorage
+   */
+  private clearGuestData(): void {
+    try {
+      localStorage.removeItem('guest_progress');
+      localStorage.removeItem('guest_analytics');
+      console.log('[Auth] Guest data and analytics cleared before login');
+    } catch (error) {
+      console.error('[Auth] Error clearing guest data:', error);
+    }
+  }
+
+  /**
+   * Proceed with Google OAuth login
+   */
+  private proceedWithGoogleLogin(): Observable<void> {
     return from(
       this.supabase.auth.signInWithOAuth({
         provider: 'google',

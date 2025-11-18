@@ -221,6 +221,39 @@
       }
     }
   }
+
+  .challenge-inactive {
+    text-align: center;
+    padding: 1rem 0;
+
+    .inactive-text {
+      color: #94A3B8;
+      font-size: 0.875rem;
+      margin: 0 0 1rem 0;
+    }
+
+    .activate-btn {
+      width: 100%;
+      padding: 0.75rem;
+      background: rgba(139, 92, 246, 0.2);
+      color: #A78BFA;
+      border: 1px solid rgba(139, 92, 246, 0.3);
+      border-radius: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+
+      &:hover {
+        background: rgba(139, 92, 246, 0.3);
+        border-color: rgba(139, 92, 246, 0.5);
+      }
+    }
+  }
+
+  &.inactive {
+    opacity: 0.8;
+    border-style: dashed;
+  }
 }
 
 .weekly-goal-widget {
@@ -273,6 +306,39 @@
       font-size: 0.875rem;
       margin: 0;
     }
+  }
+
+  .goal-inactive {
+    text-align: center;
+    padding: 1rem 0;
+
+    .inactive-text {
+      color: #94A3B8;
+      font-size: 0.875rem;
+      margin: 0 0 1rem 0;
+    }
+
+    .activate-btn {
+      width: 100%;
+      padding: 0.75rem;
+      background: rgba(139, 92, 246, 0.2);
+      color: #A78BFA;
+      border: 1px solid rgba(139, 92, 246, 0.3);
+      border-radius: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+
+      &:hover {
+        background: rgba(139, 92, 246, 0.3);
+        border-color: rgba(139, 92, 246, 0.5);
+      }
+    }
+  }
+
+  &.inactive {
+    opacity: 0.8;
+    border-style: dashed;
   }
 }
 

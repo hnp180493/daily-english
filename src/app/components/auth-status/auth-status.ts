@@ -1,4 +1,4 @@
-import { Component, inject, ChangeDetectionStrategy } from '@angular/core';
+import { Component, inject, ChangeDetectionStrategy, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { AuthService } from '../../services/auth.service';
 
@@ -18,14 +18,17 @@ export class AuthStatus {
   displayName = () => this.authService.getDisplayName();
   email = () => this.authService.getEmail();
   photoURL = () => this.authService.getPhotoURL();
+  
+  // Tooltip state
+  showTooltip = signal(false);
 
   signInWithGoogle(): void {
     this.authService.signInWithGoogle().subscribe({
       next: () => {
-        console.log('Signed in with Google successfully');
-        window.location.reload();
+        console.log('[AuthStatus] Google OAuth redirect initiated');
+        // Don't reload - OAuth will redirect automatically
       },
-      error: (error) => console.error('Google sign in failed:', error)
+      error: (error) => console.error('[AuthStatus] Google sign in failed:', error)
     });
   }
 
@@ -48,5 +51,13 @@ export class AuthStatus {
       },
       error: (error) => console.error('Sign out failed:', error)
     });
+  }
+  
+  onTooltipMouseEnter(): void {
+    this.showTooltip.set(true);
+  }
+  
+  onTooltipMouseLeave(): void {
+    this.showTooltip.set(false);
   }
 }

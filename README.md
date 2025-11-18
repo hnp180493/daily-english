@@ -94,6 +94,24 @@
 For detailed comparison and setup instructions, see [OpenRouter Guide](docs/OPENROUTER-GUIDE.md).
 
 
+## 📚 Documentation
+
+Tài liệu chi tiết về dự án được tổ chức trong thư mục `docs/`:
+
+- **[📑 Documentation Index](docs/INDEX.md)** - Danh mục tài liệu đầy đủ
+- **[🚀 Quick Start](docs/QUICKSTART.md)** - Hướng dẫn bắt đầu nhanh
+- **[🎯 Features](docs/INDEX.md#-features-documentation)** - Tài liệu các tính năng
+- **[🔧 Technical](docs/INDEX.md#-technical-documentation)** - Tài liệu kỹ thuật
+- **[📈 SEO](docs/INDEX.md#-seo--marketing)** - Tài liệu SEO & Marketing
+- **[🔐 Setup](docs/INDEX.md#-setup--configuration)** - Hướng dẫn cấu hình
+
+### Tài liệu nổi bật
+
+- [OpenRouter Integration Guide](docs/OPENROUTER-GUIDE.md) - Hướng dẫn tích hợp OpenRouter
+- [SEO Guide](docs/SEO-GUIDE.md) - Hướng dẫn SEO tổng quan
+- [Feature Roadmap](docs/FEATURE_ROADMAP.md) - Lộ trình phát triển
+- [Deployment Guide](docs/DEPLOYMENT.md) - Hướng dẫn deploy
+
 ## 📞 Liên Hệ & Hỗ Trợ
 
 Nếu bạn có câu hỏi, góp ý hoặc cần hỗ trợ, vui lòng liên hệ:
