@@ -346,7 +346,7 @@ export class AdaptiveEngineService {
     const isWeekend = new Date().getDay() === 0 || new Date().getDay() === 6;
     
     challenge = {
-      id: `${userId}-${today}`,
+      id: crypto.randomUUID(),
       userId,
       date: today,
       exerciseId: recommendation.exerciseId,

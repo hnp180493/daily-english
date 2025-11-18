@@ -6,6 +6,9 @@ import { DictationPracticeAttempt } from '../models/dictation.model';
 import { DatabaseService } from './database/database.service';
 import { UnsubscribeFunction } from './database/database.interface';
 import { AuthService } from './auth.service';
+import { StorageAdapterFactory } from './storage/storage-adapter-factory.service';
+import { LocalStorageProvider } from './storage/local-storage-provider.service';
+import { GuestAnalyticsService } from './guest-analytics.service';
 
 @Injectable({
   providedIn: 'root'
@@ -13,6 +16,9 @@ import { AuthService } from './auth.service';
 export class ProgressService {
   private databaseService = inject(DatabaseService);
   private authService = inject(AuthService);
+  private storageFactory = inject(StorageAdapterFactory);
+  private localStorageProvider = inject(LocalStorageProvider);
+  private guestAnalytics = inject(GuestAnalyticsService);
   private progress$ = new BehaviorSubject<UserProgress>(this.getDefaultProgress());
   private unsubscribe: UnsubscribeFunction | null = null;
   
@@ -24,26 +30,47 @@ export class ProgressService {
   private currentUserId: string | null = null;
 
   constructor() {
-    // console.log('[ProgressService] Constructor called');
     // Subscribe to auth changes using effect
     effect(() => {
       const user = this.authService.currentUser();
       const userId = user?.uid || null;
       
-      // console.log('[ProgressService] Effect triggered, user:', user?.email, 'isInitialized:', this.isInitialized, 'currentUserId:', this.currentUserId, 'newUserId:', userId);
-      
       // Only initialize if user changed
       if (userId && userId !== this.currentUserId) {
+        // User logged in
         this.currentUserId = userId;
-        this.isInitialized = false; // Reset for new user
-        this.initializeUserProgress();
+        this.isInitialized = false;
+        this.handleLogin();
         this.isInitialized = true;
       } else if (!userId && this.currentUserId) {
         // User logged out
         this.currentUserId = null;
         this.isInitialized = false;
-        this.stopFirestoreSync();
-        // Reset to default progress when logged out
+        this.handleLogout();
+      } else if (!userId && !this.isInitialized) {
+        // Initial load as guest
+        this.isInitialized = true;
+        this.loadProgress();
+      }
+    });
+  }
+
+  /**
+   * Load progress using the appropriate storage adapter
+   */
+  private loadProgress(): void {
+    const adapter = this.storageFactory.getAdapter();
+    adapter.loadProgress().subscribe({
+      next: (progress) => {
+        let data = progress || this.getDefaultProgress();
+        // Migrate data if needed
+        data = this.migrateProgressData(data);
+        this.progress$.next(data);
+        this.progressSignal.set(data);
+        console.log('[ProgressService] Progress loaded');
+      },
+      error: (error: Error) => {
+        console.error('[ProgressService] Failed to load progress:', error);
         const defaultProgress = this.getDefaultProgress();
         this.progress$.next(defaultProgress);
         this.progressSignal.set(defaultProgress);
@@ -51,35 +78,50 @@ export class ProgressService {
     });
   }
 
-  private initializeUserProgress(): void {
-    // Check if migration is needed (one-time check)
-    this.checkAndMigrateData().subscribe({
+  /**
+   * Handle user login - clear localStorage and load from Supabase
+   */
+  private handleLogin(): void {
+    console.log('[ProgressService] User logged in, clearing guest data');
+    
+    // Clear localStorage when user logs in
+    this.localStorageProvider.clearAll().subscribe({
       next: () => {
-        // Load from Firestore
-        this.loadFromFirestore();
+        console.log('[ProgressService] Guest data cleared on login');
+        // Check if migration is needed (one-time check)
+        this.checkAndMigrateData().subscribe({
+          next: () => {
+            // Load from Supabase
+            this.loadProgress();
+          },
+          error: (error) => {
+            console.error('[ProgressService] Migration failed:', error);
+            this.loadProgress(); // Try loading anyway
+          }
+        });
       },
       error: (error) => {
-        console.error('[ProgressService] Migration failed:', error);
-        this.loadFromFirestore(); // Try loading anyway
+        console.error('[ProgressService] Failed to clear guest data:', error);
+        // Continue with login anyway
+        this.loadProgress();
       }
     });
   }
 
-  private loadFromFirestore(): void {
-    this.databaseService.loadProgressAuto().subscribe({
-      next: (progress) => {
-        let data = progress || this.getDefaultProgress();
-        // Migrate data if needed
-        data = this.migrateProgressData(data);
-        this.progress$.next(data);
-        this.progressSignal.set(data);
-        console.log('[ProgressService] Progress loaded from Firestore');
-      },
-      error: (error: Error) => {
-        console.error('[ProgressService] Failed to load progress:', error);
-        // Keep current state on error
-      }
-    });
+  /**
+   * Handle user logout - reset to default and load from localStorage
+   */
+  private handleLogout(): void {
+    console.log('[ProgressService] User logged out, switching to guest mode');
+    this.stopFirestoreSync();
+    
+    // Reset to default progress
+    const defaultProgress = this.getDefaultProgress();
+    this.progress$.next(defaultProgress);
+    this.progressSignal.set(defaultProgress);
+    
+    // Load from localStorage (if any guest data exists)
+    this.loadProgress();
   }
 
   private checkAndMigrateData(): Observable<void> {
@@ -242,6 +284,17 @@ export class ProgressService {
     console.log('Attempt accuracyScore:', attempt.accuracyScore);
     console.log('Points to add:', attempt.pointsEarned);
     
+    // Track guest analytics if user is not authenticated
+    if (!this.authService.isAuthenticated()) {
+      const isFirstExercise = Object.keys(current.exerciseHistory).length === 0;
+      
+      if (isFirstExercise) {
+        this.guestAnalytics.trackFirstExerciseCompletion();
+      }
+      
+      this.guestAnalytics.incrementExercisesCompleted();
+    }
+    
     // Update exercise history - only keep latest attempt per exercise
     const updatedHistory = {
       ...current.exerciseHistory,
@@ -275,9 +328,10 @@ export class ProgressService {
 
     console.log('=== END RECORDING ATTEMPT ===');
 
-    // Save to Firestore
-    this.databaseService.saveProgressAuto(updated).subscribe({
-      next: () => console.log('[ProgressService] Progress saved to Firestore'),
+    // Save using appropriate adapter
+    const adapter = this.storageFactory.getAdapter();
+    adapter.saveProgress(updated).subscribe({
+      next: () => console.log('[ProgressService] Progress saved'),
       error: (error) => console.error('[ProgressService] Failed to save progress:', error)
     });
   }
@@ -498,9 +552,10 @@ export class ProgressService {
 
     console.log('=== END RECORDING DICTATION ATTEMPT ===');
 
-    // Save to Firestore
-    this.databaseService.saveProgressAuto(updated).subscribe({
-      next: () => console.log('[ProgressService] Dictation progress saved to Firestore'),
+    // Save using appropriate adapter
+    const adapter = this.storageFactory.getAdapter();
+    adapter.saveProgress(updated).subscribe({
+      next: () => console.log('[ProgressService] Dictation progress saved'),
       error: (error) => console.error('[ProgressService] Failed to save dictation progress:', error)
     });
   }
@@ -559,8 +614,9 @@ export class ProgressService {
       this.progress$.next(updated);
       this.progressSignal.set(updated);
       
-      // Save to Firestore
-      this.databaseService.saveProgressAuto(updated).subscribe({
+      // Save using appropriate adapter
+      const adapter = this.storageFactory.getAdapter();
+      adapter.saveProgress(updated).subscribe({
         error: (error) => console.error('[ProgressService] Failed to save achievements:', error)
       });
     }
@@ -587,9 +643,10 @@ export class ProgressService {
 
     console.log('=== END ADDING BONUS POINTS ===');
 
-    // Save to Firestore
-    this.databaseService.saveProgressAuto(updated).subscribe({
-      next: () => console.log('[ProgressService] Bonus points saved to Firestore'),
+    // Save using appropriate adapter
+    const adapter = this.storageFactory.getAdapter();
+    adapter.saveProgress(updated).subscribe({
+      next: () => console.log('[ProgressService] Bonus points saved'),
       error: (error) => console.error('[ProgressService] Failed to save bonus points:', error)
     });
   }

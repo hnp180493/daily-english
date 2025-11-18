@@ -28,6 +28,9 @@ export class CurriculumService {
   currentModule = signal<LearningModule | null>(null);
   pathProgress = signal<UserPathProgress | null>(null);
 
+  // Cache for preventing duplicate requests
+  private loadingPromise: Promise<LearningPath | null> | null = null;
+
   // Computed values
   pathCompletion = computed(() => {
     const progress = this.pathProgress();
@@ -78,6 +81,23 @@ export class CurriculumService {
   }
 
   async getUserCurrentPath(): Promise<LearningPath | null> {
+    // If already loading, return the existing promise to prevent duplicate requests
+    if (this.loadingPromise) {
+      return this.loadingPromise;
+    }
+
+    // Start loading and cache the promise
+    this.loadingPromise = this.loadUserCurrentPathInternal();
+    
+    try {
+      const result = await this.loadingPromise;
+      return result;
+    } finally {
+      this.loadingPromise = null;
+    }
+  }
+
+  private async loadUserCurrentPathInternal(): Promise<LearningPath | null> {
     const progress = await firstValueFrom(this.db.loadLearningPathProgressAuto()).catch(() => null);
     if (!progress || !progress.currentPathId) {
       this.pathProgress.set(null);
@@ -228,6 +248,14 @@ export class CurriculumService {
     this.pathProgress.set(progress);
     this.currentPath.set(path);
     this.currentModule.set(firstModule);
+    
+    // Clear cache to force reload
+    this.clearCache();
+  }
+
+  // Clear cache to force reload
+  clearCache(): void {
+    this.loadingPromise = null;
   }
 
   // Module management methods

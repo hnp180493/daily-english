@@ -1,3 +1,133 @@
 .auth-status {
   @apply flex items-center justify-end;
 }
+
+.guest-mode-badge-container {
+  position: relative;
+  display: inline-block;
+}
+
+.guest-mode-badge {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  background: rgba(251, 191, 36, 0.1);
+  border: 1px solid rgba(251, 191, 36, 0.3);
+  border-radius: 12px;
+  transition: all 0.3s ease;
+  cursor: help;
+
+  &:hover {
+    background: rgba(251, 191, 36, 0.2);
+    box-shadow: 0 0 20px rgba(251, 191, 36, 0.4);
+    transform: translateY(-2px);
+  }
+}
+
+.guest-icon {
+  font-size: 1.1rem;
+}
+
+.guest-text {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #FBBF24;
+  text-shadow: 0 0 10px rgba(251, 191, 36, 0.5);
+  letter-spacing: 0.3px;
+}
+
+.guest-tooltip {
+  position: absolute;
+  top: calc(100% + 12px);
+  right: 0;
+  min-width: 280px;
+  background: rgba(26, 31, 58, 0.98);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(251, 191, 36, 0.3);
+  border-radius: 12px;
+  padding: 1rem;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(251, 191, 36, 0.2);
+  z-index: 1000;
+  animation: tooltipFadeIn 0.2s ease-out;
+
+  // Arrow pointing up
+  &::before {
+    content: '';
+    position: absolute;
+    top: -6px;
+    right: 20px;
+    width: 12px;
+    height: 12px;
+    background: rgba(26, 31, 58, 0.98);
+    border-left: 1px solid rgba(251, 191, 36, 0.3);
+    border-top: 1px solid rgba(251, 191, 36, 0.3);
+    transform: rotate(45deg);
+  }
+}
+
+@keyframes tooltipFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.tooltip-title {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #FBBF24;
+  margin-bottom: 0.75rem;
+  text-shadow: 0 0 10px rgba(251, 191, 36, 0.5);
+}
+
+.tooltip-list {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 0.75rem 0;
+
+  li {
+    font-size: 0.85rem;
+    color: #94A3B8;
+    padding: 0.4rem 0;
+    line-height: 1.4;
+
+    &:not(:last-child) {
+      border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+    }
+  }
+}
+
+.tooltip-footer {
+  font-size: 0.8rem;
+  color: #A78BFA;
+  font-weight: 600;
+  text-align: center;
+  padding-top: 0.5rem;
+  border-top: 1px solid rgba(167, 139, 250, 0.2);
+}
+
+@media (max-width: 767px) {
+  .guest-mode-badge {
+    padding: 0.35rem 0.5rem;
+    gap: 0.3rem;
+  }
+
+  .guest-icon {
+    font-size: 0.9rem;
+  }
+
+  .guest-text {
+    font-size: 0.75rem;
+  }
+
+  .guest-tooltip {
+    min-width: 240px;
+    right: -20px;
+  }
+}

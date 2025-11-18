@@ -1,0 +1,42 @@
+<div class="modal-overlay" (click)="onCancel()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <div class="icon-container warning">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+          <line x1="12" y1="9" x2="12" y2="13"></line>
+          <line x1="12" y1="17" x2="12.01" y2="17"></line>
+        </svg>
+      </div>
+      <h2 class="modal-title">Login Warning</h2>
+    </div>
+
+    <div class="modal-body">
+      <div class="warning-message">
+        <p class="main-message">
+          Logging in will clear your current guest progress.
+        </p>
+        <p class="sub-message">
+          Your data will be stored securely in the cloud and synced across all your devices.
+        </p>
+      </div>
+      
+      <div class="info-box">
+        <svg class="info-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"></circle>
+          <line x1="12" y1="16" x2="12" y2="12"></line>
+          <line x1="12" y1="8" x2="12.01" y2="8"></line>
+        </svg>
+        <div class="info-text">
+          <strong>Note:</strong> Once you log in, your guest progress cannot be recovered.
+          You'll start fresh with cloud-based storage.
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn btn-secondary" (click)="onCancel()">Cancel</button>
+      <button class="btn btn-primary" (click)="onConfirm()">Continue to Login</button>
+    </div>
+  </div>
+</div>

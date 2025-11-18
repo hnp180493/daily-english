@@ -91,33 +91,9 @@ export class ExerciseService {
   }
 
   private loadExercises(): void {
-    const levels = [
-      DifficultyLevel.BEGINNER,
-      DifficultyLevel.INTERMEDIATE,
-      DifficultyLevel.ADVANCED
-    ];
-    const categories = [
-      ExerciseCategory.DAILY_LIFE,
-      ExerciseCategory.EDUCATION_WORK,
-      ExerciseCategory.CULTURE_ARTS,
-      ExerciseCategory.HEALTH_WELLNESS,
-      ExerciseCategory.SCIENCE_ENVIRONMENT,
-      ExerciseCategory.SOCIETY_SERVICES,
-      ExerciseCategory.TRAVEL_TRANSPORTATION,
-      ExerciseCategory.PHILOSOPHY_BELIEFS
-    ];
-
-    // Load all exercise files
-    const requests = levels.flatMap(level =>
-      categories.map(category =>
-        this.http.get<Exercise[]>(`/data/exercises/${level}/${category}.json`)
-      )
-    );
-
-    // Combine all requests
-    combineLatest(requests).subscribe({
-      next: (results) => {
-        const allExercises = results.flat();
+    // Load all exercises from single combined file
+    this.http.get<Exercise[]>('/data/exercises/all-exercises.json').subscribe({
+      next: (allExercises) => {
         // Sort by ID
         allExercises.sort((a, b) => {
           const idA = parseInt(a.id.replace('ex-', ''));
