@@ -27,13 +27,13 @@
             }
           </div>
         } @else {
-          <div class="widget daily-challenge-widget inactive" (click)="navigateToLearningPath()">
+          <div class="widget daily-challenge-widget inactive">
             <div class="widget-header">
               <h3>🎯 Daily Challenge</h3>
             </div>
             <div class="challenge-inactive">
               <p class="inactive-text">Join a learning path to unlock daily challenges</p>
-              <button class="activate-btn">Activate Now →</button>
+              <button class="activate-btn" (click)="activateDailyChallenge()">Activate Now →</button>
             </div>
           </div>
         }

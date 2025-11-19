@@ -352,6 +352,7 @@ export const routes: Routes = [
     path: 'learning-path',
     loadComponent: () =>
       import('./components/learning-path/learning-path').then((m) => m.LearningPath),
+    canActivate: [authGuard],
     data: {
       preload: 'high',
       seo: {

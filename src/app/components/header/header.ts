@@ -7,6 +7,7 @@ import { ProgressService } from '../../services/progress.service';
 import { AchievementService } from '../../services/achievement.service';
 import { PointsAnimationService } from '../../services/points-animation.service';
 import { ReviewService } from '../../services/review.service';
+import { AuthService } from '../../services/auth.service';
 import { UserProgressHelper } from '../../models/exercise.model';
 
 @Component({
@@ -22,7 +23,11 @@ export class HeaderComponent implements OnInit {
   private achievementService = inject(AchievementService);
   private pointsAnimationService = inject(PointsAnimationService);
   private reviewService = inject(ReviewService);
+  private authService = inject(AuthService);
   private router = inject(Router);
+  
+  // Check if user is authenticated
+  isAuthenticated = computed(() => !!this.authService.currentUser());
   
   appTitle = 'English';
   favoriteCount = computed(() => this.favoriteService.favoriteCount());
@@ -140,6 +145,14 @@ export class HeaderComponent implements OnInit {
   
   isLearningMenuActive(): boolean {
     const url = this.router.url;
+    const isLearningPath = url.includes('/learning-path');
+    
+    // For authenticated users, include learning-path in active check
+    if (this.isAuthenticated()) {
+      return isLearningPath || url.includes('/dashboard') || url.includes('/exercises/custom') || url.includes('/guide');
+    }
+    
+    // For guest users, exclude learning-path
     return url.includes('/dashboard') || url.includes('/exercises/custom') || url.includes('/guide');
   }
   

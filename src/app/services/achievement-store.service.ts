@@ -2,7 +2,6 @@ import { Injectable, inject } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import { switchMap, tap, catchError } from 'rxjs/operators';
 import { UserAchievementData } from '../models/achievement.model';
-import { DatabaseService } from './database/database.service';
 import { AuthService } from './auth.service';
 
 /**
@@ -13,39 +12,103 @@ import { AuthService } from './auth.service';
   providedIn: 'root'
 })
 export class AchievementStoreService {
-  private databaseService = inject(DatabaseService);
   private authService = inject(AuthService);
 
   /**
-   * Load achievement data from Firestore
+   * Load achievement data from storage (Firestore for auth users, localStorage for guests)
    */
   loadAchievementData(): Observable<UserAchievementData | null> {
-    return this.databaseService.loadAchievementsAuto().pipe(
-      tap((data) => {
-        if (data) {
-          // console.log('[AchievementStoreService] Data loaded from Supabase');
-        }
-      }),
-      catchError((error: Error) => {
-        console.error('[AchievementStoreService] Failed to load data:', error);
-        return of(null);
-      })
-    );
+    const userId = this.authService.getUserId();
+    
+    // Guest user - load from localStorage
+    if (!userId) {
+      const localData = this.loadFromLocalStorage('guest');
+      return of(localData);
+    }
+    
+    // Authenticated user - load from Firestore (not implemented yet)
+    // TODO: Implement Firestore storage for achievements
+    console.warn('[AchievementStoreService] Firestore storage not implemented, using localStorage');
+    const localData = this.loadFromLocalStorage(userId);
+    return of(localData);
   }
 
   /**
-   * Save achievement data to Firestore
+   * Save achievement data to storage (Firestore for auth users, localStorage for guests)
    */
   saveAchievementData(data: UserAchievementData): Observable<void> {
-    return this.databaseService.saveAchievementsAuto(data).pipe(
-      tap(() => {
-        console.log('[AchievementStoreService] Data saved to Supabase');
-      }),
-      catchError((error: Error) => {
-        console.error('[AchievementStoreService] Failed to save data:', error);
-        return of(undefined);
-      })
-    );
+    const userId = this.authService.getUserId();
+    
+    // Guest user - save to localStorage
+    if (!userId) {
+      this.saveToLocalStorage('guest', data);
+      return of(undefined);
+    }
+    
+    // Authenticated user - save to Firestore (not implemented yet)
+    // TODO: Implement Firestore storage for achievements
+    console.warn('[AchievementStoreService] Firestore storage not implemented, using localStorage');
+    this.saveToLocalStorage(userId, data);
+    return of(undefined);
+  }
+  
+  /**
+   * Load achievement data from localStorage
+   */
+  private loadFromLocalStorage(userId: string): UserAchievementData | null {
+    const key = `user_achievements_${userId}`;
+    const stored = localStorage.getItem(key);
+
+    if (!stored) {
+      console.log(`[AchievementStoreService] No data found in localStorage for key: ${key}`);
+      return null;
+    }
+
+    try {
+      const data = JSON.parse(stored);
+
+      // Convert date strings back to Date objects
+      data.unlockedAchievements = data.unlockedAchievements.map((ua: any) => ({
+        ...ua,
+        unlockedAt: new Date(ua.unlockedAt),
+        rewardsClaimed: ua.rewardsClaimed ?? false // Ensure rewardsClaimed is preserved
+      }));
+      data.lastEvaluated = new Date(data.lastEvaluated);
+
+      // Convert progress dates
+      if (data.progress) {
+        Object.keys(data.progress).forEach((key) => {
+          data.progress[key].lastUpdated = new Date(data.progress[key].lastUpdated);
+        });
+      }
+
+      console.log(`[AchievementStoreService] Loaded ${data.unlockedAchievements.length} unlocked achievements from localStorage`);
+      
+      // Debug: Log claimed status
+      const claimedCount = data.unlockedAchievements.filter((ua: any) => ua.rewardsClaimed).length;
+      console.log(`[AchievementStoreService] ${claimedCount} achievements have claimed rewards`);
+
+      return data;
+    } catch (error) {
+      console.error('[AchievementStoreService] Failed to parse localStorage data:', error);
+      return null;
+    }
+  }
+  
+  /**
+   * Save achievement data to localStorage
+   */
+  private saveToLocalStorage(userId: string, data: UserAchievementData): void {
+    const key = `user_achievements_${userId}`;
+    try {
+      localStorage.setItem(key, JSON.stringify(data));
+      
+      // Debug: Log what's being saved
+      const claimedCount = data.unlockedAchievements.filter(ua => ua.rewardsClaimed).length;
+      console.log(`[AchievementStoreService] Saved to localStorage: ${data.unlockedAchievements.length} unlocked, ${claimedCount} claimed`);
+    } catch (error) {
+      console.error('[AchievementStoreService] Failed to save to localStorage:', error);
+    }
   }
 
   /**
@@ -87,38 +150,10 @@ export class AchievementStoreService {
   }
 
   /**
-   * Check for localStorage data
+   * Check for localStorage data (used for migration)
    */
   private checkLocalStorageData(userId: string): UserAchievementData | null {
-    const key = `user_achievements_${userId}`;
-    const stored = localStorage.getItem(key);
-
-    if (stored) {
-      try {
-        const data = JSON.parse(stored);
-
-        // Convert date strings back to Date objects
-        data.unlockedAchievements = data.unlockedAchievements.map((ua: any) => ({
-          ...ua,
-          unlockedAt: new Date(ua.unlockedAt)
-        }));
-        data.lastEvaluated = new Date(data.lastEvaluated);
-
-        // Convert progress dates
-        if (data.progress) {
-          Object.keys(data.progress).forEach((key) => {
-            data.progress[key].lastUpdated = new Date(data.progress[key].lastUpdated);
-          });
-        }
-
-        return data;
-      } catch (error) {
-        console.error('[AchievementStoreService] Failed to parse localStorage data:', error);
-        return null;
-      }
-    }
-
-    return null;
+    return this.loadFromLocalStorage(userId);
   }
 
   /**

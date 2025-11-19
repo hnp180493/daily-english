@@ -60,8 +60,10 @@ export class AchievementService {
         // Load from Firestore only once per user session
         this.isInitialized = true;
         this.loadFromFirestore();
-      } else if (!user) {
-        this.isInitialized = false;
+      } else if (!user && !this.isInitialized) {
+        // Guest user - initialize with default data and evaluate
+        this.isInitialized = true;
+        this.loadForGuestUser();
       }
     });
 
@@ -72,6 +74,34 @@ export class AchievementService {
         }
       });
     }, 100);
+  }
+
+  /**
+   * Load achievement data for guest user (from localStorage)
+   */
+  private loadForGuestUser(): void {
+    console.log('[AchievementService] Initializing achievements for guest user');
+    
+    // Load from localStorage if exists
+    this.storeService.loadAchievementData().subscribe({
+      next: (data) => {
+        if (data) {
+          console.log('[AchievementService] Loaded guest achievement data from localStorage');
+          this.userAchievementData.set(data);
+        } else {
+          console.log('[AchievementService] No saved data, using default');
+          this.userAchievementData.set(this.storeService.getDefaultUserData());
+        }
+        this.syncAchievementStates();
+        this.performInitialEvaluation();
+      },
+      error: (error: Error) => {
+        console.error('[AchievementService] Failed to load guest data:', error);
+        this.userAchievementData.set(this.storeService.getDefaultUserData());
+        this.syncAchievementStates();
+        this.performInitialEvaluation();
+      }
+    });
   }
 
   /**
@@ -129,6 +159,7 @@ export class AchievementService {
       const unlockedData = userData.unlockedAchievements.find(
         (ua) => ua.achievementId === achievement.id
       );
+      
       return {
         ...achievement,
         unlocked: !!unlockedData,

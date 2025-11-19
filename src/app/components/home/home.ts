@@ -157,6 +157,29 @@ export class HomeComponent implements OnInit {
     }
   }
 
+  async activateDailyChallenge(): Promise<void> {
+    // If no path selected, navigate to learning path selection
+    if (!this.currentPath()) {
+      this.router.navigate(['/learning-path']);
+      return;
+    }
+    
+    // Try to generate today's challenge
+    try {
+      const challenge = await this.adaptiveEngineService.getTodaysDailyChallenge();
+      this.dailyChallenge.set(challenge);
+      
+      // Navigate to the challenge exercise
+      if (challenge?.exercise) {
+        this.router.navigate(['/exercise', challenge.exercise.id]);
+      }
+    } catch (error) {
+      console.error('[Home] Error activating daily challenge:', error);
+      // If error, navigate to learning path
+      this.router.navigate(['/learning-path']);
+    }
+  }
+
   navigateToCurrentModule(): void {
     const module = this.currentModule();
     if (!module || !module.exerciseIds || module.exerciseIds.length === 0) {

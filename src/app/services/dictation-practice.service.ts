@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
-import { Observable, of, from } from 'rxjs';
-import { map, switchMap, catchError } from 'rxjs/operators';
+import { Observable, of } from 'rxjs';
+import { map, catchError } from 'rxjs/operators';
 import {
   DictationSentence,
   DictationFeedback,
@@ -18,11 +18,6 @@ import { AuthService } from './auth.service';
 export class DictationPracticeService {
   private databaseService = inject(DatabaseService);
   private authService = inject(AuthService);
-  
-  // Performance optimization: Cache dictation history
-  private historyCache: DictationProgress | null = null;
-  private cacheTimestamp: number = 0;
-  private readonly CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
 
   /**
    * Get translated text for an exercise from exercise history or englishText
@@ -382,107 +377,25 @@ export class DictationPracticeService {
   }
 
   /**
-   * Save dictation attempt to Firestore
+   * Save dictation attempt (no-op - dictation progress is not saved to database)
    */
   saveDictationAttempt(attempt: DictationPracticeAttempt): Observable<void> {
-    const userId = this.authService.getUserId();
-    if (!userId) {
-      console.error('[DictationPracticeService] No user ID available');
-      return of(undefined);
-    }
-    
-    // Invalidate cache on save
-    this.invalidateCache();
-    
-    // Load current dictation history
-    return this.loadDictationHistory().pipe(
-      switchMap(history => {
-        const updatedHistory = {
-          ...history,
-          [attempt.exerciseId]: attempt
-        };
-        
-        // Save to Firestore under users/{userId}/dictationProgress
-        return from(
-          this.databaseService['database']['supabase']
-            .from('dictation_progress')
-            .upsert({
-              user_id: userId,
-              exercise_id: attempt.exerciseId,
-              data: attempt,
-              updated_at: new Date().toISOString()
-            })
-            .then(({ error }) => {
-              if (error) throw error;
-            })
-        );
-      }),
-      catchError(error => {
-        console.error('[DictationPracticeService] Error saving dictation attempt:', error);
-        return of(undefined);
-      })
-    );
+    console.log('[DictationPracticeService] Dictation attempt completed (not saved to DB)');
+    return of(undefined);
   }
   
   /**
-   * Invalidate cache
-   */
-  private invalidateCache(): void {
-    this.historyCache = null;
-    this.cacheTimestamp = 0;
-  }
-
-  /**
-   * Load dictation history from Firestore with caching
+   * Load dictation history (no-op - dictation progress is not saved to database)
    */
   loadDictationHistory(): Observable<DictationProgress> {
-    const userId = this.authService.getUserId();
-    if (!userId) {
-      return of({});
-    }
-    
-    // Check cache first
-    const now = Date.now();
-    if (this.historyCache && (now - this.cacheTimestamp) < this.CACHE_DURATION) {
-      return of(this.historyCache);
-    }
-    
-    return from(
-      this.databaseService['database']['supabase']
-        .from('dictation_progress')
-        .select('*')
-        .eq('user_id', userId)
-    ).pipe(
-      map(({ data, error }) => {
-        if (error) throw error;
-        
-        const history: DictationProgress = {};
-        if (data) {
-          data.forEach((record: any) => {
-            history[record.exercise_id] = record.data;
-          });
-        }
-        
-        // Update cache
-        this.historyCache = history;
-        this.cacheTimestamp = Date.now();
-        
-        return history;
-      }),
-      catchError(error => {
-        console.error('[DictationPracticeService] Error loading dictation history:', error);
-        return of({});
-      })
-    );
+    return of({});
   }
 
   /**
-   * Get best (latest) dictation attempt for an exercise
+   * Get best dictation attempt for an exercise (no-op - dictation progress is not saved to database)
    */
   getBestDictationAttempt(exerciseId: string): Observable<DictationPracticeAttempt | null> {
-    return this.loadDictationHistory().pipe(
-      map(history => history[exerciseId] || null)
-    );
+    return of(null);
   }
 
   /**
