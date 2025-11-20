@@ -86,9 +86,6 @@
               <div class="stats-row">
                 <app-practice-stats-widget [data]="enhanced.practiceStats" />
               </div>
-              <div class="heatmap-row">
-                <app-activity-heatmap [heatmapData]="enhanced.activityHeatmap" />
-              </div>
                 <div class="charts-row">
                   <app-progress-charts [analytics]="analytics()" />
                 </div>
@@ -234,9 +231,11 @@
               <div class="weak-areas-row">
                 <app-weak-areas-analysis [data]="enhanced.weakAreas" />
               </div>
+              <div class="error-patterns-row">
+                <app-error-patterns-analysis [data]="enhanced.errorPatterns || []" />
+              </div>
               <div class="insights-details-row">
                 <app-vocabulary-stats [analytics]="analytics()" />
-                <app-hints-usage-analysis [data]="enhanced.hintsAnalysis" />
               </div>
             </div>
           </section>

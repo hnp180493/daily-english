@@ -15,7 +15,7 @@
           <div class="review-card" [class]="getAccuracyClass(exercise.score)">
             <div class="review-header">
               <div class="exercise-info">
-                <span class="exercise-id">{{ exercise.exerciseId }}</span>
+                <span class="exercise-id">{{ getExerciseTitle(exercise.exerciseId) }}</span>
                 <span class="attempt-badge">
                   <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
                     <path d="M4 4a2 2 0 00-2 2v1h16V6a2 2 0 00-2-2H4z"/>

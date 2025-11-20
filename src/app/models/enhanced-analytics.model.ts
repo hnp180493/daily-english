@@ -11,11 +11,29 @@ export interface EnhancedAnalyticsData {
   weakAreas: WeakAreaData[];
   timeOfDayAnalysis: TimeOfDayData;
   learningVelocity: LearningVelocityData;
-  hintsAnalysis: HintsAnalysisData;
   bestPerformances: BestPerformanceData[];
   mostPracticed: MostPracticedData[];
   activityHeatmap: EnhancedHeatmapData;
   practiceStats: PracticeStatsData;
+  categoryDistribution: CategoryDistributionData[];
+  difficultyBreakdown: DifficultyBreakdownData[];
+  vocabularyStats: VocabularyStatsData;
+  categoryAccuracy?: any[];
+  difficultyComparison?: any[];
+  exercisesNeedingReview?: any[];
+  errorPatterns?: ErrorPatternData[];
+}
+
+/**
+ * Error pattern data
+ */
+export interface ErrorPatternData {
+  type: string;
+  description: string;
+  count: number;
+  percentage: number;
+  examples: string[];
+  recommendation: string;
 }
 
 /**
@@ -146,4 +164,42 @@ export interface PracticeStatsData {
   trend: 'improving' | 'stable' | 'declining' | null;
   recentAverage: number; // Last 10 exercises
   overallAverage: number;
+}
+
+/**
+ * Category distribution data
+ */
+export interface CategoryDistributionData {
+  category: string;
+  categoryName: string;
+  count: number;
+  percentage: number;
+}
+
+/**
+ * Difficulty breakdown data
+ */
+export interface DifficultyBreakdownData {
+  level: string;
+  levelName: string;
+  count: number;
+  percentage: number;
+}
+
+/**
+ * Vocabulary statistics data
+ */
+export interface VocabularyStatsData {
+  totalWords: number;
+  wordsToReview: number;
+  wordCloud: {
+    text: string;
+    frequency: number;
+    size: number;
+  }[];
+  reviewWords: {
+    text: string;
+    errorCount: number;
+    lastSeen: Date;
+  }[];
 }

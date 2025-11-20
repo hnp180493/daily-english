@@ -19,8 +19,58 @@ export interface VietnameseRouteSeoData extends RouteSeoData {
 export const routes: Routes = [
   {
     path: '',
-    redirectTo: 'login',
+    loadComponent: () => import('./components/home/home').then((m) => m.HomeComponent),
     pathMatch: 'full',
+    data: {
+      preload: 'high',
+      seo: {
+        title: 'Daily English - Học tiếng Anh với AI | 250+ bài tập miễn phí',
+        description:
+          'Học tiếng Anh hiệu quả với 250+ bài tập dịch câu, phản hồi AI thông minh, lộ trình học tập có cấu trúc và hệ thống ôn tập thông minh. Hoàn toàn miễn phí!',
+        keywords: [
+          'học tiếng anh',
+          'học tiếng anh online',
+          'học tiếng anh miễn phí',
+          'luyện dịch tiếng anh',
+          'AI feedback',
+          'bài tập tiếng anh',
+          'học tiếng anh với AI',
+          'daily english',
+        ],
+        structuredDataType: 'WebSite',
+        vietnamese: {
+          title: 'Daily English - Học tiếng Anh với AI | 250+ bài tập miễn phí',
+          description:
+            'Học tiếng Anh hiệu quả với 250+ bài tập dịch câu, phản hồi AI thông minh, lộ trình học tập có cấu trúc và hệ thống ôn tập thông minh. Hoàn toàn miễn phí!',
+          keywords: [
+            'học tiếng anh',
+            'học tiếng anh online',
+            'học tiếng anh miễn phí',
+            'luyện dịch tiếng anh',
+            'học tiếng anh với AI',
+            'bài tập tiếng anh',
+          ],
+          breadcrumbs: [{ name: 'Trang chủ', url: '/' }],
+          faqs: [
+            {
+              question: 'Daily English là gì?',
+              answer:
+                'Daily English là nền tảng học tiếng Anh trực tuyến với 250+ bài tập dịch câu và phản hồi AI thông minh giúp bạn cải thiện kỹ năng tiếng Anh mỗi ngày.',
+            },
+            {
+              question: 'Có miễn phí không?',
+              answer:
+                'Có, Daily English hoàn toàn miễn phí với 250+ bài tập dịch câu, phản hồi AI thông minh, lộ trình học tập, thử thách hàng ngày và hệ thống ôn tập.',
+            },
+            {
+              question: 'AI hoạt động như thế nào?',
+              answer:
+                'AI của chúng tôi phân tích bản dịch của bạn, so sánh với đáp án chuẩn, và đưa ra phản hồi chi tiết về ngữ pháp, từ vựng và cấu trúc câu.',
+            },
+          ],
+        },
+      } as VietnameseRouteSeoData,
+    },
   },
   {
     path: 'login',
@@ -36,7 +86,13 @@ export const routes: Routes = [
   },
   {
     path: 'home',
-    loadComponent: () => import('./components/home/home').then((m) => m.HomeComponent),
+    redirectTo: '',
+    pathMatch: 'full',
+  },
+  {
+    path: 'index.html',
+    redirectTo: '',
+    pathMatch: 'full',
     data: {
       preload: 'high',
       seo: {
@@ -85,7 +141,6 @@ export const routes: Routes = [
       } as VietnameseRouteSeoData,
     },
   },
-
   {
     path: 'exercises',
     loadComponent: () =>

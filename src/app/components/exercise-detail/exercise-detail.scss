@@ -138,6 +138,11 @@
     stroke: currentColor;
   }
 
+  .dictation-btn-text {
+    display: inline-block;
+    white-space: nowrap;
+  }
+
   &:hover {
     transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(129, 140, 248, 0.5);

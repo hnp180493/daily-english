@@ -129,6 +129,7 @@ export class DictationPracticeComponent implements OnInit, OnDestroy {
     (this.ttsService as any).rate = 1.0;
     
     const exerciseId = this.route.snapshot.paramMap.get('id');
+    const mode = this.route.snapshot.queryParamMap.get('mode'); // 'original' or 'user'
     
     if (!exerciseId) {
       this.error.set('Invalid exercise ID');
@@ -147,7 +148,7 @@ export class DictationPracticeComponent implements OnInit, OnDestroy {
         
         this.exercise.set(ex);
         this.updateDictationSeo(ex);
-        this.loadTranslatedText(exerciseId);
+        this.loadTranslatedText(exerciseId, mode);
       },
       error: (err) => {
         console.error('Error loading exercise:', err);
@@ -216,7 +217,7 @@ export class DictationPracticeComponent implements OnInit, OnDestroy {
     this.accuracyCache.clear();
   }
   
-  private loadTranslatedText(exerciseId: string): void {
+  private loadTranslatedText(exerciseId: string, mode: string | null): void {
     const ex = this.exercise();
     if (!ex) {
       this.error.set('Exercise not found');
@@ -224,16 +225,15 @@ export class DictationPracticeComponent implements OnInit, OnDestroy {
       return;
     }
     
-    // Pass englishText as fallback
-    this.dictationService.getTranslatedText(exerciseId, ex.englishText).subscribe({
-      next: (text) => {
-        if (!text) {
-          this.error.set('No translation available. Please complete the translation exercise first.');
-          this.isLoading.set(false);
-          return;
-        }
-        
-        this.translatedText.set(text);
+    // Determine which text to use based on mode
+    let textToUse: string | null = null;
+    
+    if (mode === 'original') {
+      // Use englishText directly (original text)
+      textToUse = ex.englishText || null;
+      
+      if (textToUse) {
+        this.translatedText.set(textToUse);
         
         // Check for in-progress session
         const savedSession = this.dictationService.loadInProgressSession(exerciseId);
@@ -244,18 +244,49 @@ export class DictationPracticeComponent implements OnInit, OnDestroy {
           this.currentSentenceIndex.set(savedSession.currentIndex);
         } else {
           // Start new session
-          const sentenceList = this.dictationService.initializeDictationSession(exerciseId, text);
+          const sentenceList = this.dictationService.initializeDictationSession(exerciseId, textToUse);
           this.sentences.set(sentenceList);
         }
         
         this.isLoading.set(false);
-      },
-      error: (err) => {
-        console.error('Error loading translated text:', err);
-        this.error.set('Failed to load translation');
+      } else {
+        this.error.set('No English text available for this exercise.');
         this.isLoading.set(false);
       }
-    });
+    } else {
+      // Default mode: use user's translation
+      this.dictationService.getTranslatedText(exerciseId, ex.englishText).subscribe({
+        next: (text) => {
+          if (!text) {
+            this.error.set('No translation available. Please complete the translation exercise first.');
+            this.isLoading.set(false);
+            return;
+          }
+          
+          this.translatedText.set(text);
+          
+          // Check for in-progress session
+          const savedSession = this.dictationService.loadInProgressSession(exerciseId);
+          
+          if (savedSession) {
+            // Restore saved session
+            this.sentences.set(savedSession.sentences);
+            this.currentSentenceIndex.set(savedSession.currentIndex);
+          } else {
+            // Start new session
+            const sentenceList = this.dictationService.initializeDictationSession(exerciseId, text);
+            this.sentences.set(sentenceList);
+          }
+          
+          this.isLoading.set(false);
+        },
+        error: (err) => {
+          console.error('Error loading translated text:', err);
+          this.error.set('Failed to load translation');
+          this.isLoading.set(false);
+        }
+      });
+    }
   }
   
   private saveProgress(): void {

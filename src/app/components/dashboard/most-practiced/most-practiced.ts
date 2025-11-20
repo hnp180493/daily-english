@@ -1,7 +1,8 @@
-import { Component, ChangeDetectionStrategy, input, inject } from '@angular/core';
+import { Component, ChangeDetectionStrategy, input, inject, signal, effect, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { MostPracticedData } from '../../../models/enhanced-analytics.model';
+import { ExerciseService } from '../../../services/exercise.service';
 
 /**
  * Most Practiced Component
@@ -16,8 +17,29 @@ import { MostPracticedData } from '../../../models/enhanced-analytics.model';
 })
 export class MostPracticedComponent {
   private router = inject(Router);
+  private exerciseService = inject(ExerciseService);
+  private cdr = inject(ChangeDetectorRef);
   
   data = input.required<MostPracticedData[]>();
+  exerciseTitles = signal<Map<string, string>>(new Map());
+
+  constructor() {
+    effect(() => {
+      const practices = this.data();
+      const ids = practices.map(p => p.exerciseId);
+      
+      if (ids.length === 0) return;
+      
+      this.exerciseService.getExercisesByIds(ids).subscribe(exercises => {
+        const titleMap = new Map<string, string>();
+        exercises.forEach(ex => {
+          titleMap.set(ex.id, ex.title);
+        });
+        this.exerciseTitles.set(titleMap);
+        this.cdr.markForCheck();
+      });
+    });
+  }
 
   /**
    * Navigate to exercise detail page
@@ -61,5 +83,12 @@ export class MostPracticedComponent {
     if (percentage > 0) return 'Improved';
     if (percentage < 0) return 'Declined';
     return 'Same';
+  }
+
+  /**
+   * Get exercise title or fallback to ID
+   */
+  getExerciseTitle(exerciseId: string): string {
+    return this.exerciseTitles().get(exerciseId) || exerciseId;
   }
 }

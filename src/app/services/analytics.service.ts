@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import {
   AnalyticsData,
   TimeRange,
@@ -16,21 +16,57 @@ import {
   ExerciseAttempt,
   FeedbackItem
 } from '../models/exercise.model';
+import { ExerciseService } from './exercise.service';
+import { firstValueFrom } from 'rxjs';
 
 interface CacheEntry {
   data: AnalyticsData;
   timestamp: number;
 }
 
+interface EnrichedAttempt extends ExerciseAttempt {
+  enrichedCategory?: ExerciseCategory;
+  enrichedLevel?: DifficultyLevel;
+}
+
 @Injectable({
   providedIn: 'root'
 })
 export class AnalyticsService {
+  private exerciseService = inject(ExerciseService);
   private cache = new Map<string, CacheEntry>();
   private readonly CACHE_TIMEOUT = 5 * 60 * 1000; // 5 minutes
+  private exerciseMetadataCache = new Map<string, { category: ExerciseCategory; level: DifficultyLevel }>();
 
   /**
    * Main method to compute all analytics data
+   */
+  async computeAnalyticsAsync(progress: UserProgress | undefined, timeRange: TimeRange = '30d'): Promise<AnalyticsData> {
+    if (!this.validateProgressData(progress)) {
+      return this.getEmptyAnalytics();
+    }
+
+    const cacheKey = this.generateCacheKey(progress!, timeRange);
+    const cached = this.cache.get(cacheKey);
+
+    if (cached && !this.isCacheExpired(cached.timestamp)) {
+      return cached.data;
+    }
+
+    // Enrich attempts with exercise metadata
+    await this.enrichAttemptsWithMetadata(progress!);
+
+    const analytics = this.performComputation(progress!, timeRange);
+    this.cache.set(cacheKey, {
+      data: analytics,
+      timestamp: Date.now()
+    });
+
+    return analytics;
+  }
+
+  /**
+   * Synchronous version for backward compatibility
    */
   computeAnalytics(progress: UserProgress | undefined, timeRange: TimeRange = '30d'): AnalyticsData {
     if (!this.validateProgressData(progress)) {
@@ -51,6 +87,40 @@ export class AnalyticsService {
     });
 
     return analytics;
+  }
+
+  /**
+   * Enrich attempts with exercise metadata from ExerciseService
+   */
+  private async enrichAttemptsWithMetadata(progress: UserProgress): Promise<void> {
+    const allAttempts = UserProgressHelper.getAllAttempts(progress);
+    const exerciseIds = [...new Set(allAttempts.map(a => a.exerciseId))];
+    
+    // Load exercises that aren't in cache
+    const uncachedIds = exerciseIds.filter(id => !this.exerciseMetadataCache.has(id));
+    
+    if (uncachedIds.length > 0) {
+      try {
+        const exercises = await firstValueFrom(this.exerciseService.getExercisesByIds(uncachedIds));
+        exercises.forEach(ex => {
+          this.exerciseMetadataCache.set(ex.id, {
+            category: ex.category,
+            level: ex.level
+          });
+        });
+      } catch (error) {
+        console.error('Failed to load exercise metadata:', error);
+      }
+    }
+
+    // Enrich attempts with cached metadata
+    allAttempts.forEach((attempt: EnrichedAttempt) => {
+      const metadata = this.exerciseMetadataCache.get(attempt.exerciseId);
+      if (metadata) {
+        attempt.enrichedCategory = metadata.category;
+        attempt.enrichedLevel = metadata.level;
+      }
+    });
   }
 
   /**
@@ -192,12 +262,21 @@ export class AnalyticsService {
 
     // Count exercises by category (using exerciseId to avoid counting duplicates)
     const uniqueExercises = new Map<string, ExerciseCategory>();
-    const allAttempts = UserProgressHelper.getAllAttempts(progress);
+    const allAttempts = UserProgressHelper.getAllAttempts(progress) as EnrichedAttempt[];
     
     allAttempts.forEach((attempt) => {
-      // Use category from attempt if available
-      if (attempt.category) {
-        const category = attempt.category as ExerciseCategory;
+      let category: ExerciseCategory | undefined;
+      
+      // Try enriched category first (from metadata cache)
+      if (attempt.enrichedCategory) {
+        category = attempt.enrichedCategory;
+      }
+      // Then try category from attempt data
+      else if (attempt.category) {
+        category = attempt.category as ExerciseCategory;
+      }
+      
+      if (category) {
         uniqueExercises.set(attempt.exerciseId, category);
       }
     });
@@ -223,6 +302,35 @@ export class AnalyticsService {
   }
 
   /**
+   * Get category from exercise ID slug
+   */
+  private getCategoryFromSlug(slug: string): ExerciseCategory | null {
+    const categoryMap: { [key: string]: ExerciseCategory } = {
+      'daily-life': ExerciseCategory.DAILY_LIFE,
+      'travel-transportation': ExerciseCategory.TRAVEL_TRANSPORTATION,
+      'education-work': ExerciseCategory.EDUCATION_WORK,
+      'health-wellness': ExerciseCategory.HEALTH_WELLNESS,
+      'society-services': ExerciseCategory.SOCIETY_SERVICES,
+      'culture-arts': ExerciseCategory.CULTURE_ARTS,
+      'science-environment': ExerciseCategory.SCIENCE_ENVIRONMENT,
+      'philosophy-beliefs': ExerciseCategory.PHILOSOPHY_BELIEFS
+    };
+    return categoryMap[slug] || null;
+  }
+
+  /**
+   * Get difficulty level from exercise ID code
+   */
+  private getLevelFromCode(code: string): DifficultyLevel | null {
+    const levelMap: { [key: string]: DifficultyLevel } = {
+      'b': DifficultyLevel.BEGINNER,
+      'i': DifficultyLevel.INTERMEDIATE,
+      'a': DifficultyLevel.ADVANCED
+    };
+    return levelMap[code] || null;
+  }
+
+  /**
    * Analyze difficulty distribution
    */
   analyzeDifficultyDistribution(progress: UserProgress): {
@@ -235,12 +343,21 @@ export class AnalyticsService {
 
     // Count unique exercises by difficulty
     const uniqueExercises = new Map<string, DifficultyLevel>();
-    const allAttempts = UserProgressHelper.getAllAttempts(progress);
+    const allAttempts = UserProgressHelper.getAllAttempts(progress) as EnrichedAttempt[];
     
     allAttempts.forEach((attempt) => {
-      // Use level from attempt if available
-      if (attempt.level) {
-        const level = attempt.level as DifficultyLevel;
+      let level: DifficultyLevel | undefined;
+      
+      // Try enriched level first (from metadata cache)
+      if (attempt.enrichedLevel) {
+        level = attempt.enrichedLevel;
+      }
+      // Then try level from attempt data
+      else if (attempt.level) {
+        level = attempt.level as DifficultyLevel;
+      }
+      
+      if (level) {
         uniqueExercises.set(attempt.exerciseId, level);
       }
     });
@@ -277,9 +394,9 @@ export class AnalyticsService {
   }[] {
     const allAttempts = UserProgressHelper.getAllAttempts(progress);
     
-    // Filter exercises with score < 75% and sort by score ascending
+    // Filter exercises with score < 80% and sort by score ascending
     const needsReview = allAttempts
-      .filter(attempt => attempt.accuracyScore < 75)
+      .filter(attempt => attempt.accuracyScore < 80)
       .map(attempt => ({
         exerciseId: attempt.exerciseId,
         score: Math.round(attempt.accuracyScore),
@@ -345,12 +462,21 @@ export class AnalyticsService {
       ExerciseCategory,
       { scores: number[]; exerciseIds: Set<string> }
     >();
-    const allAttempts = UserProgressHelper.getAllAttempts(progress);
+    const allAttempts = UserProgressHelper.getAllAttempts(progress) as EnrichedAttempt[];
 
     allAttempts.forEach((attempt) => {
-      if (attempt.category) {
-        const category = attempt.category as ExerciseCategory;
-        
+      let category: ExerciseCategory | undefined;
+      
+      // Try enriched category first
+      if (attempt.enrichedCategory) {
+        category = attempt.enrichedCategory;
+      }
+      // Then try category from attempt data
+      else if (attempt.category) {
+        category = attempt.category as ExerciseCategory;
+      }
+      
+      if (category) {
         if (!categoryData.has(category)) {
           categoryData.set(category, { scores: [], exerciseIds: new Set() });
         }
@@ -393,12 +519,21 @@ export class AnalyticsService {
       DifficultyLevel,
       { scores: number[]; exerciseIds: Set<string> }
     >();
-    const allAttempts = UserProgressHelper.getAllAttempts(progress);
+    const allAttempts = UserProgressHelper.getAllAttempts(progress) as EnrichedAttempt[];
 
     allAttempts.forEach((attempt) => {
-      if (attempt.level) {
-        const level = attempt.level as DifficultyLevel;
-        
+      let level: DifficultyLevel | undefined;
+      
+      // Try enriched level first
+      if (attempt.enrichedLevel) {
+        level = attempt.enrichedLevel;
+      }
+      // Then try level from attempt data
+      else if (attempt.level) {
+        level = attempt.level as DifficultyLevel;
+      }
+      
+      if (level) {
         if (!difficultyData.has(level)) {
           difficultyData.set(level, { scores: [], exerciseIds: new Set() });
         }
@@ -415,7 +550,7 @@ export class AnalyticsService {
       .slice(0, 10);
     
     const recentLevels = recentAttempts
-      .map((attempt) => attempt.level as DifficultyLevel)
+      .map((attempt) => (attempt.enrichedLevel || attempt.level) as DifficultyLevel)
       .filter(Boolean);
     
     const currentLevel = recentLevels[0] || DifficultyLevel.BEGINNER;
@@ -589,7 +724,7 @@ export class AnalyticsService {
   }
 
   /**
-   * Extract vocabulary statistics from feedback
+   * Extract vocabulary statistics from sentence attempts
    */
   extractVocabularyStats(progress: UserProgress): {
     totalWords: number;
@@ -601,10 +736,36 @@ export class AnalyticsService {
     const allAttempts = UserProgressHelper.getAllAttempts(progress);
 
     allAttempts.forEach((attempt) => {
+      // Extract from sentence attempts (new format from Supabase)
+      if (attempt.sentenceAttempts && Array.isArray(attempt.sentenceAttempts)) {
+        attempt.sentenceAttempts.forEach((sentence) => {
+          // Extract words from user translation
+          if (sentence.userInput) {
+            const inputWords = this.extractWords(sentence.userInput);
+            inputWords.forEach((word) => {
+              const existing = vocabularyMap.get(word) || {
+                frequency: 0,
+                errors: 0,
+                lastSeen: new Date(attempt.timestamp)
+              };
+              
+              // Count as error if accuracy is low
+              const hasError = sentence.accuracyScore < 80;
+              
+              vocabularyMap.set(word, {
+                frequency: existing.frequency + 1,
+                errors: existing.errors + (hasError ? 1 : 0),
+                lastSeen: new Date(attempt.timestamp)
+              });
+            });
+          }
+        });
+      }
+      
+      // Also extract from old format (feedback + userInput) for backward compatibility
       if (attempt.feedback && Array.isArray(attempt.feedback)) {
         attempt.feedback.forEach((item: FeedbackItem) => {
           if (item.type === 'vocabulary') {
-            // Extract words from suggestion
             const words = this.extractWords(item.suggestion);
             words.forEach((word) => {
               const existing = vocabularyMap.get(word) || {
@@ -623,24 +784,26 @@ export class AnalyticsService {
         });
       }
       
-      // Also extract from user input for general vocabulary tracking
-      const inputWords = this.extractWords(attempt.userInput);
-      inputWords.forEach((word) => {
-        if (!vocabularyMap.has(word)) {
-          vocabularyMap.set(word, {
-            frequency: 1,
-            errors: 0,
-            lastSeen: new Date(attempt.timestamp)
-          });
-        } else {
-          const existing = vocabularyMap.get(word)!;
-          vocabularyMap.set(word, {
-            ...existing,
-            frequency: existing.frequency + 1,
-            lastSeen: new Date(attempt.timestamp)
-          });
-        }
-      });
+      // Extract from userInput (old format)
+      if (attempt.userInput) {
+        const inputWords = this.extractWords(attempt.userInput);
+        inputWords.forEach((word) => {
+          if (!vocabularyMap.has(word)) {
+            vocabularyMap.set(word, {
+              frequency: 1,
+              errors: 0,
+              lastSeen: new Date(attempt.timestamp)
+            });
+          } else {
+            const existing = vocabularyMap.get(word)!;
+            vocabularyMap.set(word, {
+              ...existing,
+              frequency: existing.frequency + 1,
+              lastSeen: new Date(attempt.timestamp)
+            });
+          }
+        });
+      }
     });
 
     const totalWords = vocabularyMap.size;

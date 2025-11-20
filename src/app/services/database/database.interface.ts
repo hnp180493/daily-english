@@ -94,4 +94,10 @@ export interface IDatabase {
   // User Count Operations
   getTotalUserCount(): Observable<number>;
   checkUserExists(userId: string): Observable<boolean>;
+
+  // Exercise History Operations
+  insertExerciseHistory(record: import('../../models/exercise-history.model').ExerciseHistoryRecord): Observable<void>;
+  loadRecentHistory(userId: string, limit: number): Observable<import('../../models/exercise-history.model').ExerciseHistoryRecord[]>;
+  loadExerciseHistory(userId: string, exerciseId: string): Observable<import('../../models/exercise-history.model').ExerciseHistoryRecord[]>;
+  loadHistoryForDateRange(userId: string, startDate: Date, endDate: Date): Observable<import('../../models/exercise-history.model').ExerciseHistoryRecord[]>;
 }

@@ -49,6 +49,8 @@
 
 .bar-wrapper {
   @apply flex-1 flex flex-col items-center;
+  height: 100%;
+  justify-content: flex-end;
 }
 
 .bar {

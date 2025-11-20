@@ -1,9 +1,10 @@
-import { Component, ChangeDetectionStrategy, inject, computed } from '@angular/core';
+import { Component, ChangeDetectionStrategy, inject, computed, signal, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { ExerciseHistoryService } from '../../../services/exercise-history.service';
 import { ExerciseHistoryRecord } from '../../../models/exercise-history.model';
+import { ExerciseService } from '../../../services/exercise.service';
 
 @Component({
   selector: 'app-recent-history-widget',
@@ -14,6 +15,7 @@ import { ExerciseHistoryRecord } from '../../../models/exercise-history.model';
 })
 export class RecentHistoryWidgetComponent {
   private exerciseHistoryService = inject(ExerciseHistoryService);
+  private exerciseService = inject(ExerciseService);
   private router = inject(Router);
 
   // Load recent history (limit 10) using toSignal for reactive updates
@@ -24,6 +26,25 @@ export class RecentHistoryWidgetComponent {
   history = computed(() => this.historyData());
   isLoading = computed(() => false); // toSignal handles loading state
   isEmpty = computed(() => this.history().length === 0);
+  
+  exerciseTitles = signal<Map<string, string>>(new Map());
+
+  constructor() {
+    effect(() => {
+      const records = this.history();
+      const ids = records.map(r => r.exerciseId);
+      
+      if (ids.length === 0) return;
+      
+      this.exerciseService.getExercisesByIds(ids).subscribe(exercises => {
+        const titleMap = new Map<string, string>();
+        exercises.forEach(ex => {
+          titleMap.set(ex.id, ex.title);
+        });
+        this.exerciseTitles.set(titleMap);
+      });
+    });
+  }
 
   /**
    * Format completion date
@@ -60,6 +81,13 @@ export class RecentHistoryWidgetComponent {
     } else {
       return `${minutes}m ${remainingSeconds}s`;
     }
+  }
+
+  /**
+   * Get exercise title or fallback to ID
+   */
+  getExerciseTitle(exerciseId: string): string {
+    return this.exerciseTitles().get(exerciseId) || exerciseId;
   }
 
   /**

@@ -78,7 +78,9 @@ export class ActivityTimelineWidgetComponent {
    * Get bar height percentage
    */
   getBarHeight(count: number): number {
+    if (count === 0) return 0;
     const max = this.maxCompletions();
+    // Linear scale from count to max
     return (count / max) * 100;
   }
 

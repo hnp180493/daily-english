@@ -24,7 +24,7 @@ import { TimeOfDayAnalysisComponent } from './time-of-day-analysis/time-of-day-a
 import { BestPerformancesComponent } from './best-performances/best-performances';
 import { MostPracticedComponent } from './most-practiced/most-practiced';
 import { LearningVelocityComponent } from './learning-velocity/learning-velocity';
-import { HintsUsageAnalysisComponent } from './hints-usage-analysis/hints-usage-analysis';
+import { ErrorPatternsAnalysisComponent } from './error-patterns-analysis/error-patterns-analysis';
 import { DictationStatsWidgetComponent } from './dictation-stats-widget/dictation-stats-widget';
 import { UserProgressHelper } from '../../models/exercise.model';
 
@@ -46,7 +46,7 @@ import { UserProgressHelper } from '../../models/exercise.model';
     BestPerformancesComponent,
     MostPracticedComponent,
     LearningVelocityComponent,
-    HintsUsageAnalysisComponent,
+    ErrorPatternsAnalysisComponent,
     DictationStatsWidgetComponent
   ],
   templateUrl: './dashboard.html',
@@ -76,11 +76,43 @@ export class DashboardComponent implements OnInit {
   
   enhancedAnalytics = signal<EnhancedAnalyticsData | null>(null);
 
+  // Compute analytics from enhanced data (Supabase) with exercise info
   analytics = computed(() => {
-    const progress = this.userProgress();
-    const timeRange = this.selectedTimeRange();
-    return this.analyticsService.computeAnalytics(progress, timeRange);
+    const enhanced = this.enhancedAnalytics();
+    if (!enhanced) {
+      const progress = this.userProgress();
+      const timeRange = this.selectedTimeRange();
+      return this.analyticsService.computeAnalytics(progress, timeRange);
+    }
+    
+    // Build analytics from enhanced data
+    return this.buildAnalyticsFromEnhanced(enhanced);
   });
+  
+  private buildAnalyticsFromEnhanced(enhanced: EnhancedAnalyticsData): any {
+    // Extract score trends from performance trends
+    const scoreTrends = {
+      dates: enhanced.performanceTrends.dailyAverages.map(d => d.date),
+      scores: enhanced.performanceTrends.dailyAverages.map(d => d.averageScore),
+      averageScore: enhanced.performanceTrends.overallAverage
+    };
+    
+    return {
+      scoreTrends,
+      categoryDistribution: enhanced.categoryDistribution || [],
+      difficultyBreakdown: enhanced.difficultyBreakdown || [],
+      topErrors: [],
+      exercisesNeedingReview: enhanced.exercisesNeedingReview || [],
+      categoryAccuracy: enhanced.categoryAccuracy || [],
+      difficultyComparison: enhanced.difficultyComparison || [],
+      heatmapData: [],
+      currentStreak: enhanced.activityHeatmap.currentStreak,
+      longestStreak: enhanced.activityHeatmap.longestStreak,
+      vocabularyStats: enhanced.vocabularyStats,
+      exportTimestamp: new Date(),
+      totalExercises: enhanced.practiceStats.totalExercisesCompleted
+    };
+  }
 
   constructor() {
     // Set up debounced analytics loading
@@ -189,14 +221,7 @@ export class DashboardComponent implements OnInit {
           percentageDifference: enhanced.learningVelocity.percentageDifference,
           weeklyBreakdown: enhanced.learningVelocity.weeklyBreakdown
         },
-        hintsAnalysis: {
-          totalHintsUsed: enhanced.hintsAnalysis.totalHintsUsed,
-          averageHintsPerExercise: enhanced.hintsAnalysis.averageHintsPerExercise,
-          trend: enhanced.hintsAnalysis.trend,
-          recentAverage: enhanced.hintsAnalysis.recentAverage,
-          overallAverage: enhanced.hintsAnalysis.overallAverage,
-          percentageChange: enhanced.hintsAnalysis.percentageChange
-        },
+
         bestPerformances: enhanced.bestPerformances.map((perf: any) => ({
           exerciseId: perf.exerciseId,
           score: perf.score,

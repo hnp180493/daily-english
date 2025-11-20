@@ -1,9 +1,11 @@
 import { Injectable, inject } from '@angular/core';
-import { Observable, of } from 'rxjs';
+import { Observable, of, forkJoin } from 'rxjs';
 import { map, catchError, retry, switchMap } from 'rxjs/operators';
 import { ExerciseHistoryService } from './exercise-history.service';
+import { ExerciseService } from './exercise.service';
 import { ExerciseHistoryRecord } from '../models/exercise-history.model';
-import { TimeRange } from '../models/analytics.model';
+import { TimeRange, CATEGORY_NAMES, DIFFICULTY_NAMES } from '../models/analytics.model';
+import { ExerciseCategory, DifficultyLevel } from '../models/exercise.model';
 import {
   EnhancedAnalyticsData,
   PerformanceTrendData,
@@ -14,8 +16,14 @@ import {
   BestPerformanceData,
   MostPracticedData,
   EnhancedHeatmapData,
-  PracticeStatsData
+  PracticeStatsData,
+  VocabularyStatsData
 } from '../models/enhanced-analytics.model';
+
+interface EnrichedRecord extends ExerciseHistoryRecord {
+  category?: ExerciseCategory;
+  level?: DifficultyLevel;
+}
 
 /**
  * Enhanced Analytics Service
@@ -26,6 +34,7 @@ import {
 })
 export class EnhancedAnalyticsService {
   private exerciseHistoryService = inject(ExerciseHistoryService);
+  private exerciseService = inject(ExerciseService);
 
   // Cache with 5-minute TTL
   private analyticsCache = new Map<string, {
@@ -60,13 +69,18 @@ export class EnhancedAnalyticsService {
         // Filter records by date range
         const filteredRecords = this.filterRecordsByDateRange(records, startDate, endDate);
         
-        // Compute all analytics
-        const analytics = this.computeAllAnalytics(filteredRecords);
-        
-        // Cache the result
-        this.cacheAnalytics(userId, timeRange, analytics);
-        
-        return of(analytics);
+        // Enrich records with exercise metadata
+        return this.enrichRecordsWithMetadata(filteredRecords).pipe(
+          map(enrichedRecords => {
+            // Compute all analytics
+            const analytics = this.computeAllAnalytics(enrichedRecords);
+            
+            // Cache the result
+            this.cacheAnalytics(userId, timeRange, analytics);
+            
+            return analytics;
+          })
+        );
       }),
       catchError(error => {
         console.error('[EnhancedAnalytics] Failed to compute analytics:', error);
@@ -97,18 +111,315 @@ export class EnhancedAnalyticsService {
   /**
    * Compute all analytics from filtered records
    */
-  private computeAllAnalytics(records: ExerciseHistoryRecord[]): EnhancedAnalyticsData {
+  private computeAllAnalytics(records: EnrichedRecord[]): EnhancedAnalyticsData {
     return {
       performanceTrends: this.calculatePerformanceTrends(records),
       weakAreas: this.identifyWeakAreas(records),
       timeOfDayAnalysis: this.analyzeTimeOfDayProductivity(records),
       learningVelocity: this.calculateLearningVelocity(records),
-      hintsAnalysis: this.analyzeHintsUsage(records),
       bestPerformances: this.getBestPerformances(records, 5),
       mostPracticed: this.getMostPracticed(records, 5),
       activityHeatmap: this.generateEnhancedHeatmap(records),
-      practiceStats: this.calculatePracticeStats(records)
+      practiceStats: this.calculatePracticeStats(records),
+      categoryDistribution: this.calculateCategoryDistribution(records),
+      difficultyBreakdown: this.calculateDifficultyBreakdown(records),
+      vocabularyStats: this.calculateVocabularyStats(records),
+      categoryAccuracy: this.calculateCategoryAccuracy(records),
+      difficultyComparison: this.calculateDifficultyComparison(records),
+      exercisesNeedingReview: this.getExercisesNeedingReview(records),
+      errorPatterns: this.analyzeErrorPatterns(records)
     };
+  }
+
+  /**
+   * Enrich records with exercise metadata (category and level)
+   */
+  private enrichRecordsWithMetadata(records: ExerciseHistoryRecord[]): Observable<EnrichedRecord[]> {
+    if (records.length === 0) {
+      return of([]);
+    }
+
+    // Get unique exercise IDs
+    const exerciseIds = [...new Set(records.map(r => r.exerciseId))];
+    
+    // Load exercises
+    return this.exerciseService.getExercisesByIds(exerciseIds).pipe(
+      map(exercises => {
+        // Create metadata map
+        const metadataMap = new Map(exercises.map(ex => [ex.id, { category: ex.category, level: ex.level }]));
+        
+        // Enrich records
+        return records.map(record => ({
+          ...record,
+          category: metadataMap.get(record.exerciseId)?.category,
+          level: metadataMap.get(record.exerciseId)?.level
+        }));
+      }),
+      catchError(error => {
+        console.error('[EnhancedAnalytics] Failed to load exercise metadata:', error);
+        return of(records as EnrichedRecord[]);
+      })
+    );
+  }
+
+  /**
+   * Calculate category distribution from exercise history
+   */
+  private calculateCategoryDistribution(records: EnrichedRecord[]): any[] {
+    const categoryMap = new Map<ExerciseCategory, Set<string>>();
+    
+    records.forEach(record => {
+      if (record.category) {
+        if (!categoryMap.has(record.category)) {
+          categoryMap.set(record.category, new Set());
+        }
+        categoryMap.get(record.category)!.add(record.exerciseId);
+      }
+    });
+    
+    const total = new Set(records.filter(r => r.category).map(r => r.exerciseId)).size;
+    if (total === 0) return [];
+    
+    return Array.from(categoryMap.entries())
+      .map(([category, exerciseIds]) => ({
+        category,
+        categoryName: CATEGORY_NAMES[category] || category,
+        count: exerciseIds.size,
+        percentage: Math.round((exerciseIds.size / total) * 100 * 100) / 100
+      }))
+      .sort((a, b) => b.count - a.count);
+  }
+
+  /**
+   * Calculate difficulty breakdown from exercise history
+   */
+  private calculateDifficultyBreakdown(records: EnrichedRecord[]): any[] {
+    const difficultyMap = new Map<DifficultyLevel, Set<string>>();
+    
+    records.forEach(record => {
+      if (record.level) {
+        if (!difficultyMap.has(record.level)) {
+          difficultyMap.set(record.level, new Set());
+        }
+        difficultyMap.get(record.level)!.add(record.exerciseId);
+      }
+    });
+    
+    const total = new Set(records.filter(r => r.level).map(r => r.exerciseId)).size;
+    if (total === 0) return [];
+    
+    return Array.from(difficultyMap.entries())
+      .map(([level, exerciseIds]) => ({
+        level,
+        levelName: DIFFICULTY_NAMES[level] || level,
+        count: exerciseIds.size,
+        percentage: Math.round((exerciseIds.size / total) * 100 * 100) / 100
+      }))
+      .sort((a, b) => {
+        const order = { [DifficultyLevel.BEGINNER]: 0, [DifficultyLevel.INTERMEDIATE]: 1, [DifficultyLevel.ADVANCED]: 2 };
+        return order[a.level] - order[b.level];
+      });
+  }
+
+  /**
+   * Get human-readable category name
+   */
+  private getCategoryName(category: string): string {
+    const names: { [key: string]: string } = {
+      'daily-life': 'Daily Life',
+      'travel-transportation': 'Travel & Transportation',
+      'education-work': 'Education & Work',
+      'health-wellness': 'Health & Wellness',
+      'society-services': 'Society & Services',
+      'culture-arts': 'Culture & Arts',
+      'science-environment': 'Science & Environment',
+      'philosophy-beliefs': 'Philosophy & Beliefs'
+    };
+    return names[category] || category;
+  }
+
+  /**
+   * Get human-readable difficulty name
+   */
+  private getDifficultyName(level: string): string {
+    const names: { [key: string]: string } = {
+      'beginner': 'Beginner',
+      'intermediate': 'Intermediate',
+      'advanced': 'Advanced'
+    };
+    return names[level] || level;
+  }
+
+  /**
+   * Calculate category accuracy from enriched records
+   */
+  private calculateCategoryAccuracy(records: EnrichedRecord[]): any[] {
+    const categoryData = new Map<string, { scores: number[]; exerciseIds: Set<string> }>();
+    
+    records.forEach(record => {
+      if (record.category) {
+        const category = record.category;
+        if (!categoryData.has(category)) {
+          categoryData.set(category, { scores: [], exerciseIds: new Set() });
+        }
+        const data = categoryData.get(category)!;
+        data.scores.push(record.finalScore);
+        data.exerciseIds.add(record.exerciseId);
+      }
+    });
+    
+    return Array.from(categoryData.entries())
+      .map(([category, data]) => ({
+        category,
+        categoryName: this.getCategoryName(category),
+        exerciseCount: data.exerciseIds.size,
+        avgScore: Math.round((data.scores.reduce((sum, s) => sum + s, 0) / data.scores.length) * 100) / 100,
+        totalAttempts: data.scores.length
+      }))
+      .sort((a, b) => b.avgScore - a.avgScore);
+  }
+
+  /**
+   * Calculate difficulty comparison from enriched records
+   */
+  private calculateDifficultyComparison(records: EnrichedRecord[]): any[] {
+    const difficultyData = new Map<string, { scores: number[]; exerciseIds: Set<string> }>();
+    
+    records.forEach(record => {
+      if (record.level) {
+        const level = record.level;
+        if (!difficultyData.has(level)) {
+          difficultyData.set(level, { scores: [], exerciseIds: new Set() });
+        }
+        const data = difficultyData.get(level)!;
+        data.scores.push(record.finalScore);
+        data.exerciseIds.add(record.exerciseId);
+      }
+    });
+    
+    // Determine current level from recent records
+    const recentRecords = [...records]
+      .sort((a, b) => new Date(b.completedAt).getTime() - new Date(a.completedAt).getTime())
+      .slice(0, 10);
+    const currentLevel = recentRecords.find(r => r.level)?.level || 'beginner';
+    
+    return Array.from(difficultyData.entries())
+      .map(([level, data]) => {
+        const avgScore = data.scores.reduce((sum, s) => sum + s, 0) / data.scores.length;
+        const exerciseCount = data.exerciseIds.size;
+        const completionRate = Math.round((data.scores.filter(s => s >= 70).length / data.scores.length) * 100);
+        const readyToAdvance = avgScore >= 85 && exerciseCount >= 10;
+        const scoreProgress = Math.min((avgScore / 85) * 50, 50);
+        const countProgress = Math.min((exerciseCount / 10) * 50, 50);
+        
+        return {
+          level,
+          levelName: this.getDifficultyName(level),
+          avgScore: Math.round(avgScore * 100) / 100,
+          exerciseCount,
+          completionRate,
+          readyToAdvance,
+          isCurrentLevel: level === currentLevel,
+          advancementProgress: Math.round(scoreProgress + countProgress)
+        };
+      })
+      .sort((a, b) => {
+        const order: any = { 'beginner': 0, 'intermediate': 1, 'advanced': 2 };
+        return order[a.level] - order[b.level];
+      });
+  }
+
+  /**
+   * Get exercises that need review (score < 75%)
+   */
+  private getExercisesNeedingReview(records: EnrichedRecord[]): any[] {
+    // Group by exercise ID to get latest attempt
+    const latestAttempts = new Map<string, EnrichedRecord>();
+    
+    records.forEach(record => {
+      const existing = latestAttempts.get(record.exerciseId);
+      if (!existing || new Date(record.completedAt) > new Date(existing.completedAt)) {
+        latestAttempts.set(record.exerciseId, record);
+      }
+    });
+    
+    // Filter exercises with score < 80% and count attempts
+    const needsReview = Array.from(latestAttempts.values())
+      .filter(record => record.finalScore < 80)
+      .map(record => {
+        const attemptCount = records.filter(r => r.exerciseId === record.exerciseId).length;
+        return {
+          exerciseId: record.exerciseId,
+          score: Math.round(record.finalScore),
+          attemptCount,
+          lastAttempt: new Date(record.completedAt)
+        };
+      })
+      .sort((a, b) => a.score - b.score)
+      .slice(0, 5); // Top 5 lowest scores
+    
+    return needsReview;
+  }
+
+  /**
+   * Analyze error patterns from sentence attempts
+   * Note: Currently returns empty as exercise history doesn't store detailed feedback
+   * This can be enhanced when feedback data is available
+   */
+  private analyzeErrorPatterns(records: EnrichedRecord[]): any[] {
+    // Count low-scoring attempts as potential errors
+    const errorStats = {
+      lowAccuracy: 0,
+      highRetries: 0,
+      examples: [] as string[]
+    };
+
+    records.forEach(record => {
+      if (record.sentenceAttempts && Array.isArray(record.sentenceAttempts)) {
+        record.sentenceAttempts.forEach(attempt => {
+          // Low accuracy indicates errors
+          if (attempt.accuracyScore < 70) {
+            errorStats.lowAccuracy++;
+            if (errorStats.examples.length < 5 && attempt.originalText) {
+              errorStats.examples.push(attempt.originalText);
+            }
+          }
+          
+          // High retries indicate difficulty
+          if (attempt.retryCount > 2) {
+            errorStats.highRetries++;
+          }
+        });
+      }
+    });
+
+    const patterns = [];
+
+    // Add pattern for low accuracy sentences
+    if (errorStats.lowAccuracy > 0) {
+      patterns.push({
+        type: 'accuracy',
+        description: 'Low Accuracy Translations',
+        count: errorStats.lowAccuracy,
+        percentage: 100,
+        examples: errorStats.examples.slice(0, 3),
+        recommendation: 'Focus on understanding sentence structure and vocabulary. Review translations that scored below 70% and identify common patterns in your mistakes.'
+      });
+    }
+
+    // Add pattern for high retry sentences
+    if (errorStats.highRetries > 0) {
+      patterns.push({
+        type: 'retries',
+        description: 'Sentences Requiring Multiple Attempts',
+        count: errorStats.highRetries,
+        percentage: Math.round((errorStats.highRetries / (errorStats.lowAccuracy + errorStats.highRetries)) * 100),
+        examples: [],
+        recommendation: 'These sentences required multiple attempts. Practice similar sentence structures and review grammar rules for complex sentences.'
+      });
+    }
+
+    return patterns;
   }
 
   /**
@@ -269,7 +580,7 @@ export class EnhancedAnalyticsService {
       });
     });
 
-    // Convert to WeakAreaData and sort by average accuracy
+    // Convert to WeakAreaData and filter by threshold
     const weakAreas: WeakAreaData[] = Array.from(patternStats.entries())
       .map(([key, stats]) => ({
         pattern: stats.pattern,
@@ -279,8 +590,18 @@ export class EnhancedAnalyticsService {
         recommendation: this.getRecommendation(stats.pattern),
         exampleSentences: stats.examples
       }))
-      .sort((a, b) => a.averageAccuracy - b.averageAccuracy)
-      .slice(0, 3);
+      .filter(area => 
+        // Only show patterns with accuracy < 85% OR high retry count (> 1.5)
+        area.averageAccuracy < 85 || area.averageRetryCount > 1.5
+      )
+      .sort((a, b) => {
+        // Sort by accuracy ascending, then by retry count descending
+        if (a.averageAccuracy !== b.averageAccuracy) {
+          return a.averageAccuracy - b.averageAccuracy;
+        }
+        return b.averageRetryCount - a.averageRetryCount;
+      })
+      .slice(0, 5); // Top 5 weak areas
 
     return weakAreas;
   }
@@ -935,11 +1256,126 @@ export class EnhancedAnalyticsService {
       weakAreas: [],
       timeOfDayAnalysis: this.analyzeTimeOfDayProductivity([]),
       learningVelocity: this.calculateLearningVelocity([]),
-      hintsAnalysis: this.analyzeHintsUsage([]),
       bestPerformances: [],
       mostPracticed: [],
       activityHeatmap: this.generateEnhancedHeatmap([]),
-      practiceStats: this.calculatePracticeStats([])
+      practiceStats: this.calculatePracticeStats([]),
+      categoryDistribution: [],
+      difficultyBreakdown: [],
+      vocabularyStats: {
+        totalWords: 0,
+        wordsToReview: 0,
+        wordCloud: [],
+        reviewWords: []
+      },
+      errorPatterns: []
     };
+  }
+
+  /**
+   * Calculate vocabulary statistics from sentence attempts
+   */
+  private calculateVocabularyStats(records: ExerciseHistoryRecord[]): {
+    totalWords: number;
+    wordsToReview: number;
+    wordCloud: { text: string; frequency: number; size: number }[];
+    reviewWords: { text: string; errorCount: number; lastSeen: Date }[];
+  } {
+    const vocabularyMap = new Map<string, { frequency: number; errors: number; lastSeen: Date }>();
+
+    records.forEach((record) => {
+      if (record.sentenceAttempts && Array.isArray(record.sentenceAttempts)) {
+        record.sentenceAttempts.forEach((sentence) => {
+          if (sentence.userTranslation) {
+            const words = this.extractWords(sentence.userTranslation);
+            words.forEach((word) => {
+              const existing = vocabularyMap.get(word) || {
+                frequency: 0,
+                errors: 0,
+                lastSeen: record.completedAt
+              };
+              
+              const hasError = sentence.accuracyScore < 80;
+              
+              vocabularyMap.set(word, {
+                frequency: existing.frequency + 1,
+                errors: existing.errors + (hasError ? 1 : 0),
+                lastSeen: record.completedAt
+              });
+            });
+          }
+        });
+      }
+    });
+
+    const totalWords = vocabularyMap.size;
+    
+    const reviewWords = Array.from(vocabularyMap.entries())
+      .filter(([_, data]) => data.errors > 0)
+      .map(([text, data]) => ({
+        text,
+        errorCount: data.errors,
+        lastSeen: data.lastSeen
+      }))
+      .sort((a, b) => b.errorCount - a.errorCount)
+      .slice(0, 20);
+
+    const wordsToReview = reviewWords.length;
+
+    const wordCloud = Array.from(vocabularyMap.entries())
+      .map(([text, data]) => ({
+        text,
+        frequency: data.frequency,
+        size: this.calculateWordSize(data.frequency, vocabularyMap)
+      }))
+      .sort((a, b) => b.frequency - a.frequency)
+      .slice(0, 50);
+
+    return {
+      totalWords,
+      wordsToReview,
+      wordCloud,
+      reviewWords
+    };
+  }
+
+  /**
+   * Extract words from text
+   */
+  private extractWords(text: string): string[] {
+    return text
+      .toLowerCase()
+      .replace(/[^\w\s]/g, ' ')
+      .split(/\s+/)
+      .filter((word) => word.length > 3)
+      .filter((word) => !this.isCommonWord(word));
+  }
+
+  /**
+   * Check if word is common (to filter out)
+   */
+  private isCommonWord(word: string): boolean {
+    const commonWords = new Set([
+      'the', 'and', 'for', 'are', 'but', 'not', 'you', 'all', 'can', 'her', 'was', 'one',
+      'our', 'out', 'day', 'get', 'has', 'him', 'his', 'how', 'man', 'new', 'now', 'old',
+      'see', 'two', 'way', 'who', 'boy', 'did', 'its', 'let', 'put', 'say', 'she', 'too',
+      'use', 'this', 'that', 'with', 'have', 'from', 'they', 'will', 'what', 'been', 'more',
+      'when', 'your', 'said', 'each', 'than', 'them', 'many', 'some', 'time', 'very', 'were'
+    ]);
+    return commonWords.has(word);
+  }
+
+  /**
+   * Calculate word size for word cloud (12-48px)
+   */
+  private calculateWordSize(
+    frequency: number,
+    vocabularyMap: Map<string, { frequency: number; errors: number; lastSeen: Date }>
+  ): number {
+    const maxFrequency = Math.max(...Array.from(vocabularyMap.values()).map((v) => v.frequency));
+    const minSize = 12;
+    const maxSize = 48;
+    const ratio = frequency / maxFrequency;
+    return Math.round(minSize + ratio * (maxSize - minSize));
   }
 }

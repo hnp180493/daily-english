@@ -596,7 +596,20 @@ export class ExerciseDetailComponent implements OnInit, OnDestroy {
     const ex = this.exercise();
     if (!ex) return;
 
-    this.router.navigate(['/exercises', ex.id, 'dictation']);
+    // Navigate to dictation with mode=user (use user's translation)
+    this.router.navigate(['/exercises', ex.id, 'dictation'], {
+      queryParams: { mode: 'user' }
+    });
+  }
+
+  onPracticeDictationOriginal(): void {
+    const ex = this.exercise();
+    if (!ex) return;
+
+    // Navigate to dictation with mode=original (use englishText)
+    this.router.navigate(['/exercises', ex.id, 'dictation'], {
+      queryParams: { mode: 'original' }
+    });
   }
 
   private focusInput(): void {

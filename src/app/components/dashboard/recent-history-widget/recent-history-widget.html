@@ -15,7 +15,7 @@
       @for (record of history(); track record.id) {
         <div class="history-item" (click)="viewExercise(record.exerciseId)">
           <div class="history-header">
-            <span class="exercise-title">{{ record.exerciseId }}</span>
+            <span class="exercise-title">{{ getExerciseTitle(record.exerciseId) }}</span>
             <span class="completion-date">{{ formatDate(record.completedAt) }}</span>
           </div>
           <div class="history-details">
