@@ -382,18 +382,18 @@ export class ReviewService {
   getReviewStats(): Observable<ReviewStats> {
     return combineLatest([
       this.databaseService.loadAllReviewDataAuto(),
-      this.getWeakPoints(),
       this.progressService.getUserProgress()
     ]).pipe(
-      map(([reviewDataList, weakPoints, progress]) => {
+      map(([reviewDataList, progress]) => {
         const now = new Date();
         const oneWeekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
 
         // Calculate reviews this week (based on lastReviewDate)
         const reviewsThisWeek = reviewDataList.filter(rd => rd.lastReviewDate >= oneWeekAgo).length;
 
-        // Calculate weak points improved (those with improvement rate > 0)
-        const weakPointsImproved = weakPoints.filter(wp => wp.improvementRate > 0).length;
+        // Calculate weak points improved: exercises that improved from < 80% to >= 80%
+        const exerciseHistory = Object.values(progress.exerciseHistory);
+        const weakPointsImproved = this.calculateImprovedExercises(exerciseHistory);
 
         // Use the same streak calculation as header (from ProgressService)
         const currentStreak = this.progressService.calculateStreak();
@@ -418,6 +418,33 @@ export class ReviewService {
         });
       })
     );
+  }
+
+  /**
+   * Calculate number of exercises that improved from weak (< 80%) to strong (>= 80%)
+   * by comparing with review history
+   */
+  private calculateImprovedExercises(exerciseHistory: any[]): number {
+    let improvedCount = 0;
+
+    exerciseHistory.forEach(attempt => {
+      // Current score is >= 80% (strong)
+      if (attempt.accuracyScore >= 80) {
+        // Check if this exercise was previously weak (< 80%)
+        // We can infer this from sentence attempts with low accuracy or high retries
+        if (attempt.sentenceAttempts && Array.isArray(attempt.sentenceAttempts)) {
+          const hasWeakSentences = attempt.sentenceAttempts.some(
+            (sa: any) => sa.accuracyScore < 80 || sa.retryCount > 1
+          );
+          
+          if (hasWeakSentences) {
+            improvedCount++;
+          }
+        }
+      }
+    });
+
+    return improvedCount;
   }
 
   /**

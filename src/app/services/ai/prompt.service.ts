@@ -40,11 +40,11 @@ SCORING (start at 100)
 ====================================================
 Deduct points based on:
 - Incorrect tense (relative to the English story): -5 to -10
-- Meaning distortion or changed main idea: -15 to -20
-- Missing important detail: -10 to -15
+- Meaning distortion or changed main idea: -15 to -25
+- Missing important detail: -10 to -20
 - Grammar or structural error: -10 to -20
-- Awkward or unnatural word choice: -10 to -15
-- Spelling mistake: -10 to -15
+- Awkward or unnatural word choice: -15 to -20
+- Spelling mistake: -15 to -20
 
 Meaning errors ONLY apply if the main idea changes.
 Minor rephrasing is acceptable.

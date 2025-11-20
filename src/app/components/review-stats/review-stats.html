@@ -35,16 +35,17 @@
       <div class="text-xs opacity-75 mt-0.5">day{{ stats().currentStreak !== 1 ? 's' : '' }}</div>
     </div>
 
-    <!-- Weak Points Improved -->
-    <div class="stat-card bg-white bg-opacity-20 rounded-lg p-3 backdrop-blur-sm">
+    <!-- Exercises Improved -->
+    <div class="stat-card bg-white bg-opacity-20 rounded-lg p-3 backdrop-blur-sm" 
+         title="Exercises that improved from weak (< 80%) to strong (≥ 80%)">
       <div class="flex items-center justify-between mb-1">
-        <span class="text-xs opacity-90 font-medium">Improved</span>
+        <span class="text-xs opacity-90 font-medium">Mastered</span>
         <svg class="w-4 h-4 opacity-75" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
         </svg>
       </div>
       <div class="text-2xl font-bold leading-none">{{ stats().weakPointsImproved }}</div>
-      <div class="text-xs opacity-75 mt-0.5">weak points</div>
+      <div class="text-xs opacity-75 mt-0.5">from weak</div>
     </div>
   </div>
 </div>
