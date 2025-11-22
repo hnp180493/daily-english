@@ -33,6 +33,35 @@
   }
 }
 
+// Today glow animation
+.today-glow {
+  animation: glow-orange 2s ease-in-out infinite;
+  text-shadow: 0 0 8px rgba(251, 146, 60, 0.6);
+}
+
+@keyframes glow-orange {
+  0%, 100% {
+    text-shadow: 0 0 8px rgba(251, 146, 60, 0.6);
+  }
+  50% {
+    text-shadow: 0 0 12px rgba(251, 146, 60, 0.9), 0 0 16px rgba(251, 146, 60, 0.5);
+  }
+}
+
+// Tomorrow highlight animation
+.tomorrow-highlight {
+  animation: pulse-yellow 3s ease-in-out infinite;
+}
+
+@keyframes pulse-yellow {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.8;
+  }
+}
+
 // Responsive adjustments
 @media (max-width: 768px) {
   .review-queue-item {

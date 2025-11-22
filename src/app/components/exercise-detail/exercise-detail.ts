@@ -28,6 +28,7 @@ import { ExerciseHistoryService } from '../../services/exercise-history.service'
 import { CurriculumService } from '../../services/curriculum.service';
 import { StreakService } from '../../services/streak.service';
 import { TTSSettings } from '../tts-settings/tts-settings';
+import { getTodayLocalDate } from '../../utils/date.utils';
 import { PenaltyScore } from '../penalty-score/penalty-score';
 import { PENALTY_CONSTANTS } from '../../models/penalty.constants';
 import { ExerciseContext } from '../../models/ai.model';
@@ -694,7 +695,7 @@ export class ExerciseDetailComponent implements OnInit, OnDestroy {
       });
 
       // Check if this was a daily challenge
-      const today = new Date().toISOString().split('T')[0];
+      const today = getTodayLocalDate();
       this.curriculumService.checkAndCompleteDailyChallenge(ex.id, today, finalScore).subscribe({
         next: (completed) => {
           if (completed) {

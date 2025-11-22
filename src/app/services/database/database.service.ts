@@ -12,6 +12,7 @@ import { WeeklyGoal } from '../../models/weekly-goal.model';
 import { NotificationPreferences } from '../notification.service';
 import { IDatabase, FavoriteData, UserProfile, UserRewards, UnsubscribeFunction } from './database.interface';
 import { SupabaseDatabase } from './supabase-database.service';
+import { getTodayLocalDate, getWeekStartLocalDate } from '../../utils/date.utils';
 
 /**
  * Centralized database service
@@ -414,7 +415,7 @@ export class DatabaseService implements IDatabase {
   loadTodaysDailyChallengeAuto(): Observable<DailyChallenge | null> {
     const userId = this.authService.getUserId();
     if (!userId) return of(null);
-    const today = new Date().toISOString().split('T')[0];
+    const today = getTodayLocalDate();
     return this.loadDailyChallengeByDate(userId, today);
   }
 
@@ -444,14 +445,7 @@ export class DatabaseService implements IDatabase {
     const userId = this.authService.getUserId();
     if (!userId) return of(null);
     
-    // Calculate Monday of current week
-    const now = new Date();
-    const dayOfWeek = now.getDay();
-    const diff = dayOfWeek === 0 ? -6 : 1 - dayOfWeek; // Adjust when day is Sunday
-    const monday = new Date(now);
-    monday.setDate(now.getDate() + diff);
-    monday.setHours(0, 0, 0, 0);
-    const weekStartDate = monday.toISOString().split('T')[0];
+    const weekStartDate = getWeekStartLocalDate();
     
     return this.loadWeeklyGoalByDate(userId, weekStartDate);
   }

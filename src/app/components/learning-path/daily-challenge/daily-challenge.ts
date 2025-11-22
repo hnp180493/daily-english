@@ -8,6 +8,7 @@ import { StreakService } from '../../../services/streak.service';
 import { DatabaseService } from '../../../services/database/database.service';
 import { DailyChallenge as DailyChallengeModel } from '../../../models/daily-challenge.model';
 import { Exercise } from '../../../models/exercise.model';
+import { getTodayLocalDate, toLocalDateString } from '../../../utils/date.utils';
 
 @Component({
   selector: 'app-daily-challenge',
@@ -53,7 +54,7 @@ export class DailyChallenge implements OnInit, OnDestroy {
   async loadDailyChallenge(): Promise<void> {
     this.isLoading.set(true);
     try {
-      const today = new Date().toISOString().split('T')[0];
+      const today = getTodayLocalDate();
       let challenge = await firstValueFrom(this.databaseService.loadDailyChallengeByDateAuto(today));
 
       console.log('[DailyChallenge] Loaded challenge:', challenge);
@@ -138,7 +139,7 @@ export class DailyChallenge implements OnInit, OnDestroy {
     const challenge: DailyChallengeModel = {
       id: crypto.randomUUID(),
       userId: '', // Will be set by database service
-      date: today.toISOString().split('T')[0],
+      date: toLocalDateString(today),
       exerciseId,
       isCompleted: false,
       isWeekendChallenge: isWeekend,

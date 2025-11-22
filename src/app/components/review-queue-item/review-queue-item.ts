@@ -25,6 +25,12 @@ export class ReviewQueueItem {
   
   // Computed signal to check if overdue
   isOverdue = computed(() => this.formattedDate() === 'Overdue');
+  
+  // Computed signal to check if today
+  isToday = computed(() => this.formattedDate() === 'Today');
+  
+  // Computed signal to check if tomorrow
+  isTomorrow = computed(() => this.formattedDate() === 'Tomorrow');
 
   onStartReview(): void {
     this.startReview.emit(this.item().exerciseId);

@@ -52,14 +52,28 @@
       <span class="text-gray-500">Next Review</span>
       <span 
         class="font-semibold" 
-        [class.text-gray-200]="!isOverdue()"
+        [class.text-gray-200]="!isOverdue() && !isToday() && !isTomorrow()"
         [class.text-red-400]="isOverdue()"
-        [class.font-bold]="isOverdue()"
+        [class.text-orange-400]="isToday()"
+        [class.text-yellow-400]="isTomorrow()"
+        [class.font-bold]="isOverdue() || isToday()"
         [class.overdue-pulse]="isOverdue()"
+        [class.today-glow]="isToday()"
+        [class.tomorrow-highlight]="isTomorrow()"
         role="status">
         @if (isOverdue()) {
           <span class="inline-flex items-center gap-1">
             <span class="text-red-500">⚠️</span>
+            {{ formattedDate() }}
+          </span>
+        } @else if (isToday()) {
+          <span class="inline-flex items-center gap-1">
+            <span class="text-orange-500">🔥</span>
+            {{ formattedDate() }}
+          </span>
+        } @else if (isTomorrow()) {
+          <span class="inline-flex items-center gap-1">
+            <span class="text-yellow-500">⏰</span>
             {{ formattedDate() }}
           </span>
         } @else {

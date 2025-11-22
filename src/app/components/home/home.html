@@ -6,7 +6,17 @@
     @if (isAuthenticated()) {
       <section class="learning-path-widgets">
         <!-- Daily Challenge Widget -->
-        @if (dailyChallenge(); as challenge) {
+        @if (isLoadingChallenge()) {
+          <div class="widget daily-challenge-widget loading-skeleton">
+            <div class="widget-header">
+              <h3>🎯 Daily Challenge</h3>
+            </div>
+            <div class="skeleton-content">
+              <div class="skeleton-line"></div>
+              <div class="skeleton-line short"></div>
+            </div>
+          </div>
+        } @else if (dailyChallenge(); as challenge) {
           <div class="widget daily-challenge-widget" (click)="navigateToDailyChallenge()">
             <div class="widget-header">
               <h3>🎯 Daily Challenge</h3>
@@ -39,7 +49,17 @@
         }
 
         <!-- Weekly Goal Widget -->
-        @if (weeklyGoal(); as goal) {
+        @if (isLoadingGoal()) {
+          <div class="widget weekly-goal-widget loading-skeleton">
+            <div class="widget-header">
+              <h3>📊 Weekly Goal</h3>
+            </div>
+            <div class="skeleton-content">
+              <div class="skeleton-circle"></div>
+              <div class="skeleton-line short"></div>
+            </div>
+          </div>
+        } @else if (weeklyGoal(); as goal) {
           <div class="widget weekly-goal-widget" (click)="navigateToLearningPath()">
             <div class="widget-header">
               <h3>📊 Weekly Goal</h3>
@@ -75,7 +95,18 @@
         }
 
         <!-- Continue Learning Widget -->
-        @if (currentPath() && currentModule()) {
+        @if (isLoadingPath()) {
+          <div class="widget continue-learning-widget loading-skeleton">
+            <div class="widget-header">
+              <h3>📚 Continue Learning</h3>
+            </div>
+            <div class="skeleton-content">
+              <div class="skeleton-line"></div>
+              <div class="skeleton-line"></div>
+              <div class="skeleton-line short"></div>
+            </div>
+          </div>
+        } @else if (currentPath() && currentModule()) {
           <div class="widget continue-learning-widget" (click)="navigateToCurrentModule()">
             <div class="widget-header">
               <h3>📚 Continue Learning</h3>

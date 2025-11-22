@@ -40,6 +40,11 @@ export class HomeComponent implements OnInit {
   dailyChallenge = signal<any>(null);
   weeklyGoal = signal<any>(null);
   currentStreak = toSignal(this.streakService.getCurrentStreak(), { initialValue: 0 });
+  
+  // Individual widget loading states
+  isLoadingPath = signal(false);
+  isLoadingChallenge = signal(false);
+  isLoadingGoal = signal(false);
 
   // Computed signal for path progress percentage
   pathProgressPercentage = computed(() => {
@@ -100,50 +105,78 @@ export class HomeComponent implements OnInit {
   }
 
   async ngOnInit(): Promise<void> {
-    // Load learning path data if authenticated
+    // Load learning path data if authenticated - parallel loading with timeouts
     if (this.isAuthenticated()) {
-      await this.loadLearningPathData();
+      this.loadLearningPathData();
     }
   }
 
-  private async loadLearningPathData(): Promise<void> {
-    try {
-      // Load current path progress
-      await this.curriculumService.getUserCurrentPath();
-      
-      // Load current module if path exists
-      if (this.currentPath()) {
-        await this.curriculumService.getCurrentModule();
-        
-        // Debug: Log progress data
-        const progress = this.pathProgress();
-        const module = this.currentModule();
-        if (progress && module) {
-          console.log('[Home] Current module:', module.id);
-          console.log('[Home] Module progress:', progress.moduleProgress[module.id]);
+  private loadLearningPathData(): void {
+    // Load all widgets in parallel with individual timeouts
+    // This ensures fast widgets show immediately, slow ones don't block
+    
+    // Load path progress (with timeout)
+    this.isLoadingPath.set(true);
+    Promise.race([
+      this.curriculumService.getUserCurrentPath(),
+      this.createTimeout(3000, 'path')
+    ])
+      .then(() => {
+        if (this.currentPath()) {
+          this.curriculumService.getCurrentModule();
         }
-      }
-      
-      // Load today's daily challenge
-      try {
-        const challenge = await this.adaptiveEngineService.getTodaysDailyChallenge();
-        this.dailyChallenge.set(challenge);
-      } catch (error) {
+      })
+      .catch(error => {
+        console.error('[Home] Error loading path:', error);
+      })
+      .finally(() => {
+        this.isLoadingPath.set(false);
+      });
+    
+    // Load daily challenge (with timeout)
+    this.isLoadingChallenge.set(true);
+    Promise.race([
+      this.adaptiveEngineService.getTodaysDailyChallenge(),
+      this.createTimeout(3000, 'challenge')
+    ])
+      .then(challenge => {
+        if (challenge && challenge !== 'timeout') {
+          this.dailyChallenge.set(challenge);
+        }
+      })
+      .catch(error => {
         console.error('[Home] Error loading daily challenge:', error);
-        this.dailyChallenge.set(null);
-      }
-      
-      // Load current weekly goal
-      try {
-        const goal = await this.curriculumService.getCurrentWeeklyGoal();
-        this.weeklyGoal.set(goal);
-      } catch (error) {
+      })
+      .finally(() => {
+        this.isLoadingChallenge.set(false);
+      });
+    
+    // Load weekly goal (with timeout)
+    this.isLoadingGoal.set(true);
+    Promise.race([
+      this.curriculumService.getCurrentWeeklyGoal(),
+      this.createTimeout(3000, 'goal')
+    ])
+      .then(goal => {
+        if (goal && goal !== 'timeout') {
+          this.weeklyGoal.set(goal);
+        }
+      })
+      .catch(error => {
         console.error('[Home] Error loading weekly goal:', error);
-        this.weeklyGoal.set(null);
-      }
-    } catch (error) {
-      console.error('[Home] Error loading learning path data:', error);
-    }
+      })
+      .finally(() => {
+        this.isLoadingGoal.set(false);
+      });
+  }
+  
+  private createTimeout(ms: number, name: string): Promise<string> {
+    return new Promise(resolve => {
+      setTimeout(() => {
+        console.warn(`[Home] ${name} loading timeout after ${ms}ms`);
+        resolve('timeout');
+      }, ms);
+    });
   }
 
   navigateToLearningPath(): void {

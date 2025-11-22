@@ -1,14 +1,16 @@
-import { Component, OnInit, signal, computed, inject, ChangeDetectionStrategy } from '@angular/core';
+import { Component, OnInit, signal, computed, inject, ChangeDetectionStrategy, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { CurriculumService } from '../../../services/curriculum.service';
 import { AdaptiveEngineService } from '../../../services/adaptive-engine.service';
 import { ProgressService } from '../../../services/progress.service';
 import { StreakService } from '../../../services/streak.service';
+import { ExerciseService } from '../../../services/exercise.service';
 import { PerformanceAnalysis } from '../../../models/adaptive-learning.model';
 
 interface RecentActivity {
   id: string;
+  exerciseId: string;
   exerciseTitle: string;
   date: Date;
   score: number;
@@ -27,6 +29,7 @@ export class ProgressDashboard implements OnInit {
   private adaptiveEngine = inject(AdaptiveEngineService);
   private progressService = inject(ProgressService);
   private streakService = inject(StreakService);
+  private exerciseService = inject(ExerciseService);
 
   isLoading = signal(true);
   performance = signal<PerformanceAnalysis | null>(null);
@@ -34,6 +37,7 @@ export class ProgressDashboard implements OnInit {
   // Store user progress from ProgressService
   private userProgressSignal = signal<any>(null);
   private longestStreakSignal = signal(0);
+  exerciseTitles = signal<Map<string, string>>(new Map());
 
   // Computed signals for reactive data
   currentPath = computed(() => this.curriculumService.currentPath());
@@ -62,12 +66,15 @@ export class ProgressDashboard implements OnInit {
     if (!progress) return [];
     
     const history = Object.values(progress.exerciseHistory || {});
+    const titles = this.exerciseTitles();
+    
     return history
       .slice(-5)
       .reverse()
       .map((h: any) => ({
         id: h.exerciseId,
-        exerciseTitle: h.exerciseId,
+        exerciseId: h.exerciseId,
+        exerciseTitle: titles.get(h.exerciseId) || h.exerciseId,
         date: new Date(h.timestamp),
         score: h.accuracyScore,
         language: h.language // Include language if available
@@ -75,6 +82,26 @@ export class ProgressDashboard implements OnInit {
   });
   
   longestStreak = computed(() => this.longestStreakSignal());
+
+  constructor() {
+    effect(() => {
+      const progress = this.userProgressSignal();
+      if (!progress) return;
+      
+      const history = Object.values(progress.exerciseHistory || {});
+      const ids = history.map((h: any) => h.exerciseId);
+      
+      if (ids.length === 0) return;
+      
+      this.exerciseService.getExercisesByIds(ids).subscribe(exercises => {
+        const titleMap = new Map<string, string>();
+        exercises.forEach(ex => {
+          titleMap.set(ex.id, ex.title);
+        });
+        this.exerciseTitles.set(titleMap);
+      });
+    });
+  }
 
   async ngOnInit(): Promise<void> {
     await this.loadDashboardData();

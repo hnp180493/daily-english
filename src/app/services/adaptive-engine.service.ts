@@ -12,6 +12,7 @@ import { ExerciseService } from './exercise.service';
 import { CurriculumService } from './curriculum.service';
 import { AuthService } from './auth.service';
 import { DatabaseService } from './database/database.service';
+import { getTodayLocalDate } from '../utils/date.utils';
 
 @Injectable({
   providedIn: 'root',
@@ -325,7 +326,7 @@ export class AdaptiveEngineService {
     const userId = this.auth.getUserId();
     if (!userId) return null;
 
-    const today = new Date().toISOString().split('T')[0];
+    const today = getTodayLocalDate();
     
     // Try to load existing challenge
     let challenge = await firstValueFrom(this.db.loadDailyChallengeByDate(userId, today));

@@ -29,6 +29,7 @@ export interface UserPathProgress {
   completedModules: string[];
   moduleProgress: { [moduleId: string]: ModuleProgress };
   pathCompletions: PathCompletion[];
+  migrationCompleted?: boolean;
 }
 
 export interface ModuleProgress {

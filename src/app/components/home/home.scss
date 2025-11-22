@@ -415,6 +415,57 @@
   }
 }
 
+// Loading skeleton styles
+.loading-skeleton {
+  pointer-events: none;
+  
+  .skeleton-content {
+    padding: 1rem 0;
+  }
+  
+  .skeleton-line,
+  .skeleton-circle {
+    background: linear-gradient(
+      90deg,
+      rgba(139, 92, 246, 0.1) 0%,
+      rgba(139, 92, 246, 0.2) 50%,
+      rgba(139, 92, 246, 0.1) 100%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+    border-radius: 8px;
+  }
+  
+  .skeleton-line {
+    height: 16px;
+    margin-bottom: 0.75rem;
+    
+    &.short {
+      width: 60%;
+    }
+    
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+  
+  .skeleton-circle {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    margin: 0 auto 0.75rem;
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
 @media (max-width: 767px) {
   .learning-path-widgets {
     grid-template-columns: 1fr;

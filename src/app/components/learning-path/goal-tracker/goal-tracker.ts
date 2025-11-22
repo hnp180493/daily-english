@@ -5,6 +5,7 @@ import { ProgressService } from '../../../services/progress.service';
 import { NotificationService } from '../../../services/notification.service';
 import { WeeklyGoal } from '../../../models/weekly-goal.model';
 import { ExerciseHistoryRecord } from '../../../models/exercise-history.model';
+import { getWeekStartLocalDate } from '../../../utils/date.utils';
 
 @Component({
   selector: 'app-goal-tracker',
@@ -38,13 +39,31 @@ export class GoalTracker implements OnInit {
     const goal = this.currentGoal();
     if (!goal) return 0;
     
-    const weekStart = new Date(goal.weekStartDate);
+    // Week runs from Monday 00:00:00 to Sunday 23:59:59 (local time)
+    // Parse weekStartDate as local date (YYYY-MM-DD format)
+    const [year, month, day] = goal.weekStartDate.split('-').map(Number);
+    const weekStart = new Date(year, month - 1, day, 0, 0, 0, 0);
+    
+    // Week ends on Sunday (6 days after Monday) at end of day
     const weekEnd = new Date(weekStart);
-    weekEnd.setDate(weekEnd.getDate() + 7);
+    weekEnd.setDate(weekEnd.getDate() + 6);
+    weekEnd.setHours(23, 59, 59, 999);
     
     const now = new Date();
-    const diff = weekEnd.getTime() - now.getTime();
-    return Math.max(0, Math.ceil(diff / (1000 * 60 * 60 * 24)));
+    
+    // If already past week end, return 0
+    if (now > weekEnd) return 0;
+    
+    // Calculate days remaining
+    // Use start of today vs start of end day to avoid fractional days
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const endDay = new Date(weekEnd.getFullYear(), weekEnd.getMonth(), weekEnd.getDate());
+    
+    const diffMs = endDay.getTime() - today.getTime();
+    const diffDays = Math.round(diffMs / (1000 * 60 * 60 * 24));
+    
+    // Add 1 because we count today as a remaining day
+    return Math.max(1, diffDays + 1);
   });
 
   async ngOnInit(): Promise<void> {
@@ -212,13 +231,7 @@ export class GoalTracker implements OnInit {
   }
 
   private getWeekStartDate(): string {
-    const now = new Date();
-    const dayOfWeek = now.getDay();
-    const diff = dayOfWeek === 0 ? -6 : 1 - dayOfWeek; // Monday as start
-    const monday = new Date(now);
-    monday.setDate(now.getDate() + diff);
-    monday.setHours(0, 0, 0, 0);
-    return monday.toISOString().split('T')[0];
+    return getWeekStartLocalDate();
   }
 
   private async calculateAchievementRate(): Promise<void> {

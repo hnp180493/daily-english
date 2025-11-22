@@ -12,6 +12,7 @@ import { DatabaseService } from './database/database.service';
 import { AuthService } from './auth.service';
 import { ExerciseService } from './exercise.service';
 import { ProgressService } from './progress.service';
+import { getWeekStartLocalDate, getTodayLocalDate } from '../utils/date.utils';
 
 @Injectable({
   providedIn: 'root',
@@ -116,9 +117,12 @@ export class CurriculumService {
       this.currentModule.set(module || path.modules[0]);
     }
     
-    // Migrate existing exercise history to learning path progress
-    if (path) {
-      await this.migrateExerciseHistoryToPath(path, progress);
+    // Migrate existing exercise history to learning path progress (async, don't wait)
+    // This runs in background and won't block the UI
+    if (path && !progress.migrationCompleted) {
+      this.migrateExerciseHistoryToPath(path, progress).catch(err => {
+        console.error('[CurriculumService] Migration error:', err);
+      });
     }
     
     return path || null;
@@ -126,7 +130,7 @@ export class CurriculumService {
 
   private async migrateExerciseHistoryToPath(path: LearningPath, progress: UserPathProgress): Promise<void> {
     try {
-      // Load exercise history from progress service
+      // Load exercise history from progress service with timeout
       const exerciseHistory = await firstValueFrom(
         this.db.loadProgressAuto().pipe(
           timeout(2000)
@@ -134,6 +138,9 @@ export class CurriculumService {
       ).catch(() => null);
 
       if (!exerciseHistory || !exerciseHistory.exerciseHistory) {
+        // Mark migration as completed even if no history
+        progress.migrationCompleted = true;
+        await this.db.saveLearningPathProgressAuto(progress);
         return;
       }
 
@@ -186,12 +193,13 @@ export class CurriculumService {
         }
       }
 
-      // Save updated progress if there were changes
-      if (hasChanges) {
-        console.log('[CurriculumService] Saving migrated progress');
-        await this.db.saveLearningPathProgressAuto(progress);
-        this.pathProgress.set(progress);
-      }
+      // Mark migration as completed
+      progress.migrationCompleted = true;
+
+      // Save updated progress
+      console.log('[CurriculumService] Saving migrated progress');
+      await this.db.saveLearningPathProgressAuto(progress);
+      this.pathProgress.set(progress);
     } catch (error) {
       console.error('[CurriculumService] Error migrating exercise history:', error);
     }
@@ -645,14 +653,7 @@ export class CurriculumService {
     const userId = this.auth.getUserId();
     if (!userId) return;
 
-    // Calculate Monday of current week
-    const now = new Date();
-    const dayOfWeek = now.getDay();
-    const diff = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
-    const monday = new Date(now);
-    monday.setDate(now.getDate() + diff);
-    monday.setHours(0, 0, 0, 0);
-    const weekStartDate = monday.toISOString().split('T')[0];
+    const weekStartDate = getWeekStartLocalDate();
 
     const goal = await this.db.loadWeeklyGoalByDate(userId, weekStartDate).toPromise();
 
@@ -703,18 +704,23 @@ export class CurriculumService {
 
   async getCurrentWeeklyGoal(): Promise<any> {
     const userId = this.auth.getUserId();
-    if (!userId) return null;
+    if (!userId) {
+      console.log('[CurriculumService] getCurrentWeeklyGoal: No userId');
+      return null;
+    }
 
-    // Calculate Monday of current week
-    const now = new Date();
-    const dayOfWeek = now.getDay();
-    const diff = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
-    const monday = new Date(now);
-    monday.setDate(now.getDate() + diff);
-    monday.setHours(0, 0, 0, 0);
-    const weekStartDate = monday.toISOString().split('T')[0];
+    const weekStartDate = getWeekStartLocalDate();
+    const today = getTodayLocalDate();
+    
+    console.log('[CurriculumService] getCurrentWeeklyGoal:', {
+      today,
+      weekStartDate,
+      dayOfWeek: new Date().getDay()
+    });
 
     const goal = await this.db.loadWeeklyGoalByDate(userId, weekStartDate).toPromise();
+
+    console.log('[CurriculumService] Weekly goal loaded:', goal);
 
     // Return null if no goal set - user needs to set it in goal-tracker
     return goal || null;

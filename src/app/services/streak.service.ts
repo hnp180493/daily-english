@@ -5,6 +5,7 @@ import { StreakData, StreakHistoryEntry } from '../models/daily-challenge.model'
 import { ProgressService } from './progress.service';
 import { DatabaseService } from './database/database.service';
 import { AuthService } from './auth.service';
+import { toLocalDateString } from '../utils/date.utils';
 
 @Injectable({
   providedIn: 'root',
@@ -52,11 +53,11 @@ export class StreakService {
         for (let i = 0; i < days; i++) {
           const date = new Date(today);
           date.setDate(date.getDate() - i);
-          const dateStr = date.toISOString().split('T')[0];
+          const dateStr = toLocalDateString(date);
 
           // Check if there's an exercise completed on this date
           const hasActivity = history.some((h) => {
-            const attemptDate = new Date(h.timestamp).toISOString().split('T')[0];
+            const attemptDate = toLocalDateString(new Date(h.timestamp));
             return attemptDate === dateStr;
           });
 
