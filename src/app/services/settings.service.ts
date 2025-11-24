@@ -2,10 +2,12 @@ import { Injectable, signal, effect } from '@angular/core';
 
 export interface AppSettings {
   autoPlayTTSAfterTranslation: boolean;
+  translateFeedbackToVietnamese: boolean;
 }
 
 const DEFAULT_SETTINGS: AppSettings = {
-  autoPlayTTSAfterTranslation: false
+  autoPlayTTSAfterTranslation: false,
+  translateFeedbackToVietnamese: false
 };
 
 const STORAGE_KEY = 'app_settings';
@@ -42,6 +44,13 @@ export class SettingsService {
     this.settingsSignal.update(current => ({
       ...current,
       autoPlayTTSAfterTranslation: !current.autoPlayTTSAfterTranslation
+    }));
+  }
+
+  toggleTranslateFeedback(): void {
+    this.settingsSignal.update(current => ({
+      ...current,
+      translateFeedbackToVietnamese: !current.translateFeedbackToVietnamese
     }));
   }
 

@@ -1,8 +1,7 @@
 import { Component, ChangeDetectionStrategy, OnInit, inject, signal, computed, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router, RouterModule, NavigationEnd } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { filter } from 'rxjs/operators';
 import { DifficultyLevel, ExerciseCategory } from '../../models/exercise.model';
 import { ExerciseService } from '../../services/exercise.service';
 import { CustomExerciseService } from '../../services/custom-exercise.service';
@@ -99,7 +98,7 @@ export class HomeComponent implements OnInit {
   constructor() {
     // Hide loading after custom exercises are loaded
     effect(() => {
-      const customExercises = this.allCustomExercises();
+      this.allCustomExercises();
       setTimeout(() => this.isLoading.set(false), 300);
     });
   }

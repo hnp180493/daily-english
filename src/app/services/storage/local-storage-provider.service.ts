@@ -175,7 +175,6 @@ export class LocalStorageProvider implements StorageAdapter {
           
           const stats: UserStats = {
             totalPoints: progress.totalPoints,
-            totalCredits: progress.totalCredits,
             currentStreak: progress.currentStreak,
             longestStreak: progress.longestStreak,
             lastStreakDate: progress.lastStreakDate,
@@ -200,7 +199,6 @@ export class LocalStorageProvider implements StorageAdapter {
           const updated: UserProgress = {
             ...current,
             totalPoints: stats.totalPoints ?? current.totalPoints,
-            totalCredits: stats.totalCredits ?? current.totalCredits,
             currentStreak: stats.currentStreak ?? current.currentStreak,
             longestStreak: stats.longestStreak ?? current.longestStreak,
             lastStreakDate: stats.lastStreakDate ?? current.lastStreakDate,
@@ -242,7 +240,6 @@ export class LocalStorageProvider implements StorageAdapter {
     return {
       exerciseHistory: this.validateObject(progress.exerciseHistory),
       dictationHistory: this.validateObject(progress.dictationHistory),
-      totalCredits: this.validateNumber(progress.totalCredits),
       totalPoints: this.validateNumber(progress.totalPoints),
       lastActivityDate: this.validateDate(progress.lastActivityDate),
       currentStreak: this.validateNumber(progress.currentStreak),
@@ -286,7 +283,6 @@ export class LocalStorageProvider implements StorageAdapter {
     return {
       exerciseHistory: {},
       dictationHistory: {},
-      totalCredits: 0,
       totalPoints: 0,
       lastActivityDate: new Date(),
       currentStreak: 0,
@@ -299,7 +295,6 @@ export class LocalStorageProvider implements StorageAdapter {
   private getDefaultStats(): UserStats {
     return {
       totalPoints: 0,
-      totalCredits: 0,
       currentStreak: 0,
       longestStreak: 0,
       lastStreakDate: '',

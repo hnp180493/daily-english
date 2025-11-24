@@ -135,7 +135,7 @@ export class ExerciseDetailComponent implements OnInit, OnDestroy {
 
   // Progress tracking
   private progressSignal = this.progressService.getProgressSignal();
-  credits = computed(() => this.progressSignal().totalCredits);
+
   points = computed(() => this.progressSignal().totalPoints);
   streak = computed(() => {
     this.progressSignal();

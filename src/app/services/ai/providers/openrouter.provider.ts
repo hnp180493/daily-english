@@ -3,12 +3,14 @@ import { Observable } from 'rxjs';
 import { BaseAIProvider, AIRequest, AIMessage } from '../base-ai-provider';
 import { AIResponse, AIStreamChunk, ExerciseContext } from '../../../models/ai.model';
 import { PromptService } from '../prompt.service';
+import { SettingsService } from '../../settings.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class OpenRouterProvider extends BaseAIProvider {
   private promptService = inject(PromptService);
+  private settingsService = inject(SettingsService);
 
   get name(): string {
     return 'openrouter';
@@ -98,12 +100,14 @@ export class OpenRouterProvider extends BaseAIProvider {
     config: any
   ): Observable<AIResponse> {
     return new Observable(observer => {
+      const translateToVietnamese = this.settingsService.getSettings().translateFeedbackToVietnamese;
       const prompt = this.promptService.buildAnalysisPrompt(
         userInput,
         sourceText,
         context,
         context.fullContext,
-        context.translatedContext
+        context.translatedContext,
+        translateToVietnamese
       );
       
       const messages: AIMessage[] = [
@@ -129,12 +133,14 @@ export class OpenRouterProvider extends BaseAIProvider {
     config: any
   ): Observable<AIStreamChunk> {
     return new Observable(observer => {
+      const translateToVietnamese = this.settingsService.getSettings().translateFeedbackToVietnamese;
       const prompt = this.promptService.buildAnalysisPrompt(
         userInput,
         sourceText,
         context,
         context.fullContext,
-        context.translatedContext
+        context.translatedContext,
+        translateToVietnamese
       );
       
       const url = 'https://openrouter.ai/api/v1/chat/completions';

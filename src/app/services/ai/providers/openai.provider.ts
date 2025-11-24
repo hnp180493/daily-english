@@ -3,12 +3,14 @@ import { Observable } from 'rxjs';
 import { BaseAIProvider, AIRequest, AIMessage } from '../base-ai-provider';
 import { AIResponse, AIStreamChunk, ExerciseContext } from '../../../models/ai.model';
 import { PromptService } from '../prompt.service';
+import { SettingsService } from '../../settings.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class OpenAIProvider extends BaseAIProvider {
   private promptService = inject(PromptService);
+  private settingsService = inject(SettingsService);
 
   get name(): string {
     return 'openai';
@@ -84,7 +86,8 @@ export class OpenAIProvider extends BaseAIProvider {
     config: any
   ): Observable<AIResponse> {
     return new Observable(observer => {
-      const prompt = this.promptService.buildAnalysisPrompt(userInput, sourceText, context, context.fullContext, context.translatedContext);
+      const translateToVietnamese = this.settingsService.getSettings().translateFeedbackToVietnamese;
+      const prompt = this.promptService.buildAnalysisPrompt(userInput, sourceText, context, context.fullContext, context.translatedContext, translateToVietnamese);
       const messages: AIMessage[] = [
         { role: 'system', content: this.promptService.buildSystemPrompt() },
         { role: 'user', content: prompt }
@@ -112,7 +115,8 @@ export class OpenAIProvider extends BaseAIProvider {
       this.emittedFeedbackCount = 0;
       this.lastEmittedScore = null;
       
-      const prompt = this.promptService.buildAnalysisPrompt(userInput, sourceText, context, context.fullContext, context.translatedContext);
+      const translateToVietnamese = this.settingsService.getSettings().translateFeedbackToVietnamese;
+      const prompt = this.promptService.buildAnalysisPrompt(userInput, sourceText, context, context.fullContext, context.translatedContext, translateToVietnamese);
       const modelName = config.openai.modelName || 'gpt-4';
       const temperature = this.getTemperature(modelName, 0.7);
 

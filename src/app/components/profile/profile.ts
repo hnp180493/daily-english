@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy, inject, signal, OnInit } from '@angular/core';
+import { Component, ChangeDetectionStrategy, inject, signal, OnInit, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, ActivatedRoute } from '@angular/router';
 import { Location } from '@angular/common';
@@ -6,6 +6,8 @@ import { AchievementShowcase } from '../achievements/achievement-showcase/achiev
 import { AiProviderConfig } from '../ai-provider-config/ai-provider-config';
 import { AppSettingsComponent } from '../app-settings/app-settings';
 import { AuthService } from '../../services/auth.service';
+import { ModalService } from '../../services/modal.service';
+import { ExportImportModal } from '../export-import-modal/export-import-modal';
 
 type TabType = 'achievements' | 'settings';
 
@@ -22,12 +24,14 @@ export class ProfileComponent implements OnInit {
   private route = inject(ActivatedRoute);
   private location = inject(Location);
   private authService = inject(AuthService);
+  private modalService = inject(ModalService);
 
   currentUser = this.authService.currentUser;
   displayName = () => this.authService.getDisplayName();
   email = () => this.authService.getEmail();
   photoURL = () => this.authService.getPhotoURL();
   isAnonymous = () => this.authService.isAnonymous();
+  isGuestMode = computed(() => !this.authService.currentUser());
 
   activeTab = signal<TabType>('achievements');
 
@@ -72,5 +76,14 @@ export class ProfileComponent implements OnInit {
 
   setActiveTab(tab: TabType): void {
     this.activeTab.set(tab);
+  }
+
+  openExportImportModal(): void {
+    const modalRef = this.modalService.open(ExportImportModal);
+    if (modalRef) {
+      modalRef.instance.close.subscribe(() => {
+        this.modalService.close();
+      });
+    }
   }
 }

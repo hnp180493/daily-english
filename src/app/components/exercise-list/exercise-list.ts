@@ -36,7 +36,7 @@ export class ExerciseListComponent {
 
   // Subscribe to progress changes to make status reactive
   private progress$ = this.progressService.getUserProgress();
-  private progressSignal = toSignal(this.progress$, { initialValue: { exerciseHistory: {}, dictationHistory: {}, totalCredits: 0, totalPoints: 0, lastActivityDate: new Date(), currentStreak: 0, longestStreak: 0, lastStreakDate: '', achievements: [] } });
+  private progressSignal = toSignal(this.progress$, { initialValue: { exerciseHistory: {}, dictationHistory: {}, totalPoints: 0, lastActivityDate: new Date(), currentStreak: 0, longestStreak: 0, lastStreakDate: '', achievements: [] } });
 
   // Filter exercises based on query parameters
   exercises = computed(() => {

@@ -1,13 +1,13 @@
 <header class="app-header">
   <div class="header-container">
     <div class="logo-section">
-      <a routerLink="/home" class="logo-link">
+      <a routerLink="/" class="logo-link">
         <h1 class="logo-text">{{ appTitle }}</h1>
       </a>
     </div>
     
     <nav class="nav-links">
-      <a routerLink="/home" routerLinkActive="active" class="nav-link">WRITING</a>
+      <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" class="nav-link">✍️ WRITING</a>
       <div class="nav-dropdown">
         <button class="nav-link dropdown-trigger" 
                 [class.active]="isLearningMenuActive()"
@@ -24,10 +24,10 @@
               <a routerLink="/learning-path" routerLinkActive="active" class="dropdown-item">
                 🎯 Learning Path
               </a>
+              <a routerLink="/dashboard" routerLinkActive="active" class="dropdown-item">
+                📊 Dashboard
+              </a>
             }
-            <a routerLink="/dashboard" routerLinkActive="active" class="dropdown-item">
-              📊 Dashboard
-            </a>
             <a routerLink="/exercises/custom" routerLinkActive="active" class="dropdown-item">
               📝 Custom Exercises
             </a>

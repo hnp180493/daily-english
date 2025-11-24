@@ -304,7 +304,6 @@ export class ProgressService {
     const updated: UserProgress = {
       ...current,
       exerciseHistory: updatedHistory,
-      totalCredits: current.totalCredits + this.calculateCredits(attempt),
       totalPoints: current.totalPoints + attempt.pointsEarned,
       lastActivityDate: new Date(),
       currentStreak: streakUpdate.currentStreak,
@@ -453,12 +452,7 @@ export class ProgressService {
     return result;
   }
 
-  private calculateCredits(attempt: ExerciseAttempt): number {
-    const baseCredits = 1;
-    const accuracyBonus = attempt.accuracyScore >= 80 ? 1 : 0;
-    const hintPenalty = attempt.hintsUsed > 0 ? -0.5 : 0;
-    return Math.max(baseCredits + accuracyBonus + hintPenalty, 0);
-  }
+
 
 
 
@@ -509,7 +503,6 @@ export class ProgressService {
     return {
       exerciseHistory: {},
       dictationHistory: {},
-      totalCredits: 0,
       totalPoints: 0,
       lastActivityDate: new Date(),
       currentStreak: 0,

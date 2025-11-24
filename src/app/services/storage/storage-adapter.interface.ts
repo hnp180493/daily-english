@@ -29,7 +29,6 @@ export interface StorageAdapter {
 
 export interface UserStats {
   totalPoints: number;
-  totalCredits: number;
   currentStreak: number;
   longestStreak: number;
   lastStreakDate: string;

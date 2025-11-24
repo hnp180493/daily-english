@@ -125,7 +125,6 @@ export class SupabaseStorageProvider implements StorageAdapter {
         
         return {
           totalPoints: progress.totalPoints,
-          totalCredits: progress.totalCredits,
           currentStreak: progress.currentStreak,
           longestStreak: progress.longestStreak,
           lastStreakDate: progress.lastStreakDate,
@@ -144,7 +143,6 @@ export class SupabaseStorageProvider implements StorageAdapter {
         const updated: UserProgress = {
           ...current,
           totalPoints: stats.totalPoints ?? current.totalPoints,
-          totalCredits: stats.totalCredits ?? current.totalCredits,
           currentStreak: stats.currentStreak ?? current.currentStreak,
           longestStreak: stats.longestStreak ?? current.longestStreak,
           lastStreakDate: stats.lastStreakDate ?? current.lastStreakDate,
@@ -167,7 +165,6 @@ export class SupabaseStorageProvider implements StorageAdapter {
     return {
       exerciseHistory: {},
       dictationHistory: {},
-      totalCredits: 0,
       totalPoints: 0,
       lastActivityDate: new Date(),
       currentStreak: 0,
@@ -180,7 +177,6 @@ export class SupabaseStorageProvider implements StorageAdapter {
   private getDefaultStats(): UserStats {
     return {
       totalPoints: 0,
-      totalCredits: 0,
       currentStreak: 0,
       longestStreak: 0,
       lastStreakDate: '',

@@ -26,6 +26,28 @@
         </label>
       </div>
     </div>
+
+    <div class="setting-item">
+      <div class="setting-info">
+        <label class="setting-label" for="translateFeedback">
+          🌐 Dịch phản hồi sang tiếng Việt
+        </label>
+        <p class="setting-description">
+          Tự động dịch phản hồi AI từ tiếng Anh sang tiếng Việt
+        </p>
+      </div>
+      <div class="setting-control">
+        <label class="toggle-switch">
+          <input
+            type="checkbox"
+            id="translateFeedback"
+            [checked]="translateFeedback()"
+            (change)="toggleTranslateFeedback()"
+          />
+          <span class="toggle-slider"></span>
+        </label>
+      </div>
+    </div>
   </div>
 
   <!-- Reset Settings -->

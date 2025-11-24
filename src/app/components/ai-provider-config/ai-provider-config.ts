@@ -15,7 +15,7 @@ export class AiProviderConfig implements OnInit {
   private configService = inject(ConfigService);
 
   config = signal<AIConfig>({
-    provider: 'openai',
+    provider: 'gemini',
     azure: {
       endpoint: '',
       apiKey: '',
@@ -23,7 +23,7 @@ export class AiProviderConfig implements OnInit {
     },
     gemini: {
       apiKey: '',
-      modelName: 'gemini-2.0-flash-exp'
+      modelName: 'gemini-2.5-flash-lite'
     },
     openai: {
       apiKey: '',
@@ -210,7 +210,7 @@ export class AiProviderConfig implements OnInit {
       });
       
       this.config.set({
-        provider: 'openai',
+        provider: 'gemini',
         azure: {
           endpoint: '',
           apiKey: '',
@@ -218,7 +218,7 @@ export class AiProviderConfig implements OnInit {
         },
         gemini: {
           apiKey: '',
-          modelName: 'gemini-2.0-flash-exp'
+          modelName: 'gemini-2.5-flash-lite'
         },
         openai: {
           apiKey: '',

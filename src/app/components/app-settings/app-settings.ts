@@ -16,9 +16,14 @@ export class AppSettingsComponent {
   settings = this.settingsService.getSettingsSignal();
 
   autoPlayTTS = computed(() => this.settings().autoPlayTTSAfterTranslation);
+  translateFeedback = computed(() => this.settings().translateFeedbackToVietnamese);
 
   toggleAutoPlayTTS(): void {
     this.settingsService.toggleAutoPlayTTS();
+  }
+
+  toggleTranslateFeedback(): void {
+    this.settingsService.toggleTranslateFeedback();
   }
 
   resetSettings(): void {

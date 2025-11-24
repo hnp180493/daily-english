@@ -11,12 +11,23 @@ export class PromptService {
     context: ExerciseContext,
     fullContext: string,
     translatedContext: string,
+    translateToVietnamese: boolean = false
   ): string {
 
     let englishText: string = context.englishText;
 
+    const languageInstruction = translateToVietnamese 
+      ? `\n\n====================================================
+LANGUAGE INSTRUCTION
+====================================================
+- Provide ALL feedback explanations in Vietnamese.
+- Keep technical terms (originalText, suggestion) in English.
+- Translate all explanation text to Vietnamese for better understanding.
+`
+      : '';
+
     return `You are a strict English teacher evaluating a Vietnamese → English translation.
-Always output RAW JSON only.
+Always output RAW JSON only.${languageInstruction}
 
 Your evaluation focuses on three things, in this order:
 1) Meaning correctness (allow natural phrasing but preserve core meaning)
