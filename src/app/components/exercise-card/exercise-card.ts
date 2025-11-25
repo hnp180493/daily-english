@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { Exercise, ExerciseStatus } from '../../models/exercise.model';
 import { FavoriteService } from '../../services/favorite.service';
 import { ProgressService } from '../../services/progress.service';
+import { ExerciseService } from '../../services/exercise.service';
 
 @Component({
   selector: 'app-exercise-card',
@@ -15,6 +16,7 @@ import { ProgressService } from '../../services/progress.service';
 export class ExerciseCardComponent {
   private favoriteService = inject(FavoriteService);
   private progressService = inject(ProgressService);
+  private exerciseService = inject(ExerciseService);
   private router = inject(Router);
   
   exercise = input.required<Exercise>();
@@ -22,6 +24,9 @@ export class ExerciseCardComponent {
   startExercise = output<string>();
 
   isFavorite = computed(() => this.favoriteService.isFavorite(this.exercise().id));
+  
+  // Generate SEO-friendly slug for the exercise
+  exerciseSlug = computed(() => this.exerciseService.getExerciseSlug(this.exercise()));
 
   statusLabel = computed(() => {
     const status = this.status();
@@ -69,14 +74,15 @@ export class ExerciseCardComponent {
   });
 
   onStart(): void {
-    const exerciseId = this.exercise().id;
+    const slug = this.exerciseSlug();
     
     if (this.isCompleted()) {
       // Navigate to review mode
-      this.router.navigate(['/exercise', exerciseId], { queryParams: { mode: 'review' } });
+      this.router.navigate(['/exercise', slug], { queryParams: { mode: 'review' } });
     } else {
-      // Normal start
-      this.startExercise.emit(exerciseId);
+      // Normal start - emit ID for compatibility, but navigate with slug
+      this.startExercise.emit(this.exercise().id);
+      this.router.navigate(['/exercise', slug]);
     }
   }
 
@@ -87,8 +93,8 @@ export class ExerciseCardComponent {
   
   onPracticeDictation(event: Event): void {
     event.stopPropagation();
-    const exerciseId = this.exercise().id;
-    this.router.navigate(['/exercises', exerciseId, 'dictation']);
+    const slug = this.exerciseSlug();
+    this.router.navigate(['/exercises', slug, 'dictation']);
   }
   
   // Check if dictation is available (translation completed)

@@ -1,17 +1,20 @@
+# Allow all crawlers
 User-agent: *
 Allow: /
 
-# Block private pages only
-Disallow: /login
-Disallow: /profile
-
-# Allow public pages
-Allow: /home
-Allow: /exercises
-Allow: /guide
-Allow: /dashboard
-Allow: /favorites
-Allow: /achievements
-
+# Sitemap location
 Sitemap: https://dailyenglish.qzz.io/sitemap.xml
-Sitemap: https://dailyenglish.qzz.io/sitemap-vi.xml
+
+# Crawl-delay for polite crawling
+Crawl-delay: 1
+
+# Disallow admin/private pages (if any)
+Disallow: /api/
+Disallow: /admin/
+
+# Allow important pages
+Allow: /exercises
+Allow: /exercise/
+Allow: /guide
+Allow: /learning-path
+Allow: /dashboard

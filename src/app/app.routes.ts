@@ -212,7 +212,7 @@ export const routes: Routes = [
       import('./components/exercise-creator/exercise-creator').then((m) => m.ExerciseCreator),
   },
   {
-    path: 'exercise/:id',
+    path: 'exercise/:slug',
     loadComponent: () =>
       import('./components/exercise-detail/exercise-detail').then((m) => m.ExerciseDetailComponent),
     data: {
@@ -429,6 +429,48 @@ export const routes: Routes = [
           breadcrumbs: [
             { name: 'Trang chủ', url: '/' },
             { name: 'Lộ trình học tập', url: '/learning-path' },
+          ],
+        },
+      } as VietnameseRouteSeoData,
+    },
+  },
+  {
+    path: 'about',
+    loadComponent: () => import('./components/about/about').then((m) => m.AboutComponent),
+    data: {
+      preload: 'high',
+      seo: {
+        title: 'Về Daily English - Học tiếng Anh miễn phí với AI | Phương pháp học hiệu quả',
+        description:
+          'Daily English là nền tảng học tiếng Anh trực tuyến miễn phí với 250+ bài tập dịch câu, phản hồi AI thông minh từ GPT-4 và Gemini. Học tiếng Anh giao tiếp, ngữ pháp, từ vựng hiệu quả với lộ trình cá nhân hóa.',
+        keywords: [
+          'học tiếng anh online',
+          'học tiếng anh miễn phí',
+          'học tiếng anh với AI',
+          'bài tập tiếng anh',
+          'luyện dịch tiếng anh',
+          'học tiếng anh giao tiếp',
+          'ngữ pháp tiếng anh',
+          'từ vựng tiếng anh',
+          'ứng dụng học tiếng anh',
+          'website học tiếng anh',
+        ],
+        structuredDataType: 'EducationalOrganization',
+        vietnamese: {
+          title: 'Về Daily English - Học tiếng Anh miễn phí với AI',
+          description:
+            'Tìm hiểu về Daily English - nền tảng học tiếng Anh trực tuyến miễn phí với AI thông minh. Phương pháp học hiệu quả, 250+ bài tập đa dạng và lộ trình cá nhân hóa.',
+          keywords: [
+            'về daily english',
+            'học tiếng anh online',
+            'học tiếng anh miễn phí',
+            'học tiếng anh với AI',
+            'phương pháp học tiếng anh',
+            'website học tiếng anh',
+          ],
+          breadcrumbs: [
+            { name: 'Trang chủ', url: '/' },
+            { name: 'Về chúng tôi', url: '/about' },
           ],
         },
       } as VietnameseRouteSeoData,

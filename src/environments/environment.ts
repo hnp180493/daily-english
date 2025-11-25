@@ -1,6 +1,24 @@
-export const environment = {
+export const environment: {
+  production: boolean;
+  aiProvider: 'azure' | 'gemini' | 'openai' | 'openrouter';
+  supabase: { url: string; anonKey: string };
+  seo: {
+    googleSiteVerification: string;
+    bingWebmasterVerification: string;
+    cocCocVerification: string;
+    vietnameseKeywordsEnabled: boolean;
+    zaloAppId: string;
+  };
+  analytics: {
+    providers: Array<{
+      type: string;
+      enabled: boolean;
+      config: Record<string, any>;
+    }>;
+  };
+} = {
   production: false,
-  aiProvider: 'azure' as 'azure' | 'gemini' | 'openai' | 'openrouter',
+  aiProvider: 'azure',
   // OpenRouter Configuration Example:
   // To use OpenRouter, set aiProvider to 'openrouter' and configure:
   // openrouter: {
@@ -9,7 +27,7 @@ export const environment = {
   //   siteUrl: 'https://your-app-url.com',  // Optional: for usage tracking
   //   siteName: 'Your App Name'  // Optional: for usage tracking
   // },
-  supabase: {
+ supabase: {
     url: '',
     anonKey: ''
   },

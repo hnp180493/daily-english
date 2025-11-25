@@ -286,7 +286,7 @@ export class ExerciseDetailComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    const id = this.route.snapshot.paramMap.get('id')!;
+    const slug = this.route.snapshot.paramMap.get('slug')!;
     const mode = this.route.snapshot.queryParamMap.get('mode');
     const quickReview = this.route.snapshot.queryParamMap.get('quickReview');
 
@@ -297,21 +297,29 @@ export class ExerciseDetailComponent implements OnInit, OnDestroy {
       this.isReviewMode.set(true);
     }
 
-    if (quickReview === 'true') {
-      this.quickReviewMode.set(true);
-      // Get incorrect sentence indices from review service
-      const incorrectQuestions = this.reviewService.getIncorrectQuestions(id);
-      const indices = incorrectQuestions.map(q => q.sentenceIndex);
-      this.incorrectSentenceIndices.set(indices);
-    }
+    // Check if it's a custom exercise (starts with 'custom-')
+    const isCustom = slug.startsWith('custom-');
+    
+    // Get exercise by slug or ID
+    const exercise$ = isCustom 
+      ? this.exerciseService.getExerciseByIdUnified(slug)
+      : this.exerciseService.getExerciseBySlug(slug);
 
-    // Use unified method that handles both regular and custom exercises
-    this.exerciseService.getExerciseByIdUnified(id).pipe(
+    exercise$.pipe(
       filter(exercise => !!exercise),
       take(1)
     ).subscribe(exercise => {
       if (exercise) {
-        const isCustom = this.exerciseService.isCustomExercise(id);
+        const id = exercise.id;
+        
+        if (quickReview === 'true') {
+          this.quickReviewMode.set(true);
+          // Get incorrect sentence indices from review service
+          const incorrectQuestions = this.reviewService.getIncorrectQuestions(id);
+          const indices = incorrectQuestions.map(q => q.sentenceIndex);
+          this.incorrectSentenceIndices.set(indices);
+        }
+        
         this.loadExercise(exercise, isCustom, id);
       } else {
         this.router.navigate(['/exercises']);

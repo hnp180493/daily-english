@@ -4,6 +4,7 @@ import { BehaviorSubject, Observable, combineLatest } from 'rxjs';
 import { map, switchMap, filter } from 'rxjs/operators';
 import { Exercise, DifficultyLevel, ExerciseCategory, CustomExercise } from '../models/exercise.model';
 import { CustomExerciseService } from './custom-exercise.service';
+import { generateExerciseSlug, extractIdFromSlug } from '../utils/slug.utils';
 
 @Injectable({
   providedIn: 'root'
@@ -60,6 +61,23 @@ export class ExerciseService {
       filter(exercises => exercises.length > 0),
       map(exercises => exercises.find(ex => ex.id === id))
     );
+  }
+
+  /**
+   * Get exercise by SEO-friendly slug
+   * Slug format: "title-level-id" (e.g., "the-little-joy-beginner-001")
+   */
+  getExerciseBySlug(slug: string): Observable<Exercise | undefined> {
+    // Extract ID from slug
+    const id = extractIdFromSlug(slug);
+    return this.getExerciseById(id);
+  }
+
+  /**
+   * Generate SEO-friendly slug for an exercise
+   */
+  getExerciseSlug(exercise: Exercise): string {
+    return generateExerciseSlug(exercise.title, exercise.level, exercise.id);
   }
 
   getExercisesByIds(ids: string[]): Observable<Exercise[]> {
