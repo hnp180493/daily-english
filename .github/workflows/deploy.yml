@@ -53,9 +53,27 @@ jobs:
           BING_VERIFICATION: ${{ secrets.BING_WEBMASTER_VERIFICATION }}
         run: |
           cat > src/environments/environment.prod.ts << EOF
-          export const environment = {
+          export const environment: {
+            production: boolean;
+            aiProvider: 'azure' | 'gemini' | 'openai' | 'openrouter';
+            supabase: { url: string; anonKey: string };
+            seo: {
+              googleSiteVerification: string;
+              bingWebmasterVerification: string;
+              cocCocVerification: string;
+              vietnameseKeywordsEnabled: boolean;
+              zaloAppId: string;
+            };
+            analytics: {
+              providers: Array<{
+                type: string;
+                enabled: boolean;
+                config: Record<string, any>;
+              }>;
+            };
+          } = {
             production: true,
-            aiProvider: 'azure' as 'azure' | 'gemini' | 'openai',
+            aiProvider: 'azure',
             supabase: {
               url: '${SUPABASE_URL}',
               anonKey: '${SUPABASE_ANON_KEY}'
@@ -63,6 +81,22 @@ jobs:
             seo: {
               googleSiteVerification: '${GOOGLE_VERIFICATION}',
               bingWebmasterVerification: '${BING_VERIFICATION}',
+              cocCocVerification: '',
+              vietnameseKeywordsEnabled: true,
+              zaloAppId: ''
+            },
+            analytics: {
+              providers: [
+                {
+                  type: 'ga4',
+                  enabled: true,
+                  config: {
+                    measurementId: 'G-MZH6Q7FGWX',
+                    debugMode: false,
+                    anonymizeIp: true
+                  }
+                }
+              ]
             }
           };
           EOF
