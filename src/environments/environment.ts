@@ -45,7 +45,7 @@ export const environment: {
     providers: [
       {
         type: 'ga4',
-        enabled: false, // Set to true to enable GA4 tracking in development
+        enabled: true, // Set to true to enable GA4 tracking in development
         config: {
           measurementId: 'G-MZH6Q7FGWX', // Replace with your development GA4 Measurement ID
           debugMode: true, // Enable debug mode for development

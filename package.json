@@ -13,7 +13,9 @@
     "firebase:init": "firebase init firestore",
     "combine-exercises": "node scripts/combine-exercises.js",
     "generate:sitemap": "node scripts/generate-sitemap.js",
-    "prebuild": "npm run generate:sitemap"
+    "generate:static": "node scripts/generate-static-pages.js",
+    "prebuild": "npm run generate:sitemap",
+    "postbuild": "npm run generate:static"
   },
   "prettier": {
     "printWidth": 100,

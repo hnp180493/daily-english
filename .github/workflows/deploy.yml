@@ -106,6 +106,9 @@ jobs:
       - name: Build Angular app
         run: npm run build
 
+      - name: Generate static pages for SEO
+        run: npm run generate:static
+
       - name: Copy CNAME and 404.html to dist
         run: |
           cp CNAME ./dist/daily-english/browser/
