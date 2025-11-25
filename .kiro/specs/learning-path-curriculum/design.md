@@ -500,22 +500,7 @@ CREATE TABLE weekly_goals (
 );
 ```
 
-#### notification_preferences
 
-```sql
-CREATE TABLE notification_preferences (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  user_id UUID REFERENCES auth.users(id) NOT NULL,
-  enabled BOOLEAN DEFAULT TRUE,
-  reminder_time TIME DEFAULT '19:00:00',
-  daily_challenge_reminder BOOLEAN DEFAULT TRUE,
-  goal_progress_reminder BOOLEAN DEFAULT TRUE,
-  streak_reminder BOOLEAN DEFAULT TRUE,
-  created_at TIMESTAMP DEFAULT NOW(),
-  updated_at TIMESTAMP DEFAULT NOW(),
-  UNIQUE(user_id)
-);
-```
 
 ### Row Level Security (RLS)
 
@@ -524,7 +509,6 @@ CREATE TABLE notification_preferences (
 ALTER TABLE learning_path_progress ENABLE ROW LEVEL SECURITY;
 ALTER TABLE daily_challenges ENABLE ROW LEVEL SECURITY;
 ALTER TABLE weekly_goals ENABLE ROW LEVEL SECURITY;
-ALTER TABLE notification_preferences ENABLE ROW LEVEL SECURITY;
 
 -- Policies (users can only access their own data)
 CREATE POLICY "Users can view own path progress" ON learning_path_progress

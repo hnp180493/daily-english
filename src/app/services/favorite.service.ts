@@ -3,7 +3,7 @@ import { Observable, of } from 'rxjs';
 import { switchMap, tap, catchError } from 'rxjs/operators';
 import { AuthService } from './auth.service';
 import { DatabaseService } from './database/database.service';
-import { UnsubscribeFunction } from './database/database.interface';
+import { GUEST_FAVORITES_KEY } from '../constants/storage-keys';
 
 export interface FavoriteExercise {
   exerciseId: string;
@@ -24,8 +24,6 @@ export class FavoriteService {
 
   favoriteCount = computed(() => this.favorites().length);
 
-  private isInitialized = false;
-
   private currentUserId: string | null = null;
 
   constructor() {
@@ -37,9 +35,7 @@ export class FavoriteService {
       // Initialize for both authenticated and guest users
       if (userId !== this.currentUserId) {
         this.currentUserId = userId;
-        this.isInitialized = false;
         this.initializeFavorites();
-        this.isInitialized = true;
       }
     });
   }
@@ -87,7 +83,7 @@ export class FavoriteService {
     
     // Guest user - save to localStorage
     if (!userId) {
-      this.saveToLocalStorage('guest', favorites);
+      this.saveToLocalStorage(favorites);
       return;
     }
     
@@ -102,10 +98,9 @@ export class FavoriteService {
     });
   }
   
-  private saveToLocalStorage(userId: string, favorites: FavoriteExercise[]): void {
-    const key = `exercise_favorites_${userId}`;
+  private saveToLocalStorage(favorites: FavoriteExercise[]): void {
     try {
-      localStorage.setItem(key, JSON.stringify(favorites));
+      localStorage.setItem(GUEST_FAVORITES_KEY, JSON.stringify(favorites));
       console.log(`[FavoriteService] Saved ${favorites.length} favorites to localStorage`);
     } catch (error) {
       console.error('[FavoriteService] Failed to save to localStorage:', error);
@@ -121,7 +116,7 @@ export class FavoriteService {
     
     // Guest user - load from localStorage only
     if (!userId) {
-      this.loadFromLocalStorage('guest');
+      this.loadFromLocalStorage();
       return;
     }
     
@@ -137,9 +132,8 @@ export class FavoriteService {
     });
   }
 
-  private loadFromLocalStorage(userId: string): void {
-    const key = `exercise_favorites_${userId}`;
-    const stored = localStorage.getItem(key);
+  private loadFromLocalStorage(): void {
+    const stored = localStorage.getItem(GUEST_FAVORITES_KEY);
     
     if (stored) {
       try {
@@ -209,8 +203,7 @@ export class FavoriteService {
   }
 
   private checkLocalStorageData(userId: string): FavoriteExercise[] {
-    const key = `exercise_favorites_${userId}`;
-    const stored = localStorage.getItem(key);
+    const stored = localStorage.getItem(GUEST_FAVORITES_KEY);
     if (stored) {
       try {
         const parsed = JSON.parse(stored);
@@ -223,31 +216,11 @@ export class FavoriteService {
         return [];
       }
     }
-    
-    // Also check old key format
-    const oldKey = 'exercise_favorites';
-    const oldStored = localStorage.getItem(oldKey);
-    if (oldStored) {
-      try {
-        const parsed = JSON.parse(oldStored);
-        return parsed.map((f: any) => ({
-          ...f,
-          addedAt: new Date(f.addedAt)
-        }));
-      } catch (error) {
-        console.error('[FavoriteService] Failed to parse old localStorage data:', error);
-        return [];
-      }
-    }
-    
     return [];
   }
 
   private clearLocalStorageData(userId: string): void {
-    const key = `exercise_favorites_${userId}`;
-    localStorage.removeItem(key);
-    // Also remove old key if exists
-    localStorage.removeItem('exercise_favorites');
+    localStorage.removeItem(GUEST_FAVORITES_KEY);
     console.log('[FavoriteService] Cleared localStorage data');
   }
 }

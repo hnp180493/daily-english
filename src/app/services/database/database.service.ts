@@ -9,7 +9,6 @@ import { ExerciseHistoryRecord } from '../../models/exercise-history.model';
 import { UserPathProgress } from '../../models/learning-path.model';
 import { DailyChallenge } from '../../models/daily-challenge.model';
 import { WeeklyGoal } from '../../models/weekly-goal.model';
-import { NotificationPreferences } from '../notification.service';
 import { IDatabase, FavoriteData, UserProfile, UserRewards, UnsubscribeFunction } from './database.interface';
 import { SupabaseDatabase } from './supabase-database.service';
 import { getTodayLocalDate, getWeekStartLocalDate } from '../../utils/date.utils';
@@ -380,13 +379,31 @@ export class DatabaseService implements IDatabase {
 
   saveLearningPathProgressAuto(progress: UserPathProgress): Observable<void> {
     const userId = this.authService.getUserId();
-    if (!userId) return of(undefined);
+    if (!userId) {
+      // Guest mode - save to localStorage
+      try {
+        localStorage.setItem('guest_learning_path', JSON.stringify(progress));
+        return of(undefined);
+      } catch (error) {
+        console.error('[DatabaseService] Failed to save guest learning path:', error);
+        return of(undefined);
+      }
+    }
     return this.saveWithRetry(this.saveLearningPathProgress(userId, progress));
   }
 
   loadLearningPathProgressAuto(): Observable<UserPathProgress | null> {
     const userId = this.authService.getUserId();
-    if (!userId) return of(null);
+    if (!userId) {
+      // Guest mode - load from localStorage
+      try {
+        const data = localStorage.getItem('guest_learning_path');
+        return of(data ? JSON.parse(data) : null);
+      } catch (error) {
+        console.error('[DatabaseService] Failed to load guest learning path:', error);
+        return of(null);
+      }
+    }
     return this.loadLearningPathProgress(userId);
   }
 
@@ -408,14 +425,37 @@ export class DatabaseService implements IDatabase {
 
   saveDailyChallengeAuto(challenge: DailyChallenge): Observable<void> {
     const userId = this.authService.getUserId();
-    if (!userId) return of(undefined);
+    if (!userId) {
+      // Guest mode - save to localStorage
+      try {
+        const key = `guest_daily_challenge_${challenge.date}`;
+        localStorage.setItem(key, JSON.stringify(challenge));
+        console.log('[DatabaseService] Guest daily challenge saved to localStorage:', key);
+        return of(undefined);
+      } catch (error) {
+        console.error('[DatabaseService] Failed to save guest daily challenge:', error);
+        return of(undefined);
+      }
+    }
     return this.saveWithRetry(this.saveDailyChallenge(userId, challenge));
   }
 
   loadTodaysDailyChallengeAuto(): Observable<DailyChallenge | null> {
     const userId = this.authService.getUserId();
-    if (!userId) return of(null);
     const today = getTodayLocalDate();
+    
+    if (!userId) {
+      // Guest mode - load from localStorage
+      try {
+        const key = `guest_daily_challenge_${today}`;
+        const data = localStorage.getItem(key);
+        return of(data ? JSON.parse(data) : null);
+      } catch (error) {
+        console.error('[DatabaseService] Failed to load guest daily challenge:', error);
+        return of(null);
+      }
+    }
+    
     return this.loadDailyChallengeByDate(userId, today);
   }
 
@@ -437,52 +477,72 @@ export class DatabaseService implements IDatabase {
 
   saveWeeklyGoalAuto(goal: WeeklyGoal): Observable<void> {
     const userId = this.authService.getUserId();
-    if (!userId) return of(undefined);
+    if (!userId) {
+      // Guest mode - save to localStorage
+      try {
+        const key = `guest_weekly_goal_${goal.weekStartDate}`;
+        localStorage.setItem(key, JSON.stringify(goal));
+        console.log('[DatabaseService] Guest weekly goal saved to localStorage:', key);
+        return of(undefined);
+      } catch (error) {
+        console.error('[DatabaseService] Failed to save guest weekly goal:', error);
+        return of(undefined);
+      }
+    }
     return this.saveWithRetry(this.saveWeeklyGoal(userId, goal));
   }
 
   loadCurrentWeeklyGoalAuto(): Observable<WeeklyGoal | null> {
     const userId = this.authService.getUserId();
-    if (!userId) return of(null);
-    
     const weekStartDate = getWeekStartLocalDate();
     
+    if (!userId) {
+      // Guest mode - load from localStorage
+      try {
+        const key = `guest_weekly_goal_${weekStartDate}`;
+        const data = localStorage.getItem(key);
+        console.log('[DatabaseService] Loading guest weekly goal from localStorage:', key, data ? 'found' : 'not found');
+        return of(data ? JSON.parse(data) : null);
+      } catch (error) {
+        console.error('[DatabaseService] Failed to load guest weekly goal:', error);
+        return of(null);
+      }
+    }
+    
     return this.loadWeeklyGoalByDate(userId, weekStartDate);
-  }
-
-  // Notification Preferences Operations
-  saveNotificationPreferences(userId: string, preferences: NotificationPreferences): Observable<void> {
-    if (!userId) return of(undefined);
-    return this.database.saveNotificationPreferences(userId, preferences);
-  }
-
-  loadNotificationPreferences(userId: string): Observable<NotificationPreferences | null> {
-    if (!userId) return of(null);
-    return this.database.loadNotificationPreferences(userId);
-  }
-
-  saveNotificationPreferencesAuto(preferences: NotificationPreferences): Observable<void> {
-    const userId = this.authService.getUserId();
-    if (!userId) return of(undefined);
-    return this.saveWithRetry(this.saveNotificationPreferences(userId, preferences));
-  }
-
-  loadNotificationPreferencesAuto(): Observable<NotificationPreferences | null> {
-    const userId = this.authService.getUserId();
-    if (!userId) return of(null);
-    return this.loadNotificationPreferences(userId);
   }
 
   // Additional helper methods for learning path components
   loadDailyChallengeByDateAuto(date: string): Observable<DailyChallenge | null> {
     const userId = this.authService.getUserId();
-    if (!userId) return of(null);
+    if (!userId) {
+      // Guest mode - load from localStorage
+      try {
+        const key = `guest_daily_challenge_${date}`;
+        const data = localStorage.getItem(key);
+        return of(data ? JSON.parse(data) : null);
+      } catch (error) {
+        console.error('[DatabaseService] Failed to load guest daily challenge:', error);
+        return of(null);
+      }
+    }
     return this.loadDailyChallengeByDate(userId, date);
   }
 
   loadWeeklyGoalByDateAuto(weekStartDate: string): Observable<WeeklyGoal | null> {
     const userId = this.authService.getUserId();
-    if (!userId) return of(null);
+    if (!userId) {
+      // Guest mode - load from localStorage
+      try {
+        const key = `guest_weekly_goal_${weekStartDate}`;
+        const data = localStorage.getItem(key);
+        console.log('[DatabaseService] Loading guest weekly goal by date from localStorage:', key, data ? 'found' : 'not found');
+        return of(data ? JSON.parse(data) : null);
+      } catch (error) {
+        console.error('[DatabaseService] Failed to load guest weekly goal by date:', error);
+        return of(null);
+      }
+    }
     return this.loadWeeklyGoalByDate(userId, weekStartDate);
   }
 

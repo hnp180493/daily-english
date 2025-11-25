@@ -1,11 +1,8 @@
-import { Injectable, inject } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { Observable, from, of } from 'rxjs';
 import { map, switchMap, tap } from 'rxjs/operators';
-import { DatabaseService } from './database/database.service';
-import { AuthService } from './auth.service';
 
 export interface NotificationPreferences {
-  userId: string;
   enabled: boolean;
   reminderTime: string; // HH:MM format
   dailyChallengeReminder: boolean;
@@ -13,13 +10,12 @@ export interface NotificationPreferences {
   streakReminder: boolean;
 }
 
+const STORAGE_KEY = 'notification_preferences';
+
 @Injectable({
   providedIn: 'root',
 })
 export class NotificationService {
-  private db = inject(DatabaseService);
-  private auth = inject(AuthService);
-
   private notificationPermission: NotificationPermission = 'default';
   private preferences: NotificationPreferences | null = null;
 
@@ -40,11 +36,7 @@ export class NotificationService {
         this.notificationPermission = permission;
 
         if (permission === 'granted') {
-          const userId = this.auth.getUserId();
-          if (!userId) return of(false);
-
           const prefs: NotificationPreferences = {
-            userId,
             enabled: true,
             reminderTime: '19:00',
             dailyChallengeReminder: true,
@@ -52,10 +44,9 @@ export class NotificationService {
             streakReminder: true,
           };
 
-          return from(this.db.saveNotificationPreferencesAuto(prefs)).pipe(
-            tap(() => (this.preferences = prefs)),
-            map(() => true)
-          );
+          this.savePreferencesToLocalStorage(prefs);
+          this.preferences = prefs;
+          return of(true);
         }
 
         return of(false);
@@ -64,11 +55,7 @@ export class NotificationService {
   }
 
   disableNotifications(): Observable<void> {
-    const userId = this.auth.getUserId();
-    if (!userId) return of(undefined);
-
     const prefs: NotificationPreferences = {
-      userId,
       enabled: false,
       reminderTime: '19:00',
       dailyChallengeReminder: false,
@@ -76,10 +63,9 @@ export class NotificationService {
       streakReminder: false,
     };
 
-    return from(this.db.saveNotificationPreferencesAuto(prefs)).pipe(
-      tap(() => (this.preferences = prefs)),
-      map(() => undefined)
-    );
+    this.savePreferencesToLocalStorage(prefs);
+    this.preferences = prefs;
+    return of(undefined);
   }
 
   setReminderTime(time: string): Observable<void> {
@@ -92,16 +78,13 @@ export class NotificationService {
       reminderTime: time,
     };
 
-    return from(this.db.saveNotificationPreferencesAuto(updatedPrefs)).pipe(
-      tap(() => (this.preferences = updatedPrefs)),
-      map(() => undefined)
-    );
+    this.savePreferencesToLocalStorage(updatedPrefs);
+    this.preferences = updatedPrefs;
+    return of(undefined);
   }
 
   getPreferences(): Observable<NotificationPreferences | null> {
-    return from(this.db.loadNotificationPreferencesAuto()).pipe(
-      tap((prefs) => (this.preferences = prefs))
-    );
+    return of(this.preferences);
   }
 
   // Notification sending methods
@@ -199,9 +182,19 @@ export class NotificationService {
   }
 
   private loadPreferences(): void {
-    this.getPreferences().subscribe((prefs) => {
-      this.preferences = prefs;
-    });
+    const stored = localStorage.getItem(STORAGE_KEY);
+    if (stored) {
+      try {
+        this.preferences = JSON.parse(stored);
+      } catch (e) {
+        console.error('Failed to parse notification preferences:', e);
+        this.preferences = null;
+      }
+    }
+  }
+
+  private savePreferencesToLocalStorage(prefs: NotificationPreferences): void {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(prefs));
   }
 
   private canSendNotification(): boolean {

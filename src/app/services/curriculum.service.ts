@@ -60,9 +60,9 @@ export class CurriculumService {
   async getAllPaths(): Promise<LearningPath[]> {
     try {
       const paths = await Promise.all([
-        this.http.get<LearningPath>('data/learning-paths/beginner-path.json').toPromise(),
-        this.http.get<LearningPath>('data/learning-paths/intermediate-path.json').toPromise(),
-        this.http.get<LearningPath>('data/learning-paths/advanced-path.json').toPromise(),
+        firstValueFrom(this.http.get<LearningPath>('data/learning-paths/beginner-path.json')),
+        firstValueFrom(this.http.get<LearningPath>('data/learning-paths/intermediate-path.json')),
+        firstValueFrom(this.http.get<LearningPath>('data/learning-paths/advanced-path.json')),
       ]);
       return paths.filter((p): p is LearningPath => p !== undefined);
     } catch (error) {
@@ -206,18 +206,15 @@ export class CurriculumService {
   }
 
   async selectPath(pathId: string): Promise<void> {
-    const userId = this.auth.getUserId();
-    if (!userId) {
-      throw new Error('User not authenticated');
-    }
+    const userId = this.auth.getUserId() || 'guest';
 
-    const path = await this.getPathById(pathId).toPromise();
+    const path = await firstValueFrom(this.getPathById(pathId)).catch(() => null);
     if (!path) {
       throw new Error('Path not found');
     }
 
     // Check if user already has progress for this path
-    const existingProgress = await this.db.loadLearningPathProgressAuto().toPromise();
+    const existingProgress = await firstValueFrom(this.db.loadLearningPathProgressAuto()).catch(() => null);
     
     if (existingProgress && existingProgress.currentPathId === pathId) {
       // User already has progress for this path, just load it
@@ -330,7 +327,7 @@ export class CurriculumService {
   // Progress tracking methods
   async getUserPathProgress(): Promise<UserPathProgress | null> {
     try {
-      const progress = await this.db.loadLearningPathProgressAuto().toPromise();
+      const progress = await firstValueFrom(this.db.loadLearningPathProgressAuto()).catch(() => null);
       this.pathProgress.set(progress || null);
       return progress || null;
     } catch (error) {
@@ -615,7 +612,8 @@ export class CurriculumService {
     date: string,
     score: number
   ): Promise<boolean> {
-    const challenge = await this.db.loadDailyChallengeByDate(this.auth.getUserId() || '', date).toPromise();
+    // Use Auto method which handles both guest and authenticated users
+    const challenge = await firstValueFrom(this.db.loadDailyChallengeByDateAuto(date)).catch(() => null);
 
     if (!challenge || challenge.exerciseId !== exerciseId) {
       return false;
@@ -636,7 +634,7 @@ export class CurriculumService {
       bonusPoints,
     };
 
-    await this.db.saveDailyChallengeAuto(updatedChallenge).toPromise();
+    await firstValueFrom(this.db.saveDailyChallengeAuto(updatedChallenge)).catch(() => {});
     
     // Add bonus points to user progress
     this.progressService.addBonusPoints(bonusPoints);
@@ -650,12 +648,10 @@ export class CurriculumService {
   }
 
   private async recalculateWeeklyGoalProgressAsync(): Promise<void> {
-    const userId = this.auth.getUserId();
-    if (!userId) return;
-
     const weekStartDate = getWeekStartLocalDate();
 
-    const goal = await this.db.loadWeeklyGoalByDate(userId, weekStartDate).toPromise();
+    // Use Auto method which handles both guest and authenticated users
+    const goal = await firstValueFrom(this.db.loadWeeklyGoalByDateAuto(weekStartDate)).catch(() => null);
 
     if (!goal) {
       // Don't create goal automatically - user should set it in goal-tracker
@@ -663,9 +659,14 @@ export class CurriculumService {
       return;
     }
 
-    // Recalculate from exercise history
-    const progress = await this.db.loadProgressAuto().toPromise();
+    // Get progress from ProgressService which handles both guest and authenticated users
+    const progress = await firstValueFrom(this.progressService.getUserProgress()).catch(() => null);
     const history = progress?.exerciseHistory || {};
+    
+    console.log('[CurriculumService] Loaded progress for weekly goal calculation:', {
+      hasProgress: !!progress,
+      exerciseCount: Object.keys(history).length
+    });
     
     const weekStart = new Date(weekStartDate);
     weekStart.setHours(0, 0, 0, 0);
@@ -693,7 +694,7 @@ export class CurriculumService {
     };
 
     console.log('[CurriculumService] Recalculated weekly goal:', updatedGoal);
-    await this.db.saveWeeklyGoalAuto(updatedGoal).toPromise();
+    await firstValueFrom(this.db.saveWeeklyGoalAuto(updatedGoal)).catch(() => {});
 
     // Add bonus points if goal just achieved
     if (justAchieved) {
@@ -703,12 +704,6 @@ export class CurriculumService {
   }
 
   async getCurrentWeeklyGoal(): Promise<any> {
-    const userId = this.auth.getUserId();
-    if (!userId) {
-      console.log('[CurriculumService] getCurrentWeeklyGoal: No userId');
-      return null;
-    }
-
     const weekStartDate = getWeekStartLocalDate();
     const today = getTodayLocalDate();
     
@@ -718,7 +713,8 @@ export class CurriculumService {
       dayOfWeek: new Date().getDay()
     });
 
-    const goal = await this.db.loadWeeklyGoalByDate(userId, weekStartDate).toPromise();
+    // Use Auto method which handles both guest and authenticated users
+    const goal = await firstValueFrom(this.db.loadWeeklyGoalByDateAuto(weekStartDate)).catch(() => null);
 
     console.log('[CurriculumService] Weekly goal loaded:', goal);
 

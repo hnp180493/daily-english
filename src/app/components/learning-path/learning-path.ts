@@ -1,5 +1,6 @@
 import { Component, OnInit, signal, inject, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Router, ActivatedRoute } from '@angular/router';
 import { PathSelector } from './path-selector/path-selector';
 import { DailyChallenge } from './daily-challenge/daily-challenge';
 import { ProgressDashboard } from './progress-dashboard/progress-dashboard';
@@ -29,6 +30,8 @@ type TabType = 'overview' | 'exercises' | 'challenge' | 'progress' | 'goals' | '
 })
 export class LearningPath implements OnInit {
   private curriculumService = inject(CurriculumService);
+  private router = inject(Router);
+  private route = inject(ActivatedRoute);
 
   activeTab = signal<TabType>('overview');
   hasActivePath = signal(false);
@@ -38,6 +41,18 @@ export class LearningPath implements OnInit {
   async ngOnInit(): Promise<void> {
     await this.checkActivePath();
     await this.loadCertificates();
+    
+    // Read tab from query params
+    this.route.queryParams.subscribe(params => {
+      const tab = params['tab'] as TabType;
+      if (tab && this.isValidTab(tab)) {
+        this.activeTab.set(tab);
+      }
+    });
+  }
+
+  private isValidTab(tab: string): tab is TabType {
+    return ['overview', 'exercises', 'challenge', 'progress', 'goals', 'certificates'].includes(tab);
   }
 
   async checkActivePath(): Promise<void> {
@@ -62,9 +77,13 @@ export class LearningPath implements OnInit {
   }
 
   setTab(tab: TabType): void {
-    console.log('Setting tab to:', tab);
     this.activeTab.set(tab);
-    console.log('Active tab is now:', this.activeTab());
+    // Update query params without reloading the page
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { tab },
+      queryParamsHandling: 'merge'
+    });
   }
 
   isTabActive(tab: TabType): boolean {

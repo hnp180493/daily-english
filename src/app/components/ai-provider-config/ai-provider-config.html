@@ -12,7 +12,9 @@
     >
       <div class="card-header" (click)="toggleProvider('gemini')">
         <div class="card-title">
-          <span class="provider-icon">🔶</span>
+          <span class="provider-icon">
+            <img src="assets/icons/gemini-logo.svg" alt="Google Gemini" width="24" height="24" />
+          </span>
           <div>
             <h3>Google Gemini <span class="recommended-badge">Recommended</span></h3>
             <p class="provider-desc">Google's multimodal AI model  - No credit card required</p>
@@ -109,7 +111,9 @@
     >
       <div class="card-header" (click)="toggleProvider('openrouter')">
         <div class="card-title">
-          <span class="provider-icon">🆓</span>
+          <span class="provider-icon">
+            <img src="assets/icons/openrouter-logo.svg" alt="OpenRouter" width="24" height="24" />
+          </span>
           <div>
             <h3>OpenRouter <span class="recommended-badge">Recommended</span></h3>
             <p class="provider-desc">Multiple free AI models - No credit card required</p>
@@ -255,7 +259,9 @@
     >
       <div class="card-header" (click)="toggleProvider('openai')">
         <div class="card-title">
-          <span class="provider-icon">🟢</span>
+          <span class="provider-icon">
+            <img src="assets/icons/openai-logo.svg" alt="OpenAI" width="24" height="24" />
+          </span>
           <div>
             <h3>OpenAI</h3>
             <p class="provider-desc">Direct access to GPT models</p>
@@ -344,7 +350,7 @@
     </div>
 
     <!-- Azure OpenAI Card -->
-    <div
+    <!-- <div
       class="provider-card"
       [class.selected]="config().provider === 'azure'"
       [class.expanded]="expandedProvider() === 'azure'"
@@ -419,7 +425,7 @@
         <button class="btn btn-select" (click)="selectProvider('azure')">Use Azure OpenAI</button>
       </div>
       }
-    </div>
+    </div> -->
   </div>
 
   <!-- Action Buttons -->
@@ -427,13 +433,6 @@
     <button class="btn btn-primary" (click)="saveConfig()">💾 Save Configuration</button>
     <button class="btn btn-secondary" (click)="clearConfig()">🗑️ Clear All</button>
   </div>
-
-  <!-- Messages -->
-  @if (saveSuccess()) {
-  <div class="message success">✅ Configuration saved successfully!</div>
-  } @if (saveError()) {
-  <div class="message error">❌ Failed to save configuration. Please try again.</div>
-  }
 
   <!-- Info Box -->
   <div class="info-box">

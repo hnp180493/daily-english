@@ -43,14 +43,6 @@
     - _Requirements: 3.1, 3.2, 3.3, 3.4, 3.5_
   
 
-  - [x] 2.4 Create Supabase migration for notification_preferences table
-
-    - Write SQL migration file `supabase-migrations/10-create-notification-preferences.sql`
-    - Include table creation with columns: id, user_id, enabled, reminder_time, daily_challenge_reminder, goal_progress_reminder, streak_reminder
-    - Add unique constraint on user_id
-    - _Requirements: 7.1, 7.2, 7.3, 7.4, 7.5_
-  
-
   - [x] 2.5 Create RLS policies for all new tables
 
     - Write SQL migration file `supabase-migrations/11-enable-learning-path-rls.sql`
@@ -178,7 +170,6 @@
     - Write enableNotifications() to request permissions and save preference
     - Write disableNotifications() to update preference
     - Write setReminderTime() to customize notification time
-    - Persist preferences to notification_preferences table
     - _Requirements: 7.5_
   
   - [x] 7.3 Implement notification scheduling
@@ -397,8 +388,7 @@
       - saveLearningPathProgress, loadLearningPathProgress
       - saveDailyChallenge, loadDailyChallenge, loadDailyChallengeByDate
       - saveWeeklyGoal, loadWeeklyGoal, loadWeeklyGoalByDate
-      - saveNotificationPreferences, loadNotificationPreferences
-    - _Requirements: 1.5, 2.1, 3.1, 7.1_
+    - _Requirements: 1.5, 2.1, 3.1_
   
   - [x] 15.2 Implement Supabase database methods
     - Modify `src/app/services/database/supabase-database.service.ts`
@@ -413,8 +403,7 @@
       - saveLearningPathProgressAuto, loadLearningPathProgressAuto
       - saveDailyChallengeAuto, loadTodaysDailyChallengeAuto
       - saveWeeklyGoalAuto, loadCurrentWeeklyGoalAuto
-      - saveNotificationPreferencesAuto, loadNotificationPreferencesAuto
-    - _Requirements: 1.5, 2.1, 3.1, 7.1_
+    - _Requirements: 1.5, 2.1, 3.1_
 
 - [x] 16. Create path completion certificate feature
   - [x] 16.1 Create certificate component

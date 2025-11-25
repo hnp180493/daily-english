@@ -5,6 +5,7 @@ import { UserProgress, ExerciseAttempt } from '../../models/exercise.model';
 import { DictationPracticeAttempt } from '../../models/dictation.model';
 import { ToastService } from '../toast.service';
 import { GuestAnalyticsService } from '../guest-analytics.service';
+import { GUEST_PROGRESS_KEY } from '../../constants/storage-keys';
 
 /**
  * LocalStorage implementation of StorageAdapter for guest users
@@ -14,7 +15,7 @@ import { GuestAnalyticsService } from '../guest-analytics.service';
   providedIn: 'root'
 })
 export class LocalStorageProvider implements StorageAdapter {
-  private readonly STORAGE_KEY = 'guest_progress';
+  private readonly STORAGE_KEY = GUEST_PROGRESS_KEY;
   private readonly MAX_STORAGE_SIZE = 5 * 1024 * 1024; // 5MB limit
   private toastService = inject(ToastService);
   private guestAnalytics = inject(GuestAnalyticsService);

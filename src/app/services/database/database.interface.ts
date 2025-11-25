@@ -5,7 +5,6 @@ import { ReviewData, ReviewDataWithMetadata } from '../../models/review.model';
 import { UserPathProgress } from '../../models/learning-path.model';
 import { DailyChallenge } from '../../models/daily-challenge.model';
 import { WeeklyGoal } from '../../models/weekly-goal.model';
-import { NotificationPreferences } from '../notification.service';
 
 export interface FavoriteData {
   exerciseId: string;
@@ -86,10 +85,6 @@ export interface IDatabase {
   saveWeeklyGoal(userId: string, goal: WeeklyGoal): Observable<void>;
   loadWeeklyGoal(userId: string, goalId: string): Observable<WeeklyGoal | null>;
   loadWeeklyGoalByDate(userId: string, weekStartDate: string): Observable<WeeklyGoal | null>;
-
-  // Notification Preferences Operations
-  saveNotificationPreferences(userId: string, preferences: NotificationPreferences): Observable<void>;
-  loadNotificationPreferences(userId: string): Observable<NotificationPreferences | null>;
 
   // User Count Operations
   getTotalUserCount(): Observable<number>;

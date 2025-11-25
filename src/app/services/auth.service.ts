@@ -7,6 +7,7 @@ import { DatabaseService } from './database/database.service';
 import { ModalService } from './modal.service';
 import { RegistrationLimitModal } from '../components/registration-limit-modal/registration-limit-modal';
 import { LoginWarningModal } from '../components/login-warning-modal/login-warning-modal';
+import { clearAllGuestData } from '../constants/storage-keys';
 import type { User as SupabaseUser } from '@supabase/supabase-js';
 
 // Maximum number of users allowed to register
@@ -187,12 +188,22 @@ export class AuthService {
   }
 
   /**
-   * Check if user has guest progress data in localStorage
+   * Check if user has any guest data in localStorage
+   * Checks all keys starting with 'guest_'
    */
   private hasGuestProgress(): boolean {
     try {
-      const guestData = localStorage.getItem('guest_progress');
-      return guestData !== null && guestData !== '';
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key && key.startsWith('guest_')) {
+          const value = localStorage.getItem(key);
+          if (value && value !== '' && value !== '[]' && value !== '{}') {
+            console.log(`[Auth] Found guest data in key: ${key}`);
+            return true;
+          }
+        }
+      }
+      return false;
     } catch (error) {
       console.error('[Auth] Error checking guest progress:', error);
       return false;
@@ -251,16 +262,11 @@ export class AuthService {
   }
 
   /**
-   * Clear guest progress data from localStorage
+   * Clear all guest data from localStorage before login
+   * Uses dynamic clearing to automatically handle any guest_* keys
    */
   private clearGuestData(): void {
-    try {
-      localStorage.removeItem('guest_progress');
-      localStorage.removeItem('guest_analytics');
-      console.log('[Auth] Guest data and analytics cleared before login');
-    } catch (error) {
-      console.error('[Auth] Error clearing guest data:', error);
-    }
+    clearAllGuestData();
   }
 
   /**

@@ -34,13 +34,11 @@ import { ExerciseState } from './exercise-state.service';
 export class ExercisePersistenceService {
   private authService = inject(AuthService);
 
-  private getProgressKey(exerciseId: string): string | null {
+  private getProgressKey(exerciseId: string): string {
     const userId = this.authService.getUserId();
-    if (!userId) {
-      console.warn('No user ID available for saving progress');
-      return null;
-    }
-    return `exercise_progress_${userId}_${exerciseId}`;
+    // Use 'guest' prefix for unauthenticated users
+    const userPrefix = userId || 'guest';
+    return `exercise_progress_${userPrefix}_${exerciseId}`;
   }
 
   /**
@@ -49,12 +47,12 @@ export class ExercisePersistenceService {
    */
   saveProgress(exerciseId: string, state: ExerciseState): void {
     const key = this.getProgressKey(exerciseId);
-    if (!key) {
-      console.warn('[ExercisePersistenceService] Cannot save: no progress key (user not logged in?)');
-      return;
+    try {
+      localStorage.setItem(key, JSON.stringify(state));
+      console.log('[ExercisePersistenceService] Progress saved for', key);
+    } catch (error) {
+      console.error('[ExercisePersistenceService] Failed to save progress:', error);
     }
-
-    localStorage.setItem(key, JSON.stringify(state));
   }
 
   /**
@@ -63,20 +61,16 @@ export class ExercisePersistenceService {
    */
   loadProgress(exerciseId: string): ExerciseState | null {
     const key = this.getProgressKey(exerciseId);
-    if (!key) {
-      console.warn('[ExercisePersistenceService] Cannot load: no progress key');
-      return null;
-    }
-
     const stored = localStorage.getItem(key);
+    
     if (!stored) {
-      console.log('[ExercisePersistenceService] No saved progress found');
+      console.log('[ExercisePersistenceService] No saved progress found for', key);
       return null;
     }
 
     try {
       const state = JSON.parse(stored);
-      console.log('[ExercisePersistenceService] Progress loaded successfully');
+      console.log('[ExercisePersistenceService] Progress loaded successfully from', key);
       return state;
     } catch (error) {
       console.error('[ExercisePersistenceService] Failed to load in-progress state:', error);
@@ -90,9 +84,7 @@ export class ExercisePersistenceService {
    */
   clearProgress(exerciseId: string): void {
     const key = this.getProgressKey(exerciseId);
-    if (key) {
-      localStorage.removeItem(key);
-      console.log('[ExercisePersistenceService] Cleared in-progress state');
-    }
+    localStorage.removeItem(key);
+    console.log('[ExercisePersistenceService] Cleared in-progress state for', key);
   }
 }

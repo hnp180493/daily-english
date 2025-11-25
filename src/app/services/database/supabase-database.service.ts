@@ -9,7 +9,6 @@ import { ExerciseHistoryRecord } from '../../models/exercise-history.model';
 import { UserPathProgress } from '../../models/learning-path.model';
 import { DailyChallenge } from '../../models/daily-challenge.model';
 import { WeeklyGoal } from '../../models/weekly-goal.model';
-import { NotificationPreferences } from '../notification.service';
 import {
   IDatabase,
   FavoriteData,
@@ -758,49 +757,6 @@ export class SupabaseDatabase implements IDatabase {
             isAchieved: data.is_achieved,
             bonusPointsEarned: data.bonus_points_earned
           } as WeeklyGoal;
-        })
-    ).pipe(catchError(this.handleError));
-  }
-
-  // Notification Preferences Operations
-  saveNotificationPreferences(userId: string, preferences: NotificationPreferences): Observable<void> {
-    return from(
-      this.supabase
-        .from('notification_preferences')
-        .upsert({
-          user_id: userId,
-          enabled: preferences.enabled,
-          reminder_time: preferences.reminderTime,
-          daily_challenge_reminder: preferences.dailyChallengeReminder,
-          goal_progress_reminder: preferences.goalProgressReminder,
-          streak_reminder: preferences.streakReminder,
-          updated_at: new Date().toISOString()
-        })
-        .then(({ error }) => {
-          if (error) throw error;
-        })
-    ).pipe(catchError(this.handleError));
-  }
-
-  loadNotificationPreferences(userId: string): Observable<NotificationPreferences | null> {
-    return from(
-      this.supabase
-        .from('notification_preferences')
-        .select('*')
-        .eq('user_id', userId)
-        .maybeSingle()
-        .then(({ data, error }) => {
-          if (error) throw error;
-          if (!data) return null;
-
-          return {
-            userId: data.user_id,
-            enabled: data.enabled,
-            reminderTime: data.reminder_time,
-            dailyChallengeReminder: data.daily_challenge_reminder,
-            goalProgressReminder: data.goal_progress_reminder,
-            streakReminder: data.streak_reminder
-          } as NotificationPreferences;
         })
     ).pipe(catchError(this.handleError));
   }

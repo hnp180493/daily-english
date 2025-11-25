@@ -101,11 +101,24 @@ export class HomeComponent implements OnInit {
       this.allCustomExercises();
       setTimeout(() => this.isLoading.set(false), 300);
     });
+
+    // Watch auth state and load data when user becomes authenticated
+    effect(() => {
+      const isAuth = this.isAuthenticated();
+      if (isAuth) {
+        console.log('[Home] User authenticated, loading learning path data...');
+        this.loadLearningPathData();
+      }
+    });
   }
 
   async ngOnInit(): Promise<void> {
+    // Wait for auth to initialize before checking
+    await this.authService.waitForAuth();
+    
     // Load learning path data if authenticated - parallel loading with timeouts
     if (this.isAuthenticated()) {
+      console.log('[Home] ngOnInit: User authenticated, loading learning path data...');
       this.loadLearningPathData();
     }
   }

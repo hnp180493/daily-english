@@ -30,6 +30,13 @@ export class ProgressService {
   private currentUserId: string | null = null;
 
   constructor() {
+    // Load initial progress immediately for guest users
+    const initialUser = this.authService.currentUser();
+    if (!initialUser) {
+      this.loadProgress();
+      this.isInitialized = true;
+    }
+    
     // Subscribe to auth changes using effect
     effect(() => {
       const user = this.authService.currentUser();
@@ -47,10 +54,6 @@ export class ProgressService {
         this.currentUserId = null;
         this.isInitialized = false;
         this.handleLogout();
-      } else if (!userId && !this.isInitialized) {
-        // Initial load as guest
-        this.isInitialized = true;
-        this.loadProgress();
       }
     });
   }

@@ -2,6 +2,7 @@ import { Component, ChangeDetectionStrategy, OnInit, inject, signal } from '@ang
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ConfigService, AIConfig } from '../../services/config.service';
+import { ToastService } from '../../services/toast.service';
 
 @Component({
   selector: 'app-ai-provider-config',
@@ -13,6 +14,7 @@ import { ConfigService, AIConfig } from '../../services/config.service';
 })
 export class AiProviderConfig implements OnInit {
   private configService = inject(ConfigService);
+  private toastService = inject(ToastService);
 
   config = signal<AIConfig>({
     provider: 'gemini',
@@ -45,8 +47,6 @@ export class AiProviderConfig implements OnInit {
   });
 
   expandedProvider = signal<'azure' | 'gemini' | 'openai' | 'openrouter' | null>(null);
-  saveSuccess = signal(false);
-  saveError = signal(false);
   
   useCustomModel = signal({
     gemini: false,
@@ -109,16 +109,10 @@ export class AiProviderConfig implements OnInit {
   saveConfig(): void {
     try {
       this.configService.saveConfig(this.config());
-      this.saveSuccess.set(true);
-      this.saveError.set(false);
-      
-      setTimeout(() => {
-        this.saveSuccess.set(false);
-      }, 3000);
+      this.toastService.success('Configuration saved successfully!');
     } catch (error) {
       console.error('Failed to save config:', error);
-      this.saveError.set(true);
-      this.saveSuccess.set(false);
+      this.toastService.error('Failed to save configuration');
     }
   }
 
