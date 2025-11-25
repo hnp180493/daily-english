@@ -19,6 +19,7 @@ import { RewardService } from './reward.service';
 import { AchievementCriteriaService } from './achievement-criteria.service';
 import { AchievementProgressService } from './achievement-progress.service';
 import { AchievementStoreService } from './achievement-store.service';
+import { AnalyticsService } from './analytics.service';
 
 /**
  * Main Achievement Service
@@ -35,6 +36,7 @@ export class AchievementService {
   private criteriaService = inject(AchievementCriteriaService);
   private progressCalculator = inject(AchievementProgressService);
   private storeService = inject(AchievementStoreService);
+  private analyticsService = inject(AnalyticsService);
 
   private allAchievements = signal<Achievement[]>([]);
   private userAchievementData = signal<UserAchievementData>(
@@ -413,6 +415,12 @@ export class AchievementService {
     };
 
     this.userAchievementData.set(updatedUserData);
+
+    // Track achievement unlock
+    this.analyticsService.trackAchievementUnlocked(
+      achievementId,
+      achievement.name
+    );
 
     // Save immediately
     this.storeService.saveAchievementData(updatedUserData).subscribe({

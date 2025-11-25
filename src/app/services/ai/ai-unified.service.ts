@@ -1,13 +1,12 @@
 import { Injectable, inject } from '@angular/core';
 import { Observable, throwError } from 'rxjs';
-import { catchError, map } from 'rxjs/operators';
+import { catchError, tap } from 'rxjs/operators';
 import { AIProvider, AIResponse, AIStreamChunk, ExerciseContext } from '../../models/ai.model';
 import { Exercise } from '../../models/exercise.model';
 import { AIProviderFactory } from './ai-provider.factory';
 import { ConfigService } from '../config.service';
-import { PromptService } from './prompt.service';
+import { AnalyticsService } from '../analytics.service';
 import { environment } from '../../../environments/environment';
-import { AIMessage } from './base-ai-provider';
 
 /**
  * Unified AI Service using the new provider factory pattern
@@ -22,7 +21,7 @@ import { AIMessage } from './base-ai-provider';
 export class AIUnifiedService implements AIProvider {
   private factory = inject(AIProviderFactory);
   private configService = inject(ConfigService);
-  private promptService = inject(PromptService);
+  private analyticsService = inject(AnalyticsService);
 
   analyzeText(
     userInput: string,
@@ -31,10 +30,24 @@ export class AIUnifiedService implements AIProvider {
   ): Observable<AIResponse> {
     const provider = this.getActiveProvider();
     const config = this.getConfig();
+    const providerType = (config as any)?.provider || environment.aiProvider;
+    const startTime = Date.now();
+
+    // Track AI request
+    this.analyticsService.trackAiRequest(providerType, 'default', 'analyze_text');
 
     return provider.analyzeText(userInput, sourceText, context, config).pipe(
+      tap(response => {
+        // Track AI response
+        const responseTime = Date.now() - startTime;
+        this.analyticsService.trackAiResponse(providerType, responseTime, 0);
+      }),
       catchError(error => {
         console.error('AI Service Error:', error);
+        
+        // Track AI error
+        this.analyticsService.trackAiError(providerType, error?.message || 'unknown_error');
+        
         const errorMessage = error?.message || 'Failed to analyze text. Please try again.';
         return throwError(() => new Error(errorMessage));
       })
@@ -48,10 +61,28 @@ export class AIUnifiedService implements AIProvider {
   ): Observable<AIStreamChunk> {
     const provider = this.getActiveProvider();
     const config = this.getConfig();
+    const providerType = (config as any)?.provider || environment.aiProvider;
+    const startTime = Date.now();
+    let firstChunkReceived = false;
+
+    // Track AI request
+    this.analyticsService.trackAiRequest(providerType, 'default', 'analyze_text_stream');
 
     return provider.analyzeTextStream(userInput, sourceText, context, config).pipe(
+      tap(chunk => {
+        // Track response time on first chunk
+        if (!firstChunkReceived) {
+          const responseTime = Date.now() - startTime;
+          this.analyticsService.trackAiResponse(providerType, responseTime, 0);
+          firstChunkReceived = true;
+        }
+      }),
       catchError(error => {
         console.error('AI Service Stream Error:', error);
+        
+        // Track AI error
+        this.analyticsService.trackAiError(providerType, error?.message || 'unknown_error');
+        
         const errorMessage = error?.message || 'Failed to analyze text. Please try again.';
         return throwError(() => new Error(errorMessage));
       })
@@ -66,10 +97,24 @@ export class AIUnifiedService implements AIProvider {
   ): Observable<string> {
     const provider = this.getActiveProvider();
     const config = this.getConfig();
+    const providerType = (config as any)?.provider || environment.aiProvider;
+    const startTime = Date.now();
+
+    // Track AI request
+    this.analyticsService.trackAiRequest(providerType, 'default', 'generate_hint');
 
     return provider.generateHint(sourceText, userInput, previousHints, context, config).pipe(
+      tap(() => {
+        // Track AI response
+        const responseTime = Date.now() - startTime;
+        this.analyticsService.trackAiResponse(providerType, responseTime, 0);
+      }),
       catchError(error => {
         console.error('AI Hint Generation Error:', error);
+        
+        // Track AI error
+        this.analyticsService.trackAiError(providerType, error?.message || 'unknown_error');
+        
         const errorMessage = error?.message || 'Failed to generate hint. Please try again.';
         return throwError(() => new Error(errorMessage));
       })

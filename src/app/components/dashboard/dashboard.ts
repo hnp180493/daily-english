@@ -4,7 +4,7 @@ import { RouterModule } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs/operators';
-import { AnalyticsService } from '../../services/analytics.service';
+import { InternalAnalyticsService } from '../../services/internal-analytics.service';
 import { EnhancedAnalyticsService } from '../../services/enhanced-analytics.service';
 import { ProgressService } from '../../services/progress.service';
 import { ProgressMigrationUtility } from '../../services/progress-migration.utility';
@@ -54,7 +54,7 @@ import { UserProgressHelper } from '../../models/exercise.model';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class DashboardComponent implements OnInit {
-  private analyticsService = inject(AnalyticsService);
+  private analyticsService = inject(InternalAnalyticsService);
   private enhancedAnalyticsService = inject(EnhancedAnalyticsService);
   private progressService = inject(ProgressService);
   private authService = inject(AuthService);

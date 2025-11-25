@@ -1,4 +1,5 @@
-import { Injectable, signal, effect } from '@angular/core';
+import { Injectable, signal, effect, inject } from '@angular/core';
+import { AnalyticsService } from './analytics.service';
 
 export interface AppSettings {
   autoPlayTTSAfterTranslation: boolean;
@@ -17,8 +18,12 @@ const STORAGE_KEY = 'app_settings';
 })
 export class SettingsService {
   private settingsSignal = signal<AppSettings>(this.loadSettings());
+  private analyticsService = inject(AnalyticsService);
 
   constructor() {
+    // Analytics is always enabled
+    this.analyticsService.setAnalyticsEnabled(true);
+    
     effect(() => {
       const settings = this.settingsSignal();
       this.saveSettings(settings);
@@ -64,7 +69,8 @@ export class SettingsService {
     } catch (error) {
       console.error('Failed to load settings:', error);
     }
-    return DEFAULT_SETTINGS;
+    
+    return { ...DEFAULT_SETTINGS };
   }
 
   private saveSettings(settings: AppSettings): void {

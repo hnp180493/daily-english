@@ -20,5 +20,29 @@ export const environment = {
     cocCocVerification: '', // Add your Cốc Cốc verification code here (obtain from https://webmaster.coccoc.com/)
     vietnameseKeywordsEnabled: true, // Enable Vietnamese keyword optimization
     zaloAppId: '', // Add your Zalo App ID for social sharing integration
+  },
+  
+  // Analytics Configuration
+  analytics: {
+    providers: [
+      {
+        type: 'ga4',
+        enabled: false, // Set to true to enable GA4 tracking in development
+        config: {
+          measurementId: 'G-MZH6Q7FGWX', // Replace with your development GA4 Measurement ID
+          debugMode: true, // Enable debug mode for development
+          anonymizeIp: true // Anonymize IP addresses for privacy
+        }
+      }
+      // Easy to add more providers in the future:
+      // {
+      //   type: 'mixpanel',
+      //   enabled: false,
+      //   config: {
+      //     token: 'your-mixpanel-token',
+      //     debugMode: true
+      //   }
+      // }
+    ]
   }
 };

@@ -1,5 +1,6 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
+import { AnalyticsService } from './analytics.service';
 
 export interface AIConfig {
   provider: 'azure' | 'gemini' | 'openai' | 'openrouter';
@@ -31,6 +32,7 @@ export class ConfigService {
   private readonly STORAGE_KEY = 'aiConfig';
   private configSubject = new BehaviorSubject<AIConfig | null>(null);
   public config$: Observable<AIConfig | null> = this.configSubject.asObservable();
+  private analyticsService = inject(AnalyticsService);
 
   constructor() {
     this.loadConfig();
@@ -54,8 +56,20 @@ export class ConfigService {
 
   saveConfig(config: AIConfig): void {
     try {
+      const oldConfig = this.getConfig();
+      const oldProvider = oldConfig?.provider;
+      const newProvider = config.provider;
+      
       localStorage.setItem(this.STORAGE_KEY, JSON.stringify(config));
       this.configSubject.next(config);
+      
+      // Track provider change
+      if (oldProvider && oldProvider !== newProvider) {
+        this.analyticsService.trackAiProviderChanged(oldProvider, newProvider);
+      }
+      
+      // Track API key configuration (without exposing the key)
+      this.analyticsService.trackApiKeyConfigured(newProvider);
     } catch (error) {
       console.error('Failed to save config to localStorage:', error);
       throw error;

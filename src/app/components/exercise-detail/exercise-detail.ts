@@ -27,6 +27,7 @@ import { ReviewService } from '../../services/review.service';
 import { ExerciseHistoryService } from '../../services/exercise-history.service';
 import { CurriculumService } from '../../services/curriculum.service';
 import { StreakService } from '../../services/streak.service';
+import { AnalyticsService } from '../../services/analytics.service';
 import { TTSSettings } from '../tts-settings/tts-settings';
 import { getTodayLocalDate } from '../../utils/date.utils';
 import { PenaltyScore } from '../penalty-score/penalty-score';
@@ -70,6 +71,7 @@ export class ExerciseDetailComponent implements OnInit, OnDestroy {
   private exerciseHistoryService = inject(ExerciseHistoryService);
   private curriculumService = inject(CurriculumService);
   private streakService = inject(StreakService);
+  private analyticsService = inject(AnalyticsService);
 
   stateService = inject(ExerciseStateService);
   submissionService = inject(ExerciseSubmissionService);
@@ -334,6 +336,14 @@ export class ExerciseDetailComponent implements OnInit, OnDestroy {
       }
       // Start time tracking for new exercise attempts
       this.exerciseStartTime = new Date();
+      
+      // Track exercise start
+      this.analyticsService.trackExerciseStart(
+        exercise.id,
+        exercise.category || 'general',
+        exercise.level || 'intermediate',
+        isCustom ? 'custom' : 'standard'
+      );
     }
 
     setTimeout(() => this.isLoadingExercise.set(false), 300);
@@ -407,6 +417,8 @@ export class ExerciseDetailComponent implements OnInit, OnDestroy {
 
     this.submissionService.submitTranslation(ex, ex.id).subscribe({
       next: (result) => {
+        // Track submission
+        this.analyticsService.trackExerciseSubmit(ex.id, result.accuracyScore >= 75);
         // Auto-play TTS if enabled, translation is complete, and score >= 90
         if (
           result.complete &&
@@ -474,7 +486,14 @@ export class ExerciseDetailComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    // Cleanup if needed
+    // Track exercise abandonment if not completed
+    const ex = this.exercise();
+    if (ex && !this.isExerciseComplete() && !this.isReviewMode() && this.exerciseStartTime) {
+      const timeSpent = Math.floor((new Date().getTime() - this.exerciseStartTime.getTime()) / 1000);
+      const completionPercentage = this.progressPercentage();
+      
+      this.analyticsService.trackExerciseAbandoned(ex.id, timeSpent, completionPercentage);
+    }
   }
 
   onInputChange(): void {
@@ -521,6 +540,9 @@ export class ExerciseDetailComponent implements OnInit, OnDestroy {
       next: (hint) => {
         this.stateService.addHint(hint);
         this.isLoadingHint.set(false);
+        
+        // Track hint usage
+        this.analyticsService.trackHintUsed(ex.id, 'ai_hint');
       },
       error: (error) => {
         console.error('Failed to generate hint:', error);
@@ -747,6 +769,14 @@ export class ExerciseDetailComponent implements OnInit, OnDestroy {
         penaltyMetrics
       ).subscribe({
         error: (err) => console.warn('[ExerciseDetail] History recording failed:', err)
+      });
+
+      // Track exercise completion
+      this.analyticsService.trackExerciseComplete(ex.id, {
+        completionTime: timeSpent,
+        score: finalScore,
+        accuracy: avgAccuracy,
+        hintsUsed: this.hintsShown()
       });
     } else {
       console.log('[ExerciseDetail] Custom exercise - skipping cloud save');

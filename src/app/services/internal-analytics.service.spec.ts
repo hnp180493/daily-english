@@ -1,5 +1,5 @@
 import { TestBed } from '@angular/core/testing';
-import { AnalyticsService } from './analytics.service';
+import { InternalAnalyticsService } from './internal-analytics.service';
 import {
   UserProgress,
   ExerciseAttempt,
@@ -8,12 +8,12 @@ import {
   FeedbackItem
 } from '../models/exercise.model';
 
-describe('AnalyticsService', () => {
-  let service: AnalyticsService;
+describe('InternalAnalyticsService', () => {
+  let service: InternalAnalyticsService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({});
-    service = TestBed.inject(AnalyticsService);
+    service = TestBed.inject(InternalAnalyticsService);
   });
 
   it('should be created', () => {

@@ -9,6 +9,7 @@ import { AuthService } from './auth.service';
 import { StorageAdapterFactory } from './storage/storage-adapter-factory.service';
 import { LocalStorageProvider } from './storage/local-storage-provider.service';
 import { GuestAnalyticsService } from './guest-analytics.service';
+import { AnalyticsService } from './analytics.service';
 
 @Injectable({
   providedIn: 'root'
@@ -19,6 +20,7 @@ export class ProgressService {
   private storageFactory = inject(StorageAdapterFactory);
   private localStorageProvider = inject(LocalStorageProvider);
   private guestAnalytics = inject(GuestAnalyticsService);
+  private analyticsService = inject(AnalyticsService);
   private progress$ = new BehaviorSubject<UserProgress>(this.getDefaultProgress());
   private unsubscribe: UnsubscribeFunction | null = null;
   
@@ -280,6 +282,7 @@ export class ProgressService {
 
   recordAttempt(attempt: ExerciseAttempt): void {
     const current = this.progress$.value;
+    const oldLevel = this.calculateLevel(current.totalPoints);
     const streakUpdate = this.updateStreak(current);
     
     console.log('=== RECORDING ATTEMPT ===');
@@ -318,6 +321,12 @@ export class ProgressService {
     console.log('Emitting updated progress to BehaviorSubject...');
     console.log('BehaviorSubject current value before next:', this.progress$.value.totalPoints);
     
+    // Check for level up
+    const newLevel = this.calculateLevel(updated.totalPoints);
+    if (newLevel > oldLevel) {
+      this.analyticsService.trackLevelUp(oldLevel, newLevel, updated.totalPoints);
+    }
+    
     // Update both BehaviorSubject and Signal
     this.progress$.next(updated);
     this.progressSignal.set(updated);
@@ -336,6 +345,11 @@ export class ProgressService {
       next: () => console.log('[ProgressService] Progress saved'),
       error: (error) => console.error('[ProgressService] Failed to save progress:', error)
     });
+  }
+
+  private calculateLevel(points: number): number {
+    // Simple level calculation - adjust as needed
+    return Math.floor(points / 100) + 1;
   }
 
   getExerciseStatus(exerciseId: string): ExerciseStatus {
@@ -390,10 +404,12 @@ export class ProgressService {
     console.log('Current streak:', progress.currentStreak);
     
     const currentLongest = progress.longestStreak || 0;
+    const oldStreak = progress.currentStreak;
     
     // First time or no previous streak data
     if (!progress.lastStreakDate) {
       console.log('→ First time, setting streak to 1');
+      this.analyticsService.trackStreakMilestone(1, 'daily');
       return { 
         currentStreak: 1, 
         lastStreakDate: today,
@@ -419,6 +435,13 @@ export class ProgressService {
       // Consecutive day - increase streak
       const newStreak = progress.currentStreak + 1;
       console.log('→ Consecutive day, increasing streak to:', newStreak);
+      
+      // Track streak milestone if it's a significant number
+      if (newStreak % 7 === 0 || newStreak === 3 || newStreak === 5 || newStreak === 10 || newStreak === 30) {
+        const milestoneType = newStreak >= 30 ? 'monthly' : newStreak >= 7 ? 'weekly' : 'daily';
+        this.analyticsService.trackStreakMilestone(newStreak, milestoneType);
+      }
+      
       return { 
         currentStreak: newStreak, 
         lastStreakDate: today,
@@ -428,6 +451,7 @@ export class ProgressService {
     
     // Streak broken - reset to 1
     console.log('→ Streak broken (missed days), resetting to 1');
+    this.analyticsService.trackStreakMilestone(1, 'daily');
     return { 
       currentStreak: 1, 
       lastStreakDate: today,
@@ -621,6 +645,7 @@ export class ProgressService {
   // Add bonus points from achievements
   addBonusPoints(amount: number): void {
     const current = this.progress$.value;
+    const oldLevel = this.calculateLevel(current.totalPoints);
     
     console.log('=== ADDING BONUS POINTS ===');
     console.log('Current totalPoints:', current.totalPoints);
@@ -633,6 +658,12 @@ export class ProgressService {
 
     console.log('New totalPoints:', updated.totalPoints);
     console.log('Emitting updated progress to BehaviorSubject...');
+    
+    // Check for level up
+    const newLevel = this.calculateLevel(updated.totalPoints);
+    if (newLevel > oldLevel) {
+      this.analyticsService.trackLevelUp(oldLevel, newLevel, updated.totalPoints);
+    }
     
     this.progress$.next(updated);
     this.progressSignal.set(updated);

@@ -5,6 +5,7 @@ import { tap, switchMap, map } from 'rxjs/operators';
 import { supabaseClient } from './supabase.client';
 import { DatabaseService } from './database/database.service';
 import { ModalService } from './modal.service';
+import { AnalyticsService } from './analytics.service';
 import { RegistrationLimitModal } from '../components/registration-limit-modal/registration-limit-modal';
 import { LoginWarningModal } from '../components/login-warning-modal/login-warning-modal';
 import { clearAllGuestData } from '../constants/storage-keys';
@@ -30,12 +31,14 @@ export class AuthService {
   private databaseService = inject(DatabaseService);
   private modalService = inject(ModalService);
   private router = inject(Router);
+  private analyticsService = inject(AnalyticsService);
   
   currentUser = signal<User | null>(null);
   isAuthenticated = signal(false);
   private authInitialized = signal(false);
   private initPromise: Promise<void>;
   private profileSavedForSession = new Set<string>(); // Track saved profiles by session
+  private sessionStartTime: number | null = null;
 
   constructor() {
     this.initPromise = this.initializeAuth();
@@ -107,11 +110,40 @@ export class AuthService {
   private updateUserState(supabaseUser: SupabaseUser | null): void {
     if (supabaseUser) {
       const user: User = this.mapSupabaseUserToAppUser(supabaseUser);
+      const wasAuthenticated = this.isAuthenticated();
+      const isNewUser = !wasAuthenticated;
+      
       this.currentUser.set(user);
       this.isAuthenticated.set(true);
+      
+      // Track login if this is a new authentication
+      if (!wasAuthenticated) {
+        this.sessionStartTime = Date.now();
+        this.analyticsService.trackLogin('google', isNewUser);
+        
+        // Set user ID for analytics
+        this.analyticsService.setUserId(user.uid);
+        
+        // Set user properties
+        this.analyticsService.setUserProperties({
+          account_type: 'authenticated'
+        });
+      }
     } else {
+      const wasAuthenticated = this.isAuthenticated();
+      
       this.currentUser.set(null);
       this.isAuthenticated.set(false);
+      
+      // Track logout if user was authenticated
+      if (wasAuthenticated && this.sessionStartTime) {
+        const sessionDuration = Math.floor((Date.now() - this.sessionStartTime) / 1000);
+        this.analyticsService.trackLogout(sessionDuration);
+        this.sessionStartTime = null;
+      }
+      
+      // Clear user ID
+      this.analyticsService.setUserId(null);
     }
   }
 
@@ -158,8 +190,18 @@ export class AuthService {
         };
         
         this.databaseService.saveUserProfile(userId, profile).subscribe({
-          next: () => console.log('[Auth] ✓ Profile saved'),
-          error: (error) => console.error('[Auth] ❌ Profile save failed:', error.message)
+          next: () => {
+            console.log('[Auth] ✓ Profile saved');
+            
+            // Track registration for new users
+            this.analyticsService.trackRegistration();
+          },
+          error: (error) => {
+            console.error('[Auth] ❌ Profile save failed:', error.message);
+            
+            // Track auth error
+            this.analyticsService.trackAuthError('profile_save_failed');
+          }
         });
       },
       error: (error) => {
@@ -237,6 +279,9 @@ export class AuthService {
         // Clear guest data before login
         this.clearGuestData();
         
+        // Track guest to auth conversion
+        this.analyticsService.trackGuestToAuthConversion();
+        
         // Proceed with Google login
         this.proceedWithGoogleLogin().subscribe({
           next: () => {
@@ -281,7 +326,11 @@ export class AuthService {
           skipBrowserRedirect: false
         }
       }).then(({ error }) => {
-        if (error) throw error;
+        if (error) {
+          // Track auth error
+          this.analyticsService.trackAuthError('google_oauth_failed');
+          throw error;
+        }
       })
     );
   }
