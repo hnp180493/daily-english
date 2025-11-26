@@ -29,7 +29,6 @@ export class HeaderComponent implements OnInit {
   // Check if user is authenticated
   isAuthenticated = computed(() => !!this.authService.currentUser());
   
-  appTitle = 'English';
   favoriteCount = computed(() => this.favoriteService.favoriteCount());
   achievementCount = computed(() => this.achievementService.unlockedAchievements().length);
   

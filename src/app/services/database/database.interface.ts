@@ -17,6 +17,7 @@ export interface UserProfile {
   photoURL: string | null;
   createdAt: Date;
   lastLogin: Date;
+  status?: 'Active' | 'Inactive';
 }
 
 export interface UserRewards {

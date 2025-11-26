@@ -47,7 +47,6 @@ export interface ExerciseAttempt {
   userInput: string;
   accuracyScore: number; // This becomes the penalty-adjusted score
   pointsEarned: number;
-  feedback: FeedbackItem[];
   timestamp: Date;
   hintsUsed: number;
   sentenceAttempts?: SentenceAttempt[];

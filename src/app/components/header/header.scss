@@ -28,14 +28,17 @@
   color: inherit;
 }
 
-.logo-text {
-  font-size: 1.5rem;
-  font-weight: 800;
-  color: #A78BFA;
-  margin: 0;
-  font-family: 'Poppins', sans-serif;
-  letter-spacing: -0.5px;
-  text-shadow: 0 0 20px rgba(167, 139, 250, 0.5);
+.logo-image {
+  height: 40px;
+  width: auto;
+  display: block;
+  transition: all 0.3s ease;
+  filter: drop-shadow(0 0 10px rgba(167, 139, 250, 0.3));
+
+  &:hover {
+    transform: scale(1.05);
+    filter: drop-shadow(0 0 15px rgba(167, 139, 250, 0.5));
+  }
 }
 
 .nav-links {
@@ -456,8 +459,8 @@
     gap: 0.5rem;
   }
 
-  .logo-text {
-    font-size: 1.1rem;
+  .logo-image {
+    height: 32px;
   }
 
   .nav-links {

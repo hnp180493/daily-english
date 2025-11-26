@@ -207,9 +207,9 @@ export class ErrorPatternAnalyzer {
   // Private helper methods
 
   private extractAllFeedback(attempt: ExerciseAttempt): FeedbackItem[] {
-    const allFeedback: FeedbackItem[] = [...attempt.feedback];
+    const allFeedback: FeedbackItem[] = [];
 
-    // Also extract feedback from sentence attempts if available
+    // Extract feedback from sentence attempts
     if (attempt.sentenceAttempts) {
       attempt.sentenceAttempts.forEach(sentenceAttempt => {
         allFeedback.push(...sentenceAttempt.feedback);

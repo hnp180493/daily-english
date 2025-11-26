@@ -32,8 +32,11 @@ export class ProgressService {
   private currentUserId: string | null = null;
 
   constructor() {
-    // Load initial progress immediately for guest users
+    // Initialize current user ID immediately
     const initialUser = this.authService.currentUser();
+    this.currentUserId = initialUser?.uid || null;
+    
+    // Load initial progress for guest users
     if (!initialUser) {
       this.loadProgress();
       this.isInitialized = true;
@@ -47,12 +50,14 @@ export class ProgressService {
       // Only initialize if user changed
       if (userId && userId !== this.currentUserId) {
         // User logged in
+        console.log('[ProgressService] User logged in:', userId);
         this.currentUserId = userId;
         this.isInitialized = false;
         this.handleLogin();
         this.isInitialized = true;
       } else if (!userId && this.currentUserId) {
         // User logged out
+        console.log('[ProgressService] User logged out');
         this.currentUserId = null;
         this.isInitialized = false;
         this.handleLogout();

@@ -8,11 +8,12 @@ import { ModalService } from './modal.service';
 import { AnalyticsService } from './analytics.service';
 import { RegistrationLimitModal } from '../components/registration-limit-modal/registration-limit-modal';
 import { LoginWarningModal } from '../components/login-warning-modal/login-warning-modal';
+import { AccountInactiveModal } from '../components/account-inactive-modal/account-inactive-modal';
 import { clearAllGuestData } from '../constants/storage-keys';
 import type { User as SupabaseUser } from '@supabase/supabase-js';
 
 // Maximum number of users allowed to register
-const MAX_USER_LIMIT = 400;
+const MAX_USER_LIMIT = 450;
 
 // App User interface matching Firebase User structure
 interface User {
@@ -160,52 +161,97 @@ export class AuthService {
   private saveUserProfile(supabaseUser: SupabaseUser): void {
     const userId = supabaseUser.id;
     
-    // Check if user can register before saving profile
-    this.canRegisterNewUser(userId).subscribe({
-      next: (canRegister) => {
-        if (!canRegister) {
-          console.error(`[Auth] ❌ Registration limit reached (${MAX_USER_LIMIT} users). Cannot create new account.`);
-          // Sign out the user since they can't register
+    // First check if user exists and their status
+    this.databaseService.loadUserProfile(userId).subscribe({
+      next: (existingProfile) => {
+        // Check if user is inactive
+        if (existingProfile && existingProfile.status === 'Inactive') {
+          console.error('[Auth] ❌ User account is inactive');
+          // Sign out the user
           this.signOut().subscribe({
             next: () => {
-              console.log('[Auth] User signed out due to registration limit');
+              console.log('[Auth] User signed out due to inactive status');
               // Redirect to login page
               this.router.navigate(['/login']);
-              // Show modal to user after a short delay to ensure navigation completes
+              // Show inactive account modal
               setTimeout(() => {
-                this.showRegistrationLimitModal();
+                this.showAccountInactiveModal();
               }, 100);
             }
           });
           return;
         }
 
-        // User can register, save profile
-        const profile = {
-          email: supabaseUser.email || null,
-          displayName: supabaseUser.user_metadata?.['full_name'] || supabaseUser.user_metadata?.['name'] || null,
-          photoURL: supabaseUser.user_metadata?.['avatar_url'] || supabaseUser.user_metadata?.['picture'] || null,
-          createdAt: new Date(),
-          lastLogin: new Date()
-        };
-        
-        this.databaseService.saveUserProfile(userId, profile).subscribe({
-          next: () => {
-            console.log('[Auth] ✓ Profile saved');
+        // If user exists and is active, just update last login
+        if (existingProfile) {
+          const profile = {
+            ...existingProfile,
+            lastLogin: new Date()
+          };
+          
+          this.databaseService.saveUserProfile(userId, profile).subscribe({
+            next: () => {
+              console.log('[Auth] ✓ Profile updated');
+            },
+            error: (error) => {
+              console.error('[Auth] ❌ Profile update failed:', error.message);
+            }
+          });
+          return;
+        }
+
+        // New user - check registration limit
+        this.canRegisterNewUser(userId).subscribe({
+          next: (canRegister) => {
+            if (!canRegister) {
+              console.error(`[Auth] ❌ Registration limit reached (${MAX_USER_LIMIT} users). Cannot create new account.`);
+              // Sign out the user since they can't register
+              this.signOut().subscribe({
+                next: () => {
+                  console.log('[Auth] User signed out due to registration limit');
+                  // Redirect to login page
+                  this.router.navigate(['/login']);
+                  // Show modal to user after a short delay to ensure navigation completes
+                  setTimeout(() => {
+                    this.showRegistrationLimitModal();
+                  }, 100);
+                }
+              });
+              return;
+            }
+
+            // User can register, save profile
+            const profile = {
+              email: supabaseUser.email || null,
+              displayName: supabaseUser.user_metadata?.['full_name'] || supabaseUser.user_metadata?.['name'] || null,
+              photoURL: supabaseUser.user_metadata?.['avatar_url'] || supabaseUser.user_metadata?.['picture'] || null,
+              createdAt: new Date(),
+              lastLogin: new Date(),
+              status: 'Active' as const
+            };
             
-            // Track registration for new users
-            this.analyticsService.trackRegistration();
+            this.databaseService.saveUserProfile(userId, profile).subscribe({
+              next: () => {
+                console.log('[Auth] ✓ Profile saved');
+                
+                // Track registration for new users
+                this.analyticsService.trackRegistration();
+              },
+              error: (error) => {
+                console.error('[Auth] ❌ Profile save failed:', error.message);
+                
+                // Track auth error
+                this.analyticsService.trackAuthError('profile_save_failed');
+              }
+            });
           },
           error: (error) => {
-            console.error('[Auth] ❌ Profile save failed:', error.message);
-            
-            // Track auth error
-            this.analyticsService.trackAuthError('profile_save_failed');
+            console.error('[Auth] ❌ Error checking registration limit:', error);
           }
         });
       },
       error: (error) => {
-        console.error('[Auth] ❌ Error checking registration limit:', error);
+        console.error('[Auth] ❌ Error loading user profile:', error);
       }
     });
   }
@@ -403,6 +449,16 @@ export class AuthService {
 
   private showRegistrationLimitModal(): void {
     const modalRef = this.modalService.open(RegistrationLimitModal);
+    if (modalRef) {
+      // Subscribe to close event
+      modalRef.instance.close.subscribe(() => {
+        this.modalService.close();
+      });
+    }
+  }
+
+  private showAccountInactiveModal(): void {
+    const modalRef = this.modalService.open(AccountInactiveModal);
     if (modalRef) {
       // Subscribe to close event
       modalRef.instance.close.subscribe(() => {

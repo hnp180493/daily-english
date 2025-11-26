@@ -18,15 +18,15 @@
               type="number"
               [value]="targetExercises()"
               (input)="onTargetChange($event)"
-              min="3"
-              max="50"
+              min="0"
+              max="99"
               class="w-24 px-4 py-2 text-center text-2xl font-bold border-2 border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:border-primary-500"
             />
             <span class="text-gray-600 dark:text-gray-400">exercises</span>
           </div>
           <button
             (click)="setGoal()"
-            [disabled]="targetExercises() < 3 || targetExercises() > 50"
+            [disabled]="targetExercises() < 1 || targetExercises() > 99"
             class="mt-6 px-6 py-3 bg-primary-600 hover:bg-primary-700 disabled:bg-gray-400 text-white font-semibold rounded-lg transition-colors duration-200">
             Set Goal
           </button>
@@ -80,7 +80,7 @@
                 </div>
                 <h3 class="text-2xl font-bold text-green-600 mb-2">Goal Achieved!</h3>
                 <p class="text-gray-600 dark:text-gray-400">
-                  You earned {{ currentGoal()?.bonusPointsEarned || 500 }} bonus points!
+                  You earned {{ currentGoal()?.bonusPointsEarned || 0 }} bonus points!
                 </p>
               </div>
             } @else {
@@ -100,8 +100,8 @@
                     <span class="font-bold text-gray-900 dark:text-white">{{ daysRemaining() }}</span>
                   </div>
                   <div class="flex items-center justify-between">
-                    <span class="text-sm text-gray-600 dark:text-gray-400">Bonus reward</span>
-                    <span class="font-bold text-primary-600">+500 points</span>
+                    <span class="text-sm text-gray-600 dark:text-gray-400">Potential bonus</span>
+                    <span class="font-bold text-primary-600">+{{ potentialBonusPoints() }} points</span>
                   </div>
                 </div>
               </div>

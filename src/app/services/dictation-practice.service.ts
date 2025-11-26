@@ -20,13 +20,13 @@ export class DictationPracticeService {
   private authService = inject(AuthService);
 
   /**
-   * Get translated text for an exercise from exercise history or englishText
-   * Priority: 1) User's completed translation, 2) Exercise's englishText
+   * Get translated text for an exercise from exercise history
+   * Only returns user's completed translation, no fallback
    */
   getTranslatedText(exerciseId: string, englishText?: string): Observable<string | null> {
     return this.databaseService.loadProgressAuto().pipe(
       map(progress => {
-        // Try to get user's completed translation first
+        // Only get user's completed translation
         if (progress && progress.exerciseHistory) {
           const attempt = progress.exerciseHistory[exerciseId];
           if (attempt?.userInput) {
@@ -34,17 +34,12 @@ export class DictationPracticeService {
           }
         }
         
-        // Fallback to exercise's englishText if available
-        if (englishText) {
-          return englishText;
-        }
-        
+        // No fallback - return null if user hasn't completed translation
         return null;
       }),
       catchError(error => {
         console.error('[DictationPracticeService] Error loading translated text:', error);
-        // Still try to return englishText on error
-        return of(englishText || null);
+        return of(null);
       })
     );
   }

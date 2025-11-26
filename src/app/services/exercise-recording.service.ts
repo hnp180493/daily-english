@@ -62,14 +62,6 @@ export class ExerciseRecordingService {
       };
     });
 
-    // Aggregate all feedback from sentences to attempt level
-    const allFeedback: FeedbackItem[] = [];
-    sentenceAttempts.forEach(sa => {
-      if (sa.feedback && sa.feedback.length > 0) {
-        allFeedback.push(...sa.feedback);
-      }
-    });
-
     const attempt: ExerciseAttempt = {
       exerciseId: exercise.id,
       category: exercise.category,
@@ -82,7 +74,6 @@ export class ExerciseRecordingService {
       totalRetries,
       totalPenalty,
       pointsEarned,
-      feedback: allFeedback,
       timestamp: new Date(),
       hintsUsed,
       sentenceAttempts

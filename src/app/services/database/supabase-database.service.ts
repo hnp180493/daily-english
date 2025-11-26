@@ -16,6 +16,11 @@ import {
   UserRewards,
   UnsubscribeFunction
 } from './database.interface';
+import { ProgressDecompressor } from './progress-decompressor';
+import { ProgressCompressor } from './progress-compressor';
+import { AchievementCompressor } from './achievement-compressor';
+import { ReviewCompressor } from './review-compressor';
+import { ReviewDecompressor } from './review-decompressor';
 
 /**
  * Supabase implementation of the database interface
@@ -37,7 +42,8 @@ export class SupabaseDatabase implements IDatabase {
           display_name: profile.displayName,
           photo_url: profile.photoURL,
           created_at: profile.createdAt.toISOString(),
-          last_login: profile.lastLogin.toISOString()
+          last_login: profile.lastLogin.toISOString(),
+          status: profile.status || 'Active'
         })
         .then(({ error }) => {
           if (error) throw error;
@@ -61,7 +67,8 @@ export class SupabaseDatabase implements IDatabase {
             displayName: data.display_name,
             photoURL: data.photo_url,
             createdAt: new Date(data.created_at),
-            lastLogin: new Date(data.last_login)
+            lastLogin: new Date(data.last_login),
+            status: data.status || 'Active'
           } as UserProfile;
         })
     ).pipe(catchError(this.handleError));
@@ -69,12 +76,15 @@ export class SupabaseDatabase implements IDatabase {
 
   // Progress Operations
   saveProgress(userId: string, progress: UserProgress): Observable<void> {
+    // Compress progress data before saving
+    const compressed = ProgressCompressor.compress(progress);
+    
     return from(
       this.supabase
         .from('user_progress')
         .upsert({
           user_id: userId,
-          data: progress,
+          data: compressed,
           updated_at: new Date().toISOString()
         })
         .then(({ error }) => {
@@ -92,7 +102,21 @@ export class SupabaseDatabase implements IDatabase {
         .maybeSingle()
         .then(({ data, error }) => {
           if (error) throw error;
-          return data?.data as UserProgress | null;
+          if (!data?.data) return null;
+          
+          const progress = data.data as any;
+          
+          // Decompress exerciseHistory if in compressed format
+          if (progress.exerciseHistory && ProgressDecompressor.isCompressed(progress.exerciseHistory)) {
+            progress.exerciseHistory = ProgressDecompressor.decompressExerciseHistory(progress.exerciseHistory);
+          }
+          
+          // Decompress dictationHistory if in compressed format
+          if (progress.dictationHistory && ProgressDecompressor.isCompressed(progress.dictationHistory)) {
+            progress.dictationHistory = ProgressDecompressor.decompressDictationHistory(progress.dictationHistory);
+          }
+          
+          return progress as UserProgress;
         })
     ).pipe(catchError(this.handleError));
   }
@@ -113,7 +137,19 @@ export class SupabaseDatabase implements IDatabase {
         },
         (payload) => {
           if (payload.new && 'data' in payload.new) {
-            callback(payload.new['data'] as UserProgress);
+            const progress = payload.new['data'] as any;
+            
+            // Decompress exerciseHistory if in compressed format
+            if (progress.exerciseHistory && ProgressDecompressor.isCompressed(progress.exerciseHistory)) {
+              progress.exerciseHistory = ProgressDecompressor.decompressExerciseHistory(progress.exerciseHistory);
+            }
+            
+            // Decompress dictationHistory if in compressed format
+            if (progress.dictationHistory && ProgressDecompressor.isCompressed(progress.dictationHistory)) {
+              progress.dictationHistory = ProgressDecompressor.decompressDictationHistory(progress.dictationHistory);
+            }
+            
+            callback(progress as UserProgress);
           } else {
             callback(null);
           }
@@ -133,9 +169,10 @@ export class SupabaseDatabase implements IDatabase {
         .from('user_favorites')
         .upsert({
           user_id: userId,
+          // Use compressed format to save space
           favorites: favorites.map((f) => ({
-            exercise_id: f.exerciseId,
-            added_at: f.addedAt.toISOString()
+            id: f.exerciseId,
+            at: f.addedAt.toISOString()
           })),
           updated_at: new Date().toISOString()
         })
@@ -157,8 +194,9 @@ export class SupabaseDatabase implements IDatabase {
           if (!data || !data.favorites || data.favorites.length === 0) return null;
 
           return data.favorites.map((f: any) => ({
-            exerciseId: f.exercise_id,
-            addedAt: new Date(f.added_at)
+            // Support both compressed (id, at) and full format (exercise_id, added_at)
+            exerciseId: f.id || f.exercise_id,
+            addedAt: new Date(f.at || f.added_at)
           }));
         })
     ).pipe(catchError(this.handleError));
@@ -218,12 +256,13 @@ export class SupabaseDatabase implements IDatabase {
 
   // Achievement Operations
   saveAchievements(userId: string, data: UserAchievementData): Observable<void> {
+    const compressed = AchievementCompressor.compress(data);
     return from(
       this.supabase
         .from('user_achievements')
         .upsert({
           user_id: userId,
-          data: data,
+          data: compressed,
           updated_at: new Date().toISOString()
         })
         .then(({ error }) => {
@@ -233,6 +272,7 @@ export class SupabaseDatabase implements IDatabase {
   }
 
   loadAchievements(userId: string): Observable<UserAchievementData | null> {
+    console.log('[SupabaseDatabase] Loading achievements for user:', userId);
     return from(
       this.supabase
         .from('user_achievements')
@@ -240,12 +280,31 @@ export class SupabaseDatabase implements IDatabase {
         .eq('user_id', userId)
         .maybeSingle()
         .then(({ data, error }) => {
-          if (error) throw error;
-          if (!data) return null;
+          if (error) {
+            console.error('[SupabaseDatabase] Error loading achievements:', error);
+            throw error;
+          }
+          
+          if (!data) {
+            console.log('[SupabaseDatabase] No achievement data found for user');
+            return null;
+          }
 
+          console.log('[SupabaseDatabase] Raw achievement data:', data);
           const achievementData = data.data as any;
 
-          // Convert date strings back to Date objects
+          // Decompress if in compressed format
+          if (AchievementCompressor.isCompressed(achievementData)) {
+            console.log('[SupabaseDatabase] Decompressing achievement data');
+            const decompressed = AchievementCompressor.decompress(achievementData);
+            console.log('[SupabaseDatabase] Decompressed:', {
+              unlockedCount: decompressed.unlockedAchievements.length,
+              claimedCount: decompressed.unlockedAchievements.filter(ua => ua.rewardsClaimed).length
+            });
+            return decompressed;
+          }
+
+          // Legacy format - convert date strings back to Date objects
           return {
             userId: achievementData.userId,
             unlockedAchievements: (achievementData.unlockedAchievements || []).map((ua: any) => ({
@@ -269,14 +328,18 @@ export class SupabaseDatabase implements IDatabase {
 
   // Reward Operations
   saveRewards(userId: string, rewards: UserRewards): Observable<void> {
+    // Remove duplicates to keep data clean
+    const uniqueThemes = [...new Set(rewards.themes)];
+    const uniqueFrames = [...new Set(rewards.avatarFrames)];
+    
     return from(
       this.supabase
         .from('user_rewards')
         .upsert({
           user_id: userId,
-          themes: rewards.themes,
+          themes: uniqueThemes,
           hints: rewards.hints,
-          avatar_frames: rewards.avatarFrames,
+          avatar_frames: uniqueFrames,
           updated_at: new Date().toISOString()
         })
         .then(({ error }) => {
@@ -307,16 +370,8 @@ export class SupabaseDatabase implements IDatabase {
 
   // Review Data Operations
   saveReviewData(userId: string, exerciseId: string, reviewData: ReviewData): Observable<void> {
-    // Clean up reviewData to remove metadata fields that shouldn't be in data column
-    const cleanReviewData = {
-      easinessFactor: reviewData.easinessFactor,
-      interval: reviewData.interval,
-      nextReviewDate: reviewData.nextReviewDate,
-      repetitionCount: reviewData.repetitionCount,
-      lastReviewDate: reviewData.lastReviewDate,
-      lastScore: reviewData.lastScore,
-      incorrectSentenceIndices: reviewData.incorrectSentenceIndices || []
-    };
+    // Compress review data before saving
+    const compressedData = ReviewCompressor.compress(reviewData);
 
     return from(
       this.supabase
@@ -325,7 +380,7 @@ export class SupabaseDatabase implements IDatabase {
           {
             user_id: userId,
             exercise_id: exerciseId,
-            data: cleanReviewData,
+            data: compressedData,
             updated_at: new Date().toISOString()
           },
           {
@@ -351,13 +406,25 @@ export class SupabaseDatabase implements IDatabase {
           if (!data) return null;
 
           const reviewData = data.data as any;
-          // Convert date strings back to Date objects and merge with metadata from columns
+          
+          // Decompress if in compressed format
+          const decompressed = ReviewCompressor.isCompressed(reviewData)
+            ? ReviewDecompressor.decompress(reviewData)
+            : {
+                easinessFactor: reviewData.easinessFactor,
+                interval: reviewData.interval,
+                nextReviewDate: new Date(reviewData.nextReviewDate),
+                repetitionCount: reviewData.repetitionCount,
+                lastReviewDate: new Date(reviewData.lastReviewDate),
+                lastScore: reviewData.lastScore,
+                incorrectSentenceIndices: reviewData.incorrectSentenceIndices || []
+              };
+          
+          // Merge with metadata from columns
           return {
-            ...reviewData,
+            ...decompressed,
             exerciseId: data.exercise_id,
             userId: data.user_id,
-            nextReviewDate: new Date(reviewData.nextReviewDate),
-            lastReviewDate: new Date(reviewData.lastReviewDate),
             createdAt: new Date(data.created_at),
             updatedAt: new Date(data.updated_at)
           } as ReviewDataWithMetadata;
@@ -377,12 +444,24 @@ export class SupabaseDatabase implements IDatabase {
 
           return data.map((row) => {
             const reviewData = row.data as any;
+            
+            // Decompress if in compressed format
+            const decompressed = ReviewCompressor.isCompressed(reviewData)
+              ? ReviewDecompressor.decompress(reviewData)
+              : {
+                  easinessFactor: reviewData.easinessFactor,
+                  interval: reviewData.interval,
+                  nextReviewDate: new Date(reviewData.nextReviewDate),
+                  repetitionCount: reviewData.repetitionCount,
+                  lastReviewDate: new Date(reviewData.lastReviewDate),
+                  lastScore: reviewData.lastScore,
+                  incorrectSentenceIndices: reviewData.incorrectSentenceIndices || []
+                };
+            
             return {
-              ...reviewData,
+              ...decompressed,
               exerciseId: row.exercise_id,
               userId: row.user_id,
-              nextReviewDate: new Date(reviewData.nextReviewDate),
-              lastReviewDate: new Date(reviewData.lastReviewDate),
               createdAt: new Date(row.created_at),
               updatedAt: new Date(row.updated_at)
             } as ReviewDataWithMetadata;

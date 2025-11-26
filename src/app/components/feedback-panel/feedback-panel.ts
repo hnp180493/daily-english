@@ -72,8 +72,17 @@ export class FeedbackPanelComponent {
     // Highlight important words in orange/yellow
     let formatted = explanation;
 
-    // First, highlight words in quotes (keep the quotes)
-    formatted = formatted.replace(/(['"])([^'"]+)\1/g, '<span class="text-orange">$1$2$1</span>');
+    // Match single quotes wrapping phrases (including apostrophes inside like "child's")
+    // Pattern: quote after space/start, then any content including apostrophes, then quote before space/punctuation/end
+    // Use greedy match between word boundaries to capture full phrases
+    formatted = formatted.replace(/(\s|^)'(.+?)'(\s|[.,!?]|$)/g, (_match, before, content, after) => {
+      return `${before}<span class="text-orange">${content}</span>${after}`;
+    });
+
+    // Also handle double quotes
+    formatted = formatted.replace(/(\s|^)"(.+?)"(\s|[.,!?]|$)/g, (_match, before, content, after) => {
+      return `${before}<span class="text-orange">${content}</span>${after}`;
+    });
 
     return formatted;
   }

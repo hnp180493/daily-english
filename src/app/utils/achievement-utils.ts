@@ -214,25 +214,33 @@ export function countPerfectScores(attempts: ExerciseAttempt[]): number {
  * Count grammar errors in attempt
  */
 export function countGrammarErrors(attempt: ExerciseAttempt): number {
-  if (!attempt || !attempt.feedback || !Array.isArray(attempt.feedback)) {
+  if (!attempt || !attempt.sentenceAttempts || !Array.isArray(attempt.sentenceAttempts)) {
     return 0;
   }
-  return attempt.feedback.filter((f) => f && f.type === 'grammar').length;
+  let count = 0;
+  attempt.sentenceAttempts.forEach((sa) => {
+    if (sa.feedback && Array.isArray(sa.feedback)) {
+      count += sa.feedback.filter((f) => f && f.type === 'grammar').length;
+    }
+  });
+  return count;
 }
 
 /**
  * Check if attempt has advanced vocabulary
  */
 export function hasAdvancedVocabulary(attempt: ExerciseAttempt): boolean {
-  if (!attempt || !attempt.feedback || !Array.isArray(attempt.feedback)) {
+  if (!attempt || !attempt.sentenceAttempts || !Array.isArray(attempt.sentenceAttempts)) {
     return false;
   }
-  return attempt.feedback.some(
-    (f) =>
-      f &&
-      f.type === 'vocabulary' &&
-      f.explanation &&
-      f.explanation.toLowerCase().includes('advanced')
+  return attempt.sentenceAttempts.some((sa) =>
+    sa.feedback && Array.isArray(sa.feedback) && sa.feedback.some(
+      (f) =>
+        f &&
+        f.type === 'vocabulary' &&
+        f.explanation &&
+        f.explanation.toLowerCase().includes('advanced')
+    )
   );
 }
 

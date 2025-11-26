@@ -62,6 +62,7 @@ export class DictationPracticeComponent implements OnInit, OnDestroy {
   showOverview = signal<boolean>(false);
   isPlayingOverview = signal<boolean>(false);
   showOverviewText = signal<boolean>(false);
+  attemptCount = signal<number>(0);
   
   settings = this.settingsService.settings;
   
@@ -148,6 +149,7 @@ export class DictationPracticeComponent implements OnInit, OnDestroy {
         
         this.exercise.set(ex);
         this.updateDictationSeo(ex);
+        this.loadAttemptCount(exerciseId);
         this.loadTranslatedText(exerciseId, mode);
       },
       error: (err) => {
@@ -217,6 +219,15 @@ export class DictationPracticeComponent implements OnInit, OnDestroy {
     this.accuracyCache.clear();
   }
   
+  private loadAttemptCount(exerciseId: string): void {
+    this.progressService.getUserProgress().subscribe(progress => {
+      const dictationAttempt = progress.dictationHistory[exerciseId];
+      if (dictationAttempt) {
+        this.attemptCount.set(dictationAttempt.attemptNumber);
+      }
+    });
+  }
+  
   private loadTranslatedText(exerciseId: string, mode: string | null): void {
     const ex = this.exercise();
     if (!ex) {
@@ -238,10 +249,22 @@ export class DictationPracticeComponent implements OnInit, OnDestroy {
         // Check for in-progress session
         const savedSession = this.dictationService.loadInProgressSession(exerciseId);
         
+        // Verify saved session matches current text
         if (savedSession) {
-          // Restore saved session
-          this.sentences.set(savedSession.sentences);
-          this.currentSentenceIndex.set(savedSession.currentIndex);
+          const savedText = savedSession.sentences.map(s => s.original).join('. ') + '.';
+          const currentText = textToUse.trim();
+          
+          // If text doesn't match, clear old session and start fresh
+          if (savedText.trim() !== currentText) {
+            console.log('[DictationPractice] Text mismatch, clearing old session');
+            this.dictationService.clearInProgressSession(exerciseId);
+            const sentenceList = this.dictationService.initializeDictationSession(exerciseId, textToUse);
+            this.sentences.set(sentenceList);
+          } else {
+            // Restore saved session
+            this.sentences.set(savedSession.sentences);
+            this.currentSentenceIndex.set(savedSession.currentIndex);
+          }
         } else {
           // Start new session
           const sentenceList = this.dictationService.initializeDictationSession(exerciseId, textToUse);
@@ -268,10 +291,22 @@ export class DictationPracticeComponent implements OnInit, OnDestroy {
           // Check for in-progress session
           const savedSession = this.dictationService.loadInProgressSession(exerciseId);
           
+          // Verify saved session matches current text
           if (savedSession) {
-            // Restore saved session
-            this.sentences.set(savedSession.sentences);
-            this.currentSentenceIndex.set(savedSession.currentIndex);
+            const savedText = savedSession.sentences.map(s => s.original).join('. ') + '.';
+            const currentText = text.trim();
+            
+            // If text doesn't match, clear old session and start fresh
+            if (savedText.trim() !== currentText) {
+              console.log('[DictationPractice] Text mismatch, clearing old session');
+              this.dictationService.clearInProgressSession(exerciseId);
+              const sentenceList = this.dictationService.initializeDictationSession(exerciseId, text);
+              this.sentences.set(sentenceList);
+            } else {
+              // Restore saved session
+              this.sentences.set(savedSession.sentences);
+              this.currentSentenceIndex.set(savedSession.currentIndex);
+            }
           } else {
             // Start new session
             const sentenceList = this.dictationService.initializeDictationSession(exerciseId, text);
@@ -613,11 +648,15 @@ export class DictationPracticeComponent implements OnInit, OnDestroy {
     const totalAccuracy = sentenceList.reduce((sum, s) => sum + s.accuracyScore, 0);
     const overallAccuracy = sentenceList.length > 0 ? totalAccuracy / sentenceList.length : 0;
     
+    // Get current attempt count and increment
+    const currentAttemptCount = this.attemptCount();
+    const newAttemptNumber = currentAttemptCount + 1;
+    
     // Create attempt object
     const attempt: DictationPracticeAttempt = {
       exerciseId: ex.id,
       translatedText: this.translatedText(),
-      attemptNumber: 1,
+      attemptNumber: newAttemptNumber,
       sentenceAttempts: sentenceList,
       overallAccuracy,
       timeSpent,
@@ -630,6 +669,9 @@ export class DictationPracticeComponent implements OnInit, OnDestroy {
       next: () => {
         console.log('Dictation attempt saved');
         this.progressService.recordDictationAttempt(attempt);
+        
+        // Update local attempt count
+        this.attemptCount.set(newAttemptNumber);
         
         // Clear in-progress session after successful completion
         this.dictationService.clearInProgressSession(ex.id);

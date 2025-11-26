@@ -423,10 +423,15 @@ export class InternalAnalyticsService {
     const allAttempts = UserProgressHelper.getAllAttempts(progress);
 
     allAttempts.forEach((attempt) => {
-      if (attempt.feedback && Array.isArray(attempt.feedback)) {
-        attempt.feedback.forEach((item: FeedbackItem) => {
-          errorMap.set(item.type, (errorMap.get(item.type) || 0) + 1);
-          totalErrors++;
+      // Extract feedback from sentenceAttempts
+      if (attempt.sentenceAttempts && Array.isArray(attempt.sentenceAttempts)) {
+        attempt.sentenceAttempts.forEach((sa) => {
+          if (sa.feedback && Array.isArray(sa.feedback)) {
+            sa.feedback.forEach((item: FeedbackItem) => {
+              errorMap.set(item.type, (errorMap.get(item.type) || 0) + 1);
+              totalErrors++;
+            });
+          }
         });
       }
     });
@@ -762,23 +767,27 @@ export class InternalAnalyticsService {
         });
       }
       
-      // Also extract from old format (feedback + userInput) for backward compatibility
-      if (attempt.feedback && Array.isArray(attempt.feedback)) {
-        attempt.feedback.forEach((item: FeedbackItem) => {
-          if (item.type === 'vocabulary') {
-            const words = this.extractWords(item.suggestion);
-            words.forEach((word) => {
-              const existing = vocabularyMap.get(word) || {
-                frequency: 0,
-                errors: 0,
-                lastSeen: new Date(attempt.timestamp)
-              };
+      // Extract from sentenceAttempts feedback
+      if (attempt.sentenceAttempts && Array.isArray(attempt.sentenceAttempts)) {
+        attempt.sentenceAttempts.forEach((sa) => {
+          if (sa.feedback && Array.isArray(sa.feedback)) {
+            sa.feedback.forEach((item: FeedbackItem) => {
+              if (item.type === 'vocabulary') {
+                const words = this.extractWords(item.suggestion);
+                words.forEach((word) => {
+                  const existing = vocabularyMap.get(word) || {
+                    frequency: 0,
+                    errors: 0,
+                    lastSeen: new Date(attempt.timestamp)
+                  };
               
-              vocabularyMap.set(word, {
-                frequency: existing.frequency + 1,
-                errors: existing.errors + 1,
-                lastSeen: new Date(attempt.timestamp)
-              });
+                  vocabularyMap.set(word, {
+                    frequency: existing.frequency + 1,
+                    errors: existing.errors + 1,
+                    lastSeen: new Date(attempt.timestamp)
+                  });
+                });
+              }
             });
           }
         });

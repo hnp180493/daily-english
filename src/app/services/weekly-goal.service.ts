@@ -155,9 +155,13 @@ export class WeeklyGoalService {
       // Check if goal is achieved
       if (completedThisWeek >= goal.targetExercises && !goal.isAchieved) {
         goal.isAchieved = true;
-        goal.bonusPointsEarned = 500;
-        console.log('[WeeklyGoalService] Goal achieved! Adding bonus points');
-        this.progressService.addBonusPoints(500);
+        
+        // Calculate bonus points based on exercises completed
+        const bonusPoints = this.calculateBonusPoints(completedThisWeek);
+        goal.bonusPointsEarned = bonusPoints;
+        
+        console.log('[WeeklyGoalService] Goal achieved! Adding bonus points:', bonusPoints);
+        this.progressService.addBonusPoints(bonusPoints);
       }
 
       // Save updated goal
@@ -169,5 +173,24 @@ export class WeeklyGoalService {
       console.log('[WeeklyGoalService] 🏁 Resetting isUpdating flag');
       this.isUpdating = false;
     }
+  }
+
+  private calculateBonusPoints(completedExercises: number): number {
+    // Max 1000 points for 30+ exercises
+    if (completedExercises >= 30) {
+      return 1000;
+    }
+    
+    // Progressive reward system - more exercises = exponentially more points
+    // Using quadratic formula to reward higher completion rates
+    // Formula: (completedExercises / 30)^2 * 1000
+    const ratio = completedExercises / 30;
+    const rawPoints = Math.pow(ratio, 2) * 1000;
+    
+    // Round to nearest 50
+    const roundedPoints = Math.round(rawPoints / 50) * 50;
+    
+    // Ensure minimum of 50 points
+    return Math.max(50, roundedPoints);
   }
 }

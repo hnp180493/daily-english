@@ -271,27 +271,33 @@ export class GeminiProvider extends BaseAIProvider {
       }
 
       // Parse individual feedback items as they stream in
-      const feedbackSectionMatch = cleanBuffer.match(/"feedback"\s*:\s*\[([^\]]*)/);
+      const feedbackSectionMatch = cleanBuffer.match(/"feedback"\s*:\s*\[([\s\S]*?)(?:\]|$)/);
       if (feedbackSectionMatch) {
         const feedbackContent = feedbackSectionMatch[1];
         
-        // Match individual complete feedback objects
-        const itemRegex = /\{\s*"type"\s*:\s*"([^"]+)"[^}]*?"severity"\s*:\s*"([^"]+)"[^}]*?"originalText"\s*:\s*"([^"]*)"[^}]*?"suggestion"\s*:\s*"([^"]*)"[^}]*?"explanation"\s*:\s*"([^"]*)"/g;
+        // Match complete feedback objects with all required fields
+        // This regex handles escaped quotes, newlines, and special characters
+        const itemRegex = /\{\s*"type"\s*:\s*"([^"]+)"\s*,\s*"severity"\s*:\s*"([^"]+)"\s*,\s*"originalText"\s*:\s*"((?:[^"\\]|\\.)*)"\s*,\s*"suggestion"\s*:\s*"((?:[^"\\]|\\.)*)"\s*,\s*"explanation"\s*:\s*"((?:[^"\\]|\\.)*)"\s*,\s*"startIndex"\s*:\s*(\d+)\s*,\s*"endIndex"\s*:\s*(\d+)\s*\}/g;
         
         const allMatches: any[] = [];
         let match;
         
         // Collect all complete feedback items
         while ((match = itemRegex.exec(feedbackContent)) !== null) {
-          allMatches.push({
-            type: match[1],
-            severity: match[2],
-            originalText: match[3],
-            suggestion: match[4],
-            explanation: match[5],
-            startIndex: 0,
-            endIndex: 0
-          });
+          try {
+            allMatches.push({
+              type: match[1],
+              severity: match[2],
+              originalText: this.unescapeJson(match[3]),
+              suggestion: this.unescapeJson(match[4]),
+              explanation: this.unescapeJson(match[5]),
+              startIndex: parseInt(match[6], 10),
+              endIndex: parseInt(match[7], 10)
+            });
+          } catch (e) {
+            // Skip malformed items
+            console.warn('Skipping malformed feedback item:', e);
+          }
         }
 
         // Emit only new items we haven't emitted yet
@@ -301,7 +307,17 @@ export class GeminiProvider extends BaseAIProvider {
         }
       }
     } catch (e) {
-      // Ignore parsing errors for partial content
+      // Ignore parsing errors for partial content but log for debugging
+      console.debug('Partial parse error (expected during streaming):', e);
     }
+  }
+
+  private unescapeJson(str: string): string {
+    return str
+      .replace(/\\"/g, '"')
+      .replace(/\\n/g, '\n')
+      .replace(/\\r/g, '\r')
+      .replace(/\\t/g, '\t')
+      .replace(/\\\\/g, '\\');
   }
 }

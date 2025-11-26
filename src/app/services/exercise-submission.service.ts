@@ -71,23 +71,34 @@ export class ExerciseSubmissionService {
           } else if (chunk.type === 'complete' && chunk.data) {
             this.isStreaming.set(false);
             const response = chunk.data;
-            this.feedback.set(response.feedback ?? null);
-            this.accuracyScore.set(response.accuracyScore ?? 0);
+            
+            // Keep streamed feedback if available, otherwise use complete response
+            const currentFeedback = this.feedback();
+            if (!currentFeedback || currentFeedback.length === 0) {
+              this.feedback.set(response.feedback ?? null);
+            }
+            
+            // Update score from complete response if available
+            if (response.accuracyScore !== undefined && response.accuracyScore > 0) {
+              this.accuracyScore.set(response.accuracyScore);
+            }
 
-            const score = response.accuracyScore ?? 0;
+            // Use the score we already have (from streaming or complete response)
+            const score = this.accuracyScore();
 
-            // Extract suggestion from feedback (always, regardless of score)
+            // Extract suggestion from feedback (use streamed feedback if available)
             let suggestion: string | undefined;
-            if (response.feedback && response.feedback.length > 0) {
-              const suggestionItem = response.feedback.find(f => f.type === 'suggestion');
-              suggestion = suggestionItem?.suggestion || response.feedback[0]?.suggestion;
+            const feedbackToUse = this.feedback() || response.feedback;
+            if (feedbackToUse && feedbackToUse.length > 0) {
+              const suggestionItem = feedbackToUse.find(f => f.type === 'suggestion');
+              suggestion = suggestionItem?.suggestion || feedbackToUse[0]?.suggestion;
 
               // Log for debugging
               console.log('[Submission] Feedback received:', {
                 score,
-                feedbackCount: response.feedback.length,
+                feedbackCount: feedbackToUse.length,
                 suggestion,
-                allFeedback: response.feedback
+                allFeedback: feedbackToUse
               });
             }
 

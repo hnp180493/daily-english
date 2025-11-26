@@ -125,14 +125,15 @@ export class NotificationService {
     );
   }
 
-  sendGoalAchievement(): void {
+  sendGoalAchievement(bonusPoints?: number): void {
     if (!this.canSendNotification() || !this.preferences?.goalProgressReminder) {
       return;
     }
 
+    const points = bonusPoints || 'bonus';
     this.showNotification(
       'Goal Achieved! 🏆',
-      'Congratulations! You\'ve reached your weekly goal and earned 500 bonus points!',
+      `Congratulations! You've reached your weekly goal and earned ${points} points!`,
       '/learning-path'
     );
   }

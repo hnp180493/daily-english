@@ -3,6 +3,7 @@ import { Observable, of } from 'rxjs';
 import { switchMap, tap, catchError } from 'rxjs/operators';
 import { UserAchievementData } from '../models/achievement.model';
 import { AuthService } from './auth.service';
+import { SupabaseDatabase } from './database/supabase-database.service';
 
 /**
  * Service for managing achievement data persistence
@@ -13,28 +14,29 @@ import { AuthService } from './auth.service';
 })
 export class AchievementStoreService {
   private authService = inject(AuthService);
+  private databaseService = inject(SupabaseDatabase);
 
   /**
-   * Load achievement data from storage (Firestore for auth users, localStorage for guests)
+   * Load achievement data from storage (Supabase for auth users, localStorage for guests)
    */
   loadAchievementData(): Observable<UserAchievementData | null> {
     const userId = this.authService.getUserId();
+    console.log('[AchievementStoreService] Loading data for userId:', userId);
     
     // Guest user - load from localStorage
     if (!userId) {
+      console.log('[AchievementStoreService] Guest user, loading from localStorage');
       const localData = this.loadFromLocalStorage('guest');
       return of(localData);
     }
     
-    // Authenticated user - load from Firestore (not implemented yet)
-    // TODO: Implement Firestore storage for achievements
-    console.warn('[AchievementStoreService] Firestore storage not implemented, using localStorage');
-    const localData = this.loadFromLocalStorage(userId);
-    return of(localData);
+    // Authenticated user - load from Supabase
+    console.log('[AchievementStoreService] Authenticated user, loading from Supabase');
+    return this.databaseService.loadAchievements(userId);
   }
 
   /**
-   * Save achievement data to storage (Firestore for auth users, localStorage for guests)
+   * Save achievement data to storage (Supabase for auth users, localStorage for guests)
    */
   saveAchievementData(data: UserAchievementData): Observable<void> {
     const userId = this.authService.getUserId();
@@ -45,11 +47,8 @@ export class AchievementStoreService {
       return of(undefined);
     }
     
-    // Authenticated user - save to Firestore (not implemented yet)
-    // TODO: Implement Firestore storage for achievements
-    console.warn('[AchievementStoreService] Firestore storage not implemented, using localStorage');
-    this.saveToLocalStorage(userId, data);
-    return of(undefined);
+    // Authenticated user - save to Supabase
+    return this.databaseService.saveAchievements(userId, data);
   }
   
   /**

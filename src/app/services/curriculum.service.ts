@@ -685,12 +685,15 @@ export class CurriculumService {
     const isNowAchieved = completedThisWeek >= goal.targetExercises;
     const justAchieved = wasNotAchieved && isNowAchieved;
 
+    // Calculate bonus points
+    const bonusPoints = isNowAchieved ? this.calculateBonusPoints(completedThisWeek) : 0;
+    
     // Update goal
     const updatedGoal = {
       ...goal,
       completedExercises: completedThisWeek,
       isAchieved: isNowAchieved,
-      bonusPointsEarned: isNowAchieved ? 500 : 0,
+      bonusPointsEarned: bonusPoints,
     };
 
     console.log('[CurriculumService] Recalculated weekly goal:', updatedGoal);
@@ -698,8 +701,8 @@ export class CurriculumService {
 
     // Add bonus points if goal just achieved
     if (justAchieved) {
-      this.progressService.addBonusPoints(500);
-      console.log('[CurriculumService] Weekly goal achieved! Added 500 bonus points');
+      this.progressService.addBonusPoints(bonusPoints);
+      console.log('[CurriculumService] Weekly goal achieved! Added', bonusPoints, 'bonus points');
     }
   }
 
@@ -720,5 +723,24 @@ export class CurriculumService {
 
     // Return null if no goal set - user needs to set it in goal-tracker
     return goal || null;
+  }
+
+  private calculateBonusPoints(completedExercises: number): number {
+    // Max 1000 points for 30+ exercises
+    if (completedExercises >= 30) {
+      return 1000;
+    }
+    
+    // Progressive reward system - more exercises = exponentially more points
+    // Using quadratic formula to reward higher completion rates
+    // Formula: (completedExercises / 30)^2 * 1000
+    const ratio = completedExercises / 30;
+    const rawPoints = Math.pow(ratio, 2) * 1000;
+    
+    // Round to nearest 50
+    const roundedPoints = Math.round(rawPoints / 50) * 50;
+    
+    // Ensure minimum of 50 points
+    return Math.max(50, roundedPoints);
   }
 }

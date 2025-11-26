@@ -55,16 +55,18 @@ export class ReviewService {
   private currentUserId: string | null = null;
 
   constructor() {
-    // console.log('[ReviewService] Constructor called');
+    // Initialize current user ID immediately
+    const initialUser = this.authService.currentUser();
+    this.currentUserId = initialUser?.uid || null;
+    
     // Trigger migration check when user logs in
     effect(() => {
       const user = this.authService.currentUser();
       const userId = user?.uid || null;
       
-      // console.log('[ReviewService] Effect triggered, user:', user?.email, 'migrationCompleted:', this.migrationCompleted, 'currentUserId:', this.currentUserId, 'newUserId:', userId);
-      
       // Only initialize if user changed
       if (userId && userId !== this.currentUserId) {
+        console.log('[ReviewService] User logged in:', userId);
         this.currentUserId = userId;
         this.migrationCompleted = false; // Reset for new user
         this.checkAndMigrateReviewData();
@@ -74,6 +76,7 @@ export class ReviewService {
         }
       } else if (!userId && this.currentUserId) {
         // User logged out
+        console.log('[ReviewService] User logged out');
         this.currentUserId = null;
         this.migrationCompleted = false;
         this.cleanupNotifications();

@@ -44,6 +44,9 @@ export class HomeComponent implements OnInit {
   isLoadingPath = signal(false);
   isLoadingChallenge = signal(false);
   isLoadingGoal = signal(false);
+  
+  // Guard to prevent duplicate loading
+  private hasLoadedData = false;
 
   // Computed signal for path progress percentage
   pathProgressPercentage = computed(() => {
@@ -101,15 +104,6 @@ export class HomeComponent implements OnInit {
       this.allCustomExercises();
       setTimeout(() => this.isLoading.set(false), 300);
     });
-
-    // Watch auth state and load data when user becomes authenticated
-    effect(() => {
-      const isAuth = this.isAuthenticated();
-      if (isAuth) {
-        console.log('[Home] User authenticated, loading learning path data...');
-        this.loadLearningPathData();
-      }
-    });
   }
 
   async ngOnInit(): Promise<void> {
@@ -117,8 +111,9 @@ export class HomeComponent implements OnInit {
     await this.authService.waitForAuth();
     
     // Load learning path data if authenticated - parallel loading with timeouts
-    if (this.isAuthenticated()) {
+    if (this.isAuthenticated() && !this.hasLoadedData) {
       console.log('[Home] ngOnInit: User authenticated, loading learning path data...');
+      this.hasLoadedData = true;
       this.loadLearningPathData();
     }
   }

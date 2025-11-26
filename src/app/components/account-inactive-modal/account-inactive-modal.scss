@@ -1,0 +1,96 @@
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 1rem;
+}
+
+.modal-content {
+  background: white;
+  border-radius: 1rem;
+  max-width: 28rem;
+  width: 100%;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  animation: slideUp 0.3s ease-out;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(1rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.modal-header {
+  padding: 1.5rem 1.5rem 1rem;
+  border-bottom: 1px solid #e5e7eb;
+
+  h2 {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #1f2937;
+    text-align: center;
+  }
+}
+
+.modal-body {
+  padding: 1.5rem;
+  text-align: center;
+
+  .icon-container {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 1rem;
+
+    .warning-icon {
+      width: 4rem;
+      height: 4rem;
+      color: #ef4444;
+    }
+  }
+
+  .message {
+    color: #4b5563;
+    font-size: 1rem;
+    line-height: 1.5;
+    margin: 0;
+  }
+}
+
+.modal-footer {
+  padding: 1rem 1.5rem 1.5rem;
+  display: flex;
+  justify-content: center;
+
+  .btn-primary {
+    background-color: #4f46e5;
+    color: white;
+    padding: 0.625rem 2rem;
+    border-radius: 0.5rem;
+    border: none;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    font-size: 1rem;
+
+    &:hover {
+      background-color: #4338ca;
+    }
+
+    &:active {
+      background-color: #3730a3;
+    }
+  }
+}

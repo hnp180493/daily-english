@@ -314,72 +314,68 @@ export class ExportImportService {
 
   /**
    * Merge weekly goals - combine without duplicates
+   * Store each goal with date-based key: guest_weekly_goal_YYYY-MM-DD
    */
   private mergeWeeklyGoals(importedData: any): void {
-    const existing = localStorage.getItem(GUEST_WEEKLY_GOALS_KEY);
     const importedArray = Array.isArray(importedData) ? importedData : [];
     
-    if (!existing) {
-      localStorage.setItem(GUEST_WEEKLY_GOALS_KEY, JSON.stringify(importedArray));
-      return;
-    }
+    importedArray.forEach((goal: any) => {
+      if (!goal.weekStartDate) {
+        console.warn('[ExportImportService] Weekly goal missing weekStartDate:', goal);
+        return;
+      }
 
-    try {
-      const currentArray = JSON.parse(existing);
-      const merged = [...currentArray];
+      const key = `guest_weekly_goal_${goal.weekStartDate}`;
+      const existing = localStorage.getItem(key);
       
-      importedArray.forEach((goal: any) => {
-        const existingIndex = merged.findIndex((g: any) => g.weekStartDate === goal.weekStartDate);
-        if (existingIndex >= 0) {
+      if (!existing) {
+        localStorage.setItem(key, JSON.stringify(goal));
+      } else {
+        try {
+          const currentGoal = JSON.parse(existing);
           // Keep the one with more progress
-          if (goal.completedExercises > merged[existingIndex].completedExercises) {
-            merged[existingIndex] = goal;
+          if (goal.completedExercises > currentGoal.completedExercises) {
+            localStorage.setItem(key, JSON.stringify(goal));
           }
-        } else {
-          merged.push(goal);
+        } catch (error) {
+          console.error('[ExportImportService] Failed to merge weekly goal:', error);
+          localStorage.setItem(key, JSON.stringify(goal));
         }
-      });
-
-      localStorage.setItem(GUEST_WEEKLY_GOALS_KEY, JSON.stringify(merged));
-    } catch (error) {
-      console.error('[ExportImportService] Failed to merge weekly goals:', error);
-      localStorage.setItem(GUEST_WEEKLY_GOALS_KEY, JSON.stringify(importedArray));
-    }
+      }
+    });
   }
 
   /**
    * Merge daily challenges - combine without duplicates
+   * Store each challenge with date-based key: guest_daily_challenge_YYYY-MM-DD
    */
   private mergeDailyChallenges(importedData: any): void {
-    const existing = localStorage.getItem(GUEST_DAILY_CHALLENGES_KEY);
     const importedArray = Array.isArray(importedData) ? importedData : [];
     
-    if (!existing) {
-      localStorage.setItem(GUEST_DAILY_CHALLENGES_KEY, JSON.stringify(importedArray));
-      return;
-    }
+    importedArray.forEach((challenge: any) => {
+      if (!challenge.date) {
+        console.warn('[ExportImportService] Daily challenge missing date:', challenge);
+        return;
+      }
 
-    try {
-      const currentArray = JSON.parse(existing);
-      const merged = [...currentArray];
+      const key = `guest_daily_challenge_${challenge.date}`;
+      const existing = localStorage.getItem(key);
       
-      importedArray.forEach((challenge: any) => {
-        const existingIndex = merged.findIndex((c: any) => c.date === challenge.date);
-        if (existingIndex >= 0) {
+      if (!existing) {
+        localStorage.setItem(key, JSON.stringify(challenge));
+      } else {
+        try {
+          const currentChallenge = JSON.parse(existing);
           // Keep the completed one, or the one with more progress
-          if (challenge.isCompleted && !merged[existingIndex].isCompleted) {
-            merged[existingIndex] = challenge;
+          if (challenge.isCompleted && !currentChallenge.isCompleted) {
+            localStorage.setItem(key, JSON.stringify(challenge));
           }
-        } else {
-          merged.push(challenge);
+        } catch (error) {
+          console.error('[ExportImportService] Failed to merge daily challenge:', error);
+          localStorage.setItem(key, JSON.stringify(challenge));
         }
-      });
-
-      localStorage.setItem(GUEST_DAILY_CHALLENGES_KEY, JSON.stringify(merged));
-    } catch (error) {
-      console.error('[ExportImportService] Failed to merge daily challenges:', error);
-      localStorage.setItem(GUEST_DAILY_CHALLENGES_KEY, JSON.stringify(importedArray));
-    }
+      }
+    });
   }
 
   /**

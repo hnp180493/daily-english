@@ -35,6 +35,21 @@ export class GoalTracker implements OnInit {
     return Math.min(100, Math.round((goal.completedExercises / goal.targetExercises) * 100));
   });
   isGoalAchieved = computed(() => this.currentGoal()?.isAchieved ?? false);
+  
+  // Calculate potential bonus points based on current progress
+  potentialBonusPoints = computed(() => {
+    const goal = this.currentGoal();
+    if (!goal) return 0;
+    
+    // If already achieved, show earned points
+    if (goal.isAchieved) {
+      return goal.bonusPointsEarned;
+    }
+    
+    // Calculate what they would get if they complete the goal now
+    return this.calculateBonusPoints(goal.targetExercises);
+  });
+  
   daysRemaining = computed(() => {
     const goal = this.currentGoal();
     if (!goal) return 0;
@@ -120,7 +135,7 @@ export class GoalTracker implements OnInit {
 
   async setGoal(): Promise<void> {
     const target = this.targetExercises();
-    if (target < 3 || target > 50) return;
+    if (target < 1 || target > 99) return;
 
     this.isLoading.set(true);
     try {
@@ -187,9 +202,15 @@ export class GoalTracker implements OnInit {
     
     if (completedThisWeek >= goal.targetExercises && !goal.isAchieved) {
       goal.isAchieved = true;
-      goal.bonusPointsEarned = 500;
-      console.log('[GoalTracker] Goal achieved! Adding bonus points');
-      this.progressService.addBonusPoints(500);
+      
+      // Calculate bonus points based on exercises completed
+      // Max 1000 points for 30+ exercises
+      // Proportional for less than 30, rounded to nearest 50
+      const bonusPoints = this.calculateBonusPoints(completedThisWeek);
+      goal.bonusPointsEarned = bonusPoints;
+      
+      console.log('[GoalTracker] Goal achieved! Adding bonus points:', bonusPoints);
+      this.progressService.addBonusPoints(bonusPoints);
     }
 
     await this.databaseService.saveWeeklyGoalAuto(goal).toPromise();
@@ -201,7 +222,7 @@ export class GoalTracker implements OnInit {
     const input = event.target as HTMLInputElement;
     const value = parseInt(input.value, 10);
     if (!isNaN(value)) {
-      this.targetExercises.set(Math.max(3, Math.min(50, value)));
+      this.targetExercises.set(Math.max(0, Math.min(99, value)));
     }
   }
 
@@ -232,6 +253,25 @@ export class GoalTracker implements OnInit {
 
   private getWeekStartDate(): string {
     return getWeekStartLocalDate();
+  }
+
+  private calculateBonusPoints(completedExercises: number): number {
+    // Max 1000 points for 30+ exercises
+    if (completedExercises >= 30) {
+      return 1000;
+    }
+    
+    // Progressive reward system - more exercises = exponentially more points
+    // Using quadratic formula to reward higher completion rates
+    // Formula: (completedExercises / 30)^2 * 1000
+    const ratio = completedExercises / 30;
+    const rawPoints = Math.pow(ratio, 2) * 1000;
+    
+    // Round to nearest 50
+    const roundedPoints = Math.round(rawPoints / 50) * 50;
+    
+    // Ensure minimum of 50 points
+    return Math.max(50, roundedPoints);
   }
 
   private async calculateAchievementRate(): Promise<void> {

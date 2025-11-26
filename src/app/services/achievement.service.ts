@@ -52,18 +52,33 @@ export class AchievementService {
   private evaluationQueue: UserProgress[] = [];
   private evaluationTimer: any = null;
   private readonly EVALUATION_DEBOUNCE_MS = 500;
+  private lastSaveTimestamp = 0;
+  private readonly MIN_SAVE_INTERVAL_MS = 2000; // Minimum 2 seconds between saves
+  private claimInProgress = new Set<string>(); // Track claims in progress
+  private loadInProgress = false; // Prevent duplicate loads
 
   constructor() {
     this.initializeAchievements();
 
     effect(() => {
       const user = this.authService.currentUser();
-      if (user && !this.isInitialized) {
-        // Load from Firestore only once per user session
+      const currentUserId = user?.uid || 'guest';
+      const loadedUserId = this.userAchievementData().userId || '';
+      
+      console.log('[AchievementService] Effect triggered. User:', user?.email, 'Current:', currentUserId, 'Loaded:', loadedUserId);
+      
+      // Check if we already loaded data for this user
+      if (this.isInitialized && currentUserId === loadedUserId) {
+        console.log('[AchievementService] Already initialized for this user, skipping');
+        return;
+      }
+
+      if (user) {
+        // Load from database for authenticated user
         this.isInitialized = true;
         this.loadFromFirestore();
-      } else if (!user && !this.isInitialized) {
-        // Guest user - initialize with default data and evaluate
+      } else if (!this.isInitialized) {
+        // Guest user - initialize with default data (only once)
         this.isInitialized = true;
         this.loadForGuestUser();
       }
@@ -82,6 +97,12 @@ export class AchievementService {
    * Load achievement data for guest user (from localStorage)
    */
   private loadForGuestUser(): void {
+    if (this.loadInProgress) {
+      console.log('[AchievementService] Load already in progress, skipping');
+      return;
+    }
+
+    this.loadInProgress = true;
     console.log('[AchievementService] Initializing achievements for guest user');
     
     // Load from localStorage if exists
@@ -96,25 +117,39 @@ export class AchievementService {
         }
         this.syncAchievementStates();
         this.performInitialEvaluation();
+        this.loadInProgress = false;
       },
       error: (error: Error) => {
         console.error('[AchievementService] Failed to load guest data:', error);
         this.userAchievementData.set(this.storeService.getDefaultUserData());
         this.syncAchievementStates();
         this.performInitialEvaluation();
+        this.loadInProgress = false;
       }
     });
   }
 
   /**
-   * Load achievement data from Firestore
+   * Load achievement data from database
    */
   private loadFromFirestore(): void {
+    if (this.loadInProgress) {
+      console.log('[AchievementService] Load already in progress, skipping');
+      return;
+    }
+
+    this.loadInProgress = true;
+    console.log('[AchievementService] Loading achievements from database...');
     this.storeService.migrateFromLocalStorage().subscribe({
       next: () => {
         this.storeService.loadAchievementData().subscribe({
           next: (data) => {
             if (data) {
+              console.log('[AchievementService] Loaded achievement data:', {
+                unlockedCount: data.unlockedAchievements.length,
+                progressCount: Object.keys(data.progress).length
+              });
+
               // Auto-cleanup old data format (one-time optimization)
               const originalSize = Object.keys(data.progress).length;
               const cleanedData = this.storeService.cleanupAchievementData(data);
@@ -124,30 +159,44 @@ export class AchievementService {
                 console.log(
                   `[AchievementService] Auto-cleanup: ${originalSize} -> ${cleanedSize} progress entries`
                 );
-                // Save cleaned data
-                this.storeService.saveAchievementData(cleanedData).subscribe({
-                  error: (error: Error) =>
-                    console.error('[AchievementService] Failed to save cleaned data:', error)
-                });
+                // Save cleaned data (throttled)
+                const now = Date.now();
+                if (now - this.lastSaveTimestamp >= this.MIN_SAVE_INTERVAL_MS) {
+                  this.lastSaveTimestamp = now;
+                  this.storeService.saveAchievementData(cleanedData).subscribe({
+                    error: (error: Error) =>
+                      console.error('[AchievementService] Failed to save cleaned data:', error)
+                  });
+                }
                 this.userAchievementData.set(cleanedData);
               } else {
+                // Ensure userId is set
+                if (!data.userId) {
+                  data.userId = this.authService.getUserId() || '';
+                }
                 this.userAchievementData.set(data);
               }
 
               this.syncAchievementStates();
-              console.log('[AchievementService] Achievements loaded from Firestore');
+              console.log('[AchievementService] Achievements loaded from database');
             } else {
               console.log('[AchievementService] New user, using default achievement data');
+              const defaultData = this.storeService.getDefaultUserData();
+              defaultData.userId = this.authService.getUserId() || '';
+              this.userAchievementData.set(defaultData);
             }
             this.performInitialEvaluation();
+            this.loadInProgress = false;
           },
           error: (error: Error) => {
             console.error('[AchievementService] Failed to load achievements:', error);
+            this.loadInProgress = false;
           }
         });
       },
       error: (error: Error) => {
         console.error('[AchievementService] Migration failed:', error);
+        this.loadInProgress = false;
       }
     });
   }
@@ -261,7 +310,7 @@ export class AchievementService {
     const progress = this.evaluationQueue[this.evaluationQueue.length - 1];
     this.evaluationQueue = [];
 
-    const newlyUnlocked: Achievement[] = [];
+    const newlyUnlockedIds: string[] = [];
     const progressUpdates: string[] = [];
 
     this.allAchievements().forEach((achievement) => {
@@ -270,13 +319,9 @@ export class AchievementService {
         const criteriaMet = this.checkCriteria(achievement, progress);
 
         if (criteriaMet) {
-          this.unlockAchievement(achievement.id);
-          const unlockedAchievement = this.getAchievementById(achievement.id);
-          if (unlockedAchievement) {
-            newlyUnlocked.push(unlockedAchievement);
-          }
+          newlyUnlockedIds.push(achievement.id);
         } else {
-          // Update progress (without saving to Firestore yet)
+          // Update progress (without saving yet)
           this.updateProgress(achievement, progress, false);
           
           // Track which achievements had progress updates
@@ -288,20 +333,33 @@ export class AchievementService {
       }
     });
 
-    // Only save if there are meaningful progress updates and no unlocks
-    // This batches progress updates and reduces Firestore writes
-    if (progressUpdates.length > 0 && newlyUnlocked.length === 0 && !this.isInitialLoad) {
-      this.storeService.saveAchievementData(this.userAchievementData()).subscribe({
-        next: () => console.log(`[AchievementService] Saved progress for ${progressUpdates.length} achievements`),
-        error: (error: Error) =>
-          console.error('[AchievementService] Failed to save progress updates:', error)
-      });
+    // Batch unlock all achievements at once
+    if (newlyUnlockedIds.length > 0) {
+      console.log('[AchievementService] Attempting to unlock:', newlyUnlockedIds);
+      console.log('[AchievementService] Current unlocked:', 
+        this.userAchievementData().unlockedAchievements.map(ua => ua.achievementId)
+      );
+      this.batchUnlockAchievements(newlyUnlockedIds);
+      return; // Don't save progress updates when unlocking
     }
 
-    // Show notifications
-    if (newlyUnlocked.length > 0) {
-      // Queue notifications for newly unlocked achievements
-      console.log('[AchievementService] Newly unlocked achievements:', newlyUnlocked);
+    // Only save if there are meaningful progress updates and no unlocks
+    // This batches progress updates and reduces database writes
+    const now = Date.now();
+    const timeSinceLastSave = now - this.lastSaveTimestamp;
+    
+    if (progressUpdates.length > 0 && !this.isInitialLoad) {
+      // Throttle saves to prevent too many database writes
+      if (timeSinceLastSave >= this.MIN_SAVE_INTERVAL_MS) {
+        this.lastSaveTimestamp = now;
+        this.storeService.saveAchievementData(this.userAchievementData()).subscribe({
+          next: () => console.log(`[AchievementService] Saved progress for ${progressUpdates.length} achievements`),
+          error: (error: Error) =>
+            console.error('[AchievementService] Failed to save progress updates:', error)
+        });
+      } else {
+        console.log(`[AchievementService] Skipping save (throttled, ${Math.round((this.MIN_SAVE_INTERVAL_MS - timeSinceLastSave) / 1000)}s remaining)`);
+      }
     }
   }
 
@@ -380,7 +438,82 @@ export class AchievementService {
   }
 
   /**
-   * Unlock an achievement
+   * Batch unlock multiple achievements (single database write)
+   */
+  private batchUnlockAchievements(achievementIds: string[]): void {
+    if (achievementIds.length === 0) return;
+
+    console.log(`[AchievementService] Batch unlocking ${achievementIds.length} achievements:`, achievementIds);
+
+    const achievements = [...this.allAchievements()];
+    const userData = this.userAchievementData();
+    
+    console.log('[AchievementService] Current userData.unlockedAchievements:', 
+      userData.unlockedAchievements.map(ua => ({ id: ua.achievementId, claimed: ua.rewardsClaimed }))
+    );
+    
+    const updatedProgress = { ...userData.progress };
+    const newUnlocked = [...userData.unlockedAchievements];
+
+    achievementIds.forEach((achievementId) => {
+      // Check if already unlocked (prevent duplicates)
+      const existingUnlock = userData.unlockedAchievements.find(
+        (ua) => ua.achievementId === achievementId
+      );
+      if (existingUnlock) {
+        console.log(`[AchievementService] Achievement ${achievementId} already unlocked, skipping`);
+        return;
+      }
+
+      const achievementIndex = achievements.findIndex((a) => a.id === achievementId);
+      if (achievementIndex === -1) return;
+
+      const achievement = { ...achievements[achievementIndex] };
+      achievement.unlocked = true;
+      achievement.unlockedAt = new Date();
+      achievement.rewardsClaimed = false;
+      achievements[achievementIndex] = achievement;
+
+      // Remove progress for unlocked achievement
+      delete updatedProgress[achievementId];
+
+      // Add to unlocked list
+      newUnlocked.push({
+        achievementId,
+        unlockedAt: new Date(),
+        rewardsClaimed: false
+      });
+
+      // Track analytics
+      this.analyticsService.trackAchievementUnlocked(achievementId, achievement.name);
+    });
+
+    // Only save if there are new unlocks
+    if (newUnlocked.length === userData.unlockedAchievements.length) {
+      console.log('[AchievementService] No new achievements to unlock');
+      return;
+    }
+
+    const updatedUserData = {
+      ...userData,
+      unlockedAchievements: newUnlocked,
+      progress: updatedProgress
+    };
+
+    this.userAchievementData.set(updatedUserData);
+    this.allAchievements.set(achievements);
+
+    // Single save for all unlocks
+    this.lastSaveTimestamp = Date.now();
+    this.storeService.saveAchievementData(updatedUserData).subscribe({
+      next: () => console.log(`[AchievementService] ✅ Batch unlocked ${achievementIds.length} achievements`),
+      error: (error: Error) =>
+        console.error('[AchievementService] Failed to save batch unlock:', error)
+    });
+  }
+
+  /**
+   * Unlock an achievement (single)
    */
   private unlockAchievement(achievementId: string): void {
     const achievementIndex = this.allAchievements().findIndex((a) => a.id === achievementId);
@@ -497,6 +630,12 @@ export class AchievementService {
    * Mark achievement as claimed (updates UI immediately)
    */
   markAsClaimed(achievementId: string): void {
+    // Prevent duplicate claims
+    if (this.claimInProgress.has(achievementId)) {
+      console.warn(`[AchievementService] Claim already in progress for ${achievementId}`);
+      return;
+    }
+
     const achievementIndex = this.allAchievements().findIndex((a) => a.id === achievementId);
     if (achievementIndex === -1) {
       console.warn(`[AchievementService] Achievement ${achievementId} not found`);
@@ -514,6 +653,9 @@ export class AchievementService {
       console.warn(`[AchievementService] Rewards for ${achievementId} already claimed`);
       return;
     }
+
+    // Mark as in progress
+    this.claimInProgress.add(achievementId);
 
     const userData = this.userAchievementData();
     const unlockedIndex = userData.unlockedAchievements.findIndex(
@@ -538,6 +680,11 @@ export class AchievementService {
       unlockedAchievements: updatedUnlocked
     };
 
+    console.log(`[AchievementService] Marking ${achievementId} as claimed. Data:`, {
+      before: userData.unlockedAchievements[unlockedIndex],
+      after: updatedUnlocked[unlockedIndex]
+    });
+
     // Update UI state immediately
     this.userAchievementData.set(updatedUserData);
 
@@ -548,16 +695,18 @@ export class AchievementService {
     };
     this.allAchievements.set(achievements);
 
-    // Save to Firestore
+    // Save to database
     this.storeService.saveAchievementData(updatedUserData).subscribe({
       next: () => {
-        console.log(`[AchievementService] Claim status saved for ${achievementId}`);
+        console.log(`[AchievementService] ✅ Claim status saved to database for ${achievementId}`);
+        this.claimInProgress.delete(achievementId);
       },
       error: (error: Error) => {
         console.error(
-          `[AchievementService] Failed to save claim status for ${achievementId}:`,
+          `[AchievementService] ❌ Failed to save claim status for ${achievementId}:`,
           error
         );
+        this.claimInProgress.delete(achievementId);
       }
     });
   }
