@@ -189,6 +189,7 @@
   align-items: center;
   gap: 0.75rem;
   margin-left: 90px;
+  flex-wrap: wrap;
 }
 
 .sentence-score-badge {
@@ -252,5 +253,75 @@
     color: #ffffff;
     font-size: 0.9rem;
     line-height: 1.6;
+  }
+}
+
+@media (max-width: 767px) {
+  .review-mode-section {
+    padding: 1rem;
+  }
+
+  .review-header {
+    flex-direction: column;
+    gap: 1rem;
+    align-items: flex-start;
+
+    h3 {
+      font-size: 1.1rem;
+    }
+  }
+
+  .review-actions {
+    width: 100%;
+    flex-direction: column;
+    gap: 0.5rem;
+
+    .action-btn {
+      width: 100%;
+      padding: 0.75rem 1rem;
+      font-size: 0.9rem;
+    }
+  }
+
+  .review-sentence-item {
+    flex-direction: column;
+    gap: 0.75rem;
+    padding: 0.75rem;
+  }
+
+  .sentence-number-badge {
+    align-self: flex-start;
+  }
+
+  .sentence-row {
+    flex-direction: column;
+    gap: 0.5rem;
+
+    .label {
+      min-width: auto;
+      font-size: 0.8rem;
+    }
+
+    .text {
+      font-size: 0.9rem;
+    }
+  }
+
+  .sentence-footer {
+    margin-left: 0;
+    flex-wrap: wrap;
+  }
+
+  .sentence-suggestion {
+    margin-left: 0;
+    padding: 0.5rem;
+
+    .suggestion-label {
+      font-size: 0.8rem;
+    }
+
+    .suggestion-text {
+      font-size: 0.85rem;
+    }
   }
 }

@@ -59,6 +59,14 @@ export class ReviewService {
     const initialUser = this.authService.currentUser();
     this.currentUserId = initialUser?.uid || null;
     
+    // Load review queue immediately if user is already logged in
+    if (this.currentUserId) {
+      console.log('[ReviewService] User already logged in, loading review queue');
+      setTimeout(() => {
+        this.getReviewQueue().subscribe();
+      }, 500);
+    }
+    
     // Trigger migration check when user logs in
     effect(() => {
       const user = this.authService.currentUser();
@@ -70,6 +78,10 @@ export class ReviewService {
         this.currentUserId = userId;
         this.migrationCompleted = false; // Reset for new user
         this.checkAndMigrateReviewData();
+        // Load review queue after migration
+        setTimeout(() => {
+          this.getReviewQueue().subscribe();
+        }, 1000);
         // Initialize notifications after migration (only once)
         if (!this.notificationInitialized) {
           setTimeout(() => this.initializeNotifications(), 2000);
@@ -79,6 +91,7 @@ export class ReviewService {
         console.log('[ReviewService] User logged out');
         this.currentUserId = null;
         this.migrationCompleted = false;
+        this.reviewQueueSignal.set([]);
         this.cleanupNotifications();
       }
     });
@@ -454,18 +467,19 @@ export class ReviewService {
    * Get incorrect questions for quick review mode
    */
   getIncorrectQuestions(exerciseId: string): SentenceAttempt[] {
-    // Get the exercise attempt from progress service
-    const progress = this.progressService.getUserProgress();
-    let incorrectQuestions: SentenceAttempt[] = [];
+    // Get the exercise attempt from progress service signal (synchronous)
+    const progress = this.progressService.getProgressSignal()();
+    const attempt = progress.exerciseHistory[exerciseId];
+    
+    if (!attempt?.sentenceAttempts) {
+      return [];
+    }
 
-    progress.subscribe(prog => {
-      const attempt = prog.exerciseHistory[exerciseId];
-      if (attempt && attempt.sentenceAttempts) {
-        incorrectQuestions = attempt.sentenceAttempts.filter(sa => sa.accuracyScore < 75);
-      }
+    // Filter sentences with >= 2 issues (incorrectAttempts + retryCount)
+    return attempt.sentenceAttempts.filter((sa, index) => {
+      const issues = (sa.incorrectAttempts || 0) + (sa.retryCount || 0);
+      return issues >= 2;
     });
-
-    return incorrectQuestions;
   }
 
   /**

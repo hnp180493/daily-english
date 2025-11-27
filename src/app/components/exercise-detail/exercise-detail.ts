@@ -3,9 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Location } from '@angular/common';
-import { filter, take } from 'rxjs/operators';
 import { Exercise } from '../../models/exercise.model';
-import { ExerciseService } from '../../services/exercise.service';
 import { AIService } from '../../services/ai/ai.service';
 import { ProgressService } from '../../services/progress.service';
 import { FavoriteService } from '../../services/favorite.service';
@@ -19,19 +17,16 @@ import { ConfigService } from '../../services/config.service';
 import { ExerciseStateService } from '../../services/exercise-state.service';
 import { ExerciseSubmissionService } from '../../services/exercise-submission.service';
 import { ExercisePersistenceService } from '../../services/exercise-persistence.service';
-import { ExerciseValidationService } from '../../services/exercise-validation.service';
 import { SettingsService } from '../../services/settings.service';
-import { ExerciseSeoService } from '../../services/exercise-seo.service';
-import { ExerciseRecordingService } from '../../services/exercise-recording.service';
-import { ReviewService } from '../../services/review.service';
-import { ExerciseHistoryService } from '../../services/exercise-history.service';
-import { CurriculumService } from '../../services/curriculum.service';
-import { StreakService } from '../../services/streak.service';
 import { AnalyticsService } from '../../services/analytics.service';
+import { ExerciseCompletionService } from '../../services/exercise-completion.service';
+import { ExerciseKeyboardService } from '../../services/exercise-keyboard.service';
+import { ExerciseQuickReviewService } from '../../services/exercise-quick-review.service';
+import { ExerciseLoaderService } from '../../services/exercise-loader.service';
+import { ExerciseNavigationService } from '../../services/exercise-navigation.service';
+import { ExerciseMetricsService } from '../../services/exercise-metrics.service';
 import { TTSSettings } from '../tts-settings/tts-settings';
-import { getTodayLocalDate } from '../../utils/date.utils';
 import { PenaltyScore } from '../penalty-score/penalty-score';
-import { PENALTY_CONSTANTS } from '../../models/penalty.constants';
 import { ExerciseContext } from '../../models/ai.model';
 
 @Component({
@@ -45,7 +40,7 @@ import { ExerciseContext } from '../../models/ai.model';
     LoadingSpinnerComponent,
     TranslationReview,
     TTSSettings,
-    PenaltyScore
+    PenaltyScore,
   ],
   templateUrl: './exercise-detail.html',
   styleUrl: './exercise-detail.scss',
@@ -58,66 +53,49 @@ export class ExerciseDetailComponent implements OnInit, OnDestroy {
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private location = inject(Location);
-  private exerciseService = inject(ExerciseService);
   private aiService = inject(AIService);
   private progressService = inject(ProgressService);
   private favoriteService = inject(FavoriteService);
   private configService = inject(ConfigService);
-  private validationService = inject(ExerciseValidationService);
   private settingsService = inject(SettingsService);
-  private seoService = inject(ExerciseSeoService);
-  private recordingService = inject(ExerciseRecordingService);
-  private reviewService = inject(ReviewService);
-  private exerciseHistoryService = inject(ExerciseHistoryService);
-  private curriculumService = inject(CurriculumService);
-  private streakService = inject(StreakService);
   private analyticsService = inject(AnalyticsService);
+  private completionService = inject(ExerciseCompletionService);
+  private keyboardService = inject(ExerciseKeyboardService);
+  private loaderService = inject(ExerciseLoaderService);
+  private navigationService = inject(ExerciseNavigationService);
+  private metricsService = inject(ExerciseMetricsService);
+
+  private progressSignal = this.progressService.getProgressSignal();
 
   stateService = inject(ExerciseStateService);
   submissionService = inject(ExerciseSubmissionService);
   persistenceService = inject(ExercisePersistenceService);
   ttsService = inject(TTSService);
+  quickReviewService = inject(ExerciseQuickReviewService);
 
   translationInput = viewChild<any>('translationInput');
 
   exercise = signal<Exercise | null>(null);
   isCustomExercise = signal(false);
   isLoadingHint = signal(false);
-  isLoadingExercise = signal(true);
   showApiKeyPrompt = signal(false);
   showErrorModal = signal(false);
   errorMessage = signal('');
   isReviewMode = signal(false);
-  quickReviewMode = signal(false);
-  incorrectSentenceIndices = signal<number[]>([]);
   exerciseStartTime: Date | null = null;
+  private saveProgressTimeout: any = null;
   // Delegate to state service
   sentences = this.stateService.sentences;
   currentSentenceIndex = this.stateService.currentSentenceIndex;
   currentSentence = this.stateService.currentSentence;
   completedSentences = this.stateService.completedSentences;
 
-  // Filtered sentences for quick review mode
-  filteredSentences = computed(() => {
-    const allSentences = this.sentences();
-    if (!this.quickReviewMode()) {
-      return allSentences;
-    }
-    const incorrectIndices = this.incorrectSentenceIndices();
-    return allSentences.filter((_, index) => incorrectIndices.includes(index));
-  });
-
-  // Quick review progress
-  quickReviewProgress = computed(() => {
-    if (!this.quickReviewMode()) return null;
-    const filtered = this.filteredSentences();
-    const completed = filtered.filter(s => s.isCompleted).length;
-    return {
-      current: completed + 1,
-      total: filtered.length,
-      percentage: filtered.length > 0 ? Math.round((completed / filtered.length) * 100) : 0
-    };
-  });
+  // Delegate to quick review service
+  quickReviewMode = this.quickReviewService.quickReviewMode;
+  quickReviewProgress = this.quickReviewService.quickReviewProgress;
+  
+  // Delegate to loader service
+  isLoadingExercise = this.loaderService.isLoadingExercise;
   progressPercentage = this.stateService.progressPercentage;
   isExerciseComplete = this.stateService.isExerciseComplete;
   canProceedToNext = this.stateService.canProceedToNext;
@@ -135,120 +113,19 @@ export class ExerciseDetailComponent implements OnInit, OnDestroy {
   isStreaming = this.submissionService.isStreaming;
   userInputAfterSubmit = this.submissionService.userInputAfterSubmit;
 
-  // Progress tracking
-  private progressSignal = this.progressService.getProgressSignal();
-
-  points = computed(() => this.progressSignal().totalPoints);
-  streak = computed(() => {
-    this.progressSignal();
-    return this.progressService.calculateStreak();
-  });
-  achievements = computed(() => this.progressSignal().achievements);
-
-  exerciseStatus = computed(() => {
-    const ex = this.exercise();
-    if (!ex) return null;
-
-    const progress = this.progressSignal();
-    const attempt = progress.exerciseHistory[ex.id];
-
-    if (!attempt) {
-      return { status: 'new' as const, attemptCount: 0 };
-    }
-
-    return {
-      status: 'attempted' as const,
-      attemptCount: attempt.attemptNumber,
-      bestScore: attempt.accuracyScore,
-      perfectCompletions: attempt.accuracyScore === 100 ? 1 : 0
-    };
-  });
-
+  // Delegate to metrics service
+  points = computed(() => this.metricsService.getPoints());
+  streak = computed(() => this.metricsService.getStreak());
+  achievements = computed(() => this.metricsService.getAchievements());
+  exerciseStatus = computed(() => this.metricsService.getExerciseStatus(this.exercise()));
   perfectCompletions = computed(() => this.exerciseStatus()?.perfectCompletions || 0);
   creditsToEarn = computed(() => 1);
-
-  exercisePoints = computed(() => {
-    const ex = this.exercise();
-    if (!ex) return 0;
-
-    const status = this.exerciseStatus();
-    if (!status) return 0;
-
-    return this.validationService.calculateExercisePoints(ex, status.attemptCount);
-  });
-
-  // Penalty metrics for review mode
-  penaltyMetrics = computed(() => {
-    const ex = this.exercise();
-    if (!ex) return null;
-
-    // Show immediately when exercise is complete
-    if (this.isExerciseComplete()) {
-      const sentences = this.sentences();
-      const penalties = this.stateService.getPenaltyMetrics();
-      const completedSents = sentences.filter(s => s.isCompleted);
-      const avgAccuracy = completedSents.length > 0
-        ? completedSents.reduce((sum, s) => sum + (s.accuracyScore || 0), 0) / completedSents.length
-        : 0;
-      const totalPenalty = (penalties.totalIncorrectAttempts * PENALTY_CONSTANTS.INCORRECT_ATTEMPT_PENALTY) +
-        (penalties.totalRetries * PENALTY_CONSTANTS.RETRY_PENALTY);
-      const finalScore = Math.max(0, Math.round(avgAccuracy - totalPenalty));
-
-      return {
-        baseScore: Math.round(avgAccuracy),
-        totalIncorrectAttempts: penalties.totalIncorrectAttempts,
-        totalRetries: penalties.totalRetries,
-        totalPenalty,
-        finalScore
-      };
-    }
-
-    // In review mode, load from saved history
-    if (this.isReviewMode()) {
-      const progress = this.progressSignal();
-      const attempt = progress.exerciseHistory[ex.id];
-
-      if (!attempt) return null;
-
-      return {
-        baseScore: attempt.baseScore ?? attempt.accuracyScore,
-        totalIncorrectAttempts: attempt.totalIncorrectAttempts ?? 0,
-        totalRetries: attempt.totalRetries ?? 0,
-        totalPenalty: attempt.totalPenalty ?? 0,
-        finalScore: attempt.accuracyScore
-      };
-    }
-
-    return null;
-  });
-
-  // Current penalty metrics during exercise
-  currentPenaltyMetrics = computed(() => {
-    if (this.isReviewMode()) return null;
-
-    const sents = this.sentences();
-    const completedSents = sents.filter(s => s.isCompleted);
-
-    if (completedSents.length === 0) return null;
-
-    const avgAccuracy = completedSents.reduce((sum, s) => sum + (s.accuracyScore || 0), 0) / completedSents.length;
-    const penalties = this.stateService.getPenaltyMetrics();
-    const totalPenalty = (penalties.totalIncorrectAttempts * PENALTY_CONSTANTS.INCORRECT_ATTEMPT_PENALTY) +
-      (penalties.totalRetries * PENALTY_CONSTANTS.RETRY_PENALTY);
-    const currentScore = Math.max(0, avgAccuracy - totalPenalty);
-
-    return {
-      currentAverage: Math.round(avgAccuracy),
-      totalIncorrectAttempts: penalties.totalIncorrectAttempts,
-      totalRetries: penalties.totalRetries,
-      totalPenalty,
-      currentScore: Math.round(currentScore)
-    };
-  });
-
+  exercisePoints = computed(() => this.metricsService.getExercisePoints(this.exercise(), this.exerciseStatus()));
+  penaltyMetrics = computed(() => this.metricsService.getPenaltyMetrics(this.exercise(), this.isExerciseComplete(), this.isReviewMode()));
+  currentPenaltyMetrics = computed(() => this.metricsService.getCurrentPenaltyMetrics(this.isReviewMode()));
   isFavorite = computed(() => {
     const ex = this.exercise();
-    return ex ? this.favoriteService.isFavorite(ex.id) : false;
+    return ex ? this.metricsService.isFavorite(ex.id) : false;
   });
 
   isPlayingTTS = computed(() => this.ttsService.isPlaying());
@@ -259,12 +136,16 @@ export class ExerciseDetailComponent implements OnInit, OnDestroy {
   settings = this.settingsService.getSettingsSignal();
 
   constructor() {
+    this.setupEffects();
+    this.setupKeyboardShortcuts();
+  }
+
+  private setupEffects(): void {
     effect(() => {
       const points = this.points();
       console.log('[ExerciseDetail] Points changed:', points);
     });
 
-    // Watch for progress data to load best attempt in review mode
     effect(() => {
       const progress = this.progressSignal();
       const ex = this.exercise();
@@ -272,12 +153,10 @@ export class ExerciseDetailComponent implements OnInit, OnDestroy {
       if (ex && this.isReviewMode() && Object.keys(progress.exerciseHistory || {}).length > 0) {
         const attempt = progress.exerciseHistory[ex.id];
         if (attempt && attempt.sentenceAttempts && attempt.sentenceAttempts.length > 0) {
-          // Only load if sentences are not already loaded
           const currentSentences = this.sentences();
           const hasLoadedTranslations = currentSentences.some(s => s.translation && s.isCompleted);
 
           if (!hasLoadedTranslations) {
-            console.log('[ExerciseDetail] Loading best attempt from progress effect');
             this.stateService.loadBestAttempt(attempt);
           }
         }
@@ -285,76 +164,52 @@ export class ExerciseDetailComponent implements OnInit, OnDestroy {
     });
   }
 
-  ngOnInit(): void {
-    const slug = this.route.snapshot.paramMap.get('slug')!;
-    const mode = this.route.snapshot.queryParamMap.get('mode');
-    const quickReview = this.route.snapshot.queryParamMap.get('quickReview');
-
-    // Reset feedback from previous exercise
-    this.submissionService.reset();
-
-    if (mode === 'review') {
-      this.isReviewMode.set(true);
-    }
-
-    // Check if it's a custom exercise (starts with 'custom-')
-    const isCustom = slug.startsWith('custom-');
-    
-    // Get exercise by slug or ID
-    const exercise$ = isCustom 
-      ? this.exerciseService.getExerciseByIdUnified(slug)
-      : this.exerciseService.getExerciseBySlug(slug);
-
-    exercise$.pipe(
-      filter(exercise => !!exercise),
-      take(1)
-    ).subscribe(exercise => {
-      if (exercise) {
-        const id = exercise.id;
-        
-        if (quickReview === 'true') {
-          this.quickReviewMode.set(true);
-          // Get incorrect sentence indices from review service
-          const incorrectQuestions = this.reviewService.getIncorrectQuestions(id);
-          const indices = incorrectQuestions.map(q => q.sentenceIndex);
-          this.incorrectSentenceIndices.set(indices);
+  private setupKeyboardShortcuts(): void {
+    this.keyboardService.registerShortcuts([
+      {
+        key: 'Enter',
+        description: 'Submit or next sentence',
+        action: () => {
+          if (this.canProceedToNext()) {
+            this.onNextSentence();
+          } else if (!this.isReviewMode() && !this.isExerciseComplete()) {
+            this.onSubmit();
+          }
         }
-        
-        this.loadExercise(exercise, isCustom, id);
-      } else {
-        this.router.navigate(['/exercises']);
+      },
+      {
+        key: 'r',
+        description: 'Retry sentence',
+        action: () => this.onRetrySentence(),
+        condition: () => this.canProceedToNext() || this.hasThreeConsecutiveFailures()
       }
-    });
+    ]);
   }
 
-  private loadExercise(exercise: Exercise, isCustom: boolean, id: string): void {
-    this.exercise.set(exercise);
-    this.isCustomExercise.set(isCustom);
-    this.stateService.initializeSentences(exercise.sourceText);
+  ngOnInit(): void {
+    this.submissionService.reset();
+    this.loadExercise();
+  }
 
-    this.seoService.updateExerciseSeo(exercise);
-    this.seoService.updateVietnameseSeo(exercise);
-
-    if (this.isReviewMode()) {
-      this.loadBestAttempt(id);
-    } else {
-      const hasProgress = this.loadProgress(id);
-      if (!hasProgress) {
-        this.stateService.currentSentenceIndex.set(0);
+  private loadExercise(): void {
+    this.loaderService.loadFromRoute(this.route, (result) => {
+      this.exercise.set(result.exercise);
+      this.isCustomExercise.set(result.isCustom);
+      
+      if (result.mode === 'review') {
+        this.isReviewMode.set(true);
       }
-      // Start time tracking for new exercise attempts
+
       this.exerciseStartTime = new Date();
       
-      // Track exercise start
-      this.analyticsService.trackExerciseStart(
-        exercise.id,
-        exercise.category || 'general',
-        exercise.level || 'intermediate',
-        isCustom ? 'custom' : 'standard'
+      this.loaderService.initializeExercise(
+        result.exercise,
+        result.isCustom,
+        result.mode,
+        (id) => this.loadProgress(id),
+        (id) => this.loadBestAttempt(id)
       );
-    }
-
-    setTimeout(() => this.isLoadingExercise.set(false), 300);
+    });
   }
 
 
@@ -458,54 +313,51 @@ export class ExerciseDetailComponent implements OnInit, OnDestroy {
     });
   }
 
-  onKeyDown(event: KeyboardEvent): void {
-    // Ignore if user is typing in textarea or input
-    const target = event.target as HTMLElement;
-    if (target.tagName === 'TEXTAREA' || target.tagName === 'INPUT') {
-      // Only handle Enter and R when in textarea
-      if (target.tagName === 'TEXTAREA') {
-        if (event.key === 'Enter' && !event.shiftKey) {
-          event.preventDefault();
-          this.canProceedToNext() ? this.onNextSentence() : this.onSubmit();
-        } else if (event.key === 'r' || event.key === 'R') {
-          if (this.canProceedToNext() || this.hasThreeConsecutiveFailures()) {
-            event.preventDefault();
-            this.onRetrySentence();
-          }
-        }
-      }
+  onTextareaEnter(event: KeyboardEvent): void {
+    // Allow Enter when can proceed to next (even if textarea is readonly)
+    if (this.canProceedToNext()) {
+      event.preventDefault();
+      this.onNextSentence();
       return;
     }
 
-    // Handle keyboard shortcuts when not typing
-    if (event.key === 'Enter' && !event.shiftKey) {
+    // Otherwise, check normal conditions for submit
+    if (!this.isSubmitting() && !this.hasThreeConsecutiveFailures() && this.userInput()) {
       event.preventDefault();
-      if (this.canProceedToNext()) {
-        this.onNextSentence();
-      } else if (!this.isReviewMode() && !this.isExerciseComplete()) {
-        this.onSubmit();
-      }
-    } else if (event.key === 'r' || event.key === 'R') {
-      if (this.canProceedToNext() || this.hasThreeConsecutiveFailures()) {
-        event.preventDefault();
-        this.onRetrySentence();
-      }
+      this.onSubmit();
     }
   }
 
+  onKeyDown(event: KeyboardEvent): void {
+    this.keyboardService.handleKeyDown(event);
+  }
+
   ngOnDestroy(): void {
-    // Track exercise abandonment if not completed
+    this.keyboardService.clearShortcuts();
+    
+    // Clear any pending save
+    if (this.saveProgressTimeout) {
+      clearTimeout(this.saveProgressTimeout);
+      this.saveProgress(); // Save immediately on destroy
+    }
+    
     const ex = this.exercise();
     if (ex && !this.isExerciseComplete() && !this.isReviewMode() && this.exerciseStartTime) {
       const timeSpent = Math.floor((new Date().getTime() - this.exerciseStartTime.getTime()) / 1000);
-      const completionPercentage = this.progressPercentage();
-      
-      this.analyticsService.trackExerciseAbandoned(ex.id, timeSpent, completionPercentage);
+      this.analyticsService.trackExerciseAbandoned(ex.id, timeSpent, this.progressPercentage());
     }
   }
 
   onInputChange(): void {
-    this.saveProgress();
+    // Debounce save progress - only save after 500ms of no typing
+    if (this.saveProgressTimeout) {
+      clearTimeout(this.saveProgressTimeout);
+    }
+    
+    this.saveProgressTimeout = setTimeout(() => {
+      this.saveProgress();
+      this.saveProgressTimeout = null;
+    }, 500);
   }
 
   onHint(): void {
@@ -562,6 +414,12 @@ export class ExerciseDetailComponent implements OnInit, OnDestroy {
   }
 
   onQuit(): void {
+    // If in quick review mode, exit to review mode instead of going back
+    if (this.quickReviewMode()) {
+      this.exitQuickReview();
+      return;
+    }
+
     // Only save progress if exercise is not completed
     if (!this.isExerciseComplete()) {
       this.saveProgress();
@@ -570,45 +428,29 @@ export class ExerciseDetailComponent implements OnInit, OnDestroy {
   }
 
   onNextSentence(): void {
-    const wasLastSentence = (this.currentSentenceIndex() + 1) >= this.sentences().length;
-
-    this.stateService.moveToNextSentence();
-    this.submissionService.feedback.set(null);
-    this.submissionService.accuracyScore.set(0);
-
-    if (wasLastSentence) {
-      this.completeExercise();
-    } else {
-      this.saveProgress();
-      this.focusInput();
-    }
+    this.navigationService.moveToNextSentence(
+      () => this.completeExercise(),
+      () => {
+        this.saveProgress();
+        this.focusInput();
+      }
+    );
   }
 
   onRetrySentence(): void {
-    // Reset current sentence state
-    this.stateService.retrySentence();
-    this.submissionService.feedback.set(null);
-    this.submissionService.accuracyScore.set(0);
-    this.submissionService.userInputAfterSubmit.set('');
+    this.navigationService.retrySentence();
     this.saveProgress();
     this.focusInput();
   }
 
   onSkipToNextSentence(): void {
-    // Skip to next sentence after 3 failed attempts
-    const wasLastSentence = (this.currentSentenceIndex() + 1) >= this.sentences().length;
-
-    this.stateService.moveToNextSentence();
-    this.submissionService.feedback.set(null);
-    this.submissionService.accuracyScore.set(0);
-    this.submissionService.userInputAfterSubmit.set('');
-
-    if (wasLastSentence) {
-      this.completeExercise();
-    } else {
-      this.saveProgress();
-      this.focusInput();
-    }
+    this.navigationService.skipToNextSentence(
+      () => this.completeExercise(),
+      () => {
+        this.saveProgress();
+        this.focusInput();
+      }
+    );
   }
 
   onPracticeAgain(): void {
@@ -641,6 +483,36 @@ export class ExerciseDetailComponent implements OnInit, OnDestroy {
     this.router.navigate(['/exercises', ex.id, 'dictation'], {
       queryParams: { mode: 'original' }
     });
+  }
+
+  onStartQuickReview(): void {
+    const ex = this.exercise();
+    if (!ex) return;
+
+    const allSentences = this.sentences();
+    const { difficultIndices, hasDifficult } = this.quickReviewService.startQuickReview(allSentences);
+
+    if (!hasDifficult) {
+      console.log('[ExerciseDetail] No difficult sentences to review');
+      return;
+    }
+
+    this.isReviewMode.set(false);
+    this.clearProgress();
+    this.stateService.reset();
+    this.submissionService.reset();
+    this.stateService.initializeSentences(ex.sourceText);
+
+    this.quickReviewService.markCorrectSentences(allSentences, difficultIndices);
+
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { mode: null, quickReview: 'true' },
+      queryParamsHandling: 'merge',
+      replaceUrl: true
+    });
+
+    this.focusInput();
   }
 
   private focusInput(): void {
@@ -686,130 +558,45 @@ export class ExerciseDetailComponent implements OnInit, OnDestroy {
     const ex = this.exercise();
     if (!ex) return;
 
-    const isCustom = this.isCustomExercise();
-    console.log('[ExerciseDetail] Exercise completed, isCustom:', isCustom);
-
-    // Calculate final score with penalties
-    const sentences = this.sentences();
-    const penalties = this.stateService.getPenaltyMetrics();
-    const completedSents = sentences.filter(s => s.isCompleted);
-    const avgAccuracy = completedSents.length > 0
-      ? completedSents.reduce((sum, s) => sum + (s.accuracyScore || 0), 0) / completedSents.length
-      : 0;
-    const totalPenalty = (penalties.totalIncorrectAttempts * PENALTY_CONSTANTS.INCORRECT_ATTEMPT_PENALTY) +
-      (penalties.totalRetries * PENALTY_CONSTANTS.RETRY_PENALTY);
-
-    const finalScore = Math.max(0, Math.round(avgAccuracy - totalPenalty));
-
-    // Only save to cloud for regular exercises (not custom)
-    if (!isCustom) {
-      // Apply streak multiplier to points
-      const basePoints = this.exercisePoints();
-      const streakMultiplier = this.streakService.getStreakMultiplier();
-      const bonusPoints = streakMultiplier > 1.0 ? Math.round(basePoints * (streakMultiplier - 1.0)) : 0;
-
-      console.log('[ExerciseDetail] Points calculation:', {
-        basePoints,
-        streakMultiplier,
-        bonusPoints,
-        totalPoints: basePoints + bonusPoints
-      });
-
-      // Record attempt with streak bonus
-      this.recordingService.recordAttempt(ex, this.hintsShown(), basePoints + bonusPoints);
-
-      // Update learning path progress
-      this.curriculumService.updateModuleProgress(ex.id, finalScore, basePoints + bonusPoints).subscribe({
-        next: () => console.log('[ExerciseDetail] Module progress updated'),
-        error: (err) => console.warn('[ExerciseDetail] Module progress update failed:', err)
-      });
-
-      // Check if this was a daily challenge
-      const today = getTodayLocalDate();
-      this.curriculumService.checkAndCompleteDailyChallenge(ex.id, today, finalScore).subscribe({
-        next: (completed) => {
-          if (completed) {
-            console.log('[ExerciseDetail] Daily challenge completed!');
-          }
-        },
-        error: (err) => console.warn('[ExerciseDetail] Daily challenge check failed:', err)
-      });
-
-      // Update weekly goal progress (only if score >= 60)
-      this.curriculumService.incrementWeeklyGoalProgress(finalScore).subscribe({
-        next: () => console.log('[ExerciseDetail] Weekly goal progress updated with score:', finalScore),
-        error: (err) => console.warn('[ExerciseDetail] Weekly goal update failed:', err)
-      });
-
-      // NOTE: scheduleNextReview is now handled in ExerciseSubmissionService
-      // when all sentences are completed, so we don't call it here to avoid duplication
-
-      // Update review data with incorrect sentence indices
-      const incorrectIndices = sentences
-        .map((s, index) => ({ index, score: s.accuracyScore || 0 }))
-        .filter(item => item.score < 75)
-        .map(item => item.index);
-
-      if (incorrectIndices.length > 0) {
-        // Store incorrect indices for quick review mode
-        console.log('[ExerciseDetail] Incorrect sentence indices:', incorrectIndices);
-      }
-
-      // Record exercise history (optional - won't block completion if it fails)
-      const timeSpent = this.exerciseStartTime
-        ? Math.floor((new Date().getTime() - this.exerciseStartTime.getTime()) / 1000)
-        : 0;
-
-      const penaltyMetrics = {
-        baseScore: Math.round(avgAccuracy),
-        totalIncorrectAttempts: penalties.totalIncorrectAttempts,
-        totalRetries: penalties.totalRetries,
-        totalPenalty,
-        finalScore
-      };
-
-      this.exerciseHistoryService.recordExerciseAttempt(
-        ex.id,
-        finalScore,
-        timeSpent,
-        this.hintsShown(),
-        sentences,
-        penaltyMetrics
-      ).subscribe({
-        error: (err) => console.warn('[ExerciseDetail] History recording failed:', err)
-      });
-
-      // Track exercise completion
-      this.analyticsService.trackExerciseComplete(ex.id, {
-        completionTime: timeSpent,
-        score: finalScore,
-        accuracy: avgAccuracy,
-        hintsUsed: this.hintsShown()
-      });
-    } else {
-      console.log('[ExerciseDetail] Custom exercise - skipping cloud save');
+    // If in Quick Review mode, just exit to review mode without scoring
+    if (this.quickReviewMode()) {
+      this.exitQuickReview();
+      return;
     }
 
-    this.clearProgress();
-    this.isReviewMode.set(true);
+    // Normal completion with scoring
+    this.completionService.completeExercise(
+      ex,
+      this.isCustomExercise(),
+      this.exercisePoints(),
+      this.hintsShown(),
+      this.exerciseStartTime,
+      true
+    );
 
-    this.router.navigate([], {
-      relativeTo: this.route,
-      queryParams: { mode: 'review' },
-      queryParamsHandling: 'merge',
-      replaceUrl: true
-    });
+    this.isReviewMode.set(true);
+    this.completionService.navigateToReviewMode(this.route);
   }
 
   exitQuickReview(): void {
-    this.quickReviewMode.set(false);
-    this.incorrectSentenceIndices.set([]);
+    const ex = this.exercise();
+    if (!ex) return;
 
-    // Navigate to regular exercise mode
+    this.quickReviewService.reset();
+    this.isReviewMode.set(true);
+
+    this.stateService.reset();
+    this.submissionService.reset();
+    this.stateService.initializeSentences(ex.sourceText);
+    
+    this.loadBestAttempt(ex.id);
+
+    // Use replaceUrl to avoid adding to history stack
     this.router.navigate([], {
       relativeTo: this.route,
-      queryParams: { quickReview: null },
-      queryParamsHandling: 'merge'
+      queryParams: { mode: 'review', quickReview: null },
+      queryParamsHandling: 'merge',
+      replaceUrl: true
     });
   }
 

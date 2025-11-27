@@ -130,11 +130,30 @@ export class HeaderComponent implements OnInit {
         this.isAnimatingAchievements = true;
       }
     });
+    
+    // Load review queue when authenticated
+    effect(() => {
+      if (this.isAuthenticated()) {
+        // Delay to ensure migration completes first
+        setTimeout(() => this.loadReviewQueue(), 1000);
+      }
+    });
   }
 
   ngOnInit(): void {
-    // Load review queue to populate badge
-    this.reviewService.getReviewQueue().subscribe();
+    // Load review queue immediately to populate badge
+    this.loadReviewQueue();
+  }
+  
+  private loadReviewQueue(): void {
+    this.reviewService.getReviewQueue().subscribe({
+      next: (queue) => {
+        console.log('[Header] Review queue loaded:', queue.length, 'items');
+      },
+      error: (error) => {
+        console.error('[Header] Failed to load review queue:', error);
+      }
+    });
   }
 
   navigateToReviewQueue(): void {

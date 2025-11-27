@@ -5,6 +5,7 @@ import { ExerciseStateService } from './exercise-state.service';
 import { ExerciseValidationService } from './exercise-validation.service';
 import { ExercisePersistenceService } from './exercise-persistence.service';
 import { ReviewService } from './review.service';
+import { ExerciseQuickReviewService } from './exercise-quick-review.service';
 import { Exercise, FeedbackItem } from '../models/exercise.model';
 
 export interface SubmissionResult {
@@ -22,6 +23,7 @@ export class ExerciseSubmissionService {
   private validationService = inject(ExerciseValidationService);
   private persistenceService = inject(ExercisePersistenceService);
   private reviewService = inject(ReviewService);
+  private quickReviewService = inject(ExerciseQuickReviewService);
 
   isSubmitting = signal(false);
   isStreaming = signal(false);
@@ -108,8 +110,10 @@ export class ExerciseSubmissionService {
             // Check if all sentences are now completed
             const sentences = this.stateService.sentences();
             const allCompleted = sentences.every(s => s.isCompleted);
+            const isQuickReview = this.quickReviewService.quickReviewMode();
             
-            if (allCompleted) {
+            // Don't save to DB in quick review mode - it's just practice
+            if (allCompleted && !isQuickReview) {
               // Calculate average score from all completed sentences
               const avgScore = sentences.reduce((sum, s) => sum + (s.accuracyScore || 0), 0) / sentences.length;
               
@@ -117,16 +121,42 @@ export class ExerciseSubmissionService {
               this.reviewService.scheduleNextReview(exerciseId, avgScore);
             }
 
-            if (score >= 90) {
-              this.persistenceService.saveProgress(exerciseId, this.stateService.getState());
-
-              if (score === 100) {
+            // Handle auto-advance for score 100
+            if (score === 100) {
+              if (isQuickReview) {
+                // Quick review: find next incorrect sentence
+                const nextIncorrectIdx = this.quickReviewService.getNextIncorrectIndex(currentIdx);
+                const wasLastSentence = nextIncorrectIdx === null;
+                
+                // Always mark current sentence to show translation
+                this.stateService.sentences.update(sentences => {
+                  const updated = [...sentences];
+                  if (currentIdx < updated.length) {
+                    updated[currentIdx] = { ...updated[currentIdx], showTranslation: true };
+                  }
+                  return updated;
+                });
+                
+                if (nextIncorrectIdx !== null) {
+                  // Jump to next incorrect sentence
+                  this.stateService.currentSentenceIndex.set(nextIncorrectIdx);
+                  this.stateService.resetSentenceState();
+                }
+                
+                this.feedback.set(null);
+                observer.next({ autoAdvance: true, wasLastSentence });
+              } else {
+                // Normal mode: advance to next sentence sequentially
                 const wasLastSentence = (currentIdx + 1) >= this.stateService.sentences().length;
                 this.stateService.moveToNextSentence();
                 this.feedback.set(null);
-
                 observer.next({ autoAdvance: true, wasLastSentence });
               }
+            }
+            
+            // Save progress for normal mode with score >= 90
+            if (score >= 90 && !isQuickReview) {
+              this.persistenceService.saveProgress(exerciseId, this.stateService.getState());
             }
 
             // this.userInputAfterSubmit.set(input);

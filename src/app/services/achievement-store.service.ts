@@ -55,7 +55,7 @@ export class AchievementStoreService {
    * Load achievement data from localStorage
    */
   private loadFromLocalStorage(userId: string): UserAchievementData | null {
-    const key = `user_achievements_${userId}`;
+    const key = userId === 'guest' ? 'guest_achievements' : `user_achievements_${userId}`;
     const stored = localStorage.getItem(key);
 
     if (!stored) {
@@ -98,7 +98,7 @@ export class AchievementStoreService {
    * Save achievement data to localStorage
    */
   private saveToLocalStorage(userId: string, data: UserAchievementData): void {
-    const key = `user_achievements_${userId}`;
+    const key = userId === 'guest' ? 'guest_achievements' : `user_achievements_${userId}`;
     try {
       localStorage.setItem(key, JSON.stringify(data));
       
@@ -124,6 +124,7 @@ export class AchievementStoreService {
           console.log(
             '[AchievementStoreService] Data already exists in Firestore, skipping migration'
           );
+          // Clean up old guest keys even if migration already done
           return of(undefined);
         }
 
@@ -139,6 +140,7 @@ export class AchievementStoreService {
         }
 
         console.log('[AchievementStoreService] No localStorage data to migrate');
+        // Clean up old guest keys even if no migration needed
         return of(undefined);
       }),
       catchError((error: Error) => {
@@ -159,7 +161,7 @@ export class AchievementStoreService {
    * Clear localStorage data after migration
    */
   private clearLocalStorageData(userId: string): void {
-    const key = `user_achievements_${userId}`;
+    const key = userId === 'guest' ? 'guest_achievements' : `user_achievements_${userId}`;
     localStorage.removeItem(key);
     console.log('[AchievementStoreService] Cleared localStorage data');
   }

@@ -12,7 +12,13 @@
         ← Back to Exercises
       </button>
     </div>
-  </div>  
+  </div>
+  
+  <!-- Difficult Sentences Summary -->
+  <app-difficult-sentences-summary 
+    [sentences]="sentences()"
+    (startQuickReview)="startQuickReview.emit()" />
+  
   <div class="review-sentences-list">
     @for (sentence of sentences(); track $index; let i = $index) {
       <div class="review-sentence-item" 
@@ -34,6 +40,12 @@
                 ✓ {{ sentence.accuracyScore }}% accuracy
               </div>
             }
+            
+            <!-- Difficulty Badge -->
+            <app-sentence-difficulty-badge 
+              [incorrectAttempts]="sentence.incorrectAttempts"
+              [retryCount]="sentence.retryCount" />
+            
             @if (sentence.isCompleted) {
               <button 
                 class="sentence-tts-btn" 

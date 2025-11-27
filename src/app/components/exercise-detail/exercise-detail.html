@@ -22,6 +22,9 @@
           @if (isCustomExercise()) {
             <span class="custom-badge">Custom</span>
           }
+          @if (quickReviewMode()) {
+            <span class="quick-review-badge">🎯 Quick Review</span>
+          }
         </h1>
         <button 
           class="favorite-btn-detail" 
@@ -53,12 +56,20 @@
             🏆 {{ perfectCompletions() }}× Perfect
           </span>
         }
-        <span class="progress-text">Progress: {{ currentSentenceIndex() }}/{{ sentences().length }} sentences</span>
+        @if (quickReviewMode() && quickReviewProgress()) {
+          <span class="progress-text">Progress: {{ quickReviewProgress()!.current }}/{{ quickReviewProgress()!.total }} sentences</span>
+        } @else {
+          <span class="progress-text">Progress: {{ currentSentenceIndex() }}/{{ sentences().length }} sentences</span>
+        }
       </div>
     </header>
 
     <div class="progress-bar-container">
-      <div class="progress-bar-fill" [style.width.%]="progressPercentage()"></div>
+      @if (quickReviewMode() && quickReviewProgress()) {
+        <div class="progress-bar-fill" [style.width.%]="quickReviewProgress()!.percentage"></div>
+      } @else {
+        <div class="progress-bar-fill" [style.width.%]="progressPercentage()"></div>
+      }
     </div>
 
     <!-- Main Content: 2 Column Layout -->
@@ -99,12 +110,26 @@
 
           <!-- Translation Input Area -->
           @if (!isReviewMode() && !isExerciseComplete()) {
+            <!-- Quick Review Exit Button -->
+            @if (quickReviewMode() && quickReviewProgress()) {
+              <div class="quick-review-notice">
+                <div class="notice-content">
+                  <span class="notice-icon">🎯</span>
+                  <span class="notice-text">Đang luyện {{ quickReviewProgress()!.total }} câu khó</span>
+                </div>
+                <!-- <button class="exit-quick-review-btn" (click)="exitQuickReview()">
+                  ← Thoát Quick Review
+                </button> -->
+              </div>
+            }
+            
             <div class="translation-input-section">
               <textarea 
                 #translationInput
                 class="translation-textarea"
                 [ngModel]="userInput()"
                 (ngModelChange)="userInput.set($event); onInputChange()"
+                (keydown.enter)="onTextareaEnter($any($event))"
                 [disabled]="isSubmitting() || hasThreeConsecutiveFailures()"
                 [readonly]="canProceedToNext()"
                 placeholder="Enter your English translation here... (Only highlighted sentence)"
@@ -148,7 +173,8 @@
                     <button 
                       class="action-btn retry-btn" 
                       (click)="onRetrySentence()"
-                      aria-label="Retry this sentence">
+                      aria-label="Retry this sentence"
+                      title="Press the shortcut key &quot;r&quot; to retry">
                       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.2"/>
                       </svg>
@@ -165,7 +191,8 @@
                     <button 
                       class="action-btn retry-btn" 
                       (click)="onRetrySentence()"
-                      aria-label="Retry this sentence">
+                      aria-label="Retry this sentence"
+                      title="Press the shortcut key &quot;r&quot; to retry">
                       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.2"/>
                       </svg>
@@ -187,7 +214,8 @@
               (practiceAgain)="onPracticeAgain()"
               (practiceDictation)="onPracticeDictation()"
               (quit)="onQuit()"
-              (playSentence)="playSentence($event)">
+              (playSentence)="playSentence($event)"
+              (startQuickReview)="onStartQuickReview()">
             </app-translation-review>
           }
         </div>

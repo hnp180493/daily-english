@@ -75,12 +75,13 @@ export class ExerciseCardComponent {
 
   onStart(): void {
     const slug = this.exerciseSlug();
+    const status = this.status();
     
-    if (this.isCompleted()) {
-      // Navigate to review mode
+    // If exercise has been attempted (has bestScore), navigate to review mode
+    if (status.bestScore !== undefined) {
       this.router.navigate(['/exercise', slug], { queryParams: { mode: 'review' } });
     } else {
-      // Normal start - emit ID for compatibility, but navigate with slug
+      // New exercise - normal start
       this.startExercise.emit(this.exercise().id);
       this.router.navigate(['/exercise', slug]);
     }

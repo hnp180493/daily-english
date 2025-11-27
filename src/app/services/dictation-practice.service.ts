@@ -24,6 +24,25 @@ export class DictationPracticeService {
    * Only returns user's completed translation, no fallback
    */
   getTranslatedText(exerciseId: string, englishText?: string): Observable<string | null> {
+    // First check guest_progress in localStorage
+    const guestProgressStr = localStorage.getItem('guest_progress');
+    if (guestProgressStr) {
+      try {
+        const guestProgress = JSON.parse(guestProgressStr);
+        // Check if exerciseHistory exists and has the exercise
+        if (guestProgress?.exerciseHistory && guestProgress.exerciseHistory[exerciseId]) {
+          const attempt = guestProgress.exerciseHistory[exerciseId];
+          if (attempt?.userInput) {
+            console.log('[DictationPracticeService] Found translation in guest_progress');
+            return of(attempt.userInput);
+          }
+        }
+      } catch (error) {
+        console.error('[DictationPracticeService] Error parsing guest_progress:', error);
+      }
+    }
+    
+    // Then try to load from database (for logged-in users)
     return this.databaseService.loadProgressAuto().pipe(
       map(progress => {
         // Only get user's completed translation

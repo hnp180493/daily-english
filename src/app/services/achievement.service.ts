@@ -76,7 +76,7 @@ export class AchievementService {
       if (user) {
         // Load from database for authenticated user
         this.isInitialized = true;
-        this.loadFromFirestore();
+        this.loadData();
       } else if (!this.isInitialized) {
         // Guest user - initialize with default data (only once)
         this.isInitialized = true;
@@ -132,7 +132,7 @@ export class AchievementService {
   /**
    * Load achievement data from database
    */
-  private loadFromFirestore(): void {
+  private loadData(): void {
     if (this.loadInProgress) {
       console.log('[AchievementService] Load already in progress, skipping');
       return;

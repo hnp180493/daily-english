@@ -277,7 +277,7 @@ export class DictationPracticeComponent implements OnInit, OnDestroy {
         this.isLoading.set(false);
       }
     } else {
-      // Default mode: use user's translation
+      // Default mode: use user's translation (from guest_progress or cloud)
       this.dictationService.getTranslatedText(exerciseId, ex.englishText).subscribe({
         next: (text) => {
           if (!text) {
