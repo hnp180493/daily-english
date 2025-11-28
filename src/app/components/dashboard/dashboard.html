@@ -53,16 +53,18 @@
       <span class="tab-icon" aria-hidden="true">📈</span>
       <span>Performance</span>
     </button>
-    <button 
-      role="tab"
-      class="tab-btn" 
-      [class.active]="activeTab() === 'activity'"
-      [attr.aria-selected]="activeTab() === 'activity'"
-      [attr.aria-controls]="'tab-activity'"
-      (click)="setActiveTab('activity')">
-      <span class="tab-icon" aria-hidden="true">📅</span>
-      <span>Activity</span>
-    </button>
+    @if (currentUser()) {
+      <button 
+        role="tab"
+        class="tab-btn" 
+        [class.active]="activeTab() === 'activity'"
+        [attr.aria-selected]="activeTab() === 'activity'"
+        [attr.aria-controls]="'tab-activity'"
+        (click)="setActiveTab('activity')">
+        <span class="tab-icon" aria-hidden="true">📅</span>
+        <span>Activity</span>
+      </button>
+    }
     <button 
       role="tab"
       class="tab-btn" 
@@ -86,16 +88,34 @@
               <div class="stats-row">
                 <app-practice-stats-widget [data]="enhanced.practiceStats" />
               </div>
-                <div class="charts-row">
-                  <app-progress-charts [analytics]="analytics()" />
-                </div>
+              <div class="charts-row">
+                <app-progress-charts [analytics]="analytics()" />
+              </div>
               <div class="history-row">
                 <app-recent-history-widget />
               </div>
               @if (userProgress()?.dictationHistory) {
-                <div class="dictation-row">
+                <!-- <div class="dictation-row">
                   <app-dictation-stats-widget [dictationHistory]="userProgress()!.dictationHistory" />
+                </div> -->
+              }
+            } @else {
+              <!-- Guest mode - show basic analytics with computed stats -->
+              @if (guestPracticeStats(); as stats) {
+                <div class="stats-row">
+                  <app-practice-stats-widget [data]="stats" />
                 </div>
+              }
+              <div class="charts-row">
+                <app-progress-charts [analytics]="analytics()" />
+              </div>
+              <div class="history-row">
+                <app-recent-history-widget />
+              </div>
+              @if (userProgress()?.dictationHistory) {
+                <!-- <div class="dictation-row">
+                  <app-dictation-stats-widget [dictationHistory]="userProgress()!.dictationHistory" />
+                </div> -->
               }
             }
           </div>
@@ -144,12 +164,22 @@
               </div>
             </div>
           </section>
+        } @else {
+          <!-- Guest mode - show basic performance analysis -->
+          <section aria-labelledby="performance-heading">
+            <!-- <h2 id="performance-heading" class="section-title">Performance Analysis</h2> -->
+            <div class="performance-grid" role="group" aria-label="Performance widgets">
+              <div class="analysis-row">
+                <app-performance-analysis [analytics]="analytics()" />
+              </div>
+            </div>
+          </section>
         }
       </div>
     }
 
-    <!-- Activity Tab -->
-    @if (activeTab() === 'activity') {
+    <!-- Activity Tab - Only for authenticated users -->
+    @if (activeTab() === 'activity' && currentUser()) {
       <div id="tab-activity" role="tabpanel" aria-labelledby="tab-activity" class="tab-content">
         <section aria-labelledby="activity-heading">
           <h2 id="activity-heading" class="section-title">Activity History</h2>
@@ -240,11 +270,18 @@
             </div>
           </section>
         } @else {
-          <div class="empty-state" role="status">
-            <div class="empty-state-icon" aria-hidden="true">📊</div>
-            <h3>No Enhanced Analytics Yet</h3>
-            <p>Complete more exercises to see detailed insights and analytics.</p>
-          </div>
+          <!-- Guest mode - show basic vocabulary stats -->
+          <section aria-labelledby="insights-heading">
+            <h2 id="insights-heading" class="section-title">Learning Insights</h2>
+            <div class="insights-grid" role="group" aria-label="Insights widgets">
+              <div class="insights-details-row">
+                <app-vocabulary-stats [analytics]="analytics()" />
+              </div>
+              <div class="guest-mode-notice">
+                <p>📊 Sign in to unlock advanced insights including weak areas analysis and error pattern detection.</p>
+              </div>
+            </div>
+          </section>
         }
       </div>
     }
@@ -252,7 +289,7 @@
     <div class="empty-state" role="status">
       <div class="empty-state-icon" aria-hidden="true">📊</div>
       <h2>Not Enough Data Yet</h2>
-      <p>Complete at least 2 exercises to see your analytics and progress insights.</p>
+      <p>Complete at least 1 exercise to see your analytics and progress insights.</p>
       <a routerLink="/exercises" class="btn-primary" aria-label="Go to exercises page to start practicing">Start Practicing</a>
     </div>
   }

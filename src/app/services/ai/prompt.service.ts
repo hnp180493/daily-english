@@ -16,13 +16,14 @@ export class PromptService {
 
     let fullContextEN: string = context.englishText;
 
-    const languageInstruction = translateToVietnamese 
+    const languageInstruction = translateToVietnamese
       ? `\n\n====================================================
 LANGUAGE INSTRUCTION
 ====================================================
 - Provide ALL feedback explanations in Vietnamese.
 - Keep technical terms (originalText, suggestion) in English.
 - Translate all explanation text to Vietnamese for better understanding.
+- Talk to students in a natural, friendly, and mature tone, avoid overly cute expressions.
 `
       : '';
 
@@ -63,7 +64,7 @@ If score < 100, include at least ONE specific feedback item.
 
 FEEDBACK STYLE:
 - Feedback must sound like a teacher talking to a student.
-- Do NOT mention system rules, instructions, or technical terms.
+- Do NOT mention system rules, instructions, or technical terms, "Full Paragraph (EN)", ...
 - Explain tense issues based on meaning in the Full Paragraph (EN), not grammar labels.
 
 OUTPUT (RAW JSON ONLY):
@@ -95,36 +96,51 @@ Student Translation (EN): ${userInput}
     userInput: string,
     previousHints: string[],
     context: ExerciseContext,
-    fullContext?: string
+    fullContext?: string,
+    translateToVietnamese: boolean = false
   ): string {
-    const contextSection = fullContext ? `
-Full Paragraph Context (for understanding):
-${fullContext}
+    const correctAnswer = context.englishText;
+    const languageInstruction = translateToVietnamese
+      ? '\n\nIMPORTANT: Respond in Vietnamese. Be direct and specific.'
+      : '';
 
-Sentence to Translate (highlighted):
-${sourceText}
-` : `Source Text: ${sourceText}`;
+    let prompt = `You are an English teacher. Compare these two sentences:
 
-    let prompt = `You are helping a ${context.level} level student translate this sentence to English:
-
-${contextSection}`;
-
-    if (userInput) {
-      prompt += `\n\nStudent's current attempt: ${userInput}`;
-    }
+Correct: ${correctAnswer}
+Student: ${userInput || '(empty)'}`;
 
     if (previousHints.length > 0) {
-      prompt += `\n\nPrevious hints given:\n${previousHints.map((h, i) => `${i + 1}. ${h}`).join('\n')}`;
+      prompt += `\n\nPrevious hints:\n${previousHints.map((h, i) => `${i + 1}. ${h}`).join('\n')}`;
     }
 
-    prompt += `\n\nProvide ONE specific, progressive hint to help the student improve their translation. The hint should:
-- Be different from previous hints
-- Be more specific than previous hints if this is not the first hint
-- Focus on grammar, vocabulary, or sentence structure
-- Not give away the complete answer
-- Be encouraging and educational
+    const hintNumber = previousHints.length + 1;
+    
+    const exampleFormat = translateToVietnamese
+      ? `Example format:
+   - "Bạn thiếu từ 'for' trước 'the bus'"
+   - "Sai động từ: phải dùng 'get on' thay vì 'go'"
+   - "Thiếu giới từ 'at' trước 'the station'"`
+      : `Example format:
+   - "You're missing 'for' before 'the bus'"
+   - "Wrong verb: use 'get on' instead of 'go'"
+   - "Missing preposition 'at' before 'the station'"`;
+    
+    prompt += `\n\nThis is hint #${hintNumber} of 3. Give ONLY ONE specific correction:
 
-Respond with ONLY the hint text, no additional formatting or explanation.`;
+${hintNumber === 1 ? `Tell them EXACTLY what word/phrase is wrong or missing.
+${exampleFormat}` : ''}
+
+${hintNumber === 2 ? 'Point out another specific error with the exact fix.' : ''}
+
+${hintNumber === 3 ? `Show the complete correct answer: **${correctAnswer}**` : ''}
+
+Rules:
+- Give ONLY ONE hint, not multiple hints
+- Be VERY specific about what's wrong
+- Tell them the exact word/phrase to add or change
+- Don't list multiple corrections${languageInstruction}
+
+Response format: Just one sentence with the correction.`;
 
     return prompt;
   }

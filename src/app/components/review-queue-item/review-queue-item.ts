@@ -107,8 +107,12 @@ export class ReviewQueueItem {
 
   formatDate(date: Date): string {
     const now = new Date();
-    const diffMs = date.getTime() - now.getTime();
-    const diffDays = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
+    now.setHours(0, 0, 0, 0); // Reset to start of day
+    
+    const reviewDate = new Date(date);
+    reviewDate.setHours(0, 0, 0, 0); // Reset to start of day
+    
+    const diffDays = Math.floor((reviewDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
 
     if (diffDays < 0) {
       return 'Overdue';

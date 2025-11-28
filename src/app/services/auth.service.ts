@@ -12,8 +12,8 @@ import { AccountInactiveModal } from '../components/account-inactive-modal/accou
 import { clearAllGuestData } from '../constants/storage-keys';
 import type { User as SupabaseUser } from '@supabase/supabase-js';
 
-// Maximum number of users allowed to register
-const MAX_USER_LIMIT = 450;
+// Maximum database size allowed in MB
+const MAX_DATABASE_SIZE_MB = 410;
 
 // App User interface matching Firebase User structure
 interface User {
@@ -202,9 +202,9 @@ export class AuthService {
 
         // New user - check registration limit
         this.canRegisterNewUser(userId).subscribe({
-          next: (canRegister) => {
+          next: ({ canRegister, currentSize }) => {
             if (!canRegister) {
-              console.error(`[Auth] ❌ Registration limit reached (${MAX_USER_LIMIT} users). Cannot create new account.`);
+              console.error(`[Auth] ❌ Registration limit reached (${currentSize}MB/${MAX_DATABASE_SIZE_MB}MB). Cannot create new account.`);
               // Sign out the user since they can't register
               this.signOut().subscribe({
                 next: () => {
@@ -383,9 +383,9 @@ export class AuthService {
 
   /**
    * Check if new user registration is allowed
-   * Returns true if user can register (existing user or under limit)
+   * Returns object with canRegister flag and current database size
    */
-  canRegisterNewUser(userId: string): Observable<boolean> {
+  canRegisterNewUser(userId: string): Observable<{ canRegister: boolean; currentSize: number }> {
     return this.databaseService.checkUserExists(userId).pipe(
       tap(exists => {
         if (exists) {
@@ -393,21 +393,21 @@ export class AuthService {
         }
       }),
       // If user exists, allow them
-      // If user doesn't exist, check total count
+      // If user doesn't exist, check database size
       switchMap(exists => {
         if (exists) {
-          return of(true);
+          return of({ canRegister: true, currentSize: 0 });
         }
         
-        return this.databaseService.getTotalUserCount().pipe(
-          map(count => {
-            const canRegister = count < MAX_USER_LIMIT;
+        return this.databaseService.getDatabaseSizeMB().pipe(
+          map(sizeMB => {
+            const canRegister = sizeMB < MAX_DATABASE_SIZE_MB;
             if (!canRegister) {
-              console.log(`[Auth] ❌ Registration limit reached: ${count}/${MAX_USER_LIMIT}`);
+              console.log(`[Auth] ❌ Registration limit reached: ${sizeMB}MB/${MAX_DATABASE_SIZE_MB}MB`);
             } else {
-              console.log(`[Auth] ✓ Registration allowed, current count: ${count}/${MAX_USER_LIMIT}`);
+              console.log(`[Auth] ✓ Registration allowed, current size: ${sizeMB}MB/${MAX_DATABASE_SIZE_MB}MB`);
             }
-            return canRegister;
+            return { canRegister, currentSize: sizeMB };
           })
         );
       })

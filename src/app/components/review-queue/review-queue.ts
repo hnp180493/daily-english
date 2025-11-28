@@ -55,14 +55,17 @@ export class ReviewQueueComponent implements OnInit {
   filteredQueue = computed(() => {
     let queue = this.reviewQueue();
     
-    // Filter: only show items that are due today or earlier (compare dates only, not time)
+    // Filter: show items due within 5 days (compare dates only, not time)
     const today = new Date();
     today.setHours(0, 0, 0, 0); // Reset to start of day
+    
+    const fiveDaysLater = new Date(today);
+    fiveDaysLater.setDate(today.getDate() + 5);
     
     queue = queue.filter(item => {
       const reviewDate = new Date(item.nextReviewDate);
       reviewDate.setHours(0, 0, 0, 0); // Reset to start of day
-      return reviewDate <= today;
+      return reviewDate <= fiveDaysLater;
     });
     
     // Filter by urgency

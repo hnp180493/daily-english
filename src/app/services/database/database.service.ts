@@ -546,13 +546,13 @@ export class DatabaseService implements IDatabase {
     return this.loadWeeklyGoalByDate(userId, weekStartDate);
   }
 
-  // User Count Operations
-  getTotalUserCount(): Observable<number> {
-    return this.database.getTotalUserCount();
-  }
-
+  // User Operations
   checkUserExists(userId: string): Observable<boolean> {
     if (!userId) return of(false);
     return this.database.checkUserExists(userId);
+  }
+
+  getDatabaseSizeMB(): Observable<number> {
+    return this.database.getDatabaseSizeMB();
   }
 }

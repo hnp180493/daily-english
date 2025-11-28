@@ -50,6 +50,7 @@ export class ExerciseNavigationService {
     
     if (nextIncorrectIdx !== null) {
       this.stateService.currentSentenceIndex.set(nextIncorrectIdx);
+      this.stateService.resetSentenceState();
       this.clearFeedback();
       onContinue();
     } else {

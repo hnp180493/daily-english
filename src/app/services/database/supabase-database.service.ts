@@ -840,18 +840,7 @@ export class SupabaseDatabase implements IDatabase {
     ).pipe(catchError(this.handleError));
   }
 
-  // User Count Operations
-  getTotalUserCount(): Observable<number> {
-    return from(
-      this.supabase
-        .rpc('get_total_user_count')
-        .then(({ data, error }) => {
-          if (error) throw error;
-          return data as number;
-        })
-    ).pipe(catchError(this.handleError));
-  }
-
+  // User Operations
   checkUserExists(userId: string): Observable<boolean> {
     return from(
       this.supabase
@@ -862,6 +851,17 @@ export class SupabaseDatabase implements IDatabase {
         .then(({ data, error }) => {
           if (error) throw error;
           return data !== null;
+        })
+    ).pipe(catchError(this.handleError));
+  }
+
+  getDatabaseSizeMB(): Observable<number> {
+    return from(
+      this.supabase
+        .rpc('get_database_size_mb')
+        .then(({ data, error }) => {
+          if (error) throw error;
+          return data as number;
         })
     ).pipe(catchError(this.handleError));
   }

@@ -18,11 +18,8 @@
 - **3 cấp độ**: Beginner, Intermediate, Advanced
 - **20+ chủ đề**: Cuộc sống, du lịch, công việc, công nghệ...
 
-## 🌐 Demo
 
-Ứng dụng đã được deploy tại: **https://dailyenglish.qzz.io/**
-
-### Cấu Hình trong Ứng Dụng
+## ⚙️ Cấu Hình trong Ứng Dụng
 
 1. Mở ứng dụng và click vào **👤 Profile** ở góc trên bên phải
 2. Chọn nhà cung cấp AI bạn muốn sử dụng
@@ -31,7 +28,7 @@
    - **OpenRouter** (Khuyến nghị - 7 models miễn phí): API Key và chọn model
    - **Google Gemini**: API Key (model: gemini-2.5-pro)
    - **OpenAI**: API Key và chọn model (gpt-5)
-   - **Azure OpenAI**: Endpoint URL, API Key, Deployment Name (gpt-4)
+   <!-- - **Azure OpenAI**: Endpoint URL, API Key, Deployment Name (gpt-4) -->
 5. Click **"Use [Provider Name]"** để chọn nhà cung cấp
 6. Click **💾 Save Configuration** để lưu
 
@@ -40,12 +37,6 @@
 - Không được chia sẻ với server nào ngoài nhà cung cấp AI bạn chọn
 - Có thể thay đổi nhà cung cấp bất cứ lúc nào
 
-**OpenRouter - Lựa chọn miễn phí tốt nhất:**
-- Truy cập nhiều models AI miễn phí qua một API key duy nhất
-- Không cần thẻ tín dụng
-- Model khuyến nghị: Llama 3.2 3B (nhanh, ổn định)
-- Xem [hướng dẫn chi tiết](docs/OPENROUTER-GUIDE.md)
-- ⚠️ Lưu ý: Tình trạng model có thể thay đổi - kiểm tra [danh sách model](https://openrouter.ai/models)
 
 ## 📖 Cách Sử Dụng
 

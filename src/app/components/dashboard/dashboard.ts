@@ -47,7 +47,7 @@ import { UserProgressHelper } from '../../models/exercise.model';
     MostPracticedComponent,
     LearningVelocityComponent,
     ErrorPatternsAnalysisComponent,
-    DictationStatsWidgetComponent
+    // DictationStatsWidgetComponent
   ],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.scss',
@@ -76,13 +76,15 @@ export class DashboardComponent implements OnInit {
   
   enhancedAnalytics = signal<EnhancedAnalyticsData | null>(null);
 
+  // Local analytics signal for guest mode
+  private localAnalytics = signal<any>(null);
+
   // Compute analytics from enhanced data (Supabase) with exercise info
   analytics = computed(() => {
     const enhanced = this.enhancedAnalytics();
     if (!enhanced) {
-      const progress = this.userProgress();
-      const timeRange = this.selectedTimeRange();
-      return this.analyticsService.computeAnalytics(progress, timeRange);
+      // Guest mode - return local analytics
+      return this.localAnalytics() || this.analyticsService.computeAnalytics(this.userProgress(), this.selectedTimeRange());
     }
     
     // Build analytics from enhanced data
@@ -147,6 +149,10 @@ export class DashboardComponent implements OnInit {
       
       if (user?.uid) {
         this.timeRangeChange$.next({ userId: user.uid, timeRange });
+      } else {
+        // Guest mode - enhanced analytics will be null, reload local analytics
+        this.enhancedAnalytics.set(null);
+        this.loadLocalAnalytics();
       }
     });
   }
@@ -158,6 +164,19 @@ export class DashboardComponent implements OnInit {
     
     if (user?.uid) {
       this.timeRangeChange$.next({ userId: user.uid, timeRange });
+    } else {
+      // Guest mode - compute local analytics asynchronously
+      this.loadLocalAnalytics();
+    }
+  }
+
+  private async loadLocalAnalytics(): Promise<void> {
+    const progress = this.userProgress();
+    const timeRange = this.selectedTimeRange();
+    
+    if (progress) {
+      const analytics = await this.analyticsService.computeAnalyticsAsync(progress, timeRange);
+      this.localAnalytics.set(analytics);
     }
   }
 
@@ -172,7 +191,40 @@ export class DashboardComponent implements OnInit {
 
   hasEnoughData = computed(() => {
     const progress = this.userProgress();
-    return progress && UserProgressHelper.getAttemptsCount(progress) >= 2;
+    return progress && UserProgressHelper.getAttemptsCount(progress) >= 1;
+  });
+
+  // Compute practice stats for guest mode from local data
+  guestPracticeStats = computed(() => {
+    const progress = this.userProgress();
+    if (!progress || this.currentUser()) return null;
+
+    const attempts = UserProgressHelper.getAllAttempts(progress);
+    if (attempts.length === 0) return null;
+
+    const totalExercisesCompleted = attempts.length;
+    const averageAccuracy = attempts.reduce((sum, a) => sum + a.accuracyScore, 0) / totalExercisesCompleted;
+    const totalTimeSpentMinutes = 0; // Not tracked in guest mode
+    const averageTimePerExercise = 0; // Not tracked in guest mode
+    const totalHintsUsed = attempts.reduce((sum, a) => sum + (a.hintsUsed || 0), 0);
+
+    // Calculate trend (compare recent vs overall)
+    const recentAttempts = attempts.slice(-5);
+    const recentAverage = recentAttempts.reduce((sum, a) => sum + a.accuracyScore, 0) / recentAttempts.length;
+    const overallAverage = averageAccuracy;
+
+    return {
+      totalExercisesCompleted,
+      averageAccuracy: Math.round(averageAccuracy),
+      totalTimeSpentMinutes,
+      averageTimePerExercise,
+      totalHintsUsed,
+      trend: recentAverage > overallAverage ? 'improving' as const : 
+             recentAverage < overallAverage ? 'declining' as const : 
+             'stable' as const,
+      recentAverage: Math.round(recentAverage),
+      overallAverage: Math.round(overallAverage)
+    };
   });
 
   needsMigration = computed(() => {

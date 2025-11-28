@@ -197,7 +197,8 @@ export class AzureOpenAIProvider extends BaseAIProvider {
     config: any
   ): Observable<string> {
     return new Observable(observer => {
-      const prompt = this.promptService.buildHintPrompt(sourceText, userInput, previousHints, context, context.fullContext);
+      const translateToVietnamese = this.settingsService.getSettings().translateFeedbackToVietnamese;
+      const prompt = this.promptService.buildHintPrompt(sourceText, userInput, previousHints, context, context.fullContext, translateToVietnamese);
       const messages: AIMessage[] = [
         { role: 'system', content: 'You are a helpful English language teacher providing hints to students. Give ONE specific, actionable hint.' },
         { role: 'user', content: prompt }

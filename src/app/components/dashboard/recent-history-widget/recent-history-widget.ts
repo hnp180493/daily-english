@@ -5,6 +5,9 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { ExerciseHistoryService } from '../../../services/exercise-history.service';
 import { ExerciseHistoryRecord } from '../../../models/exercise-history.model';
 import { ExerciseService } from '../../../services/exercise.service';
+import { ProgressService } from '../../../services/progress.service';
+import { AuthService } from '../../../services/auth.service';
+import { UserProgressHelper } from '../../../models/exercise.model';
 
 @Component({
   selector: 'app-recent-history-widget',
@@ -16,6 +19,8 @@ import { ExerciseService } from '../../../services/exercise.service';
 export class RecentHistoryWidgetComponent {
   private exerciseHistoryService = inject(ExerciseHistoryService);
   private exerciseService = inject(ExerciseService);
+  private progressService = inject(ProgressService);
+  private authService = inject(AuthService);
   private router = inject(Router);
 
   // Load recent history (limit 10) using toSignal for reactive updates
@@ -23,8 +28,45 @@ export class RecentHistoryWidgetComponent {
     initialValue: [] as ExerciseHistoryRecord[]
   });
 
-  history = computed(() => this.historyData());
-  isLoading = computed(() => false); // toSignal handles loading state
+  // Get user progress for guest mode
+  private userProgress = toSignal(this.progressService.getUserProgress());
+  private isAuthenticated = this.authService.isAuthenticated;
+
+  // Combine authenticated and guest history
+  history = computed(() => {
+    if (this.isAuthenticated()) {
+      return this.historyData();
+    } else {
+      // Guest mode - convert UserProgress to ExerciseHistoryRecord format
+      const progress = this.userProgress();
+      if (!progress) return [];
+      
+      const attempts = UserProgressHelper.getAllAttempts(progress);
+      return attempts
+        .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
+        .slice(0, 10)
+        .map(attempt => ({
+          id: attempt.exerciseId,
+          userId: 'guest',
+          exerciseId: attempt.exerciseId,
+          completedAt: new Date(attempt.timestamp),
+          finalScore: attempt.accuracyScore,
+          timeSpentSeconds: 0, // Not tracked in old format
+          hintsUsed: attempt.hintsUsed || 0,
+          sentenceAttempts: [],
+          penaltyMetrics: {
+            baseScore: attempt.baseScore || attempt.accuracyScore,
+            totalIncorrectAttempts: attempt.totalIncorrectAttempts || 0,
+            totalRetries: attempt.totalRetries || 0,
+            totalPenalty: attempt.totalPenalty || 0,
+            finalScore: attempt.accuracyScore
+          },
+          createdAt: new Date(attempt.timestamp)
+        } as ExerciseHistoryRecord));
+    }
+  });
+
+  isLoading = computed(() => false);
   isEmpty = computed(() => this.history().length === 0);
   
   exerciseTitles = signal<Map<string, string>>(new Map());

@@ -601,19 +601,25 @@ export class ReviewService {
   // Private helper methods
 
   private calculateUrgency(reviewData: ReviewData): UrgencyLevel {
-    const score = reviewData.lastScore;
+    const now = new Date();
+    now.setHours(0, 0, 0, 0); // Reset to start of day
 
-    if (score < 60) {
+    const reviewDate = new Date(reviewData.nextReviewDate);
+    reviewDate.setHours(0, 0, 0, 0); // Reset to start of day
+
+    // Calculate days difference
+    const daysDiff = Math.floor(
+      (reviewDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)
+    );
+
+    if (daysDiff < 0) {
+      // Overdue (past due date)
       return UrgencyLevel.HIGH;
-    } else if (score < 75) {
+    } else if (daysDiff <= 1) {
+      // Due today or tomorrow (0-1 days)
       return UrgencyLevel.MEDIUM;
     } else {
-      // Check if review is due
-      const now = new Date();
-      if (reviewData.nextReviewDate <= now) {
-        return UrgencyLevel.LOW;
-      }
-      // Not due yet, but still in queue for planning
+      // Scheduled for later (2-5 days away)
       return UrgencyLevel.LOW;
     }
   }

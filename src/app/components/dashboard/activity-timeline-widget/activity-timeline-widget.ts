@@ -1,9 +1,11 @@
 import { Component, ChangeDetectionStrategy, inject, input, computed, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { toSignal } from '@angular/core/rxjs-interop';
-import { switchMap, of } from 'rxjs';
+import { toSignal, toObservable } from '@angular/core/rxjs-interop';
+import { switchMap } from 'rxjs/operators';
 import { ExerciseHistoryService } from '../../../services/exercise-history.service';
-import { ActivityTimelineData } from '../../../models/exercise-history.model';
+import { ProgressService } from '../../../services/progress.service';
+import { AuthService } from '../../../services/auth.service';
+import { UserProgressHelper } from '../../../models/exercise.model';
 
 export type TimeRange = '7d' | '30d' | '90d';
 
@@ -16,9 +18,15 @@ export type TimeRange = '7d' | '30d' | '90d';
 })
 export class ActivityTimelineWidgetComponent {
   private exerciseHistoryService = inject(ExerciseHistoryService);
+  private progressService = inject(ProgressService);
+  private authService = inject(AuthService);
 
   // Accept time range input from parent component
   timeRange = input<TimeRange>('7d');
+
+  // Get user progress for guest mode
+  private userProgress = toSignal(this.progressService.getUserProgress());
+  private isAuthenticated = this.authService.isAuthenticated;
 
   // Calculate start and end dates based on time range
   private dateRange = computed(() => {
@@ -41,16 +49,45 @@ export class ActivityTimelineWidgetComponent {
     return { startDate, endDate };
   });
 
-  // Load activity timeline data using computed that reacts to time range changes
+  // Load activity timeline data - reactive to date range changes
   private timelineData = toSignal(
-    computed(() => {
-      const { startDate, endDate } = this.dateRange();
-      return this.exerciseHistoryService.getActivityTimeline(startDate, endDate);
-    })()
+    toObservable(this.dateRange).pipe(
+      switchMap(({ startDate, endDate }) => 
+        this.exerciseHistoryService.getActivityTimeline(startDate, endDate)
+      )
+    ),
+    { initialValue: [] }
   );
 
-  timeline = computed(() => this.timelineData() || []);
-  isLoading = computed(() => this.timelineData() === undefined);
+  // Combine authenticated and guest timeline
+  timeline = computed(() => {
+    if (this.isAuthenticated()) {
+      return this.timelineData() || [];
+    } else {
+      // Guest mode - build timeline from UserProgress
+      const progress = this.userProgress();
+      if (!progress) return [];
+      
+      const { startDate, endDate } = this.dateRange();
+      const attempts = UserProgressHelper.getAllAttempts(progress);
+      
+      // Group by date
+      const dateMap = new Map<string, number>();
+      attempts.forEach(attempt => {
+        const attemptDate = new Date(attempt.timestamp);
+        if (attemptDate >= startDate && attemptDate <= endDate) {
+          const dateStr = attemptDate.toISOString().split('T')[0];
+          dateMap.set(dateStr, (dateMap.get(dateStr) || 0) + 1);
+        }
+      });
+      
+      return Array.from(dateMap.entries())
+        .map(([date, completionCount]) => ({ date, completionCount }))
+        .sort((a, b) => a.date.localeCompare(b.date));
+    }
+  });
+
+  isLoading = computed(() => false);
   isEmpty = computed(() => {
     const data = this.timeline();
     return data.length === 0 || data.every(d => d.completionCount === 0);

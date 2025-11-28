@@ -87,9 +87,9 @@ export interface IDatabase {
   loadWeeklyGoal(userId: string, goalId: string): Observable<WeeklyGoal | null>;
   loadWeeklyGoalByDate(userId: string, weekStartDate: string): Observable<WeeklyGoal | null>;
 
-  // User Count Operations
-  getTotalUserCount(): Observable<number>;
+  // User Operations
   checkUserExists(userId: string): Observable<boolean>;
+  getDatabaseSizeMB(): Observable<number>;
 
   // Exercise History Operations
   insertExerciseHistory(record: import('../../models/exercise-history.model').ExerciseHistoryRecord): Observable<void>;

@@ -274,7 +274,7 @@
           @if (currentHint()) {
             <div class="section-card hint-card">
               <h3 class="section-title">💡 Hint</h3>
-              <p class="hint-text">{{ currentHint() }}</p>
+              <p class="hint-text" [innerHTML]="currentHint() | markdown"></p>
             </div>
           }
 

@@ -32,7 +32,7 @@
 
 .periods-grid {
   @apply grid gap-4;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  grid-template-columns: repeat(2, 1fr);
 }
 
 .period-card {
@@ -87,7 +87,7 @@
   }
 
   .periods-grid {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: 1fr;
   }
 }
 

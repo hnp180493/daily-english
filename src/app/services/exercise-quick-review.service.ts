@@ -55,6 +55,7 @@ export class ExerciseQuickReviewService {
     // Start from first incorrect sentence
     const firstIncorrectIdx = incorrectIndices[0] || 0;
     this.stateService.currentSentenceIndex.set(firstIncorrectIdx);
+    this.stateService.resetSentenceState();
   }
 
   startQuickReview(allSentences: SentenceProgress[]): { difficultIndices: number[], hasDifficult: boolean } {
@@ -91,6 +92,7 @@ export class ExerciseQuickReviewService {
 
     const firstIncorrectIdx = difficultIndices[0] || 0;
     this.stateService.currentSentenceIndex.set(firstIncorrectIdx);
+    this.stateService.resetSentenceState();
   }
 
   getNextIncorrectIndex(currentIdx: number): number | null {

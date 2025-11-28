@@ -292,12 +292,14 @@ export class OpenRouterProvider extends BaseAIProvider {
     config: any
   ): Observable<string> {
     return new Observable(observer => {
+      const translateToVietnamese = this.settingsService.getSettings().translateFeedbackToVietnamese;
       const prompt = this.promptService.buildHintPrompt(
         sourceText,
         userInput,
         previousHints,
         context,
-        context.fullContext
+        context.fullContext,
+        translateToVietnamese
       );
       
       const messages: AIMessage[] = [

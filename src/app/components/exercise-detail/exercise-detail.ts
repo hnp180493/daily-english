@@ -28,6 +28,7 @@ import { ExerciseMetricsService } from '../../services/exercise-metrics.service'
 import { TTSSettings } from '../tts-settings/tts-settings';
 import { PenaltyScore } from '../penalty-score/penalty-score';
 import { ExerciseContext } from '../../models/ai.model';
+import { MarkdownPipe } from '../../pipes/markdown.pipe';
 
 @Component({
   selector: 'app-exercise-detail',
@@ -41,6 +42,7 @@ import { ExerciseContext } from '../../models/ai.model';
     TranslationReview,
     TTSSettings,
     PenaltyScore,
+    MarkdownPipe,
   ],
   templateUrl: './exercise-detail.html',
   styleUrl: './exercise-detail.scss',
@@ -383,12 +385,17 @@ export class ExerciseDetailComponent implements OnInit, OnDestroy {
       .map(s => s.translation)
       .join(' ');
 
+    // Extract corresponding English sentence
+    const sentenceRegex = /[^.!?]+[.!?]+/g;
+    const englishSentences = ex.englishText?.match(sentenceRegex) || [];
+    const currentEnglishSentence = englishSentences[currentIdx]?.trim() || '';
+
     const tempExercise = {
       ...ex,
       sourceText: currentSentence.original,
       fullContext: ex.sourceText,
       translatedContext: translatedContext || undefined,
-      englishText: ''
+      englishText: currentEnglishSentence
     } as ExerciseContext;
 
     this.aiService.generateHint(
