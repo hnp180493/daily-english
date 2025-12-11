@@ -10,10 +10,10 @@ export class CustomRouteReuseStrategy implements RouteReuseStrategy {
   private handlers: Map<string, DetachedRouteHandle> = new Map();
   
   // Routes that should be cached
+  // Note: dashboard is excluded to ensure fresh data on navigation
   private readonly cacheableRoutes = [
     'home',
     'exercises',
-    'dashboard',
     'profile',
     'favorites'
   ];

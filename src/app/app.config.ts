@@ -5,7 +5,7 @@ import {
   provideAppInitializer,
   inject,
 } from '@angular/core';
-import { provideRouter, withPreloading, RouteReuseStrategy } from '@angular/router';
+import { provideRouter, withPreloading, withInMemoryScrolling, RouteReuseStrategy } from '@angular/router';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { provideClientHydration } from '@angular/platform-browser';
 import { provideAnimations } from '@angular/platform-browser/animations';
@@ -91,7 +91,10 @@ export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
     provideZoneChangeDetection({ eventCoalescing: true }),
-    provideRouter(routes, withPreloading(SelectivePreloadStrategy)),
+    provideRouter(
+      routes,
+      withPreloading(SelectivePreloadStrategy)
+    ),
     provideHttpClient(withInterceptors([cacheInterceptor])),
     provideClientHydration(),
     provideAnimations(),

@@ -74,6 +74,15 @@ export class ProfileComponent implements OnInit {
     });
   }
 
+  signInWithGoogle(): void {
+    this.authService.signInWithGoogle().subscribe({
+      next: () => {
+        console.log('Signing in with Google...');
+      },
+      error: (error) => console.error('Google sign-in failed:', error)
+    });
+  }
+
   setActiveTab(tab: TabType): void {
     this.activeTab.set(tab);
   }

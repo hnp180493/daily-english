@@ -636,7 +636,7 @@ const MILESTONE_ACHIEVEMENTS: Achievement[] = [
     criteria: ['Complete 100 exercises'],
     rewards: [
       { type: RewardType.CREDITS, value: 250, description: '250 Bonus Credits' },
-      { type: RewardType.HINTS, value: 3, description: '3 Exclusive Hints' }
+
     ],
     unlocked: false
   },
@@ -687,7 +687,7 @@ const STREAK_ACHIEVEMENTS: Achievement[] = [
     tips: ['Consistency is key - even one exercise per day counts!'],
     rewards: [
       { type: RewardType.CREDITS, value: 250, description: '250 Bonus Credits' },
-      { type: RewardType.HINTS, value: 3, description: '3 Exclusive Hints' }
+
     ],
     unlocked: false
   },
@@ -757,7 +757,7 @@ const PERFORMANCE_ACHIEVEMENTS: Achievement[] = [
     tips: ['Read widely and incorporate sophisticated vocabulary in your translations'],
     rewards: [
       { type: RewardType.CREDITS, value: 250, description: '250 Bonus Credits' },
-      { type: RewardType.HINTS, value: 3, description: '3 Exclusive Hints' }
+
     ],
     unlocked: false
   },
@@ -775,7 +775,7 @@ const PERFORMANCE_ACHIEVEMENTS: Achievement[] = [
     tips: ['Practice regularly to improve both speed and accuracy'],
     rewards: [
       { type: RewardType.CREDITS, value: 250, description: '250 Bonus Credits' },
-      { type: RewardType.HINTS, value: 3, description: '3 Exclusive Hints' }
+
     ],
     unlocked: false
   }

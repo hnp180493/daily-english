@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy, signal, computed, inject, effect, OnInit } from '@angular/core';
+import { Component, ChangeDetectionStrategy, signal, computed, inject, effect, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
@@ -26,6 +26,7 @@ import { MostPracticedComponent } from './most-practiced/most-practiced';
 import { LearningVelocityComponent } from './learning-velocity/learning-velocity';
 import { ErrorPatternsAnalysisComponent } from './error-patterns-analysis/error-patterns-analysis';
 import { DictationStatsWidgetComponent } from './dictation-stats-widget/dictation-stats-widget';
+import { DashboardSkeletonComponent } from './dashboard-skeleton/dashboard-skeleton';
 import { UserProgressHelper } from '../../models/exercise.model';
 
 @Component({
@@ -47,13 +48,14 @@ import { UserProgressHelper } from '../../models/exercise.model';
     MostPracticedComponent,
     LearningVelocityComponent,
     ErrorPatternsAnalysisComponent,
+    DashboardSkeletonComponent,
     // DictationStatsWidgetComponent
   ],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class DashboardComponent implements OnInit {
+export class DashboardComponent implements OnInit, OnDestroy {
   private analyticsService = inject(InternalAnalyticsService);
   private enhancedAnalyticsService = inject(EnhancedAnalyticsService);
   private progressService = inject(ProgressService);
@@ -65,7 +67,7 @@ export class DashboardComponent implements OnInit {
   selectedTimeRange = signal<TimeRange>('30d');
   historyTimeRange = signal<HistoryTimeRange>('7d');
   activeTab = signal<'overview' | 'performance' | 'activity' | 'insights'>('overview');
-  isLoading = signal(false);
+  isLoading = signal(true);
   isLoadingEnhanced = signal(false);
   enhancedError = signal<string | null>(null);
   isMigrating = signal(false);
@@ -133,11 +135,13 @@ export class DashboardComponent implements OnInit {
       .subscribe({
         next: (data) => {
           this.isLoadingEnhanced.set(false);
+          this.isLoading.set(false);
           this.enhancedAnalytics.set(data);
         },
         error: (error) => {
           console.error('Failed to load enhanced analytics:', error);
           this.isLoadingEnhanced.set(false);
+          this.isLoading.set(false);
           this.enhancedError.set('Failed to load analytics. Please try again.');
         }
       });
@@ -158,6 +162,9 @@ export class DashboardComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    // Scroll to top when entering dashboard
+    window.scrollTo({ top: 0, behavior: 'instant' });
+    
     // Initial load
     const user = this.currentUser();
     const timeRange = this.selectedTimeRange();
@@ -170,7 +177,13 @@ export class DashboardComponent implements OnInit {
     }
   }
 
+  ngOnDestroy(): void {
+    // Clean up subscription
+    this.timeRangeChange$.complete();
+  }
+
   private async loadLocalAnalytics(): Promise<void> {
+    this.isLoading.set(true);
     const progress = this.userProgress();
     const timeRange = this.selectedTimeRange();
     
@@ -178,6 +191,7 @@ export class DashboardComponent implements OnInit {
       const analytics = await this.analyticsService.computeAnalyticsAsync(progress, timeRange);
       this.localAnalytics.set(analytics);
     }
+    this.isLoading.set(false);
   }
 
   retryEnhancedAnalytics(): void {

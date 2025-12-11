@@ -189,6 +189,9 @@ export class ExerciseDetailComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    // Scroll to top when entering exercise detail
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    
     this.submissionService.reset();
     this.loadExercise();
   }
@@ -337,10 +340,12 @@ export class ExerciseDetailComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.keyboardService.clearShortcuts();
     
-    // Clear any pending save
+    // Clear any pending save (but don't save in Quick Review mode)
     if (this.saveProgressTimeout) {
       clearTimeout(this.saveProgressTimeout);
-      this.saveProgress(); // Save immediately on destroy
+      if (!this.quickReviewMode()) {
+        this.saveProgress(); // Save immediately on destroy
+      }
     }
     
     const ex = this.exercise();
@@ -351,6 +356,9 @@ export class ExerciseDetailComponent implements OnInit, OnDestroy {
   }
 
   onInputChange(): void {
+    // Don't save progress in Quick Review mode
+    if (this.quickReviewMode()) return;
+
     // Debounce save progress - only save after 500ms of no typing
     if (this.saveProgressTimeout) {
       clearTimeout(this.saveProgressTimeout);
@@ -438,7 +446,10 @@ export class ExerciseDetailComponent implements OnInit, OnDestroy {
     this.navigationService.moveToNextSentence(
       () => this.completeExercise(),
       () => {
-        this.saveProgress();
+        // Don't save progress in Quick Review mode
+        if (!this.quickReviewMode()) {
+          this.saveProgress();
+        }
         this.focusInput();
       }
     );
@@ -446,7 +457,10 @@ export class ExerciseDetailComponent implements OnInit, OnDestroy {
 
   onRetrySentence(): void {
     this.navigationService.retrySentence();
-    this.saveProgress();
+    // Don't save progress in Quick Review mode
+    if (!this.quickReviewMode()) {
+      this.saveProgress();
+    }
     this.focusInput();
   }
 
@@ -454,7 +468,10 @@ export class ExerciseDetailComponent implements OnInit, OnDestroy {
     this.navigationService.skipToNextSentence(
       () => this.completeExercise(),
       () => {
-        this.saveProgress();
+        // Don't save progress in Quick Review mode
+        if (!this.quickReviewMode()) {
+          this.saveProgress();
+        }
         this.focusInput();
       }
     );

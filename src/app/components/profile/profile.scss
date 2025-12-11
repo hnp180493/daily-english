@@ -49,6 +49,41 @@
   gap: 1.5rem;
 }
 
+.btn-google-signin {
+  display: none;
+
+  @media (max-width: 768px) {
+    display: inline-flex;
+    margin-top: 1.5rem;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem 1.5rem;
+    background: white;
+    border: 1px solid #E5E7EB;
+    border-radius: 12px;
+    color: #1F2937;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+
+    svg {
+      flex-shrink: 0;
+    }
+
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+      border-color: #D1D5DB;
+    }
+
+    &:active {
+      transform: translateY(0);
+    }
+  }
+}
+
 .user-info-section {
   background: rgba(255, 255, 255, 0.95);
   border-radius: 16px;

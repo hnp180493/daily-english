@@ -1,50 +1,59 @@
 <div class="heatmap-section">
-  <h2>Activity Heatmap</h2>
-
-  <div class="streak-stats">
-    <div class="stat-card">
-      <span class="icon">🔥</span>
-      <div>
-        <label>Current Streak</label>
-        <strong>{{ heatmapData().currentStreak }} days</strong>
-      </div>
-    </div>
-    <div class="stat-card">
-      <span class="icon">🏆</span>
-      <div>
-        <label>Longest Streak</label>
-        <strong>{{ heatmapData().longestStreak }} days</strong>
-      </div>
+  <div class="heatmap-header">
+    <span class="contribution-count">{{ totalContributions() }} exercises in the last year</span>
+    <div class="streak-badges">
+      <span class="streak-badge" title="Current Streak">
+        🔥 {{ currentStreak() }} days
+      </span>
+      <span class="streak-badge" title="Longest Streak">
+        🏆 {{ longestStreak() }} days
+      </span>
     </div>
   </div>
 
   <div class="heatmap-container">
     @if (heatmapData().weeks.length > 0) {
-      <div class="heatmap-grid">
-        @for (week of heatmapData().weeks; track week.weekNumber) {
-          <div class="heatmap-week">
-            @for (day of week.days; track day.date) {
-              <div 
-                class="heatmap-cell"
-                [class.intensity-0]="day.intensity === 0"
-                [class.intensity-1]="day.intensity === 1"
-                [class.intensity-2]="day.intensity === 2"
-                [class.intensity-3]="day.intensity === 3"
-                [class.intensity-4]="day.intensity === 4"
-                [class.selected]="selectedDay()?.date === day.date"
-                [title]="getTooltip(day)"
-                [attr.aria-label]="getTooltip(day)"
-                (click)="showDayDetails(day)"
-                (keydown.enter)="showDayDetails(day)"
-                (keydown.space)="showDayDetails(day)"
-                tabindex="0"
-                role="button">
-              </div>
-            }
-          </div>
+    <!-- Month Labels -->
+    <div class="month-labels">
+      <div class="day-label-spacer"></div>
+      <div class="months-row">
+        @for (month of monthLabels(); track month.name + month.colStart) {
+        <span class="month-label" [style.grid-column-start]="month.colStart + 1"
+          [style.grid-column-end]="month.colStart + month.colSpan + 1">
+          {{ month.name }}
+        </span>
         }
       </div>
-      
+    </div>
+
+    <div class="heatmap-body">
+      <!-- Day Labels (Mon, Wed, Fri) -->
+      <div class="day-labels">
+        @for (label of dayLabels; track $index) {
+        <span class="day-label">{{ label }}</span>
+        }
+      </div>
+
+      <!-- Heatmap Grid -->
+      <div class="heatmap-grid">
+        @for (week of heatmapData().weeks; track week.weekNumber) {
+        <div class="heatmap-column">
+          @for (day of week.days; track day.date) {
+          <div class="heatmap-cell" [class.intensity-0]="day.intensity === 0" [class.intensity-1]="day.intensity === 1"
+            [class.intensity-2]="day.intensity === 2" [class.intensity-3]="day.intensity === 3"
+            [class.intensity-4]="day.intensity === 4" [class.selected]="selectedDay()?.date === day.date"
+            [title]="getTooltip(day)" [attr.aria-label]="getTooltip(day)" (click)="showDayDetails(day)"
+            (keydown.enter)="showDayDetails(day)" (keydown.space)="showDayDetails(day)" tabindex="0" role="button">
+          </div>
+          }
+        </div>
+        }
+      </div>
+    </div>
+
+    <div class="heatmap-footer">
+      <!-- <a href="javascript:void(0)" class="learn-link">Learn how we count exercises</a> -->
+      <div></div>
       <div class="heatmap-legend">
         <span>Less</span>
         <div class="legend-cell intensity-0"></div>
@@ -54,71 +63,68 @@
         <div class="legend-cell intensity-4"></div>
         <span>More</span>
       </div>
+    </div>
     } @else {
-      <p class="empty-message">No activity data available yet</p>
+    <p class="empty-message">No activity data available yet. Start practicing to see your progress!</p>
     }
   </div>
 
   <!-- Day Details Panel -->
   @if (selectedDay()) {
-    <div class="day-details-overlay" (click)="closeDetails()">
-      <div class="day-details-panel" (click)="$event.stopPropagation()" role="dialog" aria-labelledby="day-details-title">
-        <div class="panel-header">
-          <h3 id="day-details-title">{{ selectedDay()!.formattedDate }}</h3>
-          <button 
-            class="close-btn" 
-            (click)="closeDetails()"
-            aria-label="Close details">
-            ✕
-          </button>
+  <div class="day-details-overlay" (click)="closeDetails()">
+    <div class="day-details-panel" (click)="$event.stopPropagation()" role="dialog" aria-labelledby="day-details-title">
+      <div class="panel-header">
+        <h3 id="day-details-title">{{ selectedDay()!.formattedDate }}</h3>
+        <button class="close-btn" (click)="closeDetails()" aria-label="Close details">
+          ✕
+        </button>
+      </div>
+
+      <div class="panel-content">
+        @if (selectedDay()!.exerciseCount > 0) {
+        <div class="day-summary">
+          <div class="summary-stat">
+            <span class="stat-label">Exercises</span>
+            <span class="stat-value">{{ selectedDay()!.exerciseCount }}</span>
+          </div>
+          <div class="summary-stat">
+            <span class="stat-label">Avg Score</span>
+            <span class="stat-value">{{ selectedDay()!.averageScore }}%</span>
+          </div>
+          <div class="summary-stat">
+            <span class="stat-label">Time</span>
+            <span class="stat-value">{{ formatTime(selectedDay()!.totalTimeSpentSeconds) }}</span>
+          </div>
+          <div class="summary-stat">
+            <span class="stat-label">Hints</span>
+            <span class="stat-value">{{ selectedDay()!.totalHintsUsed }}</span>
+          </div>
         </div>
 
-        <div class="panel-content">
-          @if (selectedDay()!.exerciseCount > 0) {
-            <div class="day-summary">
-              <div class="summary-stat">
-                <span class="stat-label">Exercises Completed</span>
-                <span class="stat-value">{{ selectedDay()!.exerciseCount }}</span>
-              </div>
-              <div class="summary-stat">
-                <span class="stat-label">Average Score</span>
-                <span class="stat-value">{{ selectedDay()!.averageScore }}%</span>
-              </div>
-              <div class="summary-stat">
-                <span class="stat-label">Time Spent</span>
-                <span class="stat-value">{{ formatTime(selectedDay()!.totalTimeSpentSeconds) }}</span>
-              </div>
-              <div class="summary-stat">
-                <span class="stat-label">Hints Used</span>
-                <span class="stat-value">{{ selectedDay()!.totalHintsUsed }}</span>
-              </div>
+        <div class="exercise-list">
+          <h4>Exercises</h4>
+          @for (exercise of selectedDay()!.exercises; track $index) {
+          <div class="exercise-item" (click)="goToExercise(exercise.id)">
+            <div class="exercise-info">
+              <span class="exercise-name">{{ exercise.name }}</span>
+              <span class="exercise-time">{{ exercise.timestamp | date:'shortTime' }}</span>
             </div>
-
-            <div class="exercise-list">
-              <h4>Exercises</h4>
-              @for (exercise of selectedDay()!.exercises; track exercise.id) {
-                <div class="exercise-item" (click)="goToExercise(exercise.id)">
-                  <div class="exercise-info">
-                    <span class="exercise-id">{{ exercise.id }}</span>
-                    <span class="exercise-time">{{ exercise.timestamp | date:'shortTime' }}</span>
-                  </div>
-                  <div class="exercise-score" 
-                    [class.score-high]="exercise.score >= 80"
-                    [class.score-medium]="exercise.score >= 60 && exercise.score < 80"
-                    [class.score-low]="exercise.score < 60">
-                    {{ exercise.score }}%
-                  </div>
-                </div>
-              }
+            <div class="exercise-score" [class.score-high]="exercise.score >= 80"
+              [class.score-medium]="exercise.score >= 60 && exercise.score < 80"
+              [class.score-low]="exercise.score < 60">
+              {{ exercise.score }}%
             </div>
-          } @else {
-            <div class="empty-day">
-              <p>🔥 Streak day - Keep up the momentum!</p>
-              <p class="hint">Activity recorded but no detailed data available</p>
-            </div>
+          </div>
           }
         </div>
+        } @else {
+        <div class="empty-day">
+          <p>🔥 Streak day - Keep up the momentum!</p>
+          <p class="hint">Activity recorded but no detailed data available</p>
+        </div>
+        }
       </div>
     </div>
+  </div>
   }
 </div>

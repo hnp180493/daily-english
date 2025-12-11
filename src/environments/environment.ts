@@ -28,8 +28,8 @@ export const environment: {
   //   siteName: 'Your App Name'  // Optional: for usage tracking
   // },
  supabase: {
-    url: '',
-    anonKey: ''
+    url: 'https://pxxbalgsvnpvxhnnkeyg.supabase.co',
+    anonKey: 'sb_publishable_oSMjKms_4R4g_xMBHcNeog_rQf7wf8m'
   },
   
   seo: {

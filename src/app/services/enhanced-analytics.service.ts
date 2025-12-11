@@ -580,8 +580,9 @@ export class EnhancedAnalyticsService {
       });
     });
 
-    // Convert to WeakAreaData and filter by threshold
-    const weakAreas: WeakAreaData[] = Array.from(patternStats.entries())
+    // Convert to WeakAreaData
+    const allAreas: WeakAreaData[] = Array.from(patternStats.entries())
+      .filter(([_, stats]) => stats.count >= 3) // Require at least 3 occurrences
       .map(([key, stats]) => ({
         pattern: stats.pattern,
         averageAccuracy: Math.round(stats.totalAccuracy / stats.count),
@@ -590,20 +591,29 @@ export class EnhancedAnalyticsService {
         recommendation: this.getRecommendation(stats.pattern),
         exampleSentences: stats.examples
       }))
-      .filter(area => 
-        // Only show patterns with accuracy < 85% OR high retry count (> 1.5)
-        area.averageAccuracy < 85 || area.averageRetryCount > 1.5
-      )
       .sort((a, b) => {
         // Sort by accuracy ascending, then by retry count descending
         if (a.averageAccuracy !== b.averageAccuracy) {
           return a.averageAccuracy - b.averageAccuracy;
         }
         return b.averageRetryCount - a.averageRetryCount;
-      })
-      .slice(0, 5); // Top 5 weak areas
+      });
 
-    return weakAreas;
+    // If no patterns below threshold, show top 3 lowest-performing patterns
+    // This ensures users always see areas for improvement
+    const weakAreas = allAreas.filter(area => 
+      area.averageAccuracy < 85 || area.averageRetryCount > 1.5
+    );
+
+    // If user performs well on all patterns, show the 3 lowest-scoring ones
+    // with accuracy < 100% as "areas to focus on"
+    if (weakAreas.length === 0 && allAreas.length > 0) {
+      return allAreas
+        .filter(area => area.averageAccuracy < 100)
+        .slice(0, 3);
+    }
+
+    return weakAreas.slice(0, 5);
   }
 
   /**
@@ -934,17 +944,9 @@ export class EnhancedAnalyticsService {
   }
 
   /**
-   * Generate enhanced heatmap data
+   * Generate enhanced heatmap data (52 weeks like GitHub)
    */
   generateEnhancedHeatmap(records: ExerciseHistoryRecord[]): EnhancedHeatmapData {
-    if (records.length === 0) {
-      return {
-        weeks: [],
-        currentStreak: 0,
-        longestStreak: 0
-      };
-    }
-
     // Group exercises by date
     const dailyMap = new Map<string, {
       exercises: { id: string; score: number; timestamp: Date }[];
@@ -954,7 +956,7 @@ export class EnhancedAnalyticsService {
     }>();
 
     records.forEach(record => {
-      const dateStr = new Date(record.completedAt).toISOString().split('T')[0];
+      const dateStr = this.getLocalDateString(new Date(record.completedAt));
       const existing = dailyMap.get(dateStr) || {
         exercises: [],
         totalScore: 0,
@@ -974,20 +976,34 @@ export class EnhancedAnalyticsService {
       dailyMap.set(dateStr, existing);
     });
 
-    // Generate weeks for last 12 weeks
+    // Generate 52 weeks (1 year) like GitHub
     const weeks: EnhancedHeatmapData['weeks'] = [];
     const today = new Date();
+    
+    // Find the start date: go back ~52 weeks and align to Sunday
     const startDate = new Date(today);
-    startDate.setDate(today.getDate() - 84); // 12 weeks ago
+    startDate.setDate(today.getDate() - 364); // ~52 weeks ago
+    // Align to Sunday (start of week for GitHub style)
+    const dayOfWeek = startDate.getDay();
+    startDate.setDate(startDate.getDate() - dayOfWeek);
 
-    for (let weekNum = 0; weekNum < 12; weekNum++) {
+    // Calculate total weeks needed (from startDate to today)
+    const totalDays = Math.ceil((today.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24));
+    const totalWeeks = Math.ceil(totalDays / 7) + 1;
+
+    for (let weekNum = 0; weekNum < totalWeeks; weekNum++) {
       const weekDays: EnhancedHeatmapData['weeks'][0]['days'] = [];
 
       for (let dayNum = 0; dayNum < 7; dayNum++) {
         const currentDate = new Date(startDate);
         currentDate.setDate(startDate.getDate() + (weekNum * 7) + dayNum);
-        const dateStr = currentDate.toISOString().split('T')[0];
-
+        
+        // Skip future dates
+        if (currentDate > today) {
+          continue;
+        }
+        
+        const dateStr = this.getLocalDateString(currentDate);
         const dayData = dailyMap.get(dateStr);
         const exerciseCount = dayData?.exercises.length || 0;
 
@@ -1014,10 +1030,13 @@ export class EnhancedAnalyticsService {
         });
       }
 
-      weeks.push({
-        weekNumber: weekNum + 1,
-        days: weekDays
-      });
+      // Only add weeks that have days
+      if (weekDays.length > 0) {
+        weeks.push({
+          weekNumber: weekNum + 1,
+          days: weekDays
+        });
+      }
     }
 
     // Calculate streaks
