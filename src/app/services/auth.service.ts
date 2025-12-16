@@ -113,18 +113,18 @@ export class AuthService {
       const user: User = this.mapSupabaseUserToAppUser(supabaseUser);
       const wasAuthenticated = this.isAuthenticated();
       const isNewUser = !wasAuthenticated;
-      
+
       this.currentUser.set(user);
       this.isAuthenticated.set(true);
-      
+
       // Track login if this is a new authentication
       if (!wasAuthenticated) {
         this.sessionStartTime = Date.now();
         this.analyticsService.trackLogin('google', isNewUser);
-        
+
         // Set user ID for analytics
         this.analyticsService.setUserId(user.uid);
-        
+
         // Set user properties
         this.analyticsService.setUserProperties({
           account_type: 'authenticated'
@@ -132,17 +132,17 @@ export class AuthService {
       }
     } else {
       const wasAuthenticated = this.isAuthenticated();
-      
+
       this.currentUser.set(null);
       this.isAuthenticated.set(false);
-      
+
       // Track logout if user was authenticated
       if (wasAuthenticated && this.sessionStartTime) {
         const sessionDuration = Math.floor((Date.now() - this.sessionStartTime) / 1000);
         this.analyticsService.trackLogout(sessionDuration);
         this.sessionStartTime = null;
       }
-      
+
       // Clear user ID
       this.analyticsService.setUserId(null);
     }

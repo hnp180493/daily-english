@@ -1,8 +1,8 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { Observable, from, throwError } from 'rxjs';
-import { catchError, map } from 'rxjs/operators';
+import { catchError } from 'rxjs/operators';
 import { supabaseClient } from '../supabase.client';
-import { UserProgress, CustomExercise } from '../../models/exercise.model';
+import { UserProgress } from '../../models/exercise.model';
 import { UserAchievementData } from '../../models/achievement.model';
 import { ReviewData, ReviewDataWithMetadata } from '../../models/review.model';
 import { ExerciseHistoryRecord } from '../../models/exercise-history.model';
@@ -21,15 +21,18 @@ import { ProgressCompressor } from './progress-compressor';
 import { AchievementCompressor } from './achievement-compressor';
 import { ReviewCompressor } from './review-compressor';
 import { ReviewDecompressor } from './review-decompressor';
+import { SupabaseTrackingService } from './supabase-tracking.service';
 
 /**
  * Supabase implementation of the database interface
+ * Delegates tracking operations to SupabaseTrackingService
  */
 @Injectable({
   providedIn: 'root'
 })
 export class SupabaseDatabase implements IDatabase {
   private supabase = supabaseClient;
+  private trackingService = inject(SupabaseTrackingService);
 
   // User Profile Operations
   saveUserProfile(userId: string, profile: UserProfile): Observable<void> {
@@ -522,81 +525,17 @@ export class SupabaseDatabase implements IDatabase {
     ).pipe(catchError(this.handleError));
   }
 
-  // Exercise History Operations
+  // Exercise History Operations (delegated to tracking service)
   insertExerciseHistory(record: ExerciseHistoryRecord): Observable<void> {
-    return from(
-      this.supabase
-        .from('user_exercise_history')
-        .insert({
-          user_id: record.userId,
-          exercise_id: record.exerciseId,
-          completed_at: record.completedAt.toISOString(),
-          final_score: record.finalScore,
-          time_spent_seconds: record.timeSpentSeconds,
-          hints_used: record.hintsUsed,
-          sentence_attempts: record.sentenceAttempts,
-          penalty_metrics: record.penaltyMetrics
-        })
-        .then(({ error }) => {
-          if (error) throw error;
-        })
-    ).pipe(catchError(this.handleError));
+    return this.trackingService.insertExerciseHistory(record);
   }
 
   loadRecentHistory(userId: string, limit: number): Observable<ExerciseHistoryRecord[]> {
-    return from(
-      this.supabase
-        .from('user_exercise_history')
-        .select('*')
-        .eq('user_id', userId)
-        .order('completed_at', { ascending: false })
-        .limit(limit)
-        .then(({ data, error }) => {
-          if (error) throw error;
-          if (!data) return [];
-
-          return data.map((row) => ({
-            id: row.id,
-            userId: row.user_id,
-            exerciseId: row.exercise_id,
-            completedAt: new Date(row.completed_at),
-            finalScore: row.final_score,
-            timeSpentSeconds: row.time_spent_seconds,
-            hintsUsed: row.hints_used,
-            sentenceAttempts: row.sentence_attempts,
-            penaltyMetrics: row.penalty_metrics,
-            createdAt: new Date(row.created_at)
-          }));
-        })
-    ).pipe(catchError(this.handleError));
+    return this.trackingService.loadRecentHistory(userId, limit);
   }
 
   loadExerciseHistory(userId: string, exerciseId: string): Observable<ExerciseHistoryRecord[]> {
-    return from(
-      this.supabase
-        .from('user_exercise_history')
-        .select('*')
-        .eq('user_id', userId)
-        .eq('exercise_id', exerciseId)
-        .order('completed_at', { ascending: false })
-        .then(({ data, error }) => {
-          if (error) throw error;
-          if (!data) return [];
-
-          return data.map((row) => ({
-            id: row.id,
-            userId: row.user_id,
-            exerciseId: row.exercise_id,
-            completedAt: new Date(row.completed_at),
-            finalScore: row.final_score,
-            timeSpentSeconds: row.time_spent_seconds,
-            hintsUsed: row.hints_used,
-            sentenceAttempts: row.sentence_attempts,
-            penaltyMetrics: row.penalty_metrics,
-            createdAt: new Date(row.created_at)
-          }));
-        })
-    ).pipe(catchError(this.handleError));
+    return this.trackingService.loadExerciseHistory(userId, exerciseId);
   }
 
   loadHistoryForDateRange(
@@ -604,32 +543,7 @@ export class SupabaseDatabase implements IDatabase {
     startDate: Date,
     endDate: Date
   ): Observable<ExerciseHistoryRecord[]> {
-    return from(
-      this.supabase
-        .from('user_exercise_history')
-        .select('*')
-        .eq('user_id', userId)
-        .gte('completed_at', startDate.toISOString())
-        .lte('completed_at', endDate.toISOString())
-        .order('completed_at', { ascending: false })
-        .then(({ data, error }) => {
-          if (error) throw error;
-          if (!data) return [];
-
-          return data.map((row) => ({
-            id: row.id,
-            userId: row.user_id,
-            exerciseId: row.exercise_id,
-            completedAt: new Date(row.completed_at),
-            finalScore: row.final_score,
-            timeSpentSeconds: row.time_spent_seconds,
-            hintsUsed: row.hints_used,
-            sentenceAttempts: row.sentence_attempts,
-            penaltyMetrics: row.penalty_metrics,
-            createdAt: new Date(row.created_at)
-          }));
-        })
-    ).pipe(catchError(this.handleError));
+    return this.trackingService.loadHistoryForDateRange(userId, startDate, endDate);
   }
 
   // Error handling
@@ -694,150 +608,30 @@ export class SupabaseDatabase implements IDatabase {
     ).pipe(catchError(this.handleError));
   }
 
-  // Daily Challenge Operations
+  // Daily Challenge Operations (delegated to tracking service)
   saveDailyChallenge(userId: string, challenge: DailyChallenge): Observable<void> {
-    return from(
-      this.supabase
-        .from('daily_challenges')
-        .upsert({
-          id: challenge.id,
-          user_id: userId,
-          date: challenge.date,
-          exercise_id: challenge.exerciseId,
-          is_completed: challenge.isCompleted,
-          completed_at: challenge.completedAt?.toISOString(),
-          score: challenge.score,
-          bonus_points: challenge.bonusPoints,
-          is_weekend_challenge: challenge.isWeekendChallenge
-        })
-        .then(({ error }) => {
-          if (error) throw error;
-        })
-    ).pipe(catchError(this.handleError));
+    return this.trackingService.saveDailyChallenge(userId, challenge);
   }
 
   loadDailyChallenge(userId: string, challengeId: string): Observable<DailyChallenge | null> {
-    return from(
-      this.supabase
-        .from('daily_challenges')
-        .select('*')
-        .eq('user_id', userId)
-        .eq('id', challengeId)
-        .maybeSingle()
-        .then(({ data, error }) => {
-          if (error) throw error;
-          if (!data) return null;
-
-          return {
-            id: data.id,
-            userId: data.user_id,
-            date: data.date,
-            exerciseId: data.exercise_id,
-            isCompleted: data.is_completed,
-            completedAt: data.completed_at ? new Date(data.completed_at) : undefined,
-            score: data.score,
-            bonusPoints: data.bonus_points,
-            isWeekendChallenge: data.is_weekend_challenge
-          } as DailyChallenge;
-        })
-    ).pipe(catchError(this.handleError));
+    return this.trackingService.loadDailyChallenge(userId, challengeId);
   }
 
   loadDailyChallengeByDate(userId: string, date: string): Observable<DailyChallenge | null> {
-    return from(
-      this.supabase
-        .from('daily_challenges')
-        .select('*')
-        .eq('user_id', userId)
-        .eq('date', date)
-        .maybeSingle()
-        .then(({ data, error }) => {
-          if (error) throw error;
-          if (!data) return null;
-
-          return {
-            id: data.id,
-            userId: data.user_id,
-            date: data.date,
-            exerciseId: data.exercise_id,
-            isCompleted: data.is_completed,
-            completedAt: data.completed_at ? new Date(data.completed_at) : undefined,
-            score: data.score,
-            bonusPoints: data.bonus_points,
-            isWeekendChallenge: data.is_weekend_challenge
-          } as DailyChallenge;
-        })
-    ).pipe(catchError(this.handleError));
+    return this.trackingService.loadDailyChallengeByDate(userId, date);
   }
 
-  // Weekly Goal Operations
+  // Weekly Goal Operations (delegated to tracking service)
   saveWeeklyGoal(userId: string, goal: WeeklyGoal): Observable<void> {
-    return from(
-      this.supabase
-        .from('weekly_goals')
-        .upsert({
-          user_id: userId,
-          week_start_date: goal.weekStartDate,
-          target_exercises: goal.targetExercises,
-          completed_exercises: goal.completedExercises,
-          is_achieved: goal.isAchieved,
-          bonus_points_earned: goal.bonusPointsEarned,
-          updated_at: new Date().toISOString()
-        }, {
-          onConflict: 'user_id,week_start_date'
-        })
-        .then(({ error }) => {
-          if (error) throw error;
-        })
-    ).pipe(catchError(this.handleError));
+    return this.trackingService.saveWeeklyGoal(userId, goal);
   }
 
   loadWeeklyGoal(userId: string, goalId: string): Observable<WeeklyGoal | null> {
-    return from(
-      this.supabase
-        .from('weekly_goals')
-        .select('*')
-        .eq('user_id', userId)
-        .eq('id', goalId)
-        .maybeSingle()
-        .then(({ data, error }) => {
-          if (error) throw error;
-          if (!data) return null;
-
-          return {
-            userId: data.user_id,
-            weekStartDate: data.week_start_date,
-            targetExercises: data.target_exercises,
-            completedExercises: data.completed_exercises,
-            isAchieved: data.is_achieved,
-            bonusPointsEarned: data.bonus_points_earned
-          } as WeeklyGoal;
-        })
-    ).pipe(catchError(this.handleError));
+    return this.trackingService.loadWeeklyGoal(userId, goalId);
   }
 
   loadWeeklyGoalByDate(userId: string, weekStartDate: string): Observable<WeeklyGoal | null> {
-    return from(
-      this.supabase
-        .from('weekly_goals')
-        .select('*')
-        .eq('user_id', userId)
-        .eq('week_start_date', weekStartDate)
-        .maybeSingle()
-        .then(({ data, error }) => {
-          if (error) throw error;
-          if (!data) return null;
-
-          return {
-            userId: data.user_id,
-            weekStartDate: data.week_start_date,
-            targetExercises: data.target_exercises,
-            completedExercises: data.completed_exercises,
-            isAchieved: data.is_achieved,
-            bonusPointsEarned: data.bonus_points_earned
-          } as WeeklyGoal;
-        })
-    ).pipe(catchError(this.handleError));
+    return this.trackingService.loadWeeklyGoalByDate(userId, weekStartDate);
   }
 
   // User Operations

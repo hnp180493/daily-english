@@ -2,6 +2,7 @@ export const environment: {
   production: boolean;
   aiProvider: 'azure' | 'gemini' | 'openai' | 'openrouter';
   supabase: { url: string; anonKey: string };
+  supabaseTracking: { url: string; anonKey: string };
   seo: {
     googleSiteVerification: string;
     bingWebmasterVerification: string;
@@ -27,9 +28,15 @@ export const environment: {
   //   siteUrl: 'https://your-app-url.com',  // Optional: for usage tracking
   //   siteName: 'Your App Name'  // Optional: for usage tracking
   // },
- supabase: {
-    url: 'https://pxxbalgsvnpvxhnnkeyg.supabase.co',
-    anonKey: 'sb_publishable_oSMjKms_4R4g_xMBHcNeog_rQf7wf8m'
+
+  supabase: {
+    url: '',
+    anonKey: ''
+  },
+
+  supabaseTracking: {
+    url: '',
+    anonKey: ''
   },
   
   seo: {

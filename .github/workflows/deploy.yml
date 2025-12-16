@@ -44,11 +44,23 @@ jobs:
           else
             echo "✅ SUPABASE_ANON_KEY is set"
           fi
+          if [ -z "${{ secrets.SUPABASE_TRACKING_URL }}" ]; then
+            echo "❌ SUPABASE_TRACKING_URL is empty"
+          else
+            echo "✅ SUPABASE_TRACKING_URL is set"
+          fi
+          if [ -z "${{ secrets.SUPABASE_TRACKING_ANON_KEY }}" ]; then
+            echo "❌ SUPABASE_TRACKING_ANON_KEY is empty"
+          else
+            echo "✅ SUPABASE_TRACKING_ANON_KEY is set"
+          fi
 
       - name: Create production environment file
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+          SUPABASE_TRACKING_URL: ${{ secrets.SUPABASE_TRACKING_URL }}
+          SUPABASE_TRACKING_ANON_KEY: ${{ secrets.SUPABASE_TRACKING_ANON_KEY }}
           GOOGLE_VERIFICATION: ${{ secrets.GOOGLE_SITE_VERIFICATION }}
           BING_VERIFICATION: ${{ secrets.BING_WEBMASTER_VERIFICATION }}
         run: |
@@ -57,6 +69,7 @@ jobs:
             production: boolean;
             aiProvider: 'azure' | 'gemini' | 'openai' | 'openrouter';
             supabase: { url: string; anonKey: string };
+            supabaseTracking: { url: string; anonKey: string };
             seo: {
               googleSiteVerification: string;
               bingWebmasterVerification: string;
@@ -77,6 +90,10 @@ jobs:
             supabase: {
               url: '${SUPABASE_URL}',
               anonKey: '${SUPABASE_ANON_KEY}'
+            },
+            supabaseTracking: {
+              url: '${SUPABASE_TRACKING_URL}',
+              anonKey: '${SUPABASE_TRACKING_ANON_KEY}'
             },
             seo: {
               googleSiteVerification: '${GOOGLE_VERIFICATION}',
