@@ -2,6 +2,7 @@ export const environment: {
   production: boolean;
   aiProvider: 'azure' | 'gemini' | 'openai' | 'openrouter';
   supabase: { url: string; anonKey: string };
+  supabaseTracking: { url: string; anonKey: string };
   seo: {
     googleSiteVerification: string;
     bingWebmasterVerification: string;
@@ -35,7 +36,15 @@ export const environment: {
   // - mistralai/mistral-7b-instruct:free (reliable, well-balanced)
   // - qwen/qwen-2-7b-instruct:free (multilingual)
   // - huggingfaceh4/zephyr-7b-beta:free (beginner-friendly)
+
+  // Main Supabase - User data, achievements, favorites, etc.
   supabase: {
+    url: '',
+    anonKey: ''
+  },
+
+  // Tracking Supabase - Exercise history, daily challenges, weekly goals
+  supabaseTracking: {
     url: '',
     anonKey: ''
   },
