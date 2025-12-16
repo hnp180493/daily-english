@@ -111,11 +111,63 @@ export class HomeComponent implements OnInit {
     await this.authService.waitForAuth();
     
     // Load learning path data if authenticated - parallel loading with timeouts
+    // Only load if not already loaded (prevents duplicate on navigation back)
     if (this.isAuthenticated() && !this.hasLoadedData) {
-      console.log('[Home] ngOnInit: User authenticated, loading learning path data...');
-      this.hasLoadedData = true;
-      this.loadLearningPathData();
+      // Check if data already exists from CurriculumService cache
+      if (this.currentPath()) {
+        console.log('[Home] ngOnInit: Learning path already loaded from cache');
+        this.hasLoadedData = true;
+        // Only load daily challenge and weekly goal if not already set
+        if (!this.dailyChallenge()) {
+          this.loadDailyChallengeOnly();
+        }
+        if (!this.weeklyGoal()) {
+          this.loadWeeklyGoalOnly();
+        }
+      } else {
+        console.log('[Home] ngOnInit: User authenticated, loading learning path data...');
+        this.hasLoadedData = true;
+        this.loadLearningPathData();
+      }
     }
+  }
+
+  private loadDailyChallengeOnly(): void {
+    this.isLoadingChallenge.set(true);
+    Promise.race([
+      this.adaptiveEngineService.getTodaysDailyChallenge(),
+      this.createTimeout(3000, 'challenge')
+    ])
+      .then(challenge => {
+        if (challenge && challenge !== 'timeout') {
+          this.dailyChallenge.set(challenge);
+        }
+      })
+      .catch(error => {
+        console.error('[Home] Error loading daily challenge:', error);
+      })
+      .finally(() => {
+        this.isLoadingChallenge.set(false);
+      });
+  }
+
+  private loadWeeklyGoalOnly(): void {
+    this.isLoadingGoal.set(true);
+    Promise.race([
+      this.curriculumService.getCurrentWeeklyGoal(),
+      this.createTimeout(3000, 'goal')
+    ])
+      .then(goal => {
+        if (goal && goal !== 'timeout') {
+          this.weeklyGoal.set(goal);
+        }
+      })
+      .catch(error => {
+        console.error('[Home] Error loading weekly goal:', error);
+      })
+      .finally(() => {
+        this.isLoadingGoal.set(false);
+      });
   }
 
   private loadLearningPathData(): void {

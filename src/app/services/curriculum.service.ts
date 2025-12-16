@@ -706,23 +706,40 @@ export class CurriculumService {
     }
   }
 
+  // Cache for weekly goal to prevent duplicate requests
+  private weeklyGoalCache: { goal: any; timestamp: number; weekStart: string } | null = null;
+  private readonly WEEKLY_GOAL_CACHE_DURATION = 30000; // 30 seconds
+
   async getCurrentWeeklyGoal(): Promise<any> {
     const weekStartDate = getWeekStartLocalDate();
-    const today = getTodayLocalDate();
     
-    console.log('[CurriculumService] getCurrentWeeklyGoal:', {
-      today,
-      weekStartDate,
-      dayOfWeek: new Date().getDay()
-    });
+    // Check cache first
+    if (this.weeklyGoalCache && 
+        this.weeklyGoalCache.weekStart === weekStartDate &&
+        Date.now() - this.weeklyGoalCache.timestamp < this.WEEKLY_GOAL_CACHE_DURATION) {
+      console.log('[CurriculumService] Returning cached weekly goal');
+      return this.weeklyGoalCache.goal;
+    }
 
     // Use Auto method which handles both guest and authenticated users
     const goal = await firstValueFrom(this.db.loadWeeklyGoalByDateAuto(weekStartDate)).catch(() => null);
+
+    // Update cache
+    this.weeklyGoalCache = {
+      goal: goal || null,
+      timestamp: Date.now(),
+      weekStart: weekStartDate
+    };
 
     console.log('[CurriculumService] Weekly goal loaded:', goal);
 
     // Return null if no goal set - user needs to set it in goal-tracker
     return goal || null;
+  }
+
+  // Clear weekly goal cache (call when goal is updated)
+  clearWeeklyGoalCache(): void {
+    this.weeklyGoalCache = null;
   }
 
   private calculateBonusPoints(completedExercises: number): number {

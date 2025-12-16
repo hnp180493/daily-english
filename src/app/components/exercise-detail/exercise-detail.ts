@@ -123,6 +123,7 @@ export class ExerciseDetailComponent implements OnInit, OnDestroy {
   perfectCompletions = computed(() => this.exerciseStatus()?.perfectCompletions || 0);
   creditsToEarn = computed(() => 1);
   exercisePoints = computed(() => this.metricsService.getExercisePoints(this.exercise(), this.exerciseStatus()));
+  pointsBreakdown = computed(() => this.metricsService.getPointsBreakdown(this.exercise(), this.exerciseStatus()));
   penaltyMetrics = computed(() => this.metricsService.getPenaltyMetrics(this.exercise(), this.isExerciseComplete(), this.isReviewMode()));
   currentPenaltyMetrics = computed(() => this.metricsService.getCurrentPenaltyMetrics(this.isReviewMode()));
   isFavorite = computed(() => {

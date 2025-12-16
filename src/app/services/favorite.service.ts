@@ -1,4 +1,4 @@
-import { Injectable, signal, computed, inject, effect } from '@angular/core';
+import { Injectable, signal, computed, inject } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import { switchMap, tap, catchError } from 'rxjs/operators';
 import { AuthService } from './auth.service';
@@ -25,19 +25,24 @@ export class FavoriteService {
   favoriteCount = computed(() => this.favorites().length);
 
   private currentUserId: string | null = null;
+  private isInitialized = false;
 
   constructor() {
-    // Reload favorites when user changes
-    effect(() => {
-      const user = this.authService.currentUser();
-      const userId = user?.uid || 'guest';
-      
-      // Initialize for both authenticated and guest users
-      if (userId !== this.currentUserId) {
-        this.currentUserId = userId;
-        this.initializeFavorites();
-      }
-    });
+    // Wait for auth to be stable before initializing
+    this.initAfterAuth();
+  }
+
+  private async initAfterAuth(): Promise<void> {
+    await this.authService.waitForAuth();
+    
+    const user = this.authService.currentUser();
+    const userId = user?.uid || 'guest';
+    
+    if (userId !== this.currentUserId) {
+      this.currentUserId = userId;
+      this.isInitialized = true;
+      this.initializeFavorites();
+    }
   }
 
   isFavorite(exerciseId: string): boolean {
@@ -92,8 +97,8 @@ export class FavoriteService {
       next: () => console.log('[FavoriteService] Favorites saved to Firestore'),
       error: (error: Error) => {
         console.error('[FavoriteService] Failed to save favorites:', error);
-        // Revert on error
-        this.loadFromFirestore();
+        // Revert on error - reload from database
+        this.loadAndMigrateData();
       }
     });
   }
@@ -113,32 +118,24 @@ export class FavoriteService {
 
   private initializeFavorites(): void {
     const userId = this.authService.getUserId();
-    
+
     // Guest user - load from localStorage only
     if (!userId) {
       this.loadFromLocalStorage();
       return;
     }
-    
-    // Authenticated user - check migration then load from Firestore
-    this.checkAndMigrateData().subscribe({
-      next: () => {
-        this.loadFromFirestore();
-      },
-      error: (error: Error) => {
-        console.error('[FavoriteService] Migration failed:', error);
-        this.loadFromFirestore();
-      }
-    });
+
+    // Authenticated user - load and migrate in single request
+    this.loadAndMigrateData();
   }
 
   private loadFromLocalStorage(): void {
     const stored = localStorage.getItem(GUEST_FAVORITES_KEY);
-    
+
     if (stored) {
       try {
         const parsed = JSON.parse(stored);
-        const favorites = parsed.map((f: any) => ({
+        const favorites = parsed.map((f: FavoriteExercise) => ({
           ...f,
           addedAt: new Date(f.addedAt)
         }));
@@ -154,52 +151,45 @@ export class FavoriteService {
     }
   }
 
-  private loadFromFirestore(): void {
-    this.databaseService.loadFavoritesAuto().subscribe({
-      next: (favorites) => {
-        this.favorites.set(favorites || []);
-        console.log('[FavoriteService] Favorites loaded from Firestore');
-      },
-      error: (error: Error) => {
-        console.error('[FavoriteService] Failed to load favorites:', error);
-      }
-    });
-  }
-
-  private checkAndMigrateData(): Observable<void> {
+  private loadAndMigrateData(): void {
     const userId = this.authService.getUserId();
-    if (!userId) return of(undefined);
+    if (!userId) return;
 
-    // Check if user has data in Firestore
-    return this.databaseService.loadFavoritesAuto().pipe(
-      switchMap(cloudFavorites => {
+    // Single request to load data
+    this.databaseService.loadFavoritesAuto().subscribe({
+      next: cloudFavorites => {
         if (cloudFavorites && cloudFavorites.length > 0) {
-          // Data exists in Firestore, no migration needed
-          console.log('[FavoriteService] Data already exists in Firestore, skipping migration');
-          return of(undefined);
+          // Data exists in Firestore, use it directly
+          this.favorites.set(cloudFavorites);
+          console.log('[FavoriteService] Favorites loaded from Firestore');
+          return;
         }
 
-        // Check for localStorage data to migrate
+        // No cloud data - check for localStorage data to migrate
         const localData = this.checkLocalStorageData(userId);
         if (localData && localData.length > 0) {
           console.log('[FavoriteService] Migrating localStorage data to Firestore');
-          return this.databaseService.saveFavoritesAuto(localData).pipe(
-            tap(() => {
+          this.favorites.set(localData); // Set immediately
+          this.databaseService.saveFavoritesAuto(localData).subscribe({
+            next: () => {
               this.clearLocalStorageData(userId);
               console.log('[FavoriteService] Migration completed successfully');
-            })
-          );
+            },
+            error: (error: Error) => {
+              console.error('[FavoriteService] Migration save failed:', error);
+            }
+          });
+        } else {
+          // No data anywhere
+          this.favorites.set([]);
+          console.log('[FavoriteService] No favorites found');
         }
-
-        // No data to migrate
-        console.log('[FavoriteService] No localStorage data to migrate');
-        return of(undefined);
-      }),
-      catchError((error: Error) => {
-        console.error('[FavoriteService] Migration error:', error);
-        return of(undefined);
-      })
-    );
+      },
+      error: (error: Error) => {
+        console.error('[FavoriteService] Failed to load favorites:', error);
+        this.favorites.set([]);
+      }
+    });
   }
 
   private checkLocalStorageData(userId: string): FavoriteExercise[] {

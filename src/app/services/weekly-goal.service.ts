@@ -1,6 +1,7 @@
 import { Injectable, inject, effect } from '@angular/core';
 import { DatabaseService } from './database/database.service';
 import { ProgressService } from './progress.service';
+import { AuthService } from './auth.service';
 import { WeeklyGoal } from '../models/weekly-goal.model';
 import { getWeekStartLocalDate } from '../utils/date.utils';
 
@@ -14,37 +15,36 @@ import { getWeekStartLocalDate } from '../utils/date.utils';
 export class WeeklyGoalService {
   private databaseService = inject(DatabaseService);
   private progressService = inject(ProgressService);
+  private authService = inject(AuthService);
   private isUpdating = false;
   private lastProgressTimestamp: Date | null = null;
+  private isInitialized = false;
 
   constructor() {
     console.log('[WeeklyGoalService] 🚀 Service initialized');
-    console.log('[WeeklyGoalService] 🔧 Setting up effect...');
+    
+    // Wait for auth to be stable before setting up effect
+    this.initAfterAuth();
+  }
+
+  private async initAfterAuth(): Promise<void> {
+    await this.authService.waitForAuth();
+    this.isInitialized = true;
+    console.log('[WeeklyGoalService] 🔧 Auth stable, setting up effect...');
     
     // Subscribe to progress changes and auto-update weekly goal
     effect(() => {
-      console.log('[WeeklyGoalService] 💥 EFFECT RUNNING!');
+      if (!this.isInitialized) return;
+      
       const progress = this.progressService.getProgressSignal()();
       
       // Use lastActivityDate to detect ANY progress change (including retries)
       const currentTimestamp = progress?.lastActivityDate;
       
-      console.log('[WeeklyGoalService] ⚡ Effect triggered:', {
-        hasProgress: !!progress,
-        currentTimestamp,
-        lastTimestamp: this.lastProgressTimestamp,
-        isUpdating: this.isUpdating
-      });
-      
       // Trigger update if lastActivityDate changed (means user completed an exercise)
       const timestampChanged = currentTimestamp && 
         (!this.lastProgressTimestamp || 
          new Date(currentTimestamp).getTime() !== new Date(this.lastProgressTimestamp).getTime());
-      
-      console.log('[WeeklyGoalService] 🔍 Checking for changes:', {
-        timestampChanged,
-        hasProgress: !!progress
-      });
       
       if (progress && timestampChanged && !this.isUpdating) {
         console.log('[WeeklyGoalService] ✅ Progress detected, triggering update');
@@ -62,13 +62,6 @@ export class WeeklyGoalService {
             // Reset timestamp on error to allow retry
             this.lastProgressTimestamp = null;
           });
-      } else {
-        console.log('[WeeklyGoalService] ⏭️ Skipping update:', {
-          reason: !progress ? 'no progress' : 
-                  !timestampChanged ? 'no timestamp change' :
-                  this.isUpdating ? 'already updating' :
-                  'no changes detected'
-        });
       }
     });
   }

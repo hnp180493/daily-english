@@ -127,8 +127,22 @@ export class EnhancedAnalyticsService {
       categoryAccuracy: this.calculateCategoryAccuracy(records),
       difficultyComparison: this.calculateDifficultyComparison(records),
       exercisesNeedingReview: this.getExercisesNeedingReview(records),
-      errorPatterns: this.analyzeErrorPatterns(records)
+      errorPatterns: this.analyzeErrorPatterns(records),
+      recentHistory: this.getRecentHistory(records, 10)
     };
+  }
+
+  /**
+   * Get recent history (first N records, already sorted by date desc)
+   */
+  private getRecentHistory(records: EnrichedRecord[], limit: number): any[] {
+    return records.slice(0, limit).map(record => ({
+      exerciseId: record.exerciseId,
+      completedAt: record.completedAt,
+      finalScore: record.finalScore,
+      timeSpentSeconds: record.timeSpentSeconds,
+      hintsUsed: record.hintsUsed
+    }));
   }
 
   /**
@@ -1264,6 +1278,15 @@ export class EnhancedAnalyticsService {
    */
   private getCacheKey(userId: string, timeRange: TimeRange): string {
     return `${userId}-${timeRange}`;
+  }
+
+  /**
+   * Invalidate all cached analytics (call after new exercise completion)
+   */
+  invalidateCache(): void {
+    this.analyticsCache.clear();
+    // Also invalidate exercise history cache
+    this.exerciseHistoryService.invalidateCache();
   }
 
   /**

@@ -1,8 +1,7 @@
-import { Component, ChangeDetectionStrategy, inject, computed, signal, effect } from '@angular/core';
+import { Component, ChangeDetectionStrategy, inject, computed, signal, effect, input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { ExerciseHistoryService } from '../../../services/exercise-history.service';
 import { ExerciseHistoryRecord } from '../../../models/exercise-history.model';
 import { ExerciseService } from '../../../services/exercise.service';
 import { ProgressService } from '../../../services/progress.service';
@@ -17,16 +16,13 @@ import { UserProgressHelper } from '../../../models/exercise.model';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class RecentHistoryWidgetComponent {
-  private exerciseHistoryService = inject(ExerciseHistoryService);
   private exerciseService = inject(ExerciseService);
   private progressService = inject(ProgressService);
   private authService = inject(AuthService);
   private router = inject(Router);
 
-  // Load recent history (limit 10) using toSignal for reactive updates
-  private historyData = toSignal(this.exerciseHistoryService.getRecentHistory(10), {
-    initialValue: [] as ExerciseHistoryRecord[]
-  });
+  // Input from parent (Dashboard) - receives data from EnhancedAnalytics recentHistory
+  historyInput = input<{ exerciseId: string; completedAt: Date; finalScore: number; timeSpentSeconds: number; hintsUsed: number }[]>([]);
 
   // Get user progress for guest mode
   private userProgress = toSignal(this.progressService.getUserProgress());
@@ -35,12 +31,32 @@ export class RecentHistoryWidgetComponent {
   // Combine authenticated and guest history
   history = computed(() => {
     if (this.isAuthenticated()) {
-      return this.historyData();
+      // Use input data from parent (already loaded by EnhancedAnalyticsService)
+      // Map to ExerciseHistoryRecord format for template compatibility
+      const inputData = this.historyInput();
+      return inputData.map(item => ({
+        id: item.exerciseId,
+        userId: '',
+        exerciseId: item.exerciseId,
+        completedAt: new Date(item.completedAt),
+        finalScore: item.finalScore,
+        timeSpentSeconds: item.timeSpentSeconds,
+        hintsUsed: item.hintsUsed,
+        sentenceAttempts: [],
+        penaltyMetrics: {
+          baseScore: item.finalScore,
+          totalIncorrectAttempts: 0,
+          totalRetries: 0,
+          totalPenalty: 0,
+          finalScore: item.finalScore
+        },
+        createdAt: new Date(item.completedAt)
+      } as ExerciseHistoryRecord));
     } else {
       // Guest mode - convert UserProgress to ExerciseHistoryRecord format
       const progress = this.userProgress();
       if (!progress) return [];
-      
+
       const attempts = UserProgressHelper.getAllAttempts(progress);
       return attempts
         .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())

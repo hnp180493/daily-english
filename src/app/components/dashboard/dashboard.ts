@@ -1,6 +1,6 @@
 import { Component, ChangeDetectionStrategy, signal, computed, inject, effect, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { RouterModule, ActivatedRoute, Router } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs/operators';
@@ -61,6 +61,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
   private progressService = inject(ProgressService);
   private authService = inject(AuthService);
   private migrationUtility = inject(ProgressMigrationUtility);
+  private route = inject(ActivatedRoute);
+  private router = inject(Router);
 
   userProgress = toSignal(this.progressService.getUserProgress());
   currentUser = this.authService.currentUser;
@@ -164,6 +166,12 @@ export class DashboardComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     // Scroll to top when entering dashboard
     window.scrollTo({ top: 0, behavior: 'instant' });
+    
+    // Read tab from query params
+    const tabParam = this.route.snapshot.queryParamMap.get('tab');
+    if (tabParam && ['overview', 'performance', 'activity', 'insights'].includes(tabParam)) {
+      this.activeTab.set(tabParam as 'overview' | 'performance' | 'activity' | 'insights');
+    }
     
     // Initial load
     const user = this.currentUser();
@@ -351,6 +359,13 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   setActiveTab(tab: 'overview' | 'performance' | 'activity' | 'insights'): void {
     this.activeTab.set(tab);
+    // Update URL query params without reloading
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { tab },
+      queryParamsHandling: 'merge',
+      replaceUrl: true
+    });
   }
 
   runMigration(): void {

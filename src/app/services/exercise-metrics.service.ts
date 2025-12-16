@@ -4,6 +4,7 @@ import { ProgressService } from './progress.service';
 import { ExerciseValidationService } from './exercise-validation.service';
 import { ExercisePenaltyService } from './exercise-penalty.service';
 import { FavoriteService } from './favorite.service';
+import { StreakService } from './streak.service';
 
 export interface ExerciseStatus {
   status: 'new' | 'attempted';
@@ -20,6 +21,7 @@ export class ExerciseMetricsService {
   private validationService = inject(ExerciseValidationService);
   private penaltyService = inject(ExercisePenaltyService);
   private favoriteService = inject(FavoriteService);
+  private streakService = inject(StreakService);
 
   private progressSignal = this.progressService.getProgressSignal();
 
@@ -43,7 +45,35 @@ export class ExerciseMetricsService {
 
   getExercisePoints(exercise: Exercise | null, status: ExerciseStatus | null): number {
     if (!exercise || !status) return 0;
-    return this.validationService.calculateExercisePoints(exercise, status.attemptCount);
+    const basePoints = this.validationService.calculateExercisePoints(exercise, status.attemptCount);
+    // Apply streak bonus to show accurate points user will earn
+    return this.streakService.applyStreakBonus(basePoints);
+  }
+
+  getPointsBreakdown(exercise: Exercise | null, status: ExerciseStatus | null): {
+    basePoints: number;
+    streakBonus: number;
+    totalPoints: number;
+    hasStreakBonus: boolean;
+    streakDays: number;
+  } {
+    if (!exercise || !status) {
+      return { basePoints: 0, streakBonus: 0, totalPoints: 0, hasStreakBonus: false, streakDays: 0 };
+    }
+
+    const basePoints = this.validationService.calculateExercisePoints(exercise, status.attemptCount);
+    const multiplier = this.streakService.getStreakMultiplier();
+    const totalPoints = this.streakService.applyStreakBonus(basePoints);
+    const streakBonus = totalPoints - basePoints;
+    const streakDays = this.progressSignal().currentStreak || 0;
+
+    return {
+      basePoints,
+      streakBonus,
+      totalPoints,
+      hasStreakBonus: multiplier > 1.0,
+      streakDays
+    };
   }
 
   getPenaltyMetrics(

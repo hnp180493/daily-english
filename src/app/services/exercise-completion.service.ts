@@ -8,6 +8,7 @@ import { CurriculumService } from './curriculum.service';
 import { StreakService } from './streak.service';
 import { AnalyticsService } from './analytics.service';
 import { ExercisePersistenceService } from './exercise-persistence.service';
+import { EnhancedAnalyticsService } from './enhanced-analytics.service';
 import { PENALTY_CONSTANTS } from '../models/penalty.constants';
 import { getTodayLocalDate } from '../utils/date.utils';
 
@@ -32,6 +33,7 @@ export class ExerciseCompletionService {
   private streakService = inject(StreakService);
   private analyticsService = inject(AnalyticsService);
   private persistenceService = inject(ExercisePersistenceService);
+  private enhancedAnalyticsService = inject(EnhancedAnalyticsService);
 
   completeExercise(
     exercise: Exercise,
@@ -61,9 +63,9 @@ export class ExerciseCompletionService {
 
     // Only save to cloud for regular exercises and when points should be awarded
     if (!isCustom && shouldAwardPoints) {
-      const streakMultiplier = this.streakService.getStreakMultiplier();
-      bonusPoints = streakMultiplier > 1.0 ? Math.round(exercisePoints * (streakMultiplier - 1.0)) : 0;
-      totalPoints = exercisePoints + bonusPoints;
+      // exercisePoints already includes streak bonus from ExerciseMetricsService
+      totalPoints = exercisePoints;
+      bonusPoints = 0; // Bonus is already included in exercisePoints
 
       // Record attempt
       this.recordingService.recordAttempt(exercise, hintsShown, totalPoints);
@@ -105,6 +107,10 @@ export class ExerciseCompletionService {
         sentences,
         penaltyMetrics
       ).subscribe({
+        next: () => {
+          // Invalidate analytics cache so dashboard shows fresh data
+          this.enhancedAnalyticsService.invalidateCache();
+        },
         error: (err) => console.warn('[Completion] History recording failed:', err)
       });
 

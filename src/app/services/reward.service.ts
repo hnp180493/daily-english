@@ -1,4 +1,4 @@
-import { Injectable, inject, signal, effect } from '@angular/core';
+import { Injectable, inject, signal } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import { switchMap, tap, catchError } from 'rxjs/operators';
 import { Reward, RewardType } from '../models/achievement.model';
@@ -21,27 +21,23 @@ export class RewardService {
   private currentUserId: string | null = null;
 
   constructor() {
-    // console.log('[RewardService] Constructor called');
-    // Reload rewards when user changes
-    effect(() => {
-      const user = this.authService.currentUser();
-      const userId = user?.uid || null;
-      
-      // console.log('[RewardService] Effect triggered, user:', user?.email, 'isInitialized:', this.isInitialized, 'currentUserId:', this.currentUserId, 'newUserId:', userId);
-      
-      // Only initialize if user changed
-      if (userId && userId !== this.currentUserId) {
-        this.currentUserId = userId;
-        this.isInitialized = false; // Reset for new user
-        this.initializeRewards();
-        this.isInitialized = true;
-      } else if (!userId && this.currentUserId) {
-        // User logged out
-        this.currentUserId = null;
-        this.isInitialized = false;
-        this.unlockedRewards.set(this.getDefaultRewards());
-      }
-    });
+    // Wait for auth to be stable before initializing
+    this.initAfterAuth();
+  }
+
+  private async initAfterAuth(): Promise<void> {
+    await this.authService.waitForAuth();
+    
+    const user = this.authService.currentUser();
+    const userId = user?.uid || null;
+    
+    if (userId) {
+      this.currentUserId = userId;
+      this.initializeRewards();
+    } else {
+      this.unlockedRewards.set(this.getDefaultRewards());
+    }
+    this.isInitialized = true;
   }
 
   grantRewards(rewards: Reward[]): void {
@@ -127,63 +123,48 @@ export class RewardService {
   }
 
   private initializeRewards(): void {
-    this.checkAndMigrateData().subscribe({
-      next: () => {
-        this.loadFromFirestore();
-      },
-      error: (error: Error) => {
-        console.error('[RewardService] Migration failed:', error);
-        this.loadFromFirestore();
-      }
-    });
+    this.loadAndMigrateData();
   }
 
-  private loadFromFirestore(): void {
-    this.databaseService.loadRewardsAuto().subscribe({
-      next: (rewards) => {
-        this.unlockedRewards.set(rewards || this.getDefaultRewards());
-        console.log('[RewardService] Rewards loaded from Firestore');
-      },
-      error: (error: Error) => {
-        console.error('[RewardService] Failed to load rewards:', error);
-      }
-    });
-  }
-
-  private checkAndMigrateData(): Observable<void> {
+  private loadAndMigrateData(): void {
     const userId = this.authService.getUserId();
-    if (!userId) return of(undefined);
+    if (!userId) return;
 
-    // Check if user has data in Firestore
-    return this.databaseService.loadRewardsAuto().pipe(
-      switchMap(cloudRewards => {
+    // Single request to load data
+    this.databaseService.loadRewardsAuto().subscribe({
+      next: cloudRewards => {
         if (cloudRewards) {
-          // Data exists in Firestore, no migration needed
-          console.log('[RewardService] Data already exists in Firestore, skipping migration');
-          return of(undefined);
+          // Data exists in Firestore, use it directly
+          this.unlockedRewards.set(cloudRewards);
+          console.log('[RewardService] Rewards loaded from Firestore');
+          return;
         }
 
-        // Check for localStorage data to migrate
+        // No cloud data - check for localStorage data to migrate
         const localData = this.checkLocalStorageData(userId);
         if (localData) {
           console.log('[RewardService] Migrating localStorage data to Firestore');
-          return this.databaseService.saveRewardsAuto(localData).pipe(
-            tap(() => {
+          this.unlockedRewards.set(localData); // Set immediately
+          this.databaseService.saveRewardsAuto(localData).subscribe({
+            next: () => {
               this.clearLocalStorageData(userId);
               console.log('[RewardService] Migration completed successfully');
-            })
-          );
+            },
+            error: (error: Error) => {
+              console.error('[RewardService] Migration save failed:', error);
+            }
+          });
+        } else {
+          // No data anywhere
+          this.unlockedRewards.set(this.getDefaultRewards());
+          console.log('[RewardService] No rewards found, using defaults');
         }
-
-        // No data to migrate
-        console.log('[RewardService] No localStorage data to migrate');
-        return of(undefined);
-      }),
-      catchError((error: Error) => {
-        console.error('[RewardService] Migration error:', error);
-        return of(undefined);
-      })
-    );
+      },
+      error: (error: Error) => {
+        console.error('[RewardService] Failed to load rewards:', error);
+        this.unlockedRewards.set(this.getDefaultRewards());
+      }
+    });
   }
 
   private checkLocalStorageData(userId: string): UserRewards | null {

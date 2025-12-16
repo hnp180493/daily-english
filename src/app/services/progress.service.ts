@@ -1,4 +1,4 @@
-import { Injectable, inject, effect, signal } from '@angular/core';
+import { Injectable, inject, signal } from '@angular/core';
 import { BehaviorSubject, Observable, of } from 'rxjs';
 import { switchMap, tap, catchError } from 'rxjs/operators';
 import { ExerciseAttempt, UserProgress, ExerciseStatus } from '../models/exercise.model';
@@ -32,37 +32,28 @@ export class ProgressService {
   private currentUserId: string | null = null;
 
   constructor() {
-    // Initialize current user ID immediately
-    const initialUser = this.authService.currentUser();
-    this.currentUserId = initialUser?.uid || null;
+    // Wait for auth to be stable before initializing
+    this.initAfterAuth();
+  }
+
+  private async initAfterAuth(): Promise<void> {
+    await this.authService.waitForAuth();
     
-    // Load initial progress for guest users
-    if (!initialUser) {
+    const user = this.authService.currentUser();
+    const userId = user?.uid || null;
+    
+    if (userId) {
+      // User is logged in
+      console.log('[ProgressService] User logged in:', userId);
+      this.currentUserId = userId;
+      this.handleLogin();
+    } else {
+      // Guest user
+      console.log('[ProgressService] Guest user, loading from localStorage');
+      this.currentUserId = null;
       this.loadProgress();
-      this.isInitialized = true;
     }
-    
-    // Subscribe to auth changes using effect
-    effect(() => {
-      const user = this.authService.currentUser();
-      const userId = user?.uid || null;
-      
-      // Only initialize if user changed
-      if (userId && userId !== this.currentUserId) {
-        // User logged in
-        console.log('[ProgressService] User logged in:', userId);
-        this.currentUserId = userId;
-        this.isInitialized = false;
-        this.handleLogin();
-        this.isInitialized = true;
-      } else if (!userId && this.currentUserId) {
-        // User logged out
-        console.log('[ProgressService] User logged out');
-        this.currentUserId = null;
-        this.isInitialized = false;
-        this.handleLogout();
-      }
-    });
+    this.isInitialized = true;
   }
 
   /**
@@ -93,27 +84,72 @@ export class ProgressService {
    */
   private handleLogin(): void {
     console.log('[ProgressService] User logged in, clearing guest data');
-    
+
     // Clear localStorage when user logs in
     this.localStorageProvider.clearAll().subscribe({
       next: () => {
         console.log('[ProgressService] Guest data cleared on login');
-        // Check if migration is needed (one-time check)
-        this.checkAndMigrateData().subscribe({
-          next: () => {
-            // Load from Supabase
-            this.loadProgress();
-          },
-          error: (error) => {
-            console.error('[ProgressService] Migration failed:', error);
-            this.loadProgress(); // Try loading anyway
-          }
-        });
+        // Load and migrate in single request
+        this.loadAndMigrateData();
       },
-      error: (error) => {
-        console.error('[ProgressService] Failed to clear guest data:', error);
+      error: () => {
         // Continue with login anyway
-        this.loadProgress();
+        this.loadAndMigrateData();
+      }
+    });
+  }
+
+  /**
+   * Load progress and migrate if needed - single database request
+   */
+  private loadAndMigrateData(): void {
+    const userId = this.authService.getUserId();
+    if (!userId) {
+      this.loadProgress();
+      return;
+    }
+
+    // Single request to load data
+    this.databaseService.loadProgressAuto().subscribe({
+      next: cloudProgress => {
+        if (cloudProgress) {
+          // Data exists, use it directly
+          const data = this.migrateProgressData(cloudProgress);
+          this.progress$.next(data);
+          this.progressSignal.set(data);
+          console.log('[ProgressService] Progress loaded from Supabase');
+          return;
+        }
+
+        // No cloud data - check for localStorage data to migrate
+        const localData = this.checkLocalStorageData(userId);
+        if (localData) {
+          console.log('[ProgressService] Migrating localStorage data to Supabase');
+          const migratedData = this.migrateProgressData(localData);
+          this.progress$.next(migratedData);
+          this.progressSignal.set(migratedData);
+          this.databaseService.saveProgressAuto(migratedData).subscribe({
+            next: () => {
+              this.clearLocalStorageData(userId);
+              console.log('[ProgressService] Migration completed');
+            },
+            error: (error: Error) => {
+              console.error('[ProgressService] Migration save failed:', error);
+            }
+          });
+        } else {
+          // No data anywhere
+          const defaultProgress = this.getDefaultProgress();
+          this.progress$.next(defaultProgress);
+          this.progressSignal.set(defaultProgress);
+          console.log('[ProgressService] No progress found, using defaults');
+        }
+      },
+      error: (error: Error) => {
+        console.error('[ProgressService] Failed to load progress:', error);
+        const defaultProgress = this.getDefaultProgress();
+        this.progress$.next(defaultProgress);
+        this.progressSignal.set(defaultProgress);
       }
     });
   }
@@ -132,42 +168,6 @@ export class ProgressService {
     
     // Load from localStorage (if any guest data exists)
     this.loadProgress();
-  }
-
-  private checkAndMigrateData(): Observable<void> {
-    const userId = this.authService.getUserId();
-    if (!userId) return of(undefined);
-
-    // Check if user has data in Firestore
-    return this.databaseService.loadProgressAuto().pipe(
-      switchMap(cloudProgress => {
-        if (cloudProgress) {
-          // Data exists in Firestore, no migration needed
-          // console.log('[ProgressService] Data already exists in Firestore, skipping migration');
-          return of(undefined);
-        }
-
-        // Check for localStorage data to migrate
-        const localData = this.checkLocalStorageData(userId);
-        if (localData) {
-          // console.log('[ProgressService] Migrating localStorage data to Firestore');
-          return this.databaseService.saveProgressAuto(localData).pipe(
-            tap(() => {
-              this.clearLocalStorageData(userId);
-              // console.log('[ProgressService] Migration completed successfully');
-            })
-          );
-        }
-
-        // No data to migrate
-        console.log('[ProgressService] No localStorage data to migrate');
-        return of(undefined);
-      }),
-      catchError((error: Error) => {
-        console.error('[ProgressService] Migration error:', error);
-        return of(undefined);
-      })
-    );
   }
 
   private checkLocalStorageData(userId: string): UserProgress | null {

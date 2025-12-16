@@ -94,7 +94,7 @@
                 <app-progress-charts [analytics]="analytics()" />
               </div>
               <div class="history-row">
-                <app-recent-history-widget />
+                <app-recent-history-widget [historyInput]="enhanced.recentHistory || []" />
               </div>
               @if (userProgress()?.dictationHistory) {
                 <!-- <div class="dictation-row">
@@ -112,7 +112,7 @@
                 <app-progress-charts [analytics]="analytics()" />
               </div>
               <div class="history-row">
-                <app-recent-history-widget />
+                <app-recent-history-widget [historyInput]="[]" />
               </div>
               @if (userProgress()?.dictationHistory) {
                 <!-- <div class="dictation-row">

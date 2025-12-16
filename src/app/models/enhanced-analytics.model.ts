@@ -22,6 +22,18 @@ export interface EnhancedAnalyticsData {
   difficultyComparison?: any[];
   exercisesNeedingReview?: any[];
   errorPatterns?: ErrorPatternData[];
+  recentHistory?: RecentHistoryData[]; // Recent 10 exercises for widget
+}
+
+/**
+ * Recent history data for widget display
+ */
+export interface RecentHistoryData {
+  exerciseId: string;
+  completedAt: Date;
+  finalScore: number;
+  timeSpentSeconds: number;
+  hintsUsed: number;
 }
 
 /**

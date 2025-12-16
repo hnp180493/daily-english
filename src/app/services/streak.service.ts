@@ -76,7 +76,7 @@ export class StreakService {
   getStreakMultiplier(): number {
     const progress = this.progressService.getProgressSignal()();
     const streak = progress.currentStreak || 0;
-    return streak >= 7 ? 1.5 : 1.0;
+    return streak >= 7 ? 1.2 : 1.0;
   }
 
   applyStreakBonus(basePoints: number): number {

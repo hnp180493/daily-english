@@ -50,7 +50,19 @@
       </div>
       <div class="header-stats">
         <!-- <span class="stat-item">💰 {{ creditsToEarn() }} credits</span> -->
-        <span class="stat-item">⭐ {{ exercisePoints() }} points</span>
+        <span class="stat-item points-stat" [class.has-bonus]="pointsBreakdown().hasStreakBonus">
+          ⭐ {{ exercisePoints() }} points
+          @if (pointsBreakdown().hasStreakBonus) {
+            <span class="bonus-indicator">🔥</span>
+          }
+          <span class="points-tooltip">
+            <span class="tooltip-row">Base: {{ pointsBreakdown().basePoints }} pts</span>
+            @if (pointsBreakdown().hasStreakBonus) {
+              <span class="tooltip-row bonus">🔥 Streak {{ pointsBreakdown().streakDays }} ngày: +{{ pointsBreakdown().streakBonus }} pts</span>
+            }
+            <span class="tooltip-row total">Tổng: {{ pointsBreakdown().totalPoints }} pts</span>
+          </span>
+        </span>
         @if (perfectCompletions() > 0) {
           <span class="stat-item mastered-badge">
             🏆 {{ perfectCompletions() }}× Perfect

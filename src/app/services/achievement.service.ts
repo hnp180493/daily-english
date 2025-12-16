@@ -1,4 +1,4 @@
-import { Injectable, inject, signal, computed, effect } from '@angular/core';
+import { Injectable, inject, signal, computed } from '@angular/core';
 import { take } from 'rxjs/operators';
 import {
   Achievement,
@@ -59,31 +59,30 @@ export class AchievementService {
 
   constructor() {
     this.initializeAchievements();
+    
+    // Wait for auth to be stable before initializing
+    this.initAfterAuth();
+  }
 
-    effect(() => {
-      const user = this.authService.currentUser();
-      const currentUserId = user?.uid || 'guest';
-      const loadedUserId = this.userAchievementData().userId || '';
-      
-      console.log('[AchievementService] Effect triggered. User:', user?.email, 'Current:', currentUserId, 'Loaded:', loadedUserId);
-      
-      // Check if we already loaded data for this user
-      if (this.isInitialized && currentUserId === loadedUserId) {
-        console.log('[AchievementService] Already initialized for this user, skipping');
-        return;
-      }
+  private async initAfterAuth(): Promise<void> {
+    await this.authService.waitForAuth();
+    
+    const user = this.authService.currentUser();
+    const currentUserId = user?.uid || 'guest';
+    
+    console.log('[AchievementService] Auth stable. User:', user?.email, 'ID:', currentUserId);
+    
+    if (user) {
+      // Load from database for authenticated user
+      this.isInitialized = true;
+      this.loadData();
+    } else {
+      // Guest user - initialize with default data
+      this.isInitialized = true;
+      this.loadForGuestUser();
+    }
 
-      if (user) {
-        // Load from database for authenticated user
-        this.isInitialized = true;
-        this.loadData();
-      } else if (!this.isInitialized) {
-        // Guest user - initialize with default data (only once)
-        this.isInitialized = true;
-        this.loadForGuestUser();
-      }
-    });
-
+    // Subscribe to progress changes for achievement evaluation
     setTimeout(() => {
       this.progressService.getUserProgress().subscribe((progress) => {
         if (this.isInitialized) {
@@ -130,7 +129,7 @@ export class AchievementService {
   }
 
   /**
-   * Load achievement data from database
+   * Load achievement data from database - single request with migration
    */
   private loadData(): void {
     if (this.loadInProgress) {
@@ -140,66 +139,118 @@ export class AchievementService {
 
     this.loadInProgress = true;
     console.log('[AchievementService] Loading achievements from database...');
-    this.storeService.migrateFromLocalStorage().subscribe({
-      next: () => {
-        this.storeService.loadAchievementData().subscribe({
-          next: (data) => {
-            if (data) {
-              console.log('[AchievementService] Loaded achievement data:', {
-                unlockedCount: data.unlockedAchievements.length,
-                progressCount: Object.keys(data.progress).length
-              });
 
-              // Auto-cleanup old data format (one-time optimization)
-              const originalSize = Object.keys(data.progress).length;
-              const cleanedData = this.storeService.cleanupAchievementData(data);
-              const cleanedSize = Object.keys(cleanedData.progress).length;
-
-              if (cleanedSize < originalSize) {
-                console.log(
-                  `[AchievementService] Auto-cleanup: ${originalSize} -> ${cleanedSize} progress entries`
-                );
-                // Save cleaned data (throttled)
-                const now = Date.now();
-                if (now - this.lastSaveTimestamp >= this.MIN_SAVE_INTERVAL_MS) {
-                  this.lastSaveTimestamp = now;
-                  this.storeService.saveAchievementData(cleanedData).subscribe({
-                    error: (error: Error) =>
-                      console.error('[AchievementService] Failed to save cleaned data:', error)
-                  });
-                }
-                this.userAchievementData.set(cleanedData);
-              } else {
-                // Ensure userId is set
-                if (!data.userId) {
-                  data.userId = this.authService.getUserId() || '';
-                }
-                this.userAchievementData.set(data);
-              }
-
-              this.syncAchievementStates();
-              console.log('[AchievementService] Achievements loaded from database');
-            } else {
-              console.log('[AchievementService] New user, using default achievement data');
-              const defaultData = this.storeService.getDefaultUserData();
-              defaultData.userId = this.authService.getUserId() || '';
-              this.userAchievementData.set(defaultData);
-            }
-            this.performInitialEvaluation();
-            this.loadInProgress = false;
-          },
-          error: (error: Error) => {
-            console.error('[AchievementService] Failed to load achievements:', error);
-            this.loadInProgress = false;
+    // Single request to load data
+    this.storeService.loadAchievementData().subscribe({
+      next: (data) => {
+        if (data) {
+          console.log('[AchievementService] Loaded achievement data:', {
+            unlockedCount: data.unlockedAchievements.length,
+            progressCount: Object.keys(data.progress).length
+          });
+          this.processLoadedData(data);
+        } else {
+          // No cloud data - check for localStorage data to migrate
+          const userId = this.authService.getUserId();
+          if (userId) {
+            this.migrateLocalDataIfExists(userId);
+          } else {
+            this.setDefaultData();
           }
-        });
+        }
       },
       error: (error: Error) => {
-        console.error('[AchievementService] Migration failed:', error);
-        this.loadInProgress = false;
+        console.error('[AchievementService] Failed to load achievements:', error);
+        this.setDefaultData();
       }
     });
   }
+
+  private processLoadedData(data: UserAchievementData): void {
+    // Auto-cleanup old data format (one-time optimization)
+    const originalSize = Object.keys(data.progress).length;
+    const cleanedData = this.storeService.cleanupAchievementData(data);
+    const cleanedSize = Object.keys(cleanedData.progress).length;
+
+    if (cleanedSize < originalSize) {
+      console.log(
+        `[AchievementService] Auto-cleanup: ${originalSize} -> ${cleanedSize} progress entries`
+      );
+      // Save cleaned data (throttled)
+      const now = Date.now();
+      if (now - this.lastSaveTimestamp >= this.MIN_SAVE_INTERVAL_MS) {
+        this.lastSaveTimestamp = now;
+        this.storeService.saveAchievementData(cleanedData).subscribe({
+          error: (error: Error) =>
+            console.error('[AchievementService] Failed to save cleaned data:', error)
+        });
+      }
+      this.userAchievementData.set(cleanedData);
+    } else {
+      // Ensure userId is set
+      if (!data.userId) {
+        data.userId = this.authService.getUserId() || '';
+      }
+      this.userAchievementData.set(data);
+    }
+
+    this.syncAchievementStates();
+    this.performInitialEvaluation();
+    this.loadInProgress = false;
+  }
+
+  private migrateLocalDataIfExists(userId: string): void {
+    // Check localStorage for old data
+    const key = `user_achievements_${userId}`;
+    const stored = localStorage.getItem(key);
+
+    if (stored) {
+      try {
+        const localData = JSON.parse(stored);
+        // Convert dates
+        localData.unlockedAchievements = localData.unlockedAchievements.map((ua: { unlockedAt: string | number | Date; rewardsClaimed: boolean }) => ({
+          ...ua,
+          unlockedAt: new Date(ua.unlockedAt),
+          rewardsClaimed: ua.rewardsClaimed ?? false
+        }));
+        localData.lastEvaluated = new Date(localData.lastEvaluated);
+
+        console.log('[AchievementService] Migrating localStorage data to database');
+        this.userAchievementData.set(localData);
+        this.syncAchievementStates();
+        this.performInitialEvaluation();
+
+        // Save to database
+        this.storeService.saveAchievementData(localData).subscribe({
+          next: () => {
+            localStorage.removeItem(key);
+            console.log('[AchievementService] Migration completed');
+          },
+          error: (error: Error) => {
+            console.error('[AchievementService] Migration save failed:', error);
+          }
+        });
+        this.loadInProgress = false;
+        return;
+      } catch (error) {
+        console.error('[AchievementService] Failed to parse localStorage:', error);
+      }
+    }
+
+    this.setDefaultData();
+  }
+
+  private setDefaultData(): void {
+    console.log('[AchievementService] Using default achievement data');
+    const defaultData = this.storeService.getDefaultUserData();
+    defaultData.userId = this.authService.getUserId() || '';
+    this.userAchievementData.set(defaultData);
+    this.syncAchievementStates();
+    this.performInitialEvaluation();
+    this.loadInProgress = false;
+  }
+
+
 
   /**
    * Sync achievement states with user data

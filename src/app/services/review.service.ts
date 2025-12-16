@@ -1,4 +1,4 @@
-import { Injectable, inject, signal, effect } from '@angular/core';
+import { Injectable, inject, signal } from '@angular/core';
 import { Observable, of, combineLatest, forkJoin } from 'rxjs';
 import { map, switchMap, tap, catchError } from 'rxjs/operators';
 import {
@@ -53,48 +53,104 @@ export class ReviewService {
   private schedulingInProgress = new Map<string, boolean>();
 
   private currentUserId: string | null = null;
+  private isInitialized = false;
 
   constructor() {
-    // Initialize current user ID immediately
-    const initialUser = this.authService.currentUser();
-    this.currentUserId = initialUser?.uid || null;
-    
-    // Load review queue immediately if user is already logged in
-    if (this.currentUserId) {
-      console.log('[ReviewService] User already logged in, loading review queue');
-      setTimeout(() => {
-        this.getReviewQueue().subscribe();
-      }, 500);
-    }
-    
-    // Trigger migration check when user logs in
-    effect(() => {
-      const user = this.authService.currentUser();
-      const userId = user?.uid || null;
-      
-      // Only initialize if user changed
-      if (userId && userId !== this.currentUserId) {
-        console.log('[ReviewService] User logged in:', userId);
-        this.currentUserId = userId;
-        this.migrationCompleted = false; // Reset for new user
-        this.checkAndMigrateReviewData();
-        // Load review queue after migration
-        setTimeout(() => {
-          this.getReviewQueue().subscribe();
-        }, 1000);
-        // Initialize notifications after migration (only once)
-        if (!this.notificationInitialized) {
-          setTimeout(() => this.initializeNotifications(), 2000);
-        }
-      } else if (!userId && this.currentUserId) {
-        // User logged out
-        console.log('[ReviewService] User logged out');
-        this.currentUserId = null;
-        this.migrationCompleted = false;
-        this.reviewQueueSignal.set([]);
-        this.cleanupNotifications();
+    // Wait for auth to be stable before initializing
+    this.initAfterAuth();
+  }
+
+  private async initAfterAuth(): Promise<void> {
+    await this.authService.waitForAuth();
+
+    const user = this.authService.currentUser();
+    const userId = user?.uid || null;
+
+    this.currentUserId = userId;
+    this.isInitialized = true;
+
+    if (userId) {
+      console.log('[ReviewService] User logged in:', userId);
+      // Load and migrate in single flow - no separate getReviewQueue call needed
+      this.loadAndMigrateReviewData();
+      // Initialize notifications (only once)
+      if (!this.notificationInitialized) {
+        setTimeout(() => this.initializeNotifications(), 1500);
       }
-    });
+    } else {
+      console.log('[ReviewService] Guest user');
+      this.reviewQueueSignal.set([]);
+    }
+  }
+
+  /**
+   * Load review data and migrate if needed - single database request
+   */
+  private loadAndMigrateReviewData(): void {
+    if (this.migrationCompleted) {
+      console.log('[ReviewService] Already loaded, skipping');
+      return;
+    }
+
+    combineLatest([
+      this.databaseService.loadAllReviewDataAuto(),
+      this.progressService.getUserProgress()
+    ])
+      .pipe(
+        switchMap(([existingReviewData, progress]) => {
+          // Update cache immediately
+          if (existingReviewData && existingReviewData.length > 0) {
+            this.updateCache(existingReviewData);
+          }
+
+          // Check if migration is needed
+          if (!ReviewMigrationUtility.isMigrationNeeded(existingReviewData, progress)) {
+            this.migrationCompleted = true;
+            // Build queue from existing data
+            return this.buildReviewQueue(existingReviewData || []);
+          }
+
+          // Perform migration
+          console.log('[ReviewService] Starting review data migration...');
+          const userId = this.authService.getUserId();
+          if (!userId) {
+            this.migrationCompleted = true;
+            return this.buildReviewQueue(existingReviewData || []);
+          }
+
+          const reviewDataList = ReviewMigrationUtility.migrateProgressToReviewData(
+            progress,
+            userId
+          );
+
+          // Save all review data to database
+          const saveOperations = reviewDataList.map(reviewDataWithMeta => {
+            const { exerciseId, ...reviewData } = reviewDataWithMeta;
+            return this.databaseService.saveReviewDataAuto(exerciseId, reviewData);
+          });
+
+          return forkJoin(saveOperations).pipe(
+            tap(() => {
+              ReviewMigrationUtility.logMigrationResults(reviewDataList);
+              this.migrationCompleted = true;
+              this.updateCache(reviewDataList);
+            }),
+            switchMap(() => this.buildReviewQueue(reviewDataList)),
+            catchError(() => {
+              this.migrationCompleted = true;
+              return this.buildReviewQueue(existingReviewData || []);
+            })
+          );
+        }),
+        catchError(() => {
+          this.migrationCompleted = true;
+          return of([]);
+        })
+      )
+      .subscribe(queue => {
+        this.reviewQueueSignal.set(queue);
+        console.log('[ReviewService] Review queue loaded:', queue.length, 'items');
+      });
   }
 
   /**
@@ -104,83 +160,31 @@ export class ReviewService {
     return this.reviewQueueSignal.asReadonly();
   }
 
-  /**
-   * Check if migration is needed and perform it
-   * This runs once per user session on initialization
-   */
-  private checkAndMigrateReviewData(): void {
-    // Guard against multiple simultaneous calls
-    if (this.migrationCompleted) {
-      console.log('[ReviewService] Migration already completed, skipping');
-      return;
-    }
 
-    console.log('[ReviewService] Checking if review data migration is needed...');
-
-    combineLatest([
-      this.databaseService.loadAllReviewDataAuto(),
-      this.progressService.getUserProgress()
-    ]).pipe(
-      switchMap(([existingReviewData, progress]) => {
-        // Check if migration is needed
-        if (!ReviewMigrationUtility.isMigrationNeeded(existingReviewData, progress)) {
-          this.migrationCompleted = true;
-          return of(null);
-        }
-
-        // Perform migration
-        console.log('[ReviewService] Starting review data migration...');
-        const userId = this.authService.getUserId();
-        if (!userId) {
-          console.error('[ReviewService] No user ID available for migration');
-          return of(null);
-        }
-
-        const reviewDataList = ReviewMigrationUtility.migrateProgressToReviewData(progress, userId);
-        
-        // Save all review data to database
-        // Extract only ReviewData fields (without metadata) for storage
-        const saveOperations = reviewDataList.map(reviewDataWithMeta => {
-          const { exerciseId, userId: _, createdAt: __, updatedAt: ___, ...reviewData } = reviewDataWithMeta;
-          return this.databaseService.saveReviewDataAuto(exerciseId, reviewData);
-        });
-
-        return forkJoin(saveOperations).pipe(
-          tap(() => {
-            ReviewMigrationUtility.logMigrationResults(reviewDataList);
-            this.migrationCompleted = true;
-            console.log('[ReviewService] Migration completed successfully');
-          }),
-          catchError(error => {
-            console.error('[ReviewService] Migration failed:', error);
-            this.migrationCompleted = true; // Mark as completed to avoid retry loops
-            return of(null);
-          })
-        );
-      }),
-      catchError(error => {
-        console.error('[ReviewService] Error checking migration status:', error);
-        this.migrationCompleted = true;
-        return of(null);
-      })
-    ).subscribe();
-  }
 
   /**
    * Get the review queue as an observable
+   * Uses cache if available, otherwise loads from database
    */
   getReviewQueue(): Observable<ReviewQueueItem[]> {
+    // If signal already has data, return it
+    const currentQueue = this.reviewQueueSignal();
+    if (currentQueue.length > 0) {
+      console.log('[ReviewService] Using signal data');
+      return of(currentQueue);
+    }
+
     // Check if cache is valid
     if (this.isCacheValid() && this.allReviewDataCache) {
       console.log('[ReviewService] Using cached review data');
-      return this.buildReviewQueue(this.allReviewDataCache);
+      return this.buildReviewQueue(this.allReviewDataCache).pipe(
+        tap(queue => this.reviewQueueSignal.set(queue))
+      );
     }
 
-    return combineLatest([
-      this.databaseService.loadAllReviewDataAuto(),
-      this.progressService.getUserProgress()
-    ]).pipe(
-      switchMap(([reviewDataList]) => {
+    // Only load from database if no cache available
+    return this.databaseService.loadAllReviewDataAuto().pipe(
+      switchMap(reviewDataList => {
         if (!reviewDataList || reviewDataList.length === 0) {
           return of([]);
         }

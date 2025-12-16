@@ -25,6 +25,11 @@ export class ExerciseHistoryService {
   private authService = inject(AuthService);
   private exerciseService = inject(ExerciseService);
 
+  // Cache for history data
+  private historyCache: ExerciseHistoryRecord[] | null = null;
+  private historyCacheTimestamp = 0;
+  private readonly CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
+
   /**
    * Record a completed exercise attempt
    * Called from ExerciseDetailComponent after exercise completion
@@ -75,6 +80,11 @@ export class ExerciseHistoryService {
     };
 
     return this.databaseService.insertExerciseHistory(record).pipe(
+      map(() => {
+        // Invalidate cache after recording new attempt
+        this.invalidateCache();
+        return undefined;
+      }),
       catchError(error => {
         console.error('[ExerciseHistoryService] Failed to record attempt:', error);
         // Don't throw - history recording should not block exercise completion
@@ -85,6 +95,7 @@ export class ExerciseHistoryService {
 
   /**
    * Get recent exercise history (last N attempts)
+   * Uses cache if available to avoid duplicate requests
    */
   getRecentHistory(limit: number = 10): Observable<ExerciseHistoryRecord[]> {
     const userId = this.authService.getUserId();
@@ -92,7 +103,21 @@ export class ExerciseHistoryService {
       return of([]);
     }
 
+    // If cache is valid and has enough data, use it
+    if (this.isCacheValid() && this.historyCache && this.historyCache.length >= limit) {
+      console.log('[ExerciseHistoryService] Using cached history');
+      return of(this.historyCache.slice(0, limit));
+    }
+
     return this.databaseService.loadRecentHistory(userId, limit).pipe(
+      map(records => {
+        // Update cache if we got more data
+        if (!this.historyCache || records.length > this.historyCache.length) {
+          this.historyCache = records;
+          this.historyCacheTimestamp = Date.now();
+        }
+        return records;
+      }),
       catchError(error => {
         console.error('[ExerciseHistoryService] Failed to load recent history:', error);
         return of([]);
@@ -101,7 +126,24 @@ export class ExerciseHistoryService {
   }
 
   /**
+   * Check if cache is still valid
+   */
+  private isCacheValid(): boolean {
+    return this.historyCacheTimestamp > 0 && 
+           (Date.now() - this.historyCacheTimestamp) < this.CACHE_DURATION;
+  }
+
+  /**
+   * Invalidate cache (call after recording new attempt)
+   */
+  invalidateCache(): void {
+    this.historyCache = null;
+    this.historyCacheTimestamp = 0;
+  }
+
+  /**
    * Get statistics from exercise history
+   * Uses cache if available
    */
   getStatistics(): Observable<ExerciseHistoryStats> {
     const userId = this.authService.getUserId();
@@ -109,8 +151,19 @@ export class ExerciseHistoryService {
       return of(this.getEmptyStats());
     }
 
+    // Use cache if valid and has substantial data
+    if (this.isCacheValid() && this.historyCache && this.historyCache.length > 0) {
+      console.log('[ExerciseHistoryService] Using cached history for statistics');
+      return of(this.calculateStatistics(this.historyCache));
+    }
+
     return this.databaseService.loadRecentHistory(userId, 1000).pipe(
-      map(records => this.calculateStatistics(records)),
+      map(records => {
+        // Update cache with full data
+        this.historyCache = records;
+        this.historyCacheTimestamp = Date.now();
+        return this.calculateStatistics(records);
+      }),
       catchError(error => {
         console.error('[ExerciseHistoryService] Failed to load statistics:', error);
         return of(this.getEmptyStats());

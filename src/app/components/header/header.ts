@@ -41,7 +41,13 @@ export class HeaderComponent implements OnInit {
   dueReviewCount = computed(() => {
     const queue = this.reviewQueue();
     const now = new Date();
-    return queue.filter(item => item.nextReviewDate <= now).length;
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    
+    return queue.filter(item => {
+      const reviewDate = new Date(item.nextReviewDate);
+      const reviewDay = new Date(reviewDate.getFullYear(), reviewDate.getMonth(), reviewDate.getDate());
+      return reviewDay <= today;
+    }).length;
   });
   
   urgentReviewCount = computed(() => {
@@ -130,19 +136,11 @@ export class HeaderComponent implements OnInit {
         this.isAnimatingAchievements = true;
       }
     });
-    
-    // Load review queue when authenticated
-    effect(() => {
-      if (this.isAuthenticated()) {
-        // Delay to ensure migration completes first
-        setTimeout(() => this.loadReviewQueue(), 1000);
-      }
-    });
   }
 
   ngOnInit(): void {
-    // Load review queue immediately to populate badge
-    this.loadReviewQueue();
+    // Review queue is loaded by ReviewService after auth is stable
+    // No need to load here - just use the signal from ReviewService
   }
   
   private loadReviewQueue(): void {
