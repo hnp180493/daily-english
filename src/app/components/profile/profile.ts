@@ -53,7 +53,7 @@ export class ProfileComponent implements OnInit {
   }
 
   signOut(): void {
-    if (confirm('Bạn có chắc muốn đăng xuất?')) {
+    if (confirm('Are you sure you want to log out?')) {
       this.authService.signOut().subscribe({
         next: () => {
           console.log('Signed out successfully');

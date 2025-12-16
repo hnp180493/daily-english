@@ -579,20 +579,20 @@ export class ReviewService {
 
     if (urgentCount > 0) {
       const message = urgentCount === 1 
-        ? '� BBạn có 1 bài ôn tập khẩn cấp cần làm ngay!'
-        : `🔴 Bạn có ${urgentCount} bài ôn tập khẩn cấp cần làm ngay!`;
+        ? '� You have 1 urgent review that needs immediate attention!'
+        : `🔴 You have ${urgentCount} urgent reviews that need immediate attention!`;
       
       this.toastService.show(message, 'warning', 10000, {
-        label: 'Xem ngay',
+        label: 'View now',
         callback: () => this.router.navigate(['/review-queue'])
       });
     } else if (dueCount > 0) {
       const message = dueCount === 1
-        ? '📚 Bạn có 1 bài đã đến hạn ôn tập'
-        : `📚 Bạn có ${dueCount} bài đã đến hạn ôn tập`;
+        ? '📚 You have 1 review due'
+        : `📚 You have ${dueCount} reviews due`;
       
       this.toastService.show(message, 'info', 8000, {
-        label: 'Xem danh sách',
+        label: 'View list',
         callback: () => this.router.navigate(['/review-queue'])
       });
     }
