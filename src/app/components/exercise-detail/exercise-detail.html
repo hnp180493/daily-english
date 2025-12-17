@@ -7,6 +7,18 @@
 
 @if (isLoadingExercise()) {
   <app-loading-spinner [fullscreen]="true" [message]="'Đang tải bài tập...'" />
+} @else if (isSessionBlocked()) {
+  <!-- Session blocked warning - anti-cheat -->
+  <div class="session-blocked-overlay">
+    <div class="session-blocked-modal">
+      <div class="blocked-icon">⚠️</div>
+      <h2 class="blocked-title">Tab Locked</h2>
+      <p class="blocked-message">{{ sessionBlockedMessage() }}</p>
+      <button class="blocked-close-btn" (click)="onQuit()">
+        Close This Tab
+      </button>
+    </div>
+  </div>
 } @else if (exercise()) {
   <div class="exercise-detail-container">
     <!-- Header with Title, Stats and Progress Bar -->

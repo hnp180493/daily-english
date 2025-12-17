@@ -167,11 +167,7 @@ export class OpenRouterProvider extends BaseAIProvider {
         headers['X-Title'] = config.openrouter.siteName;
       }
 
-      // Initialize state for tracking emitted chunks
-      const state = {
-        lastScore: -1,
-        emittedFeedbackCount: 0
-      };
+      const state = this.createStreamingState();
       let buffer = '';
 
       fetch(url, {
@@ -347,46 +343,6 @@ export class OpenRouterProvider extends BaseAIProvider {
         feedback: [],
         overallComment: ''
       };
-    }
-  }
-
-  private emitPartialResponse(buffer: string, observer: any, state: { lastScore: number; emittedFeedbackCount: number }): void {
-    // Extract and emit accuracy score if found and not already emitted
-    const scoreMatch = buffer.match(/"accuracyScore"\s*:\s*(\d+)/);
-    if (scoreMatch) {
-      const score = parseInt(scoreMatch[1], 10);
-      if (score !== state.lastScore) {
-        state.lastScore = score;
-        observer.next({
-          type: 'score',
-          data: { accuracyScore: score, feedback: [], overallComment: '' }
-        });
-      }
-    }
-
-    // Extract feedback array section from buffer
-    const feedbackMatch = buffer.match(/"feedback"\s*:\s*\[([\s\S]*?)(?:\]|$)/);
-    if (feedbackMatch) {
-      const feedbackSection = feedbackMatch[1];
-      
-      // Parse individual complete feedback objects
-      const feedbackObjectRegex = /\{[^{}]*(?:\{[^{}]*\}[^{}]*)*\}/g;
-      const feedbackObjects = feedbackSection.match(feedbackObjectRegex) || [];
-      
-      // Emit only new feedback items
-      for (let i = state.emittedFeedbackCount; i < feedbackObjects.length; i++) {
-        try {
-          const feedbackItem = JSON.parse(feedbackObjects[i]);
-          observer.next({
-            type: 'feedback',
-            feedbackItem
-          });
-          state.emittedFeedbackCount++;
-        } catch (e) {
-          // Skip invalid feedback items
-          continue;
-        }
-      }
     }
   }
 

@@ -25,6 +25,7 @@ import { ExerciseQuickReviewService } from '../../services/exercise-quick-review
 import { ExerciseLoaderService } from '../../services/exercise-loader.service';
 import { ExerciseNavigationService } from '../../services/exercise-navigation.service';
 import { ExerciseMetricsService } from '../../services/exercise-metrics.service';
+import { ExerciseSessionLockService } from '../../services/exercise-session-lock.service';
 import { TTSSettings } from '../tts-settings/tts-settings';
 import { PenaltyScore } from '../penalty-score/penalty-score';
 import { ExerciseContext } from '../../models/ai.model';
@@ -66,6 +67,7 @@ export class ExerciseDetailComponent implements OnInit, OnDestroy {
   private loaderService = inject(ExerciseLoaderService);
   private navigationService = inject(ExerciseNavigationService);
   private metricsService = inject(ExerciseMetricsService);
+  private sessionLockService = inject(ExerciseSessionLockService);
 
   private progressSignal = this.progressService.getProgressSignal();
 
@@ -138,6 +140,10 @@ export class ExerciseDetailComponent implements OnInit, OnDestroy {
   // Settings
   settings = this.settingsService.getSettingsSignal();
 
+  // Session lock (anti-cheat)
+  isSessionBlocked = this.sessionLockService.isBlocked;
+  sessionBlockedMessage = this.sessionLockService.blockedMessage;
+
   constructor() {
     this.setupEffects();
     this.setupKeyboardShortcuts();
@@ -208,6 +214,11 @@ export class ExerciseDetailComponent implements OnInit, OnDestroy {
 
       this.exerciseStartTime = new Date();
       
+      // Acquire session lock to prevent duplicate tab cheating (only for non-review mode)
+      if (result.mode !== 'review') {
+        this.sessionLockService.acquireLock(result.exercise.id);
+      }
+      
       this.loaderService.initializeExercise(
         result.exercise,
         result.isCustom,
@@ -249,6 +260,8 @@ export class ExerciseDetailComponent implements OnInit, OnDestroy {
     const ex = this.exercise();
     if (!ex) return;
     this.persistenceService.saveProgress(ex.id, this.stateService.getState());
+    // Notify other tabs about progress sync (anti-cheat)
+    this.sessionLockService.notifyProgressSync(ex.id);
   }
 
   private clearProgress(): void {
@@ -340,6 +353,9 @@ export class ExerciseDetailComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.keyboardService.clearShortcuts();
+    
+    // Release session lock
+    this.sessionLockService.releaseCurrentLock();
     
     // Clear any pending save (but don't save in Quick Review mode)
     if (this.saveProgressTimeout) {

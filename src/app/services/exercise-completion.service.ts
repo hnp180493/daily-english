@@ -9,6 +9,7 @@ import { StreakService } from './streak.service';
 import { AnalyticsService } from './analytics.service';
 import { ExercisePersistenceService } from './exercise-persistence.service';
 import { EnhancedAnalyticsService } from './enhanced-analytics.service';
+import { ReviewService } from './review.service';
 import { PENALTY_CONSTANTS } from '../models/penalty.constants';
 import { getTodayLocalDate } from '../utils/date.utils';
 
@@ -34,6 +35,7 @@ export class ExerciseCompletionService {
   private analyticsService = inject(AnalyticsService);
   private persistenceService = inject(ExercisePersistenceService);
   private enhancedAnalyticsService = inject(EnhancedAnalyticsService);
+  private reviewService = inject(ReviewService);
 
   completeExercise(
     exercise: Exercise,
@@ -113,6 +115,9 @@ export class ExerciseCompletionService {
         },
         error: (err) => console.warn('[Completion] History recording failed:', err)
       });
+
+      // Schedule next review based on performance (updates review queue)
+      this.reviewService.scheduleNextReview(exercise.id, finalScore);
 
       // Track analytics
       this.analyticsService.trackExerciseComplete(exercise.id, {

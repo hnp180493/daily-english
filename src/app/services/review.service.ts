@@ -689,6 +689,8 @@ export class ReviewService {
     this.allReviewDataCache = null;
     this.cacheTimestamp = 0;
     this.reviewDataCache.clear();
+    // Also clear signal to force reload from database
+    this.reviewQueueSignal.set([]);
     // console.log('[ReviewService] Cache invalidated');
   }
 

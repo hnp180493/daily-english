@@ -111,10 +111,7 @@ export class OpenAIProvider extends BaseAIProvider {
     config: any
   ): Observable<AIStreamChunk> {
     return new Observable(observer => {
-      // Reset counters for each new stream
-      this.emittedFeedbackCount = 0;
-      this.lastEmittedScore = null;
-      
+      const state = this.createStreamingState();
       const translateToVietnamese = this.settingsService.getSettings().translateFeedbackToVietnamese;
       const prompt = this.promptService.buildAnalysisPrompt(userInput, sourceText, context, context.fullContext, context.translatedContext, translateToVietnamese);
       const modelName = config.openai.modelName || 'gpt-4';
@@ -127,8 +124,7 @@ export class OpenAIProvider extends BaseAIProvider {
           { role: 'user', content: prompt }
         ],
         temperature,
-        seed: 12345, // Fixed seed for consistent responses
-        // max_tokens: 1000,
+        seed: 12345,
         stream: true
       });
 
@@ -185,7 +181,7 @@ export class OpenAIProvider extends BaseAIProvider {
                 
                 if (content) {
                   buffer += content;
-                  this.emitPartialResponse(buffer, observer);
+                  this.emitPartialResponse(buffer, observer, state);
                 }
               } catch (e) {
                 // Ignore JSON parse errors for incomplete chunks
@@ -254,57 +250,4 @@ export class OpenAIProvider extends BaseAIProvider {
     }
   }
 
-  private emittedFeedbackCount = 0;
-  private lastEmittedScore: number | null = null;
-
-  private emitPartialResponse(buffer: string, observer: any): void {
-    try {
-      // Emit score as soon as it appears
-      const scoreMatch = buffer.match(/"accuracyScore"\s*:\s*(\d+)/);
-      if (scoreMatch) {
-        const score = parseInt(scoreMatch[1], 10);
-        if (this.lastEmittedScore !== score) {
-          observer.next({ 
-            type: 'score', 
-            data: { accuracyScore: score, feedback: [], overallComment: '' }
-          });
-          this.lastEmittedScore = score;
-        }
-      }
-
-      // Parse individual feedback items as they stream in
-      // Match complete feedback objects within the feedback array
-      const feedbackSectionMatch = buffer.match(/"feedback"\s*:\s*\[([^\]]*)/);
-      if (feedbackSectionMatch) {
-        const feedbackContent = feedbackSectionMatch[1];
-        
-        // Match individual complete feedback objects: {...}
-        const itemRegex = /\{\s*"type"\s*:\s*"([^"]+)"[^}]*?"severity"\s*:\s*"([^"]+)"[^}]*?"originalText"\s*:\s*"([^"]*)"[^}]*?"suggestion"\s*:\s*"([^"]*)"[^}]*?"explanation"\s*:\s*"([^"]*)"/g;
-        
-        const allMatches: any[] = [];
-        let match;
-        
-        // Collect all complete feedback items
-        while ((match = itemRegex.exec(feedbackContent)) !== null) {
-          allMatches.push({
-            type: match[1],
-            severity: match[2],
-            originalText: match[3],
-            suggestion: match[4],
-            explanation: match[5],
-            startIndex: 0,
-            endIndex: 0
-          });
-        }
-
-        // Emit only new items we haven't emitted yet
-        for (let i = this.emittedFeedbackCount; i < allMatches.length; i++) {
-          observer.next({ type: 'feedback', feedbackItem: allMatches[i] });
-          this.emittedFeedbackCount++;
-        }
-      }
-    } catch (e) {
-      // Ignore parsing errors for partial content
-    }
-  }
 }
