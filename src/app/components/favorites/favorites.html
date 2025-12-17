@@ -6,15 +6,15 @@
         <button
           (click)="goBack()"
           class="back-btn"
-          aria-label="Quay lại">
+          aria-label="Go back">
           <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
           </svg>
         </button>
-        <h1 class="page-title">Bài tập yêu thích</h1>
+        <h1 class="page-title">Favorite Exercises</h1>
       </div>
       <div class="exercise-count">
-        {{ favoriteExercises().length }} bài tập
+        {{ favoriteExercises().length }} exercises
       </div>
     </div>
   </header>
@@ -22,7 +22,7 @@
   <!-- Content -->
   <main class="favorites-content">
     @if (isLoading()) {
-      <app-loading-spinner [message]="'Đang tải bài tập yêu thích...'" />
+      <app-loading-spinner [message]="'Loading favorite exercises...'" />
     } @else if (hasFavorites()) {
       <div class="exercises-grid">
         @for (exercise of favoriteExercises(); track exercise.id) {
@@ -57,7 +57,7 @@
                 <button
                   (click)="removeFavorite(exercise.id, $event)"
                   class="remove-favorite-btn"
-                  aria-label="Xóa khỏi yêu thích">
+                  aria-label="Remove from favorites">
                   <svg class="w-5 h-5" viewBox="0 0 24 24">
                     <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
                   </svg>
@@ -76,16 +76,16 @@
                       <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                         <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
                       </svg>
-                      Đã làm {{ status.attemptCount }} lần
+                      Completed {{ status.attemptCount }} times
                     </span>
                     @if (status.bestScore !== undefined) {
                       <span class="separator">•</span>
                       <span class="best-score">
-                        Điểm: {{ status.bestScore }}%
+                        Score: {{ status.bestScore }}%
                       </span>
                     }
                   } @else {
-                    <span class="status-new">Chưa làm</span>
+                    <span class="status-new">Not started</span>
                   }
                 </div>
               }
@@ -105,12 +105,12 @@
         <svg class="empty-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
         </svg>
-        <h3 class="empty-title">Chưa có bài tập yêu thích</h3>
+        <h3 class="empty-title">No favorite exercises yet</h3>
         <p class="empty-description">
-          Thêm bài tập vào danh sách yêu thích để dễ dàng luyện tập lại sau này
+          Add exercises to your favorites to easily practice them later
         </p>
         <button (click)="goBack()" class="explore-btn">
-          Khám phá bài tập
+          Explore exercises
         </button>
       </div>
     }

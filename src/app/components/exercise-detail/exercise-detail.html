@@ -70,9 +70,9 @@
           <span class="points-tooltip">
             <span class="tooltip-row">Base: {{ pointsBreakdown().basePoints }} pts</span>
             @if (pointsBreakdown().hasStreakBonus) {
-              <span class="tooltip-row bonus">🔥 Streak {{ pointsBreakdown().streakDays }} ngày: +{{ pointsBreakdown().streakBonus }} pts</span>
+              <span class="tooltip-row bonus">🔥 Streak {{ pointsBreakdown().streakDays }} days: +{{ pointsBreakdown().streakBonus }} pts</span>
             }
-            <span class="tooltip-row total">Tổng: {{ pointsBreakdown().totalPoints }} pts</span>
+            <span class="tooltip-row total">Total: {{ pointsBreakdown().totalPoints }} pts</span>
           </span>
         </span>
         @if (perfectCompletions() > 0) {

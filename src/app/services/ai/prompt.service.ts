@@ -13,77 +13,52 @@ export class PromptService {
     translatedContext: string,
     translateToVietnamese: boolean = false
   ): string {
-
-    let fullContextEN: string = context.englishText;
+    const fullContextEN: string = context.englishText;
 
     const languageInstruction = translateToVietnamese
-      ? `\n\n====================================================
-LANGUAGE INSTRUCTION
-====================================================
-- Provide ALL feedback explanations in Vietnamese.
-- Keep technical terms (originalText, suggestion) in English.
-- Translate all explanation text to Vietnamese for better understanding.
-- Talk to students in a natural, friendly, and mature tone, avoid overly cute expressions.
+      ? `
+LANGUAGE INSTRUCTION:
+- Write ALL explanations in Vietnamese.
+- Keep originalText and suggestion in English.
+- Use a natural, friendly tone.
 `
       : '';
 
     return `You are a strict English teacher evaluating a Vietnamese → English translation.
-Always output RAW JSON only.${languageInstruction}
+${languageInstruction}
+TASK: Evaluate ONLY the Student Translation. Do NOT rewrite other sentences.
 
-Your task:
-Evaluate ONLY the Student Translation (EN).
-Do NOT evaluate, correct, rewrite, or suggest changes for any other English sentences.
-
-Reference rule:
-The Full Paragraph (EN) is the ONLY reference for meaning and tense.
-You MUST NOT infer tense from the Vietnamese text.
+REFERENCE: Use Full Paragraph (EN) as the ONLY reference for meaning and tense.
 
 TENSE RULE:
-Match the tense used in the Full Paragraph (EN) for the corresponding sentence.
-- If the Student Translation matches the tense used in the Full Paragraph (EN), do NOT suggest a tense change.
-- If the verb difference is only 3rd-person singular agreement (e.g., spread → spreads), treat it as a minor grammar/verb form issue, NOT a tense error.
-
-Do NOT:
-- rewrite the entire paragraph
-- normalize tense across the story
-- change tense based on the Vietnamese text
-- assume the story happened in the past or present unless the Full Paragraph (EN) states it
+- Match tense from Full Paragraph (EN), not Vietnamese text.
+- 3rd-person singular differences (spread → spreads) = minor grammar, NOT tense error.
 
 SCORING (start 100):
-- Incorrect tense relative to the Full Paragraph (EN): -5 to -10
+- Tense error: -5 to -10
 - Meaning change: -15 to -25
 - Missing detail: -10 to -20
 - Grammar/structure: -5 to -15
 - Unnatural word choice: -5 to -15
 - Spelling: -5 to -15
 
-Meaning errors ONLY apply if the main idea changes.
-Minor rephrasing is acceptable.
+FEEDBACK STYLE: Sound like a teacher talking to a student. No technical jargon.
 
-If score < 100, include at least ONE specific feedback item.
+=== OUTPUT FORMAT (STREAMING JSONL) ===
+Output EXACTLY in this format, one JSON per line:
+{"accuracyScore": <number>}
+{"type": "<type>", "suggestion": "<text>", "explanation": "<text>"}
+{"type": "<type>", "suggestion": "<text>", "explanation": "<text>"}
+[END]
 
-FEEDBACK STYLE:
-- Feedback must sound like a teacher talking to a student.
-- Do NOT mention system rules, instructions, or technical terms, "Full Paragraph (EN)", ...
-- Explain tense issues based on meaning in the Full Paragraph (EN), not grammar labels.
+Rules:
+- First line MUST be the score object
+- Each feedback item on its own line
+- End with [END] marker
+- type: grammar | vocabulary | structure | spelling | suggestion | tense | meaning
+- If score = 100, output score line then [END] immediately
 
-OUTPUT (RAW JSON ONLY):
-{
-  "accuracyScore": number,
-  "feedback": [
-    {
-      "type": "grammar | vocabulary | structure | spelling | suggestion | tense | meaning",
-      "severity": "minor | moderate | major | serious",
-      "originalText": "...",
-      "suggestion": "...",
-      "explanation": "...",
-      "startIndex": number,
-      "endIndex": number
-    }
-  ]
-}
-
-INPUT:
+=== INPUT ===
 Full Paragraph (VN): ${fullContext}
 Full Paragraph (EN): ${fullContextEN}
 Current Sentence (VN): ${sourceText}

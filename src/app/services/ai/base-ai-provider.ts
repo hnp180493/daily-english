@@ -65,21 +65,118 @@ export abstract class BaseAIProvider {
 
   /**
    * Emit partial response chunks during streaming.
-   * Extracts score and feedback items as they become available.
+   * Supports both JSONL format (new) and nested JSON format (legacy).
    */
   protected emitPartialResponse(
     buffer: string,
     observer: Subscriber<AIStreamChunk>,
     state: StreamingState
   ): void {
+    // Clean LLM special tokens (Mistral, Llama, etc.)
+    let cleanBuffer = this.stripLlmTokens(buffer);
+
     // Clean markdown code blocks
-    let cleanBuffer = buffer.trim();
     if (cleanBuffer.startsWith('```json')) {
       cleanBuffer = cleanBuffer.replace(/^```json\s*/, '').replace(/\s*```$/, '');
     } else if (cleanBuffer.startsWith('```')) {
       cleanBuffer = cleanBuffer.replace(/^```\s*/, '').replace(/\s*```$/, '');
     }
 
+    // Try JSONL format first (new streaming format)
+    if (this.tryParseJsonl(cleanBuffer, observer, state)) {
+      return;
+    }
+
+    // Fallback to legacy nested JSON format
+    this.parseLegacyJson(cleanBuffer, observer, state);
+  }
+
+  /**
+   * Strip LLM special tokens like <s>, </s>, <|im_start|>, etc.
+   */
+  private stripLlmTokens(text: string): string {
+    return text
+      .replace(/<s>/gi, '')
+      .replace(/<\/s>/gi, '')
+      .replace(/<\|im_start\|>/gi, '')
+      .replace(/<\|im_end\|>/gi, '')
+      .replace(/<\|endoftext\|>/gi, '')
+      .replace(/<\|assistant\|>/gi, '')
+      .replace(/<\|user\|>/gi, '')
+      .replace(/<\|system\|>/gi, '')
+      .trim();
+  }
+
+  /**
+   * Parse JSONL format: each line is a separate JSON object.
+   * Format:
+   *   {"accuracyScore": 85}
+   *   {"type": "tense", "suggestion": "...", "explanation": "..."}
+   *   [END]
+   */
+  private tryParseJsonl(
+    buffer: string,
+    observer: Subscriber<AIStreamChunk>,
+    state: StreamingState
+  ): boolean {
+    const lines = buffer.split('\n').filter(line => line.trim());
+    
+    // Check if this looks like JSONL format (first line should be score-only object)
+    if (lines.length === 0) return false;
+    
+    const firstLine = lines[0].trim();
+    // JSONL format starts with {"accuracyScore": ...} without feedback array
+    if (!firstLine.match(/^\s*\{\s*"accuracyScore"\s*:\s*\d+\s*\}\s*$/)) {
+      return false;
+    }
+
+    // Parse each complete line
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i].trim();
+      
+      // Skip [END] marker
+      if (line === '[END]') continue;
+      
+      // Skip already processed lines
+      if (i === 0 && state.lastScore !== -1) continue;
+      if (i > 0 && i <= state.emittedFeedbackCount) continue;
+
+      try {
+        const obj = JSON.parse(line);
+        
+        // Score object
+        if ('accuracyScore' in obj && !('type' in obj)) {
+          if (state.lastScore !== obj.accuracyScore) {
+            state.lastScore = obj.accuracyScore;
+            observer.next({
+              type: 'score',
+              data: { accuracyScore: obj.accuracyScore, feedback: [], overallComment: '' }
+            });
+          }
+        }
+        // Feedback item
+        else if (obj.type && (obj.suggestion || obj.explanation)) {
+          if (i > state.emittedFeedbackCount) {
+            observer.next({ type: 'feedback', feedbackItem: obj as FeedbackItem });
+            state.emittedFeedbackCount = i;
+          }
+        }
+      } catch {
+        // Line not yet complete, skip
+      }
+    }
+
+    return true;
+  }
+
+  /**
+   * Parse legacy nested JSON format for backward compatibility.
+   */
+  private parseLegacyJson(
+    cleanBuffer: string,
+    observer: Subscriber<AIStreamChunk>,
+    state: StreamingState
+  ): void {
     // Emit score as soon as it appears
     const scoreMatch = cleanBuffer.match(/"accuracyScore"\s*:\s*(\d+)/);
     if (scoreMatch) {
@@ -165,5 +262,68 @@ export abstract class BaseAIProvider {
    */
   protected createStreamingState(): StreamingState {
     return { lastScore: -1, emittedFeedbackCount: 0 };
+  }
+
+  /**
+   * Parse response content supporting both JSONL and legacy JSON formats.
+   * Returns a default response if content is empty or invalid.
+   */
+  protected parseResponseContent(content: string): AIResponse {
+    // Strip LLM special tokens first
+    let cleanText = this.stripLlmTokens(content);
+    cleanText = cleanText.replace(/^```json\s*/i, '').replace(/^```\s*/, '');
+    cleanText = cleanText.replace(/\s*```\s*$/, '');
+
+    // Check for empty/invalid response from weak models
+    if (!cleanText || cleanText.length < 10) {
+      console.warn('[BaseAIProvider] Empty or too short response from model');
+      throw new Error(
+        'Model returned empty response. This model may not support the required prompt format. Try a different model.'
+      );
+    }
+
+    // Try JSONL format first
+    const lines = cleanText.split('\n').filter(line => line.trim() && line.trim() !== '[END]');
+    if (lines.length > 0) {
+      const firstLine = lines[0].trim();
+      if (firstLine.match(/^\s*\{\s*"accuracyScore"\s*:\s*\d+\s*\}\s*$/)) {
+        let score = 0;
+        const feedback: FeedbackItem[] = [];
+
+        for (const line of lines) {
+          try {
+            const obj = JSON.parse(line.trim());
+            if ('accuracyScore' in obj && !('type' in obj)) {
+              score = obj.accuracyScore;
+            } else if (obj.type) {
+              feedback.push(obj as FeedbackItem);
+            }
+          } catch {
+            // Skip invalid lines
+          }
+        }
+
+        return { accuracyScore: score, feedback, overallComment: '' };
+      }
+    }
+
+    // Fallback to legacy nested JSON format
+    const jsonMatch = cleanText.match(/\{[\s\S]*\}/);
+    if (jsonMatch) {
+      try {
+        const parsed = JSON.parse(jsonMatch[0]);
+        return {
+          accuracyScore: parsed.accuracyScore || 0,
+          feedback: parsed.feedback || [],
+          overallComment: parsed.overallComment || ''
+        };
+      } catch {
+        // JSON parse failed
+      }
+    }
+
+    throw new Error(
+      'Invalid response format. The model did not return valid JSON. Try a different model or check your API configuration.'
+    );
   }
 }

@@ -156,12 +156,8 @@
           </div>
           <small
             >Get your free API key from
-            <a href="https://openrouter.ai/keys" target="_blank" rel="noopener">OpenRouter</a> |
-            <a
-              href="https://github.com/yourusername/yourrepo/blob/main/docs/OPENROUTER-GUIDE.md"
-              target="_blank"
-              >Setup Guide</a
-            ></small
+            <a href="https://openrouter.ai/keys" target="_blank" rel="noopener">OpenRouter</a>
+          </small
           >
         </div>
 
@@ -349,7 +345,8 @@
       }
     </div>
 
-    <!-- Azure OpenAI Card -->
+    <!-- Azure OpenAI Card - Only visible for specific user -->
+    @if (showAzureProvider()) {
     <div
       class="provider-card"
       [class.selected]="config().provider === 'azure'"
@@ -426,6 +423,7 @@
       </div>
       }
     </div>
+    }
   </div>
 
   <!-- Action Buttons -->

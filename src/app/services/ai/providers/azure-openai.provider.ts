@@ -213,31 +213,10 @@ export class AzureOpenAIProvider extends BaseAIProvider {
 
   private parseResponse(content: string): AIResponse {
     try {
-      let cleanText = content.trim();
-      if (cleanText.startsWith('```json')) {
-        cleanText = cleanText.replace(/^```json\n/, '').replace(/\n```$/, '');
-      } else if (cleanText.startsWith('```')) {
-        cleanText = cleanText.replace(/^```\n/, '').replace(/\n```$/, '');
-      }
-
-      const jsonMatch = cleanText.match(/\{[\s\S]*\}/);
-      if (jsonMatch) {
-        const parsed = JSON.parse(jsonMatch[0]);
-        return {
-          accuracyScore: parsed.accuracyScore || 0,
-          feedback: parsed.feedback || [],
-          overallComment: ''
-        };
-      }
-      throw new Error('Invalid response format');
+      return this.parseResponseContent(content);
     } catch (error) {
-      console.error('Failed to parse AI response:', error);
-      return {
-        accuracyScore: 50,
-        feedback: [],
-        overallComment: ''
-      };
+      console.error('[AzureOpenAI] Failed to parse AI response:', error);
+      return { accuracyScore: 50, feedback: [], overallComment: '' };
     }
   }
-
 }

@@ -63,9 +63,23 @@ export class FeedbackPanelComponent {
   feedbackTypes = computed(() => Object.keys(this.groupedFeedback()));
 
   private formatSuggestionText(text: string): string {
-    // Highlight words in green (correct) and red (incorrect) without strikethrough
-    // Pattern: word(incorrect) -> <span class="correct">word</span><span class="incorrect">incorrect</span>
-    return text.replace(/(\w+)\s*\(([^)]+)\)/g, '<span class="text-green">$1</span> <span class="text-red">($2)</span>');
+    let formatted = text;
+
+    // Highlight words in single quotes with orange
+    // Match quote after space/start, content, quote before space/punctuation/end
+    // This avoids matching apostrophes inside words like "o'clock"
+    formatted = formatted.replace(
+      /(\s|^)'(.+?)'(\s|[.,!?]|$)/g,
+      (_, before, content, after) => `${before}<span class="text-orange">${content}</span>${after}`
+    );
+
+    // Also handle double quotes
+    formatted = formatted.replace(
+      /(\s|^)"(.+?)"(\s|[.,!?]|$)/g,
+      (_, before, content, after) => `${before}<span class="text-orange">${content}</span>${after}`
+    );
+
+    return formatted;
   }
 
   private formatExplanationText(explanation: string): string {

@@ -1,8 +1,9 @@
-import { Component, ChangeDetectionStrategy, OnInit, inject, signal } from '@angular/core';
+import { Component, ChangeDetectionStrategy, OnInit, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ConfigService, AIConfig } from '../../services/config.service';
 import { ToastService } from '../../services/toast.service';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-ai-provider-config',
@@ -15,6 +16,13 @@ import { ToastService } from '../../services/toast.service';
 export class AiProviderConfig implements OnInit {
   private configService = inject(ConfigService);
   private toastService = inject(ToastService);
+  private authService = inject(AuthService);
+
+  // Chỉ hiển thị Azure OpenAI cho email cụ thể
+  showAzureProvider = computed(() => {
+    const email = this.authService.getEmail();
+    return email === 'phuochnsw@gmail.com';
+  });
 
   config = signal<AIConfig>({
     provider: 'gemini',
@@ -33,7 +41,7 @@ export class AiProviderConfig implements OnInit {
     },
     openrouter: {
       apiKey: '',
-      modelName: 'mistralai/mistral-7b-instruct:free',
+      modelName: 'nvidia/nemotron-3-nano-30b-a3b:free',
       siteUrl: '',
       siteName: ''
     }
@@ -74,7 +82,7 @@ export class AiProviderConfig implements OnInit {
         ...saved,
         openrouter: saved.openrouter || {
           apiKey: '',
-          modelName: 'mistralai/mistral-7b-instruct:free',
+          modelName: 'nvidia/nemotron-3-nano-30b-a3b:free',
           siteUrl: '',
           siteName: ''
         }
@@ -220,7 +228,7 @@ export class AiProviderConfig implements OnInit {
         },
         openrouter: {
           apiKey: '',
-          modelName: 'mistralai/mistral-7b-instruct:free',
+          modelName: 'nvidia/nemotron-3-nano-30b-a3b:free',
           siteUrl: '',
           siteName: ''
         }
