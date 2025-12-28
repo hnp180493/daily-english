@@ -142,7 +142,15 @@ export abstract class BaseAIProvider {
       if (i > 0 && i <= state.emittedFeedbackCount) continue;
 
       try {
-        const obj = JSON.parse(line);
+        // Try to fix common JSON issues (unquoted string values)
+        let fixedLine = line;
+        // Fix unquoted type values like {"type": spelling, ...} -> {"type": "spelling", ...}
+        fixedLine = fixedLine.replace(
+          /"type"\s*:\s*([a-zA-Z]+)(\s*[,}])/g,
+          '"type": "$1"$2'
+        );
+        
+        const obj = JSON.parse(fixedLine);
         
         // Score object
         if ('accuracyScore' in obj && !('type' in obj)) {
