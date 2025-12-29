@@ -66,7 +66,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   userProgress = toSignal(this.progressService.getUserProgress());
   currentUser = this.authService.currentUser;
-  selectedTimeRange = signal<TimeRange>('30d');
+  selectedTimeRange = signal<TimeRange>('all');
   historyTimeRange = signal<HistoryTimeRange>('7d');
   activeTab = signal<'overview' | 'performance' | 'activity' | 'insights'>('overview');
   isLoading = signal(true);

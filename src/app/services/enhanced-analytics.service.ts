@@ -96,15 +96,15 @@ export class EnhancedAnalyticsService {
   private getOptimalLimit(timeRange: TimeRange): number {
     switch (timeRange) {
       case '7d':
-        return 100; // Likely enough for 7 days
+        return 200; // Likely enough for 7 days
       case '30d':
-        return 300; // Likely enough for 30 days
+        return 400; // Likely enough for 30 days
       case '90d':
-        return 500; // Likely enough for 90 days
+        return 800; // Likely enough for 90 days
       case 'all':
-        return 1000; // Maximum for all time
+        return 1500; // Maximum for all time
       default:
-        return 300;
+        return 600;
     }
   }
 
@@ -756,14 +756,16 @@ export class EnhancedAnalyticsService {
       };
     }
 
-    // Group exercises by week
+    // Group exercises by week using local date
     const weeklyMap = new Map<string, number>();
     const now = new Date();
-    const currentWeekStart = this.getWeekStart(now);
+    const currentWeekStart = this.getWeekStartLocal(now);
+    const currentWeekKey = this.getLocalDateString(currentWeekStart);
 
     records.forEach(record => {
-      const weekStart = this.getWeekStart(new Date(record.completedAt));
-      const weekKey = weekStart.toISOString().split('T')[0];
+      const recordDate = new Date(record.completedAt);
+      const weekStart = this.getWeekStartLocal(recordDate);
+      const weekKey = this.getLocalDateString(weekStart);
       weeklyMap.set(weekKey, (weeklyMap.get(weekKey) || 0) + 1);
     });
 
@@ -775,7 +777,6 @@ export class EnhancedAnalyticsService {
       : 0;
 
     // Get current week count
-    const currentWeekKey = currentWeekStart.toISOString().split('T')[0];
     const currentWeekCount = weeklyMap.get(currentWeekKey) || 0;
 
     // Calculate percentage difference
@@ -788,8 +789,8 @@ export class EnhancedAnalyticsService {
     for (let i = 3; i >= 0; i--) {
       const weekDate = new Date(now);
       weekDate.setDate(weekDate.getDate() - (i * 7));
-      const weekStart = this.getWeekStart(weekDate);
-      const weekKey = weekStart.toISOString().split('T')[0];
+      const weekStart = this.getWeekStartLocal(weekDate);
+      const weekKey = this.getLocalDateString(weekStart);
       const count = weeklyMap.get(weekKey) || 0;
 
       weeklyBreakdown.push({
@@ -807,13 +808,20 @@ export class EnhancedAnalyticsService {
   }
 
   /**
-   * Get the start of the week (Monday) for a given date
+   * Get the start of the week (Monday) for a given date in local timezone
+   * Week runs from Monday to Sunday (ISO week)
    */
-  private getWeekStart(date: Date): Date {
+  private getWeekStartLocal(date: Date): Date {
     const d = new Date(date);
     const day = d.getDay();
-    const diff = d.getDate() - day + (day === 0 ? -6 : 1); // Adjust when day is Sunday
-    return new Date(d.setDate(diff));
+    // Sunday (0) -> subtract 6 days to get to Monday
+    // Monday (1) -> subtract 0 days
+    // Tuesday (2) -> subtract 1 day, etc.
+    const diff = day === 0 ? 6 : day - 1;
+    d.setDate(d.getDate() - diff);
+    // Reset time to start of day
+    d.setHours(0, 0, 0, 0);
+    return d;
   }
 
   /**

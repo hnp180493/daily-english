@@ -31,13 +31,13 @@ export const environment: {
 
 
   supabase: {
-    url: 'https://pxxbalgsvnpvxhnnkeyg.supabase.co',
-    anonKey: 'sb_publishable_oSMjKms_4R4g_xMBHcNeog_rQf7wf8m'
+    url: '',
+    anonKey: ''
   },
 
   supabaseTracking: {
-    url: 'https://huspfvwguaikvoblvdjl.supabase.co',
-    anonKey: 'sb_publishable_a8REcB8HOdHcODd8YiQmEQ_hhtaJGnA'
+    url: '',
+    anonKey: ''
   },
   
   seo: {
