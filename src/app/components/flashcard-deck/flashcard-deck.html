@@ -1,0 +1,241 @@
+<div class="flashcard-deck-page">
+  <!-- Header -->
+  <header class="page-header">
+    <div class="header-content">
+      <h1 class="page-title">
+        <span class="title-icon">📚</span>
+        Flashcard Deck
+      </h1>
+      <p class="page-subtitle">Review and memorize vocabulary</p>
+    </div>
+    @if (!isReviewing()) {
+      <div class="header-actions">
+        <button 
+          type="button" 
+          class="header-btn export-btn" 
+          (click)="exportFlashcards()"
+          [disabled]="!hasCards()"
+          title="Export flashcards to JSON file">
+          <svg class="btn-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd" />
+          </svg>
+          <span class="btn-text">Export</span>
+        </button>
+        <label class="header-btn import-btn" title="Import flashcards from JSON file">
+          <svg class="btn-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM6.293 6.707a1 1 0 010-1.414l3-3a1 1 0 011.414 0l3 3a1 1 0 01-1.414 1.414L11 5.414V13a1 1 0 11-2 0V5.414L7.707 6.707a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+          </svg>
+          <span class="btn-text">Import</span>
+          <input 
+            type="file" 
+            accept=".json"
+            class="file-input"
+            (change)="onImportFile($event)">
+        </label>
+      </div>
+    }
+  </header>
+
+  <!-- Import Status Message -->
+  @if (importMessage()) {
+    <div class="import-message" [class.success]="importSuccess()" [class.error]="!importSuccess()">
+      {{ importMessage() }}
+      <button type="button" class="close-message" (click)="clearImportMessage()">×</button>
+    </div>
+  }
+
+  @if (!isReviewing()) {
+    <!-- Stats Overview -->
+    <section class="stats-section">
+      <div class="stat-card">
+        <div class="stat-value">{{ stats().total }}</div>
+        <div class="stat-label">Total Cards</div>
+      </div>
+      <div class="stat-card due">
+        <div class="stat-value">{{ stats().due }}</div>
+        <div class="stat-label">Due for Review</div>
+      </div>
+      <div class="stat-card mastery">
+        <div class="stat-value">{{ stats().mastery }}%</div>
+        <div class="stat-label">Mastery</div>
+      </div>
+    </section>
+
+    @if (sessionStats(); as session) {
+      <!-- Session Results -->
+      <section class="session-results">
+        <h2 class="results-title">Session Complete!</h2>
+        <div class="results-grid">
+          <div class="result-item">
+            <div class="result-value">{{ session.cardsReviewed }}</div>
+            <div class="result-label">Cards Reviewed</div>
+          </div>
+          <div class="result-item">
+            <div class="result-value">{{ session.accuracy }}%</div>
+            <div class="result-label">Accuracy</div>
+          </div>
+          <div class="result-item">
+            <div class="result-value">{{ formatTime(session.timeSpent) }}</div>
+            <div class="result-label">Time Spent</div>
+          </div>
+        </div>
+      </section>
+    }
+
+    @if (hasCards()) {
+      <!-- Filters -->
+      <section class="filters-section">
+        <h3 class="filters-title">Filters</h3>
+        <div class="filters-grid">
+          <div class="filter-group">
+            <label class="filter-label">Category</label>
+            <select
+              class="filter-select"
+              [ngModel]="filter().category"
+              (ngModelChange)="updateFilter('category', $event)">
+              <option [ngValue]="null">All Categories</option>
+              @for (cat of categories(); track cat) {
+                <option [value]="cat">{{ cat }}</option>
+              }
+            </select>
+          </div>
+
+          <div class="filter-group">
+            <label class="filter-label">Mastery</label>
+            <select
+              class="filter-select"
+              [ngModel]="filter().mastery"
+              (ngModelChange)="updateFilter('mastery', $event)">
+              <option [ngValue]="null">All Levels</option>
+              <option value="new">New</option>
+              <option value="learning">Learning</option>
+              <option value="mastered">Mastered</option>
+            </select>
+          </div>
+
+          @if (filter().category || filter().mastery) {
+            <button type="button" class="clear-filters-btn" (click)="clearFilters()">
+              Clear Filters
+            </button>
+          }
+        </div>
+      </section>
+
+      <!-- Action Buttons -->
+      <section class="actions-section">
+        @if (hasDueCards()) {
+          <button type="button" class="action-btn primary" (click)="startReview()">
+            <span class="btn-icon">▶</span>
+            Review Due Cards ({{ dueCards().length }})
+          </button>
+        } @else {
+          <div class="no-due-message">
+            <span class="message-icon">✓</span>
+            <span>No cards due for review!</span>
+          </div>
+          <button type="button" class="action-btn secondary" (click)="reviewAllCards()">
+            Review All Cards Anyway
+          </button>
+        }
+      </section>
+
+      <!-- Card List -->
+      <section class="cards-list-section">
+        <h3 class="list-title">Your Cards ({{ filteredCards().length }})</h3>
+        <div class="cards-list">
+          @for (card of filteredCards(); track card.id) {
+            <div class="card-item">
+              <div class="card-content">
+                <div class="card-front">{{ card.front }}</div>
+                <div class="card-back">{{ card.back }}</div>
+                @if (card.example) {
+                  <div class="card-example">{{ card.example }}</div>
+                }
+              </div>
+              <div class="card-meta">
+                <span class="mastery-badge" [class]="getMasteryClass(getCardMastery(card))">
+                  {{ getMasteryLabel(getCardMastery(card)) }}
+                </span>
+                <button
+                  type="button"
+                  class="delete-btn"
+                  (click)="deleteCard(card)"
+                  aria-label="Delete flashcard">
+                  🗑️
+                </button>
+              </div>
+            </div>
+          } @empty {
+            <div class="empty-list">
+              <p>No cards match your filters.</p>
+            </div>
+          }
+        </div>
+      </section>
+    } @else {
+      <!-- Empty State -->
+      <section class="empty-state">
+        <div class="empty-icon">📚</div>
+        <h2 class="empty-title">No Flashcards Yet</h2>
+        <p class="empty-text">
+          Complete exercises and add vocabulary to your flashcard deck to start reviewing.
+        </p>
+      </section>
+    }
+  } @else {
+    <!-- Review Mode -->
+    <section class="review-section">
+      <!-- Progress -->
+      <div class="review-progress">
+        <span>Card {{ progress().current }} of {{ progress().total }}</span>
+        <button type="button" class="end-session-btn" (click)="endSession()">
+          End Session
+        </button>
+      </div>
+
+      <!-- Flashcard -->
+      @if (currentCard(); as card) {
+        <div class="review-card-wrapper" (click)="flipCard()">
+          <div class="review-card" [class.flipped]="isFlipped()">
+            <div class="card-face card-front-face">
+              <div class="face-label">English</div>
+              <div class="face-content">{{ card.front }}</div>
+              <div class="face-hint">Tap to flip</div>
+            </div>
+            <div class="card-face card-back-face">
+              <div class="face-label">Vietnamese</div>
+              <div class="face-content">{{ card.back }}</div>
+              @if (card.example) {
+                <div class="face-example">
+                  <span class="example-label">Example:</span>
+                  <span class="example-text">{{ card.example }}</span>
+                </div>
+              }
+              <div class="face-hint">Tap to flip back</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Actions -->
+        @if (isFlipped()) {
+          <div class="review-actions">
+            <button
+              type="button"
+              class="review-btn dont-know"
+              (click)="markCard(false); $event.stopPropagation()">
+              <span class="btn-icon">✗</span>
+              <span>Don't Know</span>
+            </button>
+            <button
+              type="button"
+              class="review-btn know"
+              (click)="markCard(true); $event.stopPropagation()">
+              <span class="btn-icon">✓</span>
+              <span>Know</span>
+            </button>
+          </div>
+        }
+      }
+    </section>
+  }
+</div>

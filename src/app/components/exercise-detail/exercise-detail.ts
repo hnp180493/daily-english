@@ -26,10 +26,13 @@ import { ExerciseLoaderService } from '../../services/exercise-loader.service';
 import { ExerciseNavigationService } from '../../services/exercise-navigation.service';
 import { ExerciseMetricsService } from '../../services/exercise-metrics.service';
 import { ExerciseSessionLockService } from '../../services/exercise-session-lock.service';
+import { FeatureFlagService } from '../../services/feature-flag.service';
 import { TTSSettings } from '../tts-settings/tts-settings';
 import { PenaltyScore } from '../penalty-score/penalty-score';
 import { ExerciseContext } from '../../models/ai.model';
 import { MarkdownPipe } from '../../pipes/markdown.pipe';
+import { MemoryBoostComponent } from '../memory-boost/memory-boost';
+import { QUIZ_CONSTANTS } from '../../models/memory-retention.model';
 
 @Component({
   selector: 'app-exercise-detail',
@@ -44,6 +47,7 @@ import { MarkdownPipe } from '../../pipes/markdown.pipe';
     TTSSettings,
     PenaltyScore,
     MarkdownPipe,
+    MemoryBoostComponent,
   ],
   templateUrl: './exercise-detail.html',
   styleUrl: './exercise-detail.scss',
@@ -68,6 +72,7 @@ export class ExerciseDetailComponent implements OnInit, OnDestroy {
   private navigationService = inject(ExerciseNavigationService);
   private metricsService = inject(ExerciseMetricsService);
   private sessionLockService = inject(ExerciseSessionLockService);
+  private featureFlagService = inject(FeatureFlagService);
 
   private progressSignal = this.progressService.getProgressSignal();
 
@@ -88,6 +93,10 @@ export class ExerciseDetailComponent implements OnInit, OnDestroy {
   isReviewMode = signal(false);
   exerciseStartTime: Date | null = null;
   private saveProgressTimeout: any = null;
+  
+  // Memory Boost signals
+  showMemoryBoost = signal(false);
+  memoryBoostBonusAwarded = signal(false);
   // Delegate to state service
   sentences = this.stateService.sentences;
   currentSentenceIndex = this.stateService.currentSentenceIndex;
@@ -136,6 +145,25 @@ export class ExerciseDetailComponent implements OnInit, OnDestroy {
   isPlayingTTS = computed(() => this.ttsService.isPlaying());
   isPausedTTS = computed(() => this.ttsService.isPaused());
   currentTTSSentenceIndex = computed(() => this.ttsService.currentSentenceIndex());
+
+  // Memory Boost computed - show when score >= 75% AND user is beta tester
+  canShowMemoryBoost = computed(() => {
+    const metrics = this.penaltyMetrics();
+    const isBetaTester = this.featureFlagService.isMemoryBoostEnabled();
+    return isBetaTester &&
+           this.isExerciseComplete() && 
+           this.isReviewMode() && 
+           metrics && 
+           metrics.finalScore >= QUIZ_CONSTANTS.MIN_SCORE_FOR_QUIZ;
+  });
+
+  // Get user's full translation for Memory Boost
+  userFullTranslation = computed(() => {
+    return this.sentences()
+      .filter(s => s.isCompleted && s.translation)
+      .map(s => s.translation)
+      .join(' ');
+  });
 
   // Settings
   settings = this.settingsService.getSettingsSignal();
@@ -653,5 +681,25 @@ export class ExerciseDetailComponent implements OnInit, OnDestroy {
   onCloseErrorModal(): void {
     this.showErrorModal.set(false);
     this.errorMessage.set('');
+  }
+
+  /**
+   * Handle bonus points awarded from Memory Boost quiz.
+   * Requirements: 4.4 - Award bonus points for quiz score >= 80%
+   */
+  onMemoryBoostBonusAwarded(points: number): void {
+    if (!this.memoryBoostBonusAwarded()) {
+      this.memoryBoostBonusAwarded.set(true);
+      // Add bonus points to user's total
+      this.progressService.addBonusPoints(points);
+      console.log(`[ExerciseDetail] Memory Boost bonus awarded: ${points} points`);
+    }
+  }
+
+  /**
+   * Toggle Memory Boost section visibility.
+   */
+  toggleMemoryBoost(): void {
+    this.showMemoryBoost.update(v => !v);
   }
 }

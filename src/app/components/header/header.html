@@ -28,6 +28,12 @@
                 📊 Dashboard
               </a>
             }
+            @if (isBetaTester()) {
+              <a routerLink="/flashcards" routerLinkActive="active" class="dropdown-item">
+                🃏 Flashcards
+                <span class="beta-tag">BETA</span>
+              </a>
+            }
             <a routerLink="/exercises/custom" routerLinkActive="active" class="dropdown-item">
               📝 Custom Exercises
             </a>

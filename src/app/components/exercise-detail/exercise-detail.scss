@@ -1137,3 +1137,77 @@
     transform: translateY(0);
   }
 }
+
+
+// Memory Boost Section
+.memory-boost-section {
+  margin-top: 1.5rem;
+}
+
+.memory-boost-toggle {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  background: linear-gradient(135deg, rgba(129, 140, 248, 0.08) 0%, rgba(99, 102, 241, 0.08) 100%);
+  border: 1px solid #2a2d4a;
+  border-radius: 8px;
+  color: #818CF8;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  cursor: pointer;
+
+  &:hover {
+    background: linear-gradient(135deg, rgba(129, 140, 248, 0.15) 0%, rgba(99, 102, 241, 0.15) 100%);
+    border-color: #3a3d5a;
+  }
+
+  &:focus {
+    outline: 2px solid #818CF8;
+    outline-offset: 2px;
+  }
+
+  &.expanded {
+    border-radius: 8px 8px 0 0;
+    border-bottom-color: transparent;
+  }
+}
+
+.toggle-icon {
+  @apply text-xl;
+}
+
+.toggle-text {
+  @apply flex-1 text-left;
+}
+
+.toggle-arrow {
+  @apply text-sm transition-transform duration-200;
+
+  &.rotated {
+    transform: rotate(180deg);
+  }
+}
+
+.bonus-badge {
+  @apply px-2 py-0.5 text-xs font-bold rounded-full;
+  @apply bg-yellow-400 text-yellow-900;
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+}
+
+.memory-boost-section app-memory-boost {
+  @apply block;
+  border: 1px solid #2a2d4a;
+  border-top: none;
+  border-radius: 0 0 8px 8px;
+}

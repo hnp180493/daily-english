@@ -1,0 +1,117 @@
+@if (!isQuizComplete()) {
+  <!-- Quiz in progress -->
+  <div class="quiz-container">
+    <!-- Progress bar -->
+    <div class="progress-section">
+      <div class="progress-text">
+        <span>Question {{ progress().current }} of {{ progress().total }}</span>
+        <span class="score-preview">{{ correctCount() }}/{{ answers().length }} correct</span>
+      </div>
+      <div class="progress-bar">
+        <div 
+          class="progress-fill" 
+          [style.width.%]="progressPercentage()">
+        </div>
+      </div>
+    </div>
+
+    <!-- Question -->
+    @if (currentQuestion(); as question) {
+      <div class="question-section">
+        <h3 class="question-text">{{ question.questionText }}</h3>
+
+        <!-- Answer options -->
+        <div class="options-list">
+          @for (option of question.options; track $index) {
+            <button
+              type="button"
+              class="option-button"
+              [class]="getOptionClass($index)"
+              [disabled]="selectedAnswer() !== null"
+              (click)="selectAnswer($index)">
+              <span class="option-letter">{{ ['A', 'B', 'C', 'D'][$index] }}</span>
+              <span class="option-text">{{ option }}</span>
+              @if (getOptionIcon($index); as icon) {
+                <span class="option-icon">{{ icon }}</span>
+              }
+            </button>
+          }
+        </div>
+
+        <!-- Explanation -->
+        @if (showExplanation()) {
+          <div class="explanation-section" [class.correct]="isAnswerCorrect()" [class.incorrect]="!isAnswerCorrect()">
+            <div class="explanation-header">
+              @if (isAnswerCorrect()) {
+                <span class="result-icon correct">✓</span>
+                <span class="result-text">Correct!</span>
+              } @else {
+                <span class="result-icon incorrect">✗</span>
+                <span class="result-text">Incorrect</span>
+              }
+            </div>
+            <p class="explanation-text">{{ question.explanation }}</p>
+          </div>
+
+          <!-- Next button -->
+          <button
+            type="button"
+            class="next-button"
+            (click)="nextQuestion()">
+            @if (isLastQuestion()) {
+              View Results
+            } @else {
+              Next Question
+            }
+            <span class="arrow">→</span>
+          </button>
+        }
+      </div>
+    }
+  </div>
+} @else {
+  <!-- Quiz complete - Results -->
+  <div class="results-container">
+    <div class="results-header">
+      <div class="score-circle" [class.excellent]="quizScore() >= 80" [class.good]="quizScore() >= 60 && quizScore() < 80" [class.poor]="quizScore() < 60">
+        <span class="score-value">{{ quizScore() }}%</span>
+      </div>
+      <h3 class="results-title">Quiz Complete!</h3>
+      <p class="results-summary">
+        You got {{ correctCount() }} out of {{ questions().length }} questions correct.
+      </p>
+    </div>
+
+    <!-- Answer review -->
+    <div class="answers-review">
+      <h4 class="review-title">Review Your Answers</h4>
+      @for (question of questions(); track question.id; let i = $index) {
+        <div class="review-item" [class.correct]="answers()[i]?.isCorrect" [class.incorrect]="!answers()[i]?.isCorrect">
+          <div class="review-question">
+            <span class="review-number">{{ i + 1 }}.</span>
+            <span class="review-text">{{ question.questionText }}</span>
+          </div>
+          <div class="review-answer">
+            @if (answers()[i]?.isCorrect) {
+              <span class="review-icon correct">✓</span>
+            } @else {
+              <span class="review-icon incorrect">✗</span>
+              <span class="your-answer">Your answer: {{ question.options[answers()[i]?.selectedIndex ?? 0] }}</span>
+              <span class="correct-answer">Correct: {{ question.options[question.correctIndex] }}</span>
+            }
+          </div>
+        </div>
+      }
+    </div>
+
+    <!-- Actions -->
+    <div class="results-actions">
+      <button
+        type="button"
+        class="restart-button"
+        (click)="restartQuiz()">
+        Try Again
+      </button>
+    </div>
+  </div>
+}

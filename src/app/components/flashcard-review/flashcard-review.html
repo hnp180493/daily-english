@@ -1,0 +1,107 @@
+@if (hasCards()) {
+  <div class="flashcard-review-container">
+    <!-- Progress -->
+    <div class="progress-section">
+      <div class="progress-text">
+        <span>Card {{ progress().current }} of {{ progress().total }}</span>
+        <span class="reviewed-count">{{ reviewedCount() }} reviewed</span>
+      </div>
+      <div class="progress-bar">
+        <div 
+          class="progress-fill" 
+          [style.width.%]="progressPercentage()">
+        </div>
+      </div>
+    </div>
+
+    <!-- Flashcard -->
+    @if (currentCard(); as card) {
+      <div 
+        class="flashcard-wrapper"
+        (click)="flipCard()">
+        <div class="flashcard" [class.flipped]="isFlipped()">
+          <!-- Front -->
+          <div class="flashcard-face flashcard-front">
+            <div class="card-label">English</div>
+            <div class="card-content">{{ card.front }}</div>
+            <div class="flip-hint">Tap to flip</div>
+          </div>
+          <!-- Back -->
+          <div class="flashcard-face flashcard-back">
+            <div class="card-label">Vietnamese</div>
+            <div class="card-content">{{ card.back }}</div>
+            @if (card.example) {
+              <div class="card-example">
+                <span class="example-label">Example:</span>
+                <span class="example-text">{{ card.example }}</span>
+              </div>
+            }
+            <div class="flip-hint">Tap to flip back</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Actions -->
+      @if (isFlipped()) {
+        <div class="action-buttons">
+          <button
+            type="button"
+            class="action-button dont-know"
+            (click)="markCard(false); $event.stopPropagation()">
+            <span class="action-icon">✗</span>
+            <span class="action-text">Don't Know</span>
+          </button>
+          <button
+            type="button"
+            class="action-button know"
+            (click)="markCard(true); $event.stopPropagation()">
+            <span class="action-icon">✓</span>
+            <span class="action-text">Know</span>
+          </button>
+        </div>
+      } @else {
+        <div class="navigation-buttons">
+          <button
+            type="button"
+            class="nav-button"
+            [disabled]="currentIndex() === 0"
+            (click)="previousCard(); $event.stopPropagation()">
+            ← Previous
+          </button>
+          <button
+            type="button"
+            class="nav-button"
+            [disabled]="isLastCard()"
+            (click)="nextCard(); $event.stopPropagation()">
+            Next →
+          </button>
+        </div>
+      }
+    }
+
+    <!-- Add to Decks Button -->
+    @if (showAddButton()) {
+      <div class="add-section">
+        @if (addedToDecks()) {
+          <div class="added-confirmation">
+            <span class="check-icon">✓</span>
+            <span>{{ flashcards().length }} cards added to your deck!</span>
+          </div>
+        } @else {
+          <button
+            type="button"
+            class="add-button"
+            (click)="addAllToDecks()">
+            <span class="add-icon">+</span>
+            Add {{ flashcards().length }} cards to my deck
+          </button>
+        }
+      </div>
+    }
+  </div>
+} @else {
+  <div class="empty-state">
+    <div class="empty-icon">📚</div>
+    <p class="empty-text">No flashcards available</p>
+  </div>
+}

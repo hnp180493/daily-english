@@ -1,0 +1,109 @@
+<div class="memory-boost-container">
+  @if (isLoading()) {
+    <!-- Loading state -->
+    <div class="loading-state">
+      <div class="loading-spinner"></div>
+      <p class="loading-text">Generating memory content...</p>
+    </div>
+  } @else if (error()) {
+    <!-- Error state -->
+    <div class="error-state">
+      <div class="error-icon">⚠️</div>
+      <p class="error-text">{{ error() }}</p>
+      <button type="button" class="retry-button" (click)="retry()">
+        Try Again
+      </button>
+    </div>
+  } @else {
+    <!-- Bonus points notification -->
+    @if (bonusAwarded()) {
+      <div class="bonus-notification">
+        <span class="bonus-icon">🎉</span>
+        <span class="bonus-text">+{{ 5 }} bonus points for excellent quiz performance!</span>
+      </div>
+    }
+
+    <!-- Tabs -->
+    <div class="tabs">
+      <button
+        type="button"
+        class="tab"
+        [class]="getTabClass('quiz')"
+        [disabled]="!hasQuiz()"
+        (click)="selectTab('quiz')">
+        <span class="tab-icon">❓</span>
+        <span class="tab-label">Quiz</span>
+        @if (quizCompleted()) {
+          <span class="tab-badge completed">✓</span>
+        } @else if (isQuizRecommended()) {
+          <span class="tab-badge recommended">!</span>
+        }
+      </button>
+
+      <button
+        type="button"
+        class="tab"
+        [class]="getTabClass('summary')"
+        [disabled]="!hasSummary()"
+        (click)="selectTab('summary')">
+        <span class="tab-icon">📝</span>
+        <span class="tab-label">Summary</span>
+      </button>
+
+      <button
+        type="button"
+        class="tab"
+        [class]="getTabClass('flashcards')"
+        [disabled]="!hasFlashcards()"
+        (click)="selectTab('flashcards')">
+        <span class="tab-icon">📚</span>
+        <span class="tab-label">Flashcards</span>
+        @if (flashcardsAdded() > 0) {
+          <span class="tab-badge added">+{{ flashcardsAdded() }}</span>
+        }
+      </button>
+    </div>
+
+    <!-- Tab content -->
+    <div class="tab-content">
+      @switch (activeTab()) {
+        @case ('quiz') {
+          @if (hasQuiz()) {
+            <app-comprehension-quiz
+              [questions]="quizQuestions()"
+              [exerciseId]="exercise().id"
+              (quizCompleted)="onQuizCompleted($event)" />
+          } @else {
+            <div class="empty-tab">
+              <p>Quiz questions could not be generated.</p>
+            </div>
+          }
+        }
+
+        @case ('summary') {
+          @if (summaryData(); as summary) {
+            <app-content-summary [summary]="summary" />
+          } @else {
+            <div class="empty-tab">
+              <p>Summary could not be generated.</p>
+            </div>
+          }
+        }
+
+        @case ('flashcards') {
+          @if (hasFlashcards()) {
+            <app-flashcard-review
+              [flashcards]="flashcards()"
+              [showAddButton]="flashcardsAdded() === 0"
+              (cardMarked)="onCardMarked($event)"
+              (cardsAdded)="onCardsAdded($event)" />
+          } @else {
+            <div class="empty-tab">
+              <p>No flashcards available.</p>
+            </div>
+          }
+        }
+      }
+    </div>
+  }
+</div>

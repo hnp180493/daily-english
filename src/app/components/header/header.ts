@@ -8,6 +8,7 @@ import { AchievementService } from '../../services/achievement.service';
 import { PointsAnimationService } from '../../services/points-animation.service';
 import { ReviewService } from '../../services/review.service';
 import { AuthService } from '../../services/auth.service';
+import { FeatureFlagService } from '../../services/feature-flag.service';
 import { UserProgressHelper } from '../../models/exercise.model';
 
 @Component({
@@ -24,10 +25,14 @@ export class HeaderComponent implements OnInit {
   private pointsAnimationService = inject(PointsAnimationService);
   private reviewService = inject(ReviewService);
   private authService = inject(AuthService);
+  private featureFlagService = inject(FeatureFlagService);
   private router = inject(Router);
   
   // Check if user is authenticated
   isAuthenticated = computed(() => !!this.authService.currentUser());
+  
+  // Check if user is beta tester
+  isBetaTester = computed(() => this.featureFlagService.isBetaTester());
   
   favoriteCount = computed(() => this.favoriteService.favoriteCount());
   achievementCount = computed(() => this.achievementService.unlockedAchievements().length);
@@ -162,14 +167,15 @@ export class HeaderComponent implements OnInit {
   isLearningMenuActive(): boolean {
     const url = this.router.url;
     const isLearningPath = url.includes('/learning-path');
+    const isFlashcards = url.includes('/flashcards');
     
     // For authenticated users, include learning-path in active check
     if (this.isAuthenticated()) {
-      return isLearningPath || url.includes('/dashboard') || url.includes('/exercises/custom') || url.includes('/guide');
+      return isLearningPath || isFlashcards || url.includes('/dashboard') || url.includes('/exercises/custom') || url.includes('/guide');
     }
     
     // For guest users, exclude learning-path
-    return url.includes('/dashboard') || url.includes('/exercises/custom') || url.includes('/guide');
+    return isFlashcards || url.includes('/dashboard') || url.includes('/exercises/custom') || url.includes('/guide');
   }
   
   onMenuMouseEnter(): void {

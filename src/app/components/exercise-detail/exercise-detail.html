@@ -241,6 +241,32 @@
               (playSentence)="playSentence($event)"
               (startQuickReview)="onStartQuickReview()">
             </app-translation-review>
+
+            <!-- Memory Boost Section - Requirements: 4.1 -->
+            @if (canShowMemoryBoost()) {
+              <div class="memory-boost-section">
+                <button 
+                  class="memory-boost-toggle"
+                  (click)="toggleMemoryBoost()"
+                  [class.expanded]="showMemoryBoost()">
+                  <span class="toggle-icon">🧠</span>
+                  <span class="toggle-text">Memory Boost</span>
+                  <span class="toggle-arrow" [class.rotated]="showMemoryBoost()">▼</span>
+                  @if (memoryBoostBonusAwarded()) {
+                    <span class="bonus-badge">+5 pts</span>
+                  }
+                </button>
+                
+                @if (showMemoryBoost()) {
+                  <app-memory-boost
+                    [exercise]="exercise()!"
+                    [userTranslation]="userFullTranslation()"
+                    [exerciseScore]="penaltyMetrics()?.finalScore || 0"
+                    (bonusPointsAwarded)="onMemoryBoostBonusAwarded($event)">
+                  </app-memory-boost>
+                }
+              </div>
+            }
           }
         </div>
 

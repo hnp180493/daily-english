@@ -40,6 +40,7 @@ export class AuthService {
   private initPromise: Promise<void>;
   private profileSavedForSession = new Set<string>(); // Track saved profiles by session
   private sessionStartTime: number | null = null;
+  private pendingFlashcardMerge = false; // Track if we need to merge flashcards after login
 
   constructor() {
     this.initPromise = this.initializeAuth();
@@ -129,6 +130,12 @@ export class AuthService {
         this.analyticsService.setUserProperties({
           account_type: 'authenticated'
         });
+
+        // Merge flashcards if pending
+        if (this.pendingFlashcardMerge) {
+          this.mergeGuestFlashcards();
+          this.pendingFlashcardMerge = false;
+        }
       }
     } else {
       const wasAuthenticated = this.isAuthenticated();
@@ -322,8 +329,11 @@ export class AuthService {
       const confirmSub = modalRef.instance.confirm.subscribe(() => {
         this.modalService.close();
         
-        // Clear guest data before login
-        this.clearGuestData();
+        // Set flag to merge flashcards after login (Requirements: 6.4)
+        this.pendingFlashcardMerge = this.hasGuestFlashcards();
+        
+        // Clear other guest data before login (but keep flashcards for merge)
+        this.clearGuestDataExceptFlashcards();
         
         // Track guest to auth conversion
         this.analyticsService.trackGuestToAuthConversion();
@@ -358,6 +368,70 @@ export class AuthService {
    */
   private clearGuestData(): void {
     clearAllGuestData();
+  }
+
+  /**
+   * Check if user has guest flashcards in localStorage
+   */
+  private hasGuestFlashcards(): boolean {
+    try {
+      const data = localStorage.getItem('flashcards');
+      if (data) {
+        const flashcards = JSON.parse(data);
+        return Array.isArray(flashcards) && flashcards.length > 0;
+      }
+      return false;
+    } catch {
+      return false;
+    }
+  }
+
+  /**
+   * Clear guest data except flashcards (for merge on login)
+   */
+  private clearGuestDataExceptFlashcards(): void {
+    try {
+      const keysToRemove: string[] = [];
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key && key.startsWith('guest_') && key !== 'flashcards') {
+          keysToRemove.push(key);
+        }
+      }
+      keysToRemove.forEach(key => localStorage.removeItem(key));
+      console.log('[Auth] Cleared guest data except flashcards');
+    } catch (error) {
+      console.error('[Auth] Error clearing guest data:', error);
+    }
+  }
+
+  /**
+   * Merge guest flashcards with cloud flashcards after login
+   * Requirements: 6.4 - Merge local flashcards with cloud data on login
+   * Note: Sets a flag in localStorage that FlashcardService will check on init
+   */
+  private mergeGuestFlashcards(): void {
+    try {
+      const guestData = localStorage.getItem('flashcards');
+      if (!guestData) {
+        console.log('[Auth] No guest flashcards to merge');
+        return;
+      }
+
+      const guestFlashcards = JSON.parse(guestData);
+      if (!Array.isArray(guestFlashcards) || guestFlashcards.length === 0) {
+        console.log('[Auth] No guest flashcards to merge');
+        return;
+      }
+
+      console.log(`[Auth] ${guestFlashcards.length} guest flashcards pending merge`);
+      
+      // Set flag for FlashcardService to handle merge on next load
+      // FlashcardService will check this flag and merge accordingly
+      localStorage.setItem('flashcards_pending_merge', 'true');
+    } catch (error) {
+      console.error('[Auth] Error preparing flashcard merge:', error);
+    }
   }
 
   /**

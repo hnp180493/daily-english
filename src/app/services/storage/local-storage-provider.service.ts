@@ -3,6 +3,7 @@ import { Observable, of, throwError } from 'rxjs';
 import { StorageAdapter, UserStats } from './storage-adapter.interface';
 import { UserProgress, ExerciseAttempt } from '../../models/exercise.model';
 import { DictationPracticeAttempt } from '../../models/dictation.model';
+import { MemoryData, Flashcard, QuizResult } from '../../models/memory-retention.model';
 import { ToastService } from '../toast.service';
 import { GuestAnalyticsService } from '../guest-analytics.service';
 import { GUEST_PROGRESS_KEY } from '../../constants/storage-keys';
@@ -16,6 +17,9 @@ import { GUEST_PROGRESS_KEY } from '../../constants/storage-keys';
 })
 export class LocalStorageProvider implements StorageAdapter {
   private readonly STORAGE_KEY = GUEST_PROGRESS_KEY;
+  private readonly MEMORY_DATA_KEY = 'memory_retention_data';
+  private readonly FLASHCARDS_KEY = 'flashcards';
+  private readonly QUIZ_RESULTS_KEY = 'quiz_results';
   private readonly MAX_STORAGE_SIZE = 5 * 1024 * 1024; // 5MB limit
   private toastService = inject(ToastService);
   private guestAnalytics = inject(GuestAnalyticsService);
@@ -223,6 +227,9 @@ export class LocalStorageProvider implements StorageAdapter {
   clearAll(): Observable<void> {
     try {
       localStorage.removeItem(this.STORAGE_KEY);
+      localStorage.removeItem(this.MEMORY_DATA_KEY);
+      localStorage.removeItem(this.FLASHCARDS_KEY);
+      localStorage.removeItem(this.QUIZ_RESULTS_KEY);
       // Also clear guest analytics data
       this.guestAnalytics.clearAnalytics();
       console.log('[LocalStorage] All data cleared including analytics');
@@ -231,6 +238,154 @@ export class LocalStorageProvider implements StorageAdapter {
       console.error('[LocalStorage] Failed to clear data:', error);
       return throwError(() => error);
     }
+  }
+
+  // ============================================================================
+  // Memory Retention Operations (Requirements: 6.3)
+  // ============================================================================
+
+  saveMemoryData(exerciseId: string, data: MemoryData): Observable<void> {
+    try {
+      const existing = this.loadMemoryDataSync();
+      existing[exerciseId] = data;
+      localStorage.setItem(this.MEMORY_DATA_KEY, JSON.stringify(existing));
+      console.log('[LocalStorage] Memory data saved for exercise:', exerciseId);
+      return of(undefined);
+    } catch (error) {
+      console.error('[LocalStorage] Failed to save memory data:', error);
+      return throwError(() => error);
+    }
+  }
+
+  loadMemoryData(exerciseId: string): Observable<MemoryData | null> {
+    try {
+      const all = this.loadMemoryDataSync();
+      const data = all[exerciseId] || null;
+      if (data) {
+        return of(this.parseMemoryData(data));
+      }
+      return of(null);
+    } catch (error) {
+      console.error('[LocalStorage] Failed to load memory data:', error);
+      return of(null);
+    }
+  }
+
+  loadAllMemoryData(): Observable<{ [exerciseId: string]: MemoryData }> {
+    try {
+      const all = this.loadMemoryDataSync();
+      const parsed: { [exerciseId: string]: MemoryData } = {};
+      for (const [key, value] of Object.entries(all)) {
+        parsed[key] = this.parseMemoryData(value as MemoryData);
+      }
+      return of(parsed);
+    } catch (error) {
+      console.error('[LocalStorage] Failed to load all memory data:', error);
+      return of({});
+    }
+  }
+
+  private loadMemoryDataSync(): { [exerciseId: string]: MemoryData } {
+    const data = localStorage.getItem(this.MEMORY_DATA_KEY);
+    return data ? JSON.parse(data) : {};
+  }
+
+  private parseMemoryData(data: MemoryData): MemoryData {
+    return {
+      ...data,
+      generatedAt: new Date(data.generatedAt),
+      quiz: data.quiz ? {
+        ...data.quiz,
+        result: data.quiz.result ? {
+          ...data.quiz.result,
+          completedAt: new Date(data.quiz.result.completedAt)
+        } : undefined
+      } : undefined,
+      summary: data.summary ? {
+        ...data.summary,
+        generatedAt: new Date(data.summary.generatedAt)
+      } : undefined,
+      flashcards: data.flashcards?.map(fc => ({
+        ...fc,
+        createdAt: new Date(fc.createdAt),
+        nextReviewDate: new Date(fc.nextReviewDate),
+        lastReviewDate: fc.lastReviewDate ? new Date(fc.lastReviewDate) : undefined
+      }))
+    };
+  }
+
+  // ============================================================================
+  // Flashcard Operations (Requirements: 3.7)
+  // ============================================================================
+
+  saveFlashcards(flashcards: Flashcard[]): Observable<void> {
+    try {
+      localStorage.setItem(this.FLASHCARDS_KEY, JSON.stringify(flashcards));
+      console.log('[LocalStorage] Flashcards saved:', flashcards.length);
+      return of(undefined);
+    } catch (error) {
+      console.error('[LocalStorage] Failed to save flashcards:', error);
+      return throwError(() => error);
+    }
+  }
+
+  loadFlashcards(): Observable<Flashcard[]> {
+    try {
+      const data = localStorage.getItem(this.FLASHCARDS_KEY);
+      if (!data) return of([]);
+      
+      const flashcards = JSON.parse(data) as Flashcard[];
+      // Parse dates
+      const parsed = flashcards.map(fc => ({
+        ...fc,
+        createdAt: new Date(fc.createdAt),
+        nextReviewDate: new Date(fc.nextReviewDate),
+        lastReviewDate: fc.lastReviewDate ? new Date(fc.lastReviewDate) : undefined
+      }));
+      return of(parsed);
+    } catch (error) {
+      console.error('[LocalStorage] Failed to load flashcards:', error);
+      return of([]);
+    }
+  }
+
+  // ============================================================================
+  // Quiz Results Operations (Requirements: 6.1)
+  // ============================================================================
+
+  saveQuizResult(exerciseId: string, result: QuizResult): Observable<void> {
+    try {
+      const existing = this.loadQuizResultsSync();
+      existing[exerciseId] = result;
+      localStorage.setItem(this.QUIZ_RESULTS_KEY, JSON.stringify(existing));
+      console.log('[LocalStorage] Quiz result saved for exercise:', exerciseId);
+      return of(undefined);
+    } catch (error) {
+      console.error('[LocalStorage] Failed to save quiz result:', error);
+      return throwError(() => error);
+    }
+  }
+
+  loadQuizResult(exerciseId: string): Observable<QuizResult | null> {
+    try {
+      const all = this.loadQuizResultsSync();
+      const result = all[exerciseId];
+      if (result) {
+        return of({
+          ...result,
+          completedAt: new Date(result.completedAt)
+        });
+      }
+      return of(null);
+    } catch (error) {
+      console.error('[LocalStorage] Failed to load quiz result:', error);
+      return of(null);
+    }
+  }
+
+  private loadQuizResultsSync(): { [exerciseId: string]: QuizResult } {
+    const data = localStorage.getItem(this.QUIZ_RESULTS_KEY);
+    return data ? JSON.parse(data) : {};
   }
 
   /**

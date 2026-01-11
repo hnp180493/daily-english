@@ -1,0 +1,79 @@
+<div class="summary-container">
+  <!-- Main Ideas Section -->
+  <section class="main-ideas-section">
+    <h3 class="section-title">
+      <span class="section-icon">💡</span>
+      Main Ideas
+    </h3>
+    <ul class="main-ideas-list">
+      @for (idea of summary().mainIdeas; track $index) {
+        <li class="main-idea-item">
+          <div class="idea-english">{{ idea.english }}</div>
+          <div class="idea-vietnamese">{{ idea.vietnamese }}</div>
+        </li>
+      }
+    </ul>
+  </section>
+
+  <!-- Key Vocabulary Section -->
+  <section class="vocabulary-section">
+    <h3 class="section-title">
+      <span class="section-icon">📚</span>
+      Key Vocabulary
+    </h3>
+    <div class="vocabulary-list">
+      @for (vocab of summary().vocabulary; track vocab.word) {
+        <div 
+          class="vocabulary-item"
+          [class.expanded]="isExpanded(vocab.word)">
+          <div class="vocab-header" (click)="toggleVocabExpansion(vocab.word)">
+            <div class="vocab-main">
+              <button
+                type="button"
+                class="play-button"
+                [class.playing]="isPlaying(vocab.word)"
+                (click)="playPronunciation(vocab); $event.stopPropagation()"
+                [attr.aria-label]="'Play pronunciation for ' + vocab.word">
+                @if (isPlaying(vocab.word)) {
+                  <span class="play-icon">🔊</span>
+                } @else {
+                  <span class="play-icon">🔈</span>
+                }
+              </button>
+              <div class="vocab-content">
+                <span class="vocab-word">{{ vocab.word }}</span>
+                @if (vocab.partOfSpeech) {
+                  <span class="vocab-pos" [class]="getPartOfSpeechClass(vocab.partOfSpeech)">
+                    {{ vocab.partOfSpeech }}
+                  </span>
+                }
+              </div>
+            </div>
+            <div class="vocab-meaning">{{ vocab.meaning }}</div>
+            <button
+              type="button"
+              class="add-flashcard-btn"
+              [class.added]="isWordAdded(vocab.word)"
+              [disabled]="isWordAdded(vocab.word)"
+              (click)="addToFlashcard(vocab); $event.stopPropagation()"
+              [attr.aria-label]="isWordAdded(vocab.word) ? 'Already added to flashcards' : 'Add to flashcards'">
+              @if (isWordAdded(vocab.word)) {
+                <span>✓</span>
+              } @else {
+                <span>+</span>
+              }
+            </button>
+            <span class="expand-icon" [class.rotated]="isExpanded(vocab.word)">▼</span>
+          </div>
+          
+          @if (isExpanded(vocab.word)) {
+            <div class="vocab-example">
+              <span class="example-label">Example:</span>
+              <span class="example-text">{{ vocab.exampleSentence }}</span>
+            </div>
+          }
+        </div>
+      }
+    </div>
+  </section>
+</div>

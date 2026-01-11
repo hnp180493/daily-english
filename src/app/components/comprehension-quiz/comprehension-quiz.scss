@@ -1,0 +1,258 @@
+.quiz-container {
+  @apply p-4;
+}
+
+.progress-section {
+  @apply mb-6;
+}
+
+.progress-text {
+  @apply flex justify-between text-sm text-gray-600 dark:text-gray-400 mb-2;
+}
+
+.score-preview {
+  @apply font-medium;
+}
+
+.progress-bar {
+  @apply h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden;
+}
+
+.progress-fill {
+  @apply h-full bg-primary transition-all duration-300 ease-out;
+}
+
+.question-section {
+  @apply space-y-4;
+}
+
+.question-text {
+  @apply text-lg font-medium text-gray-900 dark:text-white mb-4;
+}
+
+.options-list {
+  @apply space-y-3;
+}
+
+.option-button {
+  @apply w-full flex items-center gap-3 p-4 rounded-lg border-2 text-left transition-all duration-200;
+  @apply focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2;
+
+  &.option-default {
+    @apply border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800;
+    @apply hover:border-purple-300 dark:hover:border-purple-600 hover:bg-purple-50 dark:hover:bg-purple-900/20;
+  }
+
+  &.option-correct {
+    @apply border-green-500 bg-green-50 dark:bg-green-900/30;
+  }
+
+  &.option-incorrect {
+    @apply border-red-500 bg-red-50 dark:bg-red-900/30;
+  }
+
+  &.option-disabled {
+    @apply border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50 opacity-60;
+  }
+
+  &:disabled {
+    @apply cursor-not-allowed;
+  }
+}
+
+.option-letter {
+  @apply flex-shrink-0 w-8 h-8 flex items-center justify-center rounded-full;
+  @apply bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 font-semibold text-sm;
+
+  .option-correct & {
+    @apply bg-green-500 text-white;
+  }
+
+  .option-incorrect & {
+    @apply bg-red-500 text-white;
+  }
+}
+
+.option-text {
+  @apply flex-1 text-gray-800 dark:text-gray-200;
+}
+
+.option-icon {
+  @apply flex-shrink-0 text-lg font-bold;
+
+  .option-correct & {
+    @apply text-green-600 dark:text-green-400;
+  }
+
+  .option-incorrect & {
+    @apply text-red-600 dark:text-red-400;
+  }
+}
+
+.explanation-section {
+  @apply mt-6 p-4 rounded-lg;
+
+  &.correct {
+    @apply bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800;
+  }
+
+  &.incorrect {
+    @apply bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800;
+  }
+}
+
+.explanation-header {
+  @apply flex items-center gap-2 mb-2;
+}
+
+.result-icon {
+  @apply text-xl font-bold;
+
+  &.correct {
+    @apply text-green-600 dark:text-green-400;
+  }
+
+  &.incorrect {
+    @apply text-red-600 dark:text-red-400;
+  }
+}
+
+.result-text {
+  @apply font-semibold;
+
+  .correct & {
+    @apply text-green-700 dark:text-green-300;
+  }
+
+  .incorrect & {
+    @apply text-red-700 dark:text-red-300;
+  }
+}
+
+.explanation-text {
+  @apply text-gray-700 dark:text-gray-300 text-sm;
+}
+
+.next-button {
+  @apply mt-4 w-full flex items-center justify-center gap-2 py-3 px-6;
+  @apply bg-purple-600 hover:bg-purple-700 text-white font-medium rounded-lg;
+  @apply transition-colors duration-200;
+  @apply focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2;
+}
+
+.arrow {
+  @apply text-lg;
+}
+
+// Results styles
+.results-container {
+  @apply p-4;
+}
+
+.results-header {
+  @apply text-center mb-6;
+}
+
+.score-circle {
+  @apply w-24 h-24 mx-auto mb-4 rounded-full flex items-center justify-center;
+  @apply border-4;
+
+  &.excellent {
+    @apply border-green-500 bg-green-50 dark:bg-green-900/30;
+  }
+
+  &.good {
+    @apply border-yellow-500 bg-yellow-50 dark:bg-yellow-900/30;
+  }
+
+  &.poor {
+    @apply border-red-500 bg-red-50 dark:bg-red-900/30;
+  }
+}
+
+.score-value {
+  @apply text-2xl font-bold;
+
+  .excellent & {
+    @apply text-green-600 dark:text-green-400;
+  }
+
+  .good & {
+    @apply text-yellow-600 dark:text-yellow-400;
+  }
+
+  .poor & {
+    @apply text-red-600 dark:text-red-400;
+  }
+}
+
+.results-title {
+  @apply text-xl font-semibold text-gray-900 dark:text-white mb-2;
+}
+
+.results-summary {
+  @apply text-gray-600 dark:text-gray-400;
+}
+
+.answers-review {
+  @apply mt-6 space-y-3;
+}
+
+.review-title {
+  @apply text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-3;
+}
+
+.review-item {
+  @apply p-3 rounded-lg border;
+
+  &.correct {
+    @apply border-green-200 dark:border-green-800 bg-green-50/50 dark:bg-green-900/10;
+  }
+
+  &.incorrect {
+    @apply border-red-200 dark:border-red-800 bg-red-50/50 dark:bg-red-900/10;
+  }
+}
+
+.review-question {
+  @apply flex gap-2 text-sm text-gray-800 dark:text-gray-200 mb-1;
+}
+
+.review-number {
+  @apply font-medium text-gray-500 dark:text-gray-400;
+}
+
+.review-answer {
+  @apply flex flex-wrap items-center gap-2 text-xs;
+}
+
+.review-icon {
+  @apply font-bold;
+
+  &.correct {
+    @apply text-green-600 dark:text-green-400;
+  }
+
+  &.incorrect {
+    @apply text-red-600 dark:text-red-400;
+  }
+}
+
+.your-answer {
+  @apply text-red-600 dark:text-red-400;
+}
+
+.correct-answer {
+  @apply text-green-600 dark:text-green-400;
+}
+
+.results-actions {
+  @apply mt-6 flex justify-center;
+}
+
+.restart-button {
+  @apply py-2 px-6 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300;
+  @apply hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg font-medium;
+  @apply transition-colors duration-200;
+  @apply focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2;
+}

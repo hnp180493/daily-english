@@ -1,0 +1,159 @@
+.summary-container {
+  @apply p-4 space-y-6;
+}
+
+.section-title {
+  @apply flex items-center gap-2 text-lg font-semibold text-gray-900 dark:text-white mb-4;
+}
+
+.section-icon {
+  @apply text-xl;
+}
+
+// Main Ideas Section
+.main-ideas-section {
+  @apply bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4;
+}
+
+.main-ideas-list {
+  @apply space-y-3;
+}
+
+.main-idea-item {
+  @apply pl-4 border-l-4 border-blue-400 dark:border-blue-500;
+}
+
+.idea-english {
+  @apply text-gray-800 dark:text-gray-200 font-medium;
+}
+
+.idea-vietnamese {
+  @apply text-gray-600 dark:text-gray-400 text-sm mt-1 italic;
+}
+
+// Vocabulary Section
+.vocabulary-section {
+  @apply bg-green-50 dark:bg-green-900/20 rounded-lg p-4;
+}
+
+.vocabulary-list {
+  @apply space-y-2;
+}
+
+.vocabulary-item {
+  @apply bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700;
+  @apply transition-all duration-200;
+
+  &.expanded {
+    @apply ring-2 ring-green-400 dark:ring-green-500;
+  }
+}
+
+.vocab-header {
+  @apply flex items-center gap-3 p-3 cursor-pointer;
+  @apply hover:bg-gray-50 dark:hover:bg-gray-700/50 rounded-lg;
+}
+
+.vocab-main {
+  @apply flex items-center gap-2 flex-shrink-0;
+}
+
+.play-button {
+  @apply w-8 h-8 flex items-center justify-center rounded-full;
+  @apply bg-green-100 dark:bg-green-900/50 hover:bg-green-200 dark:hover:bg-green-800;
+  @apply transition-all duration-200;
+  @apply focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2;
+
+  &.playing {
+    @apply bg-green-500 dark:bg-green-600;
+    animation: pulse 1s ease-in-out infinite;
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+}
+
+.play-icon {
+  @apply text-sm;
+}
+
+.vocab-content {
+  @apply flex items-center gap-2;
+}
+
+.vocab-word {
+  @apply font-semibold text-gray-900 dark:text-white;
+}
+
+.vocab-pos {
+  @apply text-xs px-2 py-0.5 rounded-full font-medium;
+
+  &.pos-noun {
+    @apply bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300;
+  }
+
+  &.pos-verb {
+    @apply bg-red-100 dark:bg-red-900/50 text-red-700 dark:text-red-300;
+  }
+
+  &.pos-adjective {
+    @apply bg-purple-100 dark:bg-purple-900/50 text-purple-700 dark:text-purple-300;
+  }
+
+  &.pos-adverb {
+    @apply bg-orange-100 dark:bg-orange-900/50 text-orange-700 dark:text-orange-300;
+  }
+
+  &.pos-default {
+    @apply bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300;
+  }
+}
+
+.vocab-meaning {
+  @apply flex-1 text-gray-600 dark:text-gray-400 text-sm;
+}
+
+.add-flashcard-btn {
+  @apply w-7 h-7 flex items-center justify-center rounded-full;
+  @apply bg-purple-100 dark:bg-purple-900/50 text-purple-600 dark:text-purple-400;
+  @apply hover:bg-purple-200 dark:hover:bg-purple-800 hover:text-purple-700 dark:hover:text-purple-300;
+  @apply transition-all duration-200 font-bold text-lg;
+  @apply focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2;
+  flex-shrink: 0;
+
+  &.added {
+    @apply bg-green-100 dark:bg-green-900/50 text-green-600 dark:text-green-400;
+    @apply cursor-default;
+  }
+
+  &:disabled {
+    @apply opacity-70;
+  }
+}
+
+.expand-icon {
+  @apply text-xs text-gray-400 dark:text-gray-500 transition-transform duration-200;
+
+  &.rotated {
+    transform: rotate(180deg);
+  }
+}
+
+.vocab-example {
+  @apply px-3 pb-3 pt-0;
+  @apply border-t border-gray-100 dark:border-gray-700 mt-2 pt-2;
+}
+
+.example-label {
+  @apply text-xs font-medium text-gray-500 dark:text-gray-400 mr-2;
+}
+
+.example-text {
+  @apply text-sm text-gray-700 dark:text-gray-300 italic;
+}

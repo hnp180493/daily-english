@@ -1,6 +1,7 @@
 import { Routes } from '@angular/router';
 import { authGuard } from './guards/auth.guard';
 import { loginGuard } from './guards/login.guard';
+import { betaFeatureGuard } from './guards/beta-feature.guard';
 import { RouteSeoData } from './services/seo.service';
 
 /**
@@ -369,6 +370,36 @@ export const routes: Routes = [
           breadcrumbs: [
             { name: 'Trang chủ', url: '/' },
             { name: 'Ôn tập', url: '/review-queue' },
+          ],
+        },
+      } as VietnameseRouteSeoData,
+    },
+  },
+  {
+    path: 'flashcards',
+    loadComponent: () =>
+      import('./components/flashcard-deck/flashcard-deck').then((m) => m.FlashcardDeckComponent),
+    canActivate: [betaFeatureGuard],
+    data: {
+      seo: {
+        title: 'Thẻ ghi nhớ - Daily English',
+        description:
+          'Ôn tập từ vựng và cụm từ với hệ thống thẻ ghi nhớ thông minh. Sử dụng thuật toán lặp lại ngắt quãng để ghi nhớ lâu dài.',
+        keywords: ['thẻ ghi nhớ', 'flashcard', 'học từ vựng', 'spaced repetition', 'ôn tập tiếng anh'],
+        vietnamese: {
+          title: 'Thẻ ghi nhớ - Daily English',
+          description:
+            'Hệ thống thẻ ghi nhớ với thuật toán lặp lại ngắt quãng giúp bạn ghi nhớ từ vựng và cụm từ hiệu quả. Theo dõi tiến độ học tập của bạn.',
+          keywords: [
+            'thẻ ghi nhớ',
+            'flashcard tiếng anh',
+            'học từ vựng',
+            'spaced repetition',
+            'ôn tập từ vựng',
+          ],
+          breadcrumbs: [
+            { name: 'Trang chủ', url: '/' },
+            { name: 'Thẻ ghi nhớ', url: '/flashcards' },
           ],
         },
       } as VietnameseRouteSeoData,

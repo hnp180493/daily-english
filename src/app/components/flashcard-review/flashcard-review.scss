@@ -1,0 +1,166 @@
+.flashcard-review-container {
+  @apply p-4;
+}
+
+.progress-section {
+  @apply mb-4;
+}
+
+.progress-text {
+  @apply flex justify-between text-sm text-gray-600 dark:text-gray-400 mb-2;
+}
+
+.reviewed-count {
+  @apply font-medium text-green-600 dark:text-green-400;
+}
+
+.progress-bar {
+  @apply h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden;
+}
+
+.progress-fill {
+  @apply h-full bg-primary transition-all duration-300 ease-out;
+}
+
+// Flashcard styles
+.flashcard-wrapper {
+  @apply cursor-pointer mb-4;
+  perspective: 1000px;
+}
+
+.flashcard {
+  @apply relative w-full h-48 transition-transform duration-500;
+  transform-style: preserve-3d;
+
+  &.flipped {
+    transform: rotateY(180deg);
+  }
+}
+
+.flashcard-face {
+  @apply absolute inset-0 flex flex-col items-center justify-center p-6 rounded-xl;
+  @apply border-2 shadow-lg;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+.flashcard-front {
+  @apply bg-white dark:bg-gray-800 border-purple-200 dark:border-purple-700;
+}
+
+.flashcard-back {
+  @apply bg-green-50 dark:bg-green-900/30 border-green-300 dark:border-green-700;
+  transform: rotateY(180deg);
+}
+
+.card-label {
+  @apply text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-2;
+}
+
+.card-content {
+  @apply text-xl font-semibold text-gray-900 dark:text-white text-center;
+}
+
+.card-example {
+  @apply mt-3 pt-3 border-t border-gray-200 dark:border-gray-600 text-center;
+  @apply w-full;
+
+  .example-label {
+    @apply text-xs font-medium text-gray-500 dark:text-gray-400 mr-1;
+  }
+
+  .example-text {
+    @apply text-sm text-gray-600 dark:text-gray-300 italic;
+  }
+}
+
+.flip-hint {
+  @apply absolute bottom-3 text-xs text-gray-400 dark:text-gray-500;
+}
+
+// Action buttons
+.action-buttons {
+  @apply flex gap-4 justify-center;
+}
+
+.action-button {
+  @apply flex-1 max-w-40 flex flex-col items-center gap-1 py-4 px-6 rounded-xl;
+  @apply font-medium transition-all duration-200;
+  @apply focus:outline-none focus:ring-2 focus:ring-offset-2;
+
+  &.dont-know {
+    @apply bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300;
+    @apply hover:bg-red-200 dark:hover:bg-red-900/50;
+    @apply focus:ring-red-500;
+  }
+
+  &.know {
+    @apply bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300;
+    @apply hover:bg-green-200 dark:hover:bg-green-900/50;
+    @apply focus:ring-green-500;
+  }
+}
+
+.action-icon {
+  @apply text-2xl font-bold;
+}
+
+.action-text {
+  @apply text-sm;
+}
+
+// Navigation buttons
+.navigation-buttons {
+  @apply flex gap-4 justify-center;
+}
+
+.nav-button {
+  @apply py-2 px-4 rounded-lg text-sm font-medium;
+  @apply bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300;
+  @apply hover:bg-gray-200 dark:hover:bg-gray-600;
+  @apply transition-colors duration-200;
+  @apply focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2;
+
+  &:disabled {
+    @apply opacity-50 cursor-not-allowed;
+  }
+}
+
+// Add to decks section
+.add-section {
+  @apply mt-6 pt-4 border-t border-gray-200 dark:border-gray-700;
+}
+
+.add-button {
+  @apply w-full flex items-center justify-center gap-2 py-3 px-6;
+  @apply bg-purple-600 hover:bg-purple-700 text-white font-medium rounded-lg;
+  @apply transition-colors duration-200;
+  @apply focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2;
+}
+
+.add-icon {
+  @apply text-lg font-bold;
+}
+
+.added-confirmation {
+  @apply flex items-center justify-center gap-2 py-3 px-6;
+  @apply bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300;
+  @apply rounded-lg font-medium;
+}
+
+.check-icon {
+  @apply text-lg font-bold;
+}
+
+// Empty state
+.empty-state {
+  @apply flex flex-col items-center justify-center py-12 text-center;
+}
+
+.empty-icon {
+  @apply text-4xl mb-3;
+}
+
+.empty-text {
+  @apply text-gray-500 dark:text-gray-400;
+}
