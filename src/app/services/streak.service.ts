@@ -18,7 +18,11 @@ export class StreakService {
   // Streak tracking methods
   getCurrentStreak(): Observable<number> {
     return this.progressService.getUserProgress().pipe(
-      map((progress) => progress?.currentStreak || 0)
+      map(() => {
+        // Use calculateStreak() to get the actual valid streak
+        // This checks if lastStreakDate is today or yesterday
+        return this.progressService.calculateStreak();
+      })
     );
   }
 
@@ -74,8 +78,9 @@ export class StreakService {
 
   // Multiplier methods
   getStreakMultiplier(): number {
-    const progress = this.progressService.getProgressSignal()();
-    const streak = progress.currentStreak || 0;
+    // Use calculateStreak() to get the actual valid streak
+    // This checks if lastStreakDate is today or yesterday
+    const streak = this.progressService.calculateStreak();
     return streak >= 7 ? 1.2 : 1.0;
   }
 
