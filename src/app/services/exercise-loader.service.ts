@@ -34,28 +34,48 @@ export class ExerciseLoaderService {
     const mode = route.snapshot.queryParamMap.get('mode');
     const quickReview = route.snapshot.queryParamMap.get('quickReview');
 
-    const isCustom = slug.startsWith('custom-');
+    console.log('[ExerciseLoader] Loading exercise:', { slug, mode, quickReview });
+
+    // Check if it's a custom exercise by:
+    // 1. Starts with 'custom-' prefix, OR
+    // 2. Is a UUID format (contains dashes and is 36 chars long)
+    const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(slug);
+    const isCustom = slug.startsWith('custom-') || isUUID;
+    
+    console.log('[ExerciseLoader] Is custom exercise:', isCustom, '(UUID:', isUUID, ')');
     
     const exercise$ = isCustom 
       ? this.exerciseService.getExerciseByIdUnified(slug)
       : this.exerciseService.getExerciseBySlug(slug);
 
     exercise$.pipe(
-      filter(exercise => !!exercise),
+      filter(exercise => {
+        console.log('[ExerciseLoader] Exercise received:', exercise);
+        return !!exercise;
+      }),
       take(1)
-    ).subscribe(exercise => {
-      if (exercise) {
-        let loadMode: 'normal' | 'review' | 'quick-review' = 'normal';
-        
-        if (mode === 'review') {
-          loadMode = 'review';
-        } else if (quickReview === 'true') {
-          loadMode = 'quick-review';
-          this.quickReviewService.initializeFromUrl(exercise.id);
+    ).subscribe({
+      next: exercise => {
+        console.log('[ExerciseLoader] Exercise loaded successfully:', exercise?.title);
+        if (exercise) {
+          let loadMode: 'normal' | 'review' | 'quick-review' = 'normal';
+          
+          if (mode === 'review') {
+            loadMode = 'review';
+          } else if (quickReview === 'true') {
+            loadMode = 'quick-review';
+            this.quickReviewService.initializeFromUrl(exercise.id);
+          }
+          
+          console.log('[ExerciseLoader] Calling onLoaded with mode:', loadMode);
+          onLoaded({ exercise, isCustom, mode: loadMode });
+        } else {
+          console.log('[ExerciseLoader] No exercise found, redirecting to /exercises');
+          this.router.navigate(['/exercises']);
         }
-        
-        onLoaded({ exercise, isCustom, mode: loadMode });
-      } else {
+      },
+      error: error => {
+        console.error('[ExerciseLoader] Error loading exercise:', error);
         this.router.navigate(['/exercises']);
       }
     });

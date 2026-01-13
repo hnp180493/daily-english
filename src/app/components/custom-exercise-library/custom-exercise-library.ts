@@ -155,6 +155,7 @@ export class CustomExerciseLibrary {
   }
 
   practiceExercise(id: string): void {
+    // For custom exercises, use the ID directly as slug (no slug generation needed)
     this.router.navigate(['/exercise', id]);
   }
 

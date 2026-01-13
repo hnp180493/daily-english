@@ -103,11 +103,25 @@ export class ExerciseCreator implements OnInit {
       vocabularyWords: vocabularyString
     }).subscribe({
       next: (response) => {
+        // Validate that we got proper Vietnamese translation
+        if (response.sourceText === response.englishText) {
+          this.generationError.set('AI translation failed: Source and English text are identical. Please try again.');
+          this.isGenerating.set(false);
+          return;
+        }
+        
+        if (this.isLikelyEnglish(response.sourceText)) {
+          this.generationError.set('AI translation failed: Generated Vietnamese text appears to be in English. Please try again.');
+          this.isGenerating.set(false);
+          return;
+        }
+        
         this.title.set(response.title);
         this.sourceText.set(response.sourceText);
         this.englishText.set(response.englishText || ''); // Store English translation (hidden)
         this.hasGeneratedContent.set(true); // Mark as generated
         this.isGenerating.set(false);
+        this.toastService.success('Exercise generated successfully!');
         this.activeTab.set('manual'); // Switch to manual tab to show generated content
       },
       error: (error) => {
@@ -167,14 +181,42 @@ export class ExerciseCreator implements OnInit {
 
   saveExercise(): void {
     // Auto-extract sentences from source text
-    const sourceText = this.sourceText();
-    // const highlightedSentences = sourceText ? this.customExerciseService.extractSentences(sourceText) : [];
-    let highlightedSentences: any = [];
+    const sourceTextValue = this.sourceText();
+    const englishTextValue = this.englishText();
+    
+    // Extract sentences from source text - improved regex to handle quotes
+    const sentenceRegex = /[^.!?]+[.!?]+(?=['"]?\s|$)/g;
+    let highlightedSentences = sourceTextValue.match(sentenceRegex)?.map(s => s.trim()) || [];
+    
+    // Filter out invalid sentences (too short or just punctuation)
+    highlightedSentences = highlightedSentences.filter(s => {
+      const cleanSentence = s.replace(/['".,!?]/g, '').trim();
+      return cleanSentence.length > 3; // Must have at least 3 characters of actual content
+    });
+    
+    // Validate that sourceText is in Vietnamese (for AI-generated exercises)
+    if (this.hasGeneratedContent()) {
+      if (sourceTextValue === englishTextValue) {
+        this.validationErrors.set({
+          sourceText: 'AI translation failed. Source text and English text are identical. Please try generating again or enter manually.'
+        });
+        this.toastService.error('AI translation failed. Please try again or enter content manually.');
+        return;
+      }
+      
+      if (this.isLikelyEnglish(sourceTextValue)) {
+        this.validationErrors.set({
+          sourceText: 'Source text appears to be in English instead of Vietnamese. AI translation may have failed. Please try generating again or enter Vietnamese text manually.'
+        });
+        this.toastService.error('AI translation failed to generate Vietnamese text. Please try again.');
+        return;
+      }
+    }
 
     // Validate
     const validation = this.customExerciseService.validateExercise({
       title: this.title(),
-      sourceText: this.sourceText(),
+      sourceText: sourceTextValue,
       highlightedSentences: highlightedSentences,
       level: this.difficulty(),
       customCategories: ['Custom'], // Auto-assign "Custom" category
@@ -244,5 +286,27 @@ export class ExerciseCreator implements OnInit {
       event.preventDefault();
       action();
     }
+  }
+
+  /**
+   * Check if text appears to be in English (simple heuristic)
+   */
+  private isLikelyEnglish(text: string): boolean {
+    if (!text) return false;
+    
+    // Vietnamese has specific diacritics and characters
+    const vietnameseChars = /[àáạảãâầấậẩẫăằắặẳẵèéẹẻẽêềếệểễìíịỉĩòóọỏõôồốộổỗơờớợởỡùúụủũưừứựửữỳýỵỷỹđ]/i;
+    
+    // If text contains Vietnamese characters, it's likely Vietnamese
+    if (vietnameseChars.test(text)) {
+      return false;
+    }
+    
+    // If text is mostly ASCII and has common English words, likely English
+    const commonEnglishWords = /\b(the|and|is|was|are|were|to|in|of|for|with|on|at|from|by|about)\b/gi;
+    const matches = text.match(commonEnglishWords);
+    
+    // If we find 3+ common English words and no Vietnamese chars, likely English
+    return matches !== null && matches.length >= 3;
   }
 }

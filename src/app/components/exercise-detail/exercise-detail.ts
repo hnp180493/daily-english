@@ -232,7 +232,9 @@ export class ExerciseDetailComponent implements OnInit, OnDestroy {
   }
 
   private loadExercise(): void {
+    console.log('[ExerciseDetail] loadExercise called');
     this.loaderService.loadFromRoute(this.route, (result) => {
+      console.log('[ExerciseDetail] Exercise loaded from route:', result);
       this.exercise.set(result.exercise);
       this.isCustomExercise.set(result.isCustom);
       
@@ -247,6 +249,7 @@ export class ExerciseDetailComponent implements OnInit, OnDestroy {
         this.sessionLockService.acquireLock(result.exercise.id);
       }
       
+      console.log('[ExerciseDetail] Calling initializeExercise');
       this.loaderService.initializeExercise(
         result.exercise,
         result.isCustom,

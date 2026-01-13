@@ -95,17 +95,45 @@ export class ExerciseStateService {
   }
 
   initializeSentences(sourceText: string): void {
-    const sentenceRegex = /[^.!?]+[.!?]+/g;
+    console.log('[ExerciseState] initializeSentences called with text length:', sourceText?.length);
+    
+    // Improved regex to handle quotes and complex punctuation
+    // This splits on sentence-ending punctuation followed by space or end of string
+    const sentenceRegex = /[^.!?]+[.!?]+(?=['"]?\s|$)/g;
     const matches = sourceText.match(sentenceRegex) || [];
     
-    this.sentences.set(matches.map(sentence => ({
-      original: sentence.trim(),
+    console.log('[ExerciseState] Regex matched sentences:', matches.length);
+    
+    // Filter and clean sentences
+    const validSentences = matches
+      .map(sentence => sentence.trim())
+      .filter(sentence => {
+        // Remove quotes and punctuation to check actual content
+        const cleanSentence = sentence.replace(/['".,!?]/g, '').trim();
+        // Must have at least 3 characters of actual content
+        return cleanSentence.length > 3;
+      });
+    
+    console.log('[ExerciseState] Valid sentences after filtering:', validSentences.length);
+    
+    // If no valid sentences found, fall back to treating entire text as one sentence
+    if (validSentences.length === 0) {
+      console.log('[ExerciseState] No valid sentences, using entire text as one sentence');
+      validSentences.push(sourceText.trim());
+    }
+    
+    console.log('[ExerciseState] Final sentences:', validSentences);
+    
+    this.sentences.set(validSentences.map(sentence => ({
+      original: sentence,
       translation: '',
       isCompleted: false,
       showTranslation: false,
       incorrectAttempts: 0,
       retryCount: 0
     })));
+    
+    console.log('[ExerciseState] Sentences initialized, count:', this.sentences().length);
   }
 
   markSentenceCompleted(index: number, translation: string, score: number, suggestion?: string): void {
