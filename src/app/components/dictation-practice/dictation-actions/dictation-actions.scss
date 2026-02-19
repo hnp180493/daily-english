@@ -1,0 +1,30 @@
+// Submit button animation
+@keyframes submitPulse {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(79, 70, 229, 0.7);
+  }
+  50% {
+    transform: scale(1.05);
+    box-shadow: 0 0 0 10px rgba(79, 70, 229, 0);
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(79, 70, 229, 0);
+  }
+}
+
+.submit-animation {
+  animation: submitPulse 0.4s ease-out;
+}
+
+// Responsive adjustments
+@media (max-width: 640px) {
+  .flex.gap-3 {
+    flex-direction: column;
+    
+    button {
+      width: 100%;
+    }
+  }
+}

@@ -1,0 +1,32 @@
+@if (showShortcutTips) {
+  <div
+    class="bg-gray-100 dark:bg-gray-800 rounded-lg p-4 text-sm text-gray-600 dark:text-gray-400 mb-6"
+  >
+    <div class="flex flex-wrap gap-4 justify-center">
+      <div class="flex items-center gap-2">
+        <kbd
+          class="px-2 py-1 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded text-xs font-mono"
+        >
+          {{ getKeyLabel(playPauseKey) }}
+        </kbd>
+        <span>Play/Pause</span>
+      </div>
+      <div class="flex items-center gap-2">
+        <kbd
+          class="px-2 py-1 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded text-xs font-mono"
+        >
+          {{ getKeyLabel(replayKey) }}
+        </kbd>
+        <span>Replay</span>
+      </div>
+      <div class="flex items-center gap-2">
+        <kbd
+          class="px-2 py-1 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded text-xs font-mono"
+        >
+          Enter
+        </kbd>
+        <span>Submit</span>
+      </div>
+    </div>
+  </div>
+}

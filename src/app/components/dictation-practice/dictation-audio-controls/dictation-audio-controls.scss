@@ -1,0 +1,23 @@
+.audio-controls {
+  button {
+    transition: all 0.2s ease;
+    
+    &:hover:not(:disabled) {
+      transform: scale(1.05);
+    }
+    
+    &:active:not(:disabled) {
+      transform: scale(0.95);
+    }
+  }
+}
+
+// Responsive adjustments
+@media (max-width: 640px) {
+  .audio-controls {
+    button {
+      padding: 0.5rem;
+      font-size: 0.875rem;
+    }
+  }
+}

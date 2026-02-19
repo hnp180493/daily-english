@@ -1,0 +1,55 @@
+<div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 mb-6">
+  <div class="flex items-center justify-between mb-4">
+    <div class="flex-1">
+      <h1 class="text-2xl font-bold text-gray-800 dark:text-gray-200">
+        🎧 Dictation Practice
+      </h1>
+      @if (exercise) {
+        <h2 class="text-lg text-gray-700 dark:text-gray-300 mt-2">
+          {{ exercise.title }}
+        </h2>
+      }
+    </div>
+    <div class="flex items-center gap-3">
+      <span class="stat-item"> ⭐ {{ completionPoints }} points </span>
+      @if (attemptCount > 1) {
+        <span class="stat-item"> 🔄 {{ attemptCount }}× Practiced </span>
+      }
+      <button
+        (click)="onSettingsClick()"
+        class="p-2 text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 transition"
+        aria-label="Open settings"
+      >
+        <span class="text-2xl">⚙️</span>
+      </button>
+      <button
+        (click)="onGoBack()"
+        class="text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200"
+        aria-label="Close dictation practice"
+      >
+        ✕
+      </button>
+    </div>
+  </div>
+
+  <!-- Progress Bar -->
+  <div class="mt-4" role="region" aria-label="Practice progress">
+    <div class="flex justify-between text-sm text-gray-600 dark:text-gray-400 mb-2">
+      <span>Progress</span>
+      <span aria-live="polite">{{ currentSentenceIndex + 1 }} / {{ totalSentences }}</span>
+    </div>
+    <div
+      class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2"
+      role="progressbar"
+      [attr.aria-valuenow]="progressPercentage"
+      aria-valuemin="0"
+      aria-valuemax="100"
+      [attr.aria-label]="'Progress: ' + progressPercentage.toFixed(0) + ' percent complete'"
+    >
+      <div
+        class="bg-primary h-2 rounded-full transition-all duration-300"
+        [style.width.%]="progressPercentage"
+      ></div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,69 @@
+<div
+  class="flex gap-3 justify-center flex-wrap"
+  role="group"
+  aria-label="Dictation actions"
+>
+  @if (!showFeedback || (showFeedback && currentAccuracy < passingScore)) {
+    <button
+      (click)="onSubmit()"
+      [disabled]="!userInput.trim()"
+      [class.submit-animation]="isSubmitting"
+      class="px-6 py-3 bg-primary text-white rounded-lg hover:bg-primary-dark disabled:opacity-50 disabled:cursor-not-allowed transition"
+      aria-label="Check your answer"
+    >
+      {{ showFeedback ? 'Check Again' : 'Check Answer' }}
+    </button>
+    <button
+      (click)="onReplay()"
+      class="px-6 py-3 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition"
+      aria-label="Replay audio"
+    >
+      <span aria-hidden="true">🔊</span> Replay
+    </button>
+    @if (showFeedback && currentAccuracy < passingScore) {
+      <button
+        (click)="onRetry()"
+        class="px-6 py-3 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 transition"
+        aria-label="Clear and retry"
+      >
+        Clear & Retry
+      </button>
+    }
+    @if (!showFeedback) {
+      <button
+        (click)="onSkip()"
+        class="px-6 py-3 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition"
+        aria-label="Skip this sentence"
+      >
+        Skip
+      </button>
+    }
+  } @else {
+    <!-- Only show manual navigation buttons if auto next is disabled -->
+    @if (!autoNextOnPerfect) {
+      @if (canGoNext) {
+        <button
+          (click)="onNext()"
+          aria-label="Continue to next sentence"
+          class="px-6 py-3 bg-primary text-white rounded-lg hover:bg-primary-dark transition"
+        >
+          Next Sentence →
+        </button>
+      } @else if (currentAccuracy >= passingScore) {
+        <button
+          (click)="onComplete()"
+          aria-label="Complete dictation practice"
+          class="complete-btn px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition"
+        >
+          Complete Practice
+        </button>
+      }
+    } @else {
+      <!-- Show loading indicator when auto next is enabled -->
+      <div class="px-6 py-3 text-gray-600 dark:text-gray-400 flex items-center gap-2">
+        <span class="animate-pulse">⏳</span>
+        <span>Moving to next sentence...</span>
+      </div>
+    }
+  }
+</div>

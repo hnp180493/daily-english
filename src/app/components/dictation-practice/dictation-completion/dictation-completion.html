@@ -1,0 +1,42 @@
+<div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-8 text-center">
+  <div class="text-6xl mb-4">🎉</div>
+  <h2 class="text-2xl font-bold text-gray-800 dark:text-gray-200 mb-4">
+    Dictation Practice Complete!
+  </h2>
+
+  <div class="grid grid-cols-3 gap-4 max-w-2xl mx-auto mb-6 completion-stats">
+    <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
+      <div class="text-sm text-gray-600 dark:text-gray-400 mb-1">Overall Accuracy</div>
+      <div class="text-2xl font-bold text-primary">{{ overallAccuracy.toFixed(1) }}%</div>
+    </div>
+
+    <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
+      <div class="text-sm text-gray-600 dark:text-gray-400 mb-1">Sentences Completed</div>
+      <div class="text-2xl font-bold text-primary">
+        {{ completedCount }} / {{ totalSentences }}
+      </div>
+    </div>
+
+    <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4 points-earned-card">
+      <div class="text-sm text-gray-600 dark:text-gray-400 mb-1">Points Earned</div>
+      <div class="text-2xl font-bold text-primary">+{{ completionPoints }}</div>
+    </div>
+  </div>
+
+  <div class="flex gap-4 justify-center">
+    <button
+      (click)="onRetry()"
+      class="px-6 py-3 bg-primary text-white rounded-lg hover:bg-primary-dark transition"
+      aria-label="Retry dictation practice"
+    >
+      Try Again
+    </button>
+    <button
+      (click)="onGoBack()"
+      class="px-6 py-3 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition"
+      aria-label="Return to exercise page"
+    >
+      Back to Exercise
+    </button>
+  </div>
+</div>

@@ -1,0 +1,71 @@
+<div class="audio-controls mb-6" role="region" aria-label="Audio playback controls">
+  <div class="flex items-center justify-center gap-4 mb-4">
+    <button
+      (click)="onPrevious()"
+      [disabled]="!canGoPrevious"
+      class="p-3 rounded-full bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed transition"
+      aria-label="Previous sentence"
+      [attr.aria-disabled]="!canGoPrevious"
+    >
+      <span aria-hidden="true">◄◄</span>
+    </button>
+
+    @if (!isPlaying()) {
+      <button
+        (click)="onPlay()"
+        [style.width.px]="64"
+        class="p-4 rounded-full bg-primary text-white hover:bg-primary-dark transition text-2xl"
+        aria-label="Play audio"
+      >
+        <span aria-hidden="true">▶</span>
+      </button>
+    } @else {
+      <button
+        (click)="onPause()"
+        class="p-4 rounded-full bg-primary text-white hover:bg-primary-dark transition text-2xl"
+        aria-label="Pause audio"
+      >
+        <span aria-hidden="true">⏸</span>
+      </button>
+    }
+
+    <button
+      (click)="onNext()"
+      [disabled]="!canGoNext"
+      class="p-3 rounded-full bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed transition"
+      aria-label="Next sentence"
+      [attr.aria-disabled]="!canGoNext"
+    >
+      <span aria-hidden="true">►►</span>
+    </button>
+  </div>
+
+  <!-- Speed Control -->
+  <div
+    class="flex items-center justify-center gap-2"
+    role="group"
+    aria-label="Playback speed controls"
+  >
+    <span class="text-sm text-gray-600 dark:text-gray-400" id="speed-label">Speed:</span>
+    @for (speed of speedOptions; track speed) {
+      <button
+        (click)="onSpeedChange(speed)"
+        [class.bg-primary]="playbackSpeed() === speed"
+        [class.text-white]="playbackSpeed() === speed"
+        [class.bg-gray-200]="playbackSpeed() !== speed"
+        [class.dark:bg-gray-700]="playbackSpeed() !== speed"
+        class="px-3 py-1 rounded text-sm hover:opacity-80 transition"
+        [attr.aria-pressed]="playbackSpeed() === speed"
+        [attr.aria-label]="'Set playback speed to ' + speed + 'x'"
+        aria-labelledby="speed-label"
+      >
+        {{ speed }}x
+      </button>
+    }
+  </div>
+
+  <!-- TTS Settings -->
+  <div class="flex items-center justify-center mt-3">
+    <app-tts-settings />
+  </div>
+</div>

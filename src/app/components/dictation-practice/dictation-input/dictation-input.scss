@@ -1,0 +1,17 @@
+textarea {
+  resize: vertical;
+  min-height: 100px;
+  
+  &:focus {
+    outline: none;
+  }
+}
+
+// Dark mode specific adjustments
+@media (prefers-color-scheme: dark) {
+  textarea {
+    &::placeholder {
+      color: rgba(255, 255, 255, 0.5);
+    }
+  }
+}

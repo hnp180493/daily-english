@@ -1,0 +1,92 @@
+<div class="mb-4">
+  <label
+    for="dictation-input"
+    class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+  >
+    Type what you hear:
+  </label>
+  <div class="relative">
+    <!-- Background highlight layer (behind textarea) -->
+    @if (
+      showFeedback &&
+      currentSentence &&
+      currentSentence.feedback &&
+      currentAccuracy < passingScore
+    ) {
+      <div
+        class="absolute pointer-events-none overflow-hidden whitespace-pre-wrap break-words rounded-lg z-10"
+        style="
+          font-family: monospace;
+          font-size: 14px;
+          line-height: 1.5;
+          letter-spacing: 0.5px;
+          padding: calc(0.75rem + 1px) calc(1rem + 1px);
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+        "
+        aria-hidden="true"
+        [innerHTML]="getHighlightedText()"
+      ></div>
+    }
+
+    <textarea
+      #dictationInput
+      id="dictation-input"
+      [ngModel]="userInput"
+      (ngModelChange)="onInputChange($event)"
+      (keydown.enter)="onEnterKey($any($event))"
+      [disabled]="showFeedback && currentAccuracy >= passingScore"
+      rows="4"
+      [class.opacity-0]="showFeedback && currentAccuracy >= passingScore"
+      [style.background]="
+        showFeedback && currentAccuracy < passingScore ? 'transparent' : ''
+      "
+      [style.color]="
+        showFeedback && currentAccuracy < passingScore ? 'transparent' : ''
+      "
+      [style.caret-color]="
+        showFeedback && currentAccuracy < passingScore ? 'white' : 'auto'
+      "
+      [style.position]="'relative'"
+      [style.z-index]="showFeedback && currentAccuracy < passingScore ? '5' : '10'"
+      style="
+        font-family: monospace;
+        font-size: 14px;
+        line-height: 1.5;
+        letter-spacing: 0.5px;
+      "
+      class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200 disabled:opacity-50"
+      placeholder="Start typing..."
+      aria-label="Type the sentence you hear"
+      [attr.aria-describedby]="showFeedback ? 'feedback-region' : null"
+    >
+    </textarea>
+
+    <!-- Foreground overlay (when passed) -->
+    @if (
+      showFeedback &&
+      currentSentence &&
+      currentSentence.feedback &&
+      currentAccuracy >= passingScore
+    ) {
+      <div
+        class="absolute pointer-events-none overflow-auto whitespace-pre-wrap break-words rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 z-20"
+        style="
+          font-family: monospace;
+          font-size: 14px;
+          line-height: 1.5;
+          letter-spacing: 0.5px;
+          padding: calc(0.75rem + 1px) calc(1rem + 1px);
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+        "
+        aria-hidden="true"
+        [innerHTML]="getHighlightedText()"
+      ></div>
+    }
+  </div>
+</div>

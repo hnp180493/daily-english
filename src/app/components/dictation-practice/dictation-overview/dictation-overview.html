@@ -1,0 +1,117 @@
+<div class="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden">
+  <!-- Collapsible Header -->
+  <button
+    (click)="onToggleOverview()"
+    class="w-full px-6 py-4 flex items-center justify-between hover:bg-gray-50 dark:hover:bg-gray-700 transition"
+    [attr.aria-expanded]="showOverview()"
+    aria-controls="overview-content"
+  >
+    <div class="flex items-center gap-3">
+      <span class="text-2xl" aria-hidden="true">📖</span>
+      <div class="text-left">
+        <h3 class="font-semibold text-gray-800 dark:text-gray-200">
+          Listen to Full Exercise
+        </h3>
+      </div>
+    </div>
+    <span
+      class="text-2xl text-gray-600 dark:text-gray-400 transition-transform"
+      [class.rotate-180]="showOverview()"
+      aria-hidden="true"
+    >
+      ▼
+    </span>
+  </button>
+
+  <!-- Collapsible Content -->
+  @if (showOverview()) {
+    <div
+      id="overview-content"
+      class="px-6 pb-6 border-t border-gray-200 dark:border-gray-700 animate-slideDown"
+    >
+      <!-- Custom Audio Player -->
+      <div class="bg-gray-800 dark:bg-gray-950 rounded-lg p-4 mt-4">
+        <!-- Controls -->
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <!-- Play/Pause Button -->
+            @if (!isPlayingOverview()) {
+              <button
+                (click)="onPlayOverviewAudio()"
+                class="w-10 h-10 flex items-center justify-center rounded-full bg-white hover:bg-gray-200 transition"
+                aria-label="Play audio"
+              >
+                <span class="text-gray-800 text-lg ml-0.5" aria-hidden="true">▶</span>
+              </button>
+            } @else {
+              <button
+                (click)="onPauseOverviewAudio()"
+                class="w-10 h-10 flex items-center justify-center rounded-full bg-white hover:bg-gray-200 transition"
+                aria-label="Pause audio"
+              >
+                <span class="text-gray-800 text-lg" aria-hidden="true">⏸</span>
+              </button>
+            }
+            <!-- Rewind Button - Show when playing -->
+            @if (isPlayingOverview()) {
+              <button
+                (click)="onRewindOverviewAudio()"
+                class="rewind-button w-10 h-10 flex items-center justify-center rounded-full bg-white hover:bg-gray-200 transition"
+                aria-label="Rewind to start of current sentence"
+                title="Tua lại về đầu câu hiện tại"
+              >
+                <span class="text-gray-800 text-lg" aria-hidden="true">⏪</span>
+              </button>
+            }
+          </div>
+
+          <!-- Info & Volume -->
+          <div class="flex items-center gap-3">
+            <div class="text-gray-400 text-xs hidden sm:block">
+              {{ sentences.length }} sentences
+            </div>
+            <button
+              class="text-white hover:text-gray-300 transition"
+              aria-label="Volume control"
+            >
+              <span class="text-xl" aria-hidden="true">🔊</span>
+            </button>
+            <button
+              class="text-white hover:text-gray-300 transition"
+              aria-label="More options"
+            >
+              <span class="text-xl" aria-hidden="true">⋮</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Full Text Display (Below Audio Player) -->
+      <div
+        (click)="onToggleOverviewText()"
+        class="mt-4 p-4 bg-gray-50 dark:bg-gray-900 rounded-lg cursor-pointer transition-all hover:bg-gray-100 dark:hover:bg-gray-800 border-2"
+        [class.border-primary]="showOverviewText()"
+        [class.border-transparent]="!showOverviewText()"
+        role="button"
+        [attr.aria-pressed]="showOverviewText()"
+        aria-label="Click to toggle text visibility"
+      >
+        <div class="flex items-center justify-between mb-2">
+          <span class="text-sm font-medium text-gray-600 dark:text-gray-400">
+          </span>
+          <span class="text-xs text-gray-500 dark:text-gray-500">
+            {{ showOverviewText() ? '👁️ Visible' : '🔒 Hidden' }}
+          </span>
+        </div>
+        <p
+          class="text-gray-700 dark:text-gray-300 leading-relaxed transition-all duration-300"
+          [class.blur-sm]="!showOverviewText()"
+          [class.select-none]="!showOverviewText()"
+          [class.blur-none]="showOverviewText()"
+        >
+          {{ getFullExerciseText() }}
+        </p>
+      </div>
+    </div>
+  }
+</div>

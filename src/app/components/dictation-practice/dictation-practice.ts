@@ -1,6 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, ChangeDetectionStrategy, OnInit, OnDestroy, inject, signal, computed, HostListener, ViewChild, ElementRef } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { Component, ChangeDetectionStrategy, OnInit, OnDestroy, inject, signal, computed, HostListener, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { DictationSentence, DictationPracticeAttempt } from '../../models/dictation.model';
 import { Exercise } from '../../models/exercise.model';
@@ -9,15 +8,31 @@ import { TTSService } from '../../services/tts.service';
 import { ProgressService } from '../../services/progress.service';
 import { ExerciseService } from '../../services/exercise.service';
 import { DictationSettingsService } from '../../services/dictation-settings.service';
-import { PointsAnimationService } from '../../services/points-animation.service';
 import { DictationFeedbackComponent } from '../dictation-feedback/dictation-feedback';
 import { DictationSettingsComponent } from '../dictation-settings/dictation-settings';
-import { TTSSettings } from '../tts-settings/tts-settings';
 import { SeoService } from '../../services/seo.service';
+import { DictationHeader } from './dictation-header/dictation-header';
+import { DictationAudioControls } from './dictation-audio-controls/dictation-audio-controls';
+import { DictationInput } from './dictation-input/dictation-input';
+import { DictationActions } from './dictation-actions/dictation-actions';
+import { DictationCompletion } from './dictation-completion/dictation-completion';
+import { DictationOverview } from './dictation-overview/dictation-overview';
+import { DictationShortcuts } from './dictation-shortcuts/dictation-shortcuts';
 
 @Component({
   selector: 'app-dictation-practice',
-  imports: [CommonModule, FormsModule, DictationFeedbackComponent, DictationSettingsComponent, TTSSettings],
+  imports: [
+    CommonModule,
+    DictationFeedbackComponent,
+    DictationSettingsComponent,
+    DictationHeader,
+    DictationAudioControls,
+    DictationInput,
+    DictationActions,
+    DictationCompletion,
+    DictationOverview,
+    DictationShortcuts
+  ],
   templateUrl: './dictation-practice.html',
   styleUrl: './dictation-practice.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -28,7 +43,7 @@ export class DictationPracticeComponent implements OnInit, OnDestroy {
   readonly DICTATION_COMPLETION_POINTS = 10;
   
   // ViewChild references
-  @ViewChild('dictationInput') dictationInput?: ElementRef<HTMLTextAreaElement>;
+  @ViewChild(DictationInput) dictationInputComponent?: DictationInput;
   
   // Injected services
   private route = inject(ActivatedRoute);
@@ -38,7 +53,6 @@ export class DictationPracticeComponent implements OnInit, OnDestroy {
   private progressService = inject(ProgressService);
   private exerciseService = inject(ExerciseService);
   private settingsService = inject(DictationSettingsService);
-  private pointsAnimationService = inject(PointsAnimationService);
   private seoService = inject(SeoService);
   
   // Signals for reactive state
@@ -60,8 +74,6 @@ export class DictationPracticeComponent implements OnInit, OnDestroy {
   isSubmitting = signal<boolean>(false);
   justSubmitted = signal<boolean>(false);
   showOverview = signal<boolean>(false);
-  isPlayingOverview = signal<boolean>(false);
-  showOverviewText = signal<boolean>(false);
   attemptCount = signal<number>(0);
   
   settings = this.settingsService.settings;
@@ -69,8 +81,6 @@ export class DictationPracticeComponent implements OnInit, OnDestroy {
   // Performance optimization: Cache accuracy calculations
   private accuracyCache = new Map<string, any>();
   private debounceTimer: any = null;
-  private autoReplayTimer: any = null;
-  private autoReplayCount = 0;
   
   // Computed values
   currentSentence = computed(() => {
@@ -113,15 +123,6 @@ export class DictationPracticeComponent implements OnInit, OnDestroy {
   
   completedSentencesCount = computed(() => {
     return this.sentences().filter(s => s.isCompleted).length;
-  });
-  
-  fullExerciseText = computed(() => {
-    return this.sentences().map(s => s.original).join('. ') + '.';
-  });
-  
-  estimatedDuration = computed(() => {
-    const wordCount = this.sentences().map(s => s.original).join(' ').split(' ').length;
-    return (wordCount * 0.6 / 60).toFixed(1);
   });
 
   ngOnInit(): void {
@@ -206,10 +207,6 @@ export class DictationPracticeComponent implements OnInit, OnDestroy {
   }
   
   ngOnDestroy(): void {
-    this.stopAudio();
-    this.stopOverviewAudio();
-    this.clearAutoReplay();
-    
     // Clear debounce timer
     if (this.debounceTimer) {
       clearTimeout(this.debounceTimer);
@@ -347,83 +344,14 @@ export class DictationPracticeComponent implements OnInit, OnDestroy {
     }, 300);
   }
   
-  playAudio(): void {
-    const sentence = this.currentSentence();
-    if (!sentence) return;
-    
-    // Clear any existing auto replay
-    this.clearAutoReplay();
-    
-    const settings = this.settings();
-    const autoReplayTimes = settings.autoReplay;
-    
-    if (autoReplayTimes > 0) {
-      // Auto replay mode
-      this.autoReplayCount = 0;
-      this.playWithAutoReplay(sentence.original, autoReplayTimes, settings.secondsBetweenReplays);
-    } else {
-      // Single play
-      this.isPlaying.set(true);
-      this.isPaused.set(false);
-      
-      this.ttsService.speak(sentence.original, () => {
-        this.isPlaying.set(false);
-      });
-    }
-  }
-  
-  private playWithAutoReplay(text: string, totalTimes: number, delaySeconds: number): void {
-    this.isPlaying.set(true);
-    this.isPaused.set(false);
-    
-    this.ttsService.speak(text, () => {
-      this.autoReplayCount++;
-      
-      if (this.autoReplayCount < totalTimes) {
-        // Schedule next replay
-        this.autoReplayTimer = setTimeout(() => {
-          this.playWithAutoReplay(text, totalTimes, delaySeconds);
-        }, delaySeconds * 1000);
-      } else {
-        // All replays done
-        this.isPlaying.set(false);
-        this.autoReplayCount = 0;
-      }
-    });
-  }
-  
-  private clearAutoReplay(): void {
-    if (this.autoReplayTimer) {
-      clearTimeout(this.autoReplayTimer);
-      this.autoReplayTimer = null;
-    }
-    this.autoReplayCount = 0;
-  }
-  
-  pauseAudio(): void {
-    this.ttsService.pause();
-    this.isPaused.set(true);
-    this.isPlaying.set(false);
-  }
-  
-  stopAudio(): void {
-    this.clearAutoReplay();
-    this.ttsService.stop();
-    this.isPlaying.set(false);
-    this.isPaused.set(false);
-  }
-  
-  adjustSpeed(speed: number): void {
-    this.playbackSpeed.set(speed);
-    // Set rate directly without saving to localStorage
-    const settings = this.ttsService.getSettings();
-    (this.ttsService as any).rate = speed;
+  onReplayAudio(): void {
+    // This will be handled by audio controls component
+    // Just trigger play through the component
   }
   
   nextSentence(): void {
     if (!this.canGoNext()) return;
     
-    this.stopAudio();
     this.currentSentenceIndex.update(i => i + 1);
     this.userInput.set('');
     this.showFeedback.set(false);
@@ -432,21 +360,13 @@ export class DictationPracticeComponent implements OnInit, OnDestroy {
     
     // Focus textarea after a short delay
     setTimeout(() => {
-      this.dictationInput?.nativeElement.focus();
+      this.dictationInputComponent?.focus();
     }, 100);
-    
-    // Auto-play audio from sentence 2 onwards
-    if (this.currentSentenceIndex() >= 1) {
-      setTimeout(() => {
-        this.playAudio();
-      }, 300);
-    }
   }
   
   previousSentence(): void {
     if (!this.canGoPrevious()) return;
     
-    this.stopAudio();
     this.currentSentenceIndex.update(i => i - 1);
     
     // Load previous sentence state
@@ -467,7 +387,6 @@ export class DictationPracticeComponent implements OnInit, OnDestroy {
   goToSentence(index: number): void {
     if (index < 0 || index >= this.sentences().length) return;
     
-    this.stopAudio();
     this.currentSentenceIndex.set(index);
     
     // Load sentence state
@@ -483,13 +402,6 @@ export class DictationPracticeComponent implements OnInit, OnDestroy {
     }
     
     this.saveProgress();
-    
-    // Auto-play audio from sentence 2 onwards (only if not completed)
-    if (index >= 1 && (!targetSentence || !targetSentence.isCompleted)) {
-      setTimeout(() => {
-        this.playAudio();
-      }, 300);
-    }
   }
   
   submitAnswer(): void {
@@ -537,7 +449,7 @@ export class DictationPracticeComponent implements OnInit, OnDestroy {
     
     // Move cursor to first missing word position if accuracy is not perfect
     if (accuracy < this.PASSING_SCORE) {
-      this.moveCursorToMissingWord(sentence.original, input);
+      this.dictationInputComponent?.moveCursorToMissingWord(sentence.original, input);
     }
     
     // Debounced save to avoid excessive writes
@@ -556,62 +468,11 @@ export class DictationPracticeComponent implements OnInit, OnDestroy {
     }
   }
   
-  private moveCursorToMissingWord(original: string, userInput: string): void {
-    const originalWords = original.toLowerCase().split(/\s+/);
-    const userWords = userInput.toLowerCase().split(/\s+/);
-    
-    let userIndex = 0;
-    let charPosition = 0;
-    
-    // Find first missing word position
-    for (let i = 0; i < originalWords.length; i++) {
-      const originalWord = originalWords[i].replace(/[.,!?;:"""''()[\]{}—–-]/g, '');
-      
-      if (userIndex < userWords.length) {
-        const userWord = userWords[userIndex].replace(/[.,!?;:"""''()[\]{}—–-]/g, '');
-        
-        if (originalWord === userWord) {
-          // Match found, move to next user word
-          charPosition += userWords[userIndex].length + 1;
-          userIndex++;
-        } else {
-          // Found first missing/wrong word - move cursor here
-          this.setCursorPosition(charPosition);
-          return;
-        }
-      } else {
-        // No more user words, cursor should be at end
-        this.setCursorPosition(charPosition);
-        return;
-      }
-    }
-  }
-  
-  private setCursorPosition(position: number): void {
-    setTimeout(() => {
-      const textarea = this.dictationInput?.nativeElement;
-      if (textarea) {
-        textarea.focus();
-        textarea.setSelectionRange(position, position);
-      }
-    }, 100);
-  }
-  
   retryAnswer(): void {
     // Clear feedback and input to start fresh
     this.showFeedback.set(false);
     this.currentAccuracy.set(0);
     this.userInput.set('');
-  }
-  
-  handleEnterKey(event: KeyboardEvent): void {
-    event.preventDefault();
-    
-    // Allow submit if not showing feedback OR if showing feedback but score < PASSING_SCORE
-    if (!this.showFeedback() || this.currentAccuracy() < this.PASSING_SCORE) {
-      this.submitAnswer();
-    }
-    // If already passed (100%), Enter does nothing - user must click Next button
   }
   
   skipSentence(): void {
@@ -682,32 +543,6 @@ export class DictationPracticeComponent implements OnInit, OnDestroy {
     });
     
     this.isComplete.set(true);
-    
-    // Award points after completion screen is rendered
-    setTimeout(() => {
-      this.awardCompletionPoints();
-    }, 100);
-  }
-  
-  private awardCompletionPoints(): void {
-    // Find the points earned card in completion screen
-    const sourceElement = document.querySelector('.points-earned-card') as HTMLElement
-      || document.querySelector('.completion-stats') as HTMLElement
-      || document.querySelector('.dictation-practice-container') as HTMLElement;
-    
-    if (!sourceElement) {
-      console.warn('No source element found for points animation');
-      // If no element found, just add points without animation
-      this.progressService.addBonusPoints(this.DICTATION_COMPLETION_POINTS);
-      return;
-    }
-    
-    console.log('Triggering points animation from:', sourceElement.className);
-    
-    // Trigger animation and add points after animation completes
-    this.pointsAnimationService.triggerPointsAnimation(this.DICTATION_COMPLETION_POINTS, sourceElement).then(() => {
-      this.progressService.addBonusPoints(this.DICTATION_COMPLETION_POINTS);
-    });
   }
   
   retry(): void {
@@ -735,100 +570,12 @@ export class DictationPracticeComponent implements OnInit, OnDestroy {
     window.history.back();
   }
   
-  getHighlightedText(): string {
-    const sentence = this.currentSentence();
-    if (!sentence || !sentence.feedback) return '';
-    
-    const userWords = this.userInput().trim().split(/\s+/);
-    const originalWords = sentence.original.trim().split(/\s+/);
-    const feedback = sentence.feedback;
-    
-    // Create a map of incorrect words
-    const incorrectWords = new Set<string>();
-    const misspelledMap = new Map<string, string>();
-    
-    // Add missing words (words in original but not in user input)
-    feedback.mistakes.missingWords.forEach(word => incorrectWords.add(word.toLowerCase()));
-    
-    // Add extra words (words in user input but not in original)
-    feedback.mistakes.extraWords.forEach(word => incorrectWords.add(word.toLowerCase()));
-    
-    // Add misspelled words
-    feedback.mistakes.misspelledWords.forEach(mistake => {
-      misspelledMap.set(mistake.typed.toLowerCase(), mistake.original);
-    });
-    
-    // Build highlighted HTML
-    let html = '';
-    userWords.forEach((word, index) => {
-      const wordLower = word.toLowerCase();
-      const isExtra = feedback.mistakes.extraWords.some(w => w.toLowerCase() === wordLower);
-      const isMisspelled = misspelledMap.has(wordLower);
-      
-      if (isExtra || isMisspelled) {
-        // Highlight incorrect words in red
-        html += `<span class="bg-red-200 dark:bg-red-900/50 text-red-800 dark:text-red-300 rounded">${this.escapeHtml(word)}</span>`;
-      } else {
-        // Correct words
-        html += `<span class="text-gray-800 dark:text-gray-200">${this.escapeHtml(word)}</span>`;
-      }
-      
-      if (index < userWords.length - 1) {
-        html += ' ';
-      }
-    });
-    
-    return html;
-  }
-  
-  private escapeHtml(text: string): string {
-    const div = document.createElement('div');
-    div.textContent = text;
-    return div.innerHTML;
-  }
-  
   openSettings(): void {
     this.showSettings.set(true);
   }
   
   closeSettings(): void {
     this.showSettings.set(false);
-  }
-  
-  toggleOverview(): void {
-    this.showOverview.update(v => !v);
-    
-    // Stop overview audio if collapsing
-    if (!this.showOverview()) {
-      this.stopOverviewAudio();
-      this.showOverviewText.set(false);
-    }
-  }
-  
-  toggleOverviewText(): void {
-    this.showOverviewText.update(v => !v);
-  }
-  
-  playOverviewAudio(): void {
-    const fullText = this.fullExerciseText();
-    
-    if (!fullText) return;
-    
-    this.isPlayingOverview.set(true);
-    
-    this.ttsService.speak(fullText, () => {
-      this.isPlayingOverview.set(false);
-    });
-  }
-  
-  stopOverviewAudio(): void {
-    this.ttsService.stop();
-    this.isPlayingOverview.set(false);
-  }
-  
-  pauseOverviewAudio(): void {
-    this.ttsService.pause();
-    this.isPlayingOverview.set(false);
   }
   
   @HostListener('document:keydown', ['$event'])
@@ -855,20 +602,16 @@ export class DictationPracticeComponent implements OnInit, OnDestroy {
       }
     }
     
-    // Replay key
+    // Replay key - handled by audio controls component
     if (key === settings.replayKey) {
       event.preventDefault();
-      this.playAudio();
+      // Will be handled by audio controls component
     }
     
-    // Play/Pause key
+    // Play/Pause key - handled by audio controls component
     if (key === settings.playPauseKey) {
       event.preventDefault();
-      if (this.isPlaying()) {
-        this.pauseAudio();
-      } else {
-        this.playAudio();
-      }
+      // Will be handled by audio controls component
     }
   }
   
@@ -892,17 +635,5 @@ export class DictationPracticeComponent implements OnInit, OnDestroy {
     }
     
     return parts.join('+');
-  }
-  
-  getKeyLabel(keyString: string): string {
-    const keyMap: { [key: string]: string } = {
-      'ctrl+space': 'Ctrl + Space',
-      'ctrl+r': 'Ctrl + R',
-      'ctrl+p': 'Ctrl + P',
-      'space': 'Space',
-      'backtick': '`',
-      'enter': 'Enter'
-    };
-    return keyMap[keyString] || keyString;
   }
 }
