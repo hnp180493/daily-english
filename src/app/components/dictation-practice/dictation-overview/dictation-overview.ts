@@ -117,6 +117,14 @@ export class DictationOverview implements OnInit, OnDestroy {
   }
 
   onPlayOverviewAudio(): void {
+    // If TTS is paused, resume from where it stopped
+    if (this.ttsService.isPaused()) {
+      this.ttsService.resume();
+      this.isPlayingOverview.set(true);
+      return;
+    }
+    
+    // Otherwise, start playing from beginning
     const fullText = this.getFullExerciseText();
     if (!fullText) return;
     
