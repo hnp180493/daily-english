@@ -21,6 +21,8 @@ export class DictationOverview implements OnDestroy {
   currentOverviewSentenceIndex = signal<number | null>(null);
   
   private overviewSentenceBoundaries: number[] = [];
+  private lastArrowLeftTime = 0;
+  private readonly DOUBLE_LEFT_MS = 400;
 
   @Output() overviewToggled = new EventEmitter<boolean>();
 
@@ -71,24 +73,33 @@ export class DictationOverview implements OnDestroy {
   }
 
   onRewindOverviewAudio(): void {
+    this.playFromSentenceIndex(this.currentOverviewSentenceIndex());
+  }
+
+  onRewindToPreviousSentence(): void {
     const currentIndex = this.currentOverviewSentenceIndex();
-    if (currentIndex === null || currentIndex < 0) return;
+    if (currentIndex === null || currentIndex <= 0) return;
+    this.playFromSentenceIndex(currentIndex - 1);
+  }
+
+  private playFromSentenceIndex(startIndex: number | null): void {
+    if (startIndex == null || startIndex < 0) return;
     
     this.ttsService.stop();
     
-    if (this.sentences.length === 0 || currentIndex >= this.sentences.length) return;
+    if (this.sentences.length === 0 || startIndex >= this.sentences.length) return;
     
     if (this.overviewSentenceBoundaries.length === 0) {
       this.calculateSentenceBoundaries();
     }
     
-    const remainingSentences = this.sentences.slice(currentIndex);
+    const remainingSentences = this.sentences.slice(startIndex);
     const textToPlay = remainingSentences.map(s => s.original).join('. ') + '.';
     
     this.isPlayingOverview.set(true);
-    this.currentOverviewSentenceIndex.set(currentIndex);
+    this.currentOverviewSentenceIndex.set(startIndex);
     
-    const currentBoundary = this.overviewSentenceBoundaries[currentIndex];
+    const currentBoundary = this.overviewSentenceBoundaries[startIndex];
     
     this.ttsService.speak(textToPlay, () => {
       this.isPlayingOverview.set(false);
@@ -138,10 +149,18 @@ export class DictationOverview implements OnDestroy {
 
   @HostListener('document:keydown', ['$event'])
   handleKeyboardShortcut(event: KeyboardEvent): void {
-    // Rewind overview audio with Left Arrow key
-    // Only work when overview audio is playing and not typing in textarea
-    if (event.key === 'ArrowLeft' && this.isPlayingOverview() && !(event.target instanceof HTMLTextAreaElement)) {
-      event.preventDefault();
+    if (event.key !== 'ArrowLeft' || !this.isPlayingOverview() || event.target instanceof HTMLTextAreaElement) {
+      return;
+    }
+    event.preventDefault();
+    
+    const now = Date.now();
+    const isDoubleLeft = now - this.lastArrowLeftTime < this.DOUBLE_LEFT_MS;
+    this.lastArrowLeftTime = now;
+    
+    if (isDoubleLeft) {
+      this.onRewindToPreviousSentence();
+    } else {
       this.onRewindOverviewAudio();
     }
   }

@@ -44,6 +44,7 @@ export class DictationPracticeComponent implements OnInit, OnDestroy {
   
   // ViewChild references
   @ViewChild(DictationInput) dictationInputComponent?: DictationInput;
+  @ViewChild(DictationAudioControls) dictationAudioControlsRef?: DictationAudioControls;
   
   // Injected services
   private route = inject(ActivatedRoute);
@@ -345,8 +346,7 @@ export class DictationPracticeComponent implements OnInit, OnDestroy {
   }
   
   onReplayAudio(): void {
-    // This will be handled by audio controls component
-    // Just trigger play through the component
+    this.dictationAudioControlsRef?.onPlay();
   }
   
   nextSentence(): void {
@@ -602,16 +602,22 @@ export class DictationPracticeComponent implements OnInit, OnDestroy {
       }
     }
     
-    // Replay key - handled by audio controls component
+    // Replay key - trigger play (replay current sentence) via audio controls
     if (key === settings.replayKey) {
       event.preventDefault();
-      // Will be handled by audio controls component
+      this.dictationAudioControlsRef?.onPlay();
+      return;
     }
     
-    // Play/Pause key - handled by audio controls component
+    // Play/Pause key - toggle play/pause via audio controls
     if (key === settings.playPauseKey) {
       event.preventDefault();
-      // Will be handled by audio controls component
+      if (this.isPlaying()) {
+        this.dictationAudioControlsRef?.onPause();
+      } else {
+        this.dictationAudioControlsRef?.onPlay();
+      }
+      return;
     }
   }
   

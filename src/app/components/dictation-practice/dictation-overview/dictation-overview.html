@@ -55,10 +55,19 @@
             <!-- Rewind Button - Show when playing -->
             @if (isPlayingOverview()) {
               <button
+                (click)="onRewindToPreviousSentence()"
+                class="w-10 h-10 flex items-center justify-center rounded-full bg-white hover:bg-gray-200 transition disabled:opacity-50 disabled:cursor-not-allowed"
+                [disabled]="(currentOverviewSentenceIndex() ?? 0) <= 0"
+                aria-label="Go to previous sentence"
+                title="Quay lại câu trước (double ←)"
+              >
+                <span class="text-gray-800 text-lg" aria-hidden="true">⏮</span>
+              </button>
+              <button
                 (click)="onRewindOverviewAudio()"
                 class="rewind-button w-10 h-10 flex items-center justify-center rounded-full bg-white hover:bg-gray-200 transition"
                 aria-label="Rewind to start of current sentence"
-                title="Tua lại về đầu câu hiện tại"
+                title="Tua lại về đầu câu hiện tại (←)"
               >
                 <span class="text-gray-800 text-lg" aria-hidden="true">⏪</span>
               </button>
