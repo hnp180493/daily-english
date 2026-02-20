@@ -22,7 +22,7 @@ export const AVAILABLE_KEYS = [
   { value: 'ctrl+space', label: 'Ctrl + Space' },
   { value: 'ctrl+r', label: 'Ctrl + R' },
   { value: 'ctrl+p', label: 'Ctrl + P' },
-  { value: 'space', label: 'Space' },
+  // { value: 'space', label: 'Space' },
   { value: 'backtick', label: '` (backtick)' },
   { value: 'enter', label: 'Enter' }
 ];

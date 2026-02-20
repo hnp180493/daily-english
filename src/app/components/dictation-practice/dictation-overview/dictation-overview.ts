@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, Input, Output, EventEmitter, ChangeDetectionStrategy, inject, signal, OnDestroy, HostListener } from '@angular/core';
+import { Component, Input, Output, EventEmitter, ChangeDetectionStrategy, inject, signal, OnInit, OnDestroy, HostListener } from '@angular/core';
 import { TTSService } from '../../../services/tts.service';
 import { DictationSentence } from '../../../models/dictation.model';
 
@@ -10,7 +10,7 @@ import { DictationSentence } from '../../../models/dictation.model';
   styleUrl: './dictation-overview.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class DictationOverview implements OnDestroy {
+export class DictationOverview implements OnInit, OnDestroy {
   private ttsService = inject(TTSService);
   
   @Input() sentences: DictationSentence[] = [];
@@ -23,11 +23,58 @@ export class DictationOverview implements OnDestroy {
   private overviewSentenceBoundaries: number[] = [];
   private lastArrowLeftTime = 0;
   private readonly DOUBLE_LEFT_MS = 400;
+  private spaceKeyHandlerBound: ((e: KeyboardEvent) => void) | null = null;
 
   @Output() overviewToggled = new EventEmitter<boolean>();
 
+  ngOnInit(): void {
+    // Add capture phase listener to catch Space key early
+    this.spaceKeyHandlerBound = this.handleSpaceKeyCapture.bind(this);
+    document.addEventListener('keydown', this.spaceKeyHandlerBound, { capture: true });
+  }
+
   ngOnDestroy(): void {
     this.stopOverviewAudio();
+    if (this.spaceKeyHandlerBound) {
+      document.removeEventListener('keydown', this.spaceKeyHandlerBound, { capture: true });
+    }
+  }
+
+  private handleSpaceKeyCapture(event: KeyboardEvent): void {
+    // Only handle Space key when overview is shown
+    // IMPORTANT: Only handle bare Space key, NOT with modifier keys (Ctrl, Alt, Shift, Meta)
+    // This allows Ctrl+Space and other combinations to work normally for other components
+    if (
+      (event.key === ' ' || event.key === 'Spacebar') && 
+      this.showOverview() &&
+      !event.ctrlKey &&
+      !event.altKey &&
+      !event.shiftKey &&
+      !event.metaKey
+    ) {
+      // Don't handle when typing in input elements
+      const target = event.target as HTMLElement;
+      if (
+        target instanceof HTMLTextAreaElement ||
+        target instanceof HTMLInputElement ||
+        target instanceof HTMLSelectElement ||
+        target.isContentEditable
+      ) {
+        return;
+      }
+      
+      // Prevent default IMMEDIATELY in capture phase - this stops scroll before it starts
+      event.preventDefault();
+      event.stopPropagation();
+      event.stopImmediatePropagation();
+      
+      // Handle play/pause directly here since we're stopping propagation
+      if (this.isPlayingOverview()) {
+        this.onPauseOverviewAudio();
+      } else {
+        this.onPlayOverviewAudio();
+      }
+    }
   }
 
   onToggleOverview(): void {
@@ -36,9 +83,33 @@ export class DictationOverview implements OnDestroy {
     if (!this.showOverview()) {
       this.stopOverviewAudio();
       this.showOverviewText.set(false);
+    } else {
+      // When expanding, ensure shortcuts work immediately
+      // Small delay to ensure DOM is ready
+      setTimeout(() => {
+        // Blur any focused elements that might interfere with shortcuts
+        if (document.activeElement instanceof HTMLElement) {
+          (document.activeElement as HTMLElement).blur();
+        }
+      }, 50);
     }
     
     this.overviewToggled.emit(this.showOverview());
+  }
+
+  handleToggleButtonSpace(event: KeyboardEvent): void {
+    // If overview is already open, prevent Space from toggling
+    // Let the document-level handler handle play/pause instead
+    if (this.showOverview()) {
+      event.preventDefault();
+      event.stopPropagation();
+      // Don't call onToggleOverview() - let play/pause handler take over
+      return;
+    }
+    // If overview is closed, allow Space to toggle (normal button behavior)
+    // But prevent default scroll behavior
+    event.preventDefault();
+    this.onToggleOverview();
   }
 
   onToggleOverviewText(): void {
@@ -149,19 +220,41 @@ export class DictationOverview implements OnDestroy {
 
   @HostListener('document:keydown', ['$event'])
   handleKeyboardShortcut(event: KeyboardEvent): void {
-    if (event.key !== 'ArrowLeft' || !this.isPlayingOverview() || event.target instanceof HTMLTextAreaElement) {
+    // Space key is handled in capture phase, skip it here
+    if (event.key === ' ' || event.key === 'Spacebar') {
       return;
     }
-    event.preventDefault();
     
-    const now = Date.now();
-    const isDoubleLeft = now - this.lastArrowLeftTime < this.DOUBLE_LEFT_MS;
-    this.lastArrowLeftTime = now;
+    // Only handle other shortcuts when overview is shown
+    if (!this.showOverview()) {
+      return;
+    }
     
-    if (isDoubleLeft) {
-      this.onRewindToPreviousSentence();
-    } else {
-      this.onRewindOverviewAudio();
+    // Don't handle shortcuts when typing in input elements
+    const target = event.target as HTMLElement;
+    if (
+      target instanceof HTMLTextAreaElement ||
+      target instanceof HTMLInputElement ||
+      target instanceof HTMLSelectElement ||
+      target.isContentEditable
+    ) {
+      return;
+    }
+    
+    // Handle Left Arrow key for rewind (only when playing)
+    if (event.key === 'ArrowLeft' && this.isPlayingOverview()) {
+      event.preventDefault();
+      event.stopPropagation();
+      
+      const now = Date.now();
+      const isDoubleLeft = now - this.lastArrowLeftTime < this.DOUBLE_LEFT_MS;
+      this.lastArrowLeftTime = now;
+      
+      if (isDoubleLeft) {
+        this.onRewindToPreviousSentence();
+      } else {
+        this.onRewindOverviewAudio();
+      }
     }
   }
 }
