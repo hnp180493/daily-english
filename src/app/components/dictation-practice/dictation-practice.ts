@@ -358,10 +358,11 @@ export class DictationPracticeComponent implements OnInit, OnDestroy {
     this.currentAccuracy.set(0);
     this.saveProgress();
     
-    // Focus textarea after a short delay
+    // Auto-play audio for new sentence and focus textarea
     setTimeout(() => {
+      this.dictationAudioControlsRef?.onPlay();
       this.dictationInputComponent?.focus();
-    }, 100);
+    }, 0);
   }
   
   previousSentence(): void {
