@@ -254,6 +254,13 @@ export class DictationOverview implements OnInit, OnDestroy {
       event.preventDefault();
       event.stopPropagation();
       
+      // Ctrl + Left Arrow → go to previous sentence
+      if (event.ctrlKey) {
+        this.onRewindToPreviousSentence();
+        return;
+      }
+      
+      // Double Left Arrow → go to previous sentence
       const now = Date.now();
       const isDoubleLeft = now - this.lastArrowLeftTime < this.DOUBLE_LEFT_MS;
       this.lastArrowLeftTime = now;
