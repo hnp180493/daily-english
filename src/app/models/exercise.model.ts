@@ -69,6 +69,8 @@ export interface UserProgress {
   // Optimized: Store only the latest attempt per exercise
   exerciseHistory: { [exerciseId: string]: ExerciseAttempt };
   dictationHistory: { [exerciseId: string]: import('./dictation.model').DictationPracticeAttempt };
+  // Flat history capped at PRONUNCIATION_HISTORY_LIMIT (oldest dropped first)
+  pronunciationAttempts?: import('./pronunciation.model').PronunciationAttempt[];
   totalPoints: number;
   lastActivityDate: Date;
   currentStreak: number;
@@ -76,6 +78,8 @@ export interface UserProgress {
   lastStreakDate: string; // ISO date string (YYYY-MM-DD)
   achievements: string[];
 }
+
+export const PRONUNCIATION_HISTORY_LIMIT = 500;
 
 // Helper class for UserProgress operations
 export class UserProgressHelper {

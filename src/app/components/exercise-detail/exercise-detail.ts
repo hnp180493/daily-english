@@ -547,6 +547,16 @@ export class ExerciseDetailComponent implements OnInit, OnDestroy {
     });
   }
 
+  onPracticePronunciation(): void {
+    const ex = this.exercise();
+    if (!ex) return;
+    this.router.navigate(['/exercises', ex.id, 'pronunciation']);
+  }
+
+  get isPronunciationEnabled(): boolean {
+    return this.featureFlagService.isPronunciationPracticeEnabled();
+  }
+
   onPracticeDictationOriginal(): void {
     const ex = this.exercise();
     if (!ex) return;

@@ -1,8 +1,14 @@
 import { Injectable, inject, signal } from '@angular/core';
 import { BehaviorSubject, Observable, of } from 'rxjs';
 import { switchMap, tap, catchError } from 'rxjs/operators';
-import { ExerciseAttempt, UserProgress, ExerciseStatus } from '../models/exercise.model';
+import {
+  ExerciseAttempt,
+  UserProgress,
+  ExerciseStatus,
+  PRONUNCIATION_HISTORY_LIMIT
+} from '../models/exercise.model';
 import { DictationPracticeAttempt } from '../models/dictation.model';
+import { PronunciationAttempt } from '../models/pronunciation.model';
 import { DatabaseService } from './database/database.service';
 import { UnsubscribeFunction } from './database/database.interface';
 import { AuthService } from './auth.service';
@@ -228,6 +234,11 @@ export class ProgressService {
     // Ensure dictationHistory exists
     if (!progress.dictationHistory) {
       progress.dictationHistory = {};
+    }
+
+    // Ensure pronunciationAttempts exists
+    if (!progress.pronunciationAttempts) {
+      progress.pronunciationAttempts = [];
     }
     
     // Migrate streak fields if missing
@@ -535,6 +546,7 @@ export class ProgressService {
     return {
       exerciseHistory: {},
       dictationHistory: {},
+      pronunciationAttempts: [],
       totalPoints: 0,
       lastActivityDate: new Date(),
       currentStreak: 0,
@@ -542,6 +554,39 @@ export class ProgressService {
       lastStreakDate: '',
       achievements: []
     };
+  }
+
+  recordPronunciationAttempt(attempt: PronunciationAttempt): void {
+    const current = this.progress$.value;
+    const existing = current.pronunciationAttempts ?? [];
+    // Append and cap (drop oldest)
+    const next = [...existing, attempt];
+    const trimmed = next.length > PRONUNCIATION_HISTORY_LIMIT
+      ? next.slice(next.length - PRONUNCIATION_HISTORY_LIMIT)
+      : next;
+
+    const updated: UserProgress = {
+      ...current,
+      pronunciationAttempts: trimmed,
+      lastActivityDate: new Date()
+    };
+
+    this.progress$.next(updated);
+    this.progressSignal.set(updated);
+
+    const adapter = this.storageFactory.getAdapter();
+    adapter.saveProgress(updated).subscribe({
+      next: () => console.log('[ProgressService] Pronunciation attempt saved'),
+      error: (error) => console.error('[ProgressService] Failed to save pronunciation attempt:', error)
+    });
+  }
+
+  getPronunciationAttempts(): PronunciationAttempt[] {
+    return this.progress$.value.pronunciationAttempts ?? [];
+  }
+
+  getPronunciationAttemptsByExercise(exerciseId: string): PronunciationAttempt[] {
+    return this.getPronunciationAttempts().filter(a => a.exerciseId === exerciseId);
   }
 
   recordDictationAttempt(attempt: DictationPracticeAttempt): void {

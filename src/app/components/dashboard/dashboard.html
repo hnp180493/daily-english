@@ -87,6 +87,9 @@
           <h2 id="overview-heading" class="section-title">Quick Overview</h2>
           <div class="overview-grid" role="group" aria-label="Overview widgets">
             @if (enhancedAnalytics(); as enhanced) {
+              <div class="heatmap-row">
+                <app-activity-heatmap [heatmapData]="enhanced.activityHeatmap" />
+              </div>
               <div class="stats-row">
                 <app-practice-stats-widget [data]="enhanced.practiceStats" />
               </div>
@@ -96,6 +99,11 @@
               <div class="history-row">
                 <app-recent-history-widget [historyInput]="enhanced.recentHistory || []" />
               </div>
+              @if (showPronunciationStats()) {
+                <div class="pronunciation-row">
+                  <app-pronunciation-stats [attempts]="pronunciationAttempts()" />
+                </div>
+              }
               @if (userProgress()?.dictationHistory) {
                 <!-- <div class="dictation-row">
                   <app-dictation-stats-widget [dictationHistory]="userProgress()!.dictationHistory" />
@@ -114,6 +122,11 @@
               <div class="history-row">
                 <app-recent-history-widget [historyInput]="[]" />
               </div>
+              @if (showPronunciationStats()) {
+                <div class="pronunciation-row">
+                  <app-pronunciation-stats [attempts]="pronunciationAttempts()" />
+                </div>
+              }
               @if (userProgress()?.dictationHistory) {
                 <!-- <div class="dictation-row">
                   <app-dictation-stats-widget [dictationHistory]="userProgress()!.dictationHistory" />
@@ -218,9 +231,6 @@
 
           @if (enhancedAnalytics(); as enhanced) {
             <div class="activity-grid" role="group" aria-label="Activity widgets">
-              <div class="heatmap-row">
-                <app-activity-heatmap [heatmapData]="enhanced.activityHeatmap" />
-              </div>
               <div class="activity-details-row">
                 <app-time-of-day-analysis [data]="enhanced.timeOfDayAnalysis" />
                 <app-learning-velocity [data]="enhanced.learningVelocity" />

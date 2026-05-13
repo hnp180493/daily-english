@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { ExerciseContext } from '../../models/ai.model';
+import { PronunciationContext } from '../../models/pronunciation.model';
 
 @Injectable({
   providedIn: 'root'
@@ -124,5 +125,66 @@ Response format: Just one sentence with the correction.`;
 
   buildSystemPrompt(): string {
     return 'You are an English language teacher providing feedback on student translations. Always respond with valid JSON.';
+  }
+
+  buildPronunciationPrompt(context: PronunciationContext): string {
+    const words = this.extractWords(context.expectedText);
+    const wordListJson = JSON.stringify(words);
+
+    return `You are an English pronunciation coach for Vietnamese learners. You will listen to an audio recording of a student reading the EXACT expected sentence below, then return STRICT JSON feedback grounded in what you actually heard.
+
+Student level: ${context.level}
+Expected sentence: "${context.expectedText}"
+Words in the expected sentence (lowercase, in order): ${wordListJson}
+
+============================================================
+CRITICAL ANTI-HALLUCINATION RULES — read carefully
+============================================================
+1. EVERY word you mention in "perWordFeedback" MUST come from the list above. NEVER add words that are not in that list.
+2. EVERY word you quote inside "pronunciationIssues" / "strengths" / "rawFeedback" (in quotes or otherwise) MUST come from the list above. Do NOT invent example words like "thought", "think", "the" unless they actually appear in the list.
+3. EVERY phoneme you mention (e.g. /θ/, /ð/, /r/, final /t/, /g/, /ŋ/) MUST be a phoneme that actually occurs in one of the listed words. If /θ/ is not present, do NOT mention /θ/.
+4. Base every comment EXCLUSIVELY on what you heard in the audio vs. the expected sentence. Do not generate generic Vietnamese-learner advice that is not supported by the audio.
+5. If you cannot hear the audio clearly (silent / too short / wrong sentence), return overallScore 0 and explain politely in rawFeedback. Leave the arrays empty.
+
+============================================================
+COMMON VIETNAMESE-LEARNER PITFALLS — only mention if relevant
+============================================================
+- /θ/ (voiceless th) and /ð/ (voiced th): ONLY if the word list contains a word with these sounds (e.g. "think", "the", "this").
+- Dropped final consonants (e.g. final /t/, /d/, /k/, /s/, /z/, /n/): ONLY if the relevant word ends with that consonant.
+- /r/ vs /l/ confusion: ONLY if the word list contains /r/ or /l/.
+- Word stress, sentence rhythm, vowel length, linking: comment ONLY if you actually heard a deviation.
+
+============================================================
+OUTPUT — single JSON object, no markdown fences
+============================================================
+{
+  "overallScore": <0-100 integer>,
+  "pronunciationIssues": ["<short Vietnamese bullet about 1 real issue you heard>", ...],
+  "strengths": ["<short Vietnamese bullet about 1 real strength>", ...],
+  "perWordFeedback": [
+    {"word": "<one of the allowed words>", "ok": true},
+    {"word": "<one of the allowed words>", "ok": false, "issue": "<short Vietnamese note>"}
+  ]
+}
+
+Format rules:
+- All commentary MUST be in Vietnamese.
+- DO NOT add any summary / intro / outro paragraph — the bullet arrays already convey everything.
+- Each bullet in pronunciationIssues / strengths must be short (≤ 18 Vietnamese words). No repetition between bullets and per-word issues.
+- "perWordFeedback" MUST list every word in the same order as the "Words in the expected sentence" list — no additions, no omissions, no reordering.
+- If pronunciation is excellent, still list at least 1 strength.
+- Output JSON only — no markdown, no prose before/after.`;
+  }
+
+  /**
+   * Extract whitespace-separated lowercase tokens (keep alphanumerics, apostrophes, hyphens).
+   */
+  private extractWords(text: string): string[] {
+    if (!text) return [];
+    return text
+      .toLowerCase()
+      .split(/\s+/)
+      .map(w => w.replace(/[^a-z0-9'\-]+/g, ''))
+      .filter(w => w.length > 0);
   }
 }

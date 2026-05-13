@@ -1,0 +1,244 @@
+<div class="pronunciation-practice max-w-3xl mx-auto px-4 py-6 text-slate-100">
+  <!-- Header -->
+  <div class="flex items-center justify-between mb-6">
+    <button
+      (click)="goBackToExercise()"
+      class="text-sm text-slate-400 hover:text-slate-200 flex items-center gap-1 transition"
+      aria-label="Quay lại bài tập">
+      <span aria-hidden="true">←</span> Quay lại
+    </button>
+    <span class="text-[10px] px-2 py-1 rounded-full bg-purple-500/20 text-purple-300 font-semibold tracking-wider">
+      BETA
+    </span>
+  </div>
+
+  <h1 class="text-2xl font-bold mb-2 flex items-center gap-2">
+    <span>🎤</span> Luyện phát âm
+  </h1>
+  <p class="text-sm text-slate-400 mb-6">
+    Nhấn micro để bắt đầu, đọc câu tiếng Anh, rồi nhấn lại để dừng. AI sẽ nghe và nhận xét.
+  </p>
+
+  @if (isLoading()) {
+    <div class="text-center text-slate-500 py-12">Đang tải bài tập...</div>
+  } @else if (errorMessage() && !exercise()) {
+    <div class="bg-red-500/10 border border-red-500/30 text-red-300 rounded-lg p-4">
+      {{ errorMessage() }}
+    </div>
+  } @else if (exercise()) {
+
+    @if (!recorderSupported()) {
+      <div class="bg-amber-500/10 border border-amber-500/30 text-amber-300 rounded-lg p-4 mb-4 text-sm">
+        ⚠️ Trình duyệt của bạn không hỗ trợ ghi âm. Hãy thử Chrome / Edge / Safari mới nhất.
+      </div>
+    }
+
+    @if (!providerSupportsAudio()) {
+      <div class="bg-amber-500/10 border border-amber-500/30 text-amber-300 rounded-lg p-4 mb-4 text-sm">
+        ⚠️ AI provider hiện tại không hỗ trợ audio input. Hãy chuyển sang <strong class="text-amber-200">Gemini 2.5 Pro/Flash</strong> trong Profile → Cấu hình AI để dùng tính năng này.
+      </div>
+    }
+
+    <!-- Progress -->
+    <div class="flex items-center justify-between text-xs text-slate-500 mb-2">
+      <span>Câu {{ currentIndex() + 1 }} / {{ totalSentences() }}</span>
+      <span>Tối đa {{ maxRecordingMs / 1000 }}s mỗi câu</span>
+    </div>
+    <div class="w-full h-1 bg-slate-800 rounded mb-6 overflow-hidden">
+      <div class="h-full bg-purple-500 transition-all"
+           [style.width.%]="((currentIndex() + 1) / totalSentences()) * 100"></div>
+    </div>
+
+    <!-- Current sentence -->
+    <div class="bg-slate-900/60 border border-slate-700/60 rounded-xl p-6 mb-6 backdrop-blur-sm">
+      <div class="text-xs text-slate-500 uppercase tracking-wider mb-2">Đọc câu sau:</div>
+      <p class="text-xl leading-relaxed font-medium text-slate-100 mb-3">
+        {{ currentSentence() }}
+      </p>
+      <button
+        (click)="playExpectedSentence()"
+        class="text-sm text-purple-400 hover:text-purple-300 flex items-center gap-1 transition"
+        type="button">
+        🔊 Nghe mẫu
+      </button>
+    </div>
+
+    <!-- Recording area -->
+    <div class="flex flex-col items-center mb-6">
+      <button
+        (click)="toggleRecording()"
+        [disabled]="isAnalyzing() || !recorderSupported() || !providerSupportsAudio()"
+        [class.bg-red-500]="recorder.state() === 'recording'"
+        [class.bg-purple-600]="recorder.state() !== 'recording'"
+        [class.shadow-purple-500\/40]="recorder.state() !== 'recording'"
+        [class.shadow-red-500\/40]="recorder.state() === 'recording'"
+        [class.animate-pulse]="recorder.state() === 'recording'"
+        class="w-20 h-20 rounded-full flex items-center justify-center text-white text-3xl shadow-xl hover:scale-105 transition-transform disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:scale-100"
+        type="button"
+        [attr.aria-label]="recorder.state() === 'recording' ? 'Dừng ghi âm' : 'Bắt đầu ghi âm'">
+        @if (recorder.state() === 'recording') {
+          ⏹
+        } @else {
+          🎤
+        }
+      </button>
+
+      <div class="mt-3 text-sm h-5">
+        @if (recorder.state() === 'requesting') {
+          <span class="text-slate-400">Đang xin quyền micro...</span>
+        } @else if (recorder.state() === 'recording') {
+          <span class="text-red-400 font-medium">
+            ● Đang ghi {{ formatSeconds(recorder.elapsedMs()) }}
+          </span>
+        } @else if (audioBlob()) {
+          <span class="text-slate-400">
+            Đã ghi {{ formatSeconds(durationMs()) }}
+          </span>
+        } @else {
+          <span class="text-slate-500">Nhấn micro để bắt đầu</span>
+        }
+      </div>
+    </div>
+
+    <!-- Playback -->
+    @if (audioUrl()) {
+      <div class="bg-slate-900/60 border border-slate-700/60 rounded-lg p-4 mb-4">
+        <div class="text-xs text-slate-500 uppercase tracking-wider mb-2">Nghe lại bản ghi của bạn:</div>
+        <audio [src]="audioUrl()" controls class="w-full"></audio>
+      </div>
+    }
+
+    <!-- Action buttons -->
+    @if (audioBlob() && !feedback()) {
+      <div class="flex gap-3 mb-6">
+        <button
+          (click)="submitForAnalysis()"
+          [disabled]="isAnalyzing()"
+          class="flex-1 bg-purple-600 hover:bg-purple-500 text-white py-3 rounded-lg font-semibold transition disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-purple-500/20"
+          type="button">
+          @if (isAnalyzing()) {
+            Đang phân tích...
+          } @else {
+            ✨ Phân tích phát âm
+          }
+        </button>
+        <button
+          (click)="retryRecording()"
+          [disabled]="isAnalyzing()"
+          class="px-4 py-3 border border-slate-700 rounded-lg text-slate-300 hover:bg-slate-800/60 transition disabled:opacity-50"
+          type="button">
+          Ghi lại
+        </button>
+      </div>
+    }
+
+    <!-- Error message -->
+    @if (errorMessage()) {
+      <div class="bg-red-500/10 border border-red-500/30 text-red-300 rounded-lg p-3 text-sm mb-4">
+        {{ errorMessage() }}
+      </div>
+    }
+
+    <!-- Feedback -->
+    @if (feedback(); as fb) {
+      <div class="bg-slate-900/60 border border-slate-700/60 rounded-xl p-6 mb-6 backdrop-blur-sm">
+        <div class="flex items-center justify-between mb-4">
+          <h2 class="text-lg font-semibold text-slate-100">Phản hồi AI</h2>
+          <div class="text-right">
+            <div class="text-3xl font-bold"
+                 [class.text-green-400]="fb.overallScore >= 85"
+                 [class.text-amber-400]="fb.overallScore >= 60 && fb.overallScore < 85"
+                 [class.text-red-400]="fb.overallScore < 60">
+              {{ fb.overallScore }}
+            </div>
+            <div class="text-xs text-slate-500">/ 100</div>
+          </div>
+        </div>
+
+        @if (fb.strengths.length > 0) {
+          <div class="mb-3">
+            <div class="text-sm font-semibold text-green-400 mb-1">✓ Điểm tốt</div>
+            <ul class="list-disc list-inside text-sm text-slate-300 space-y-1">
+              @for (s of fb.strengths; track s) {
+                <li>{{ s }}</li>
+              }
+            </ul>
+          </div>
+        }
+
+        @if (fb.pronunciationIssues.length > 0) {
+          <div class="mb-3">
+            <div class="text-sm font-semibold text-amber-400 mb-1">⚠ Cần luyện thêm</div>
+            <ul class="list-disc list-inside text-sm text-slate-300 space-y-1">
+              @for (issue of fb.pronunciationIssues; track issue) {
+                <li>{{ issue }}</li>
+              }
+            </ul>
+          </div>
+        }
+
+        @if (fb.perWordFeedback && fb.perWordFeedback.length > 0) {
+          <div class="mt-4 pt-4 border-t border-slate-700/60">
+            <div class="text-sm font-semibold text-slate-200 mb-2">Chi tiết từng từ</div>
+            <div class="flex flex-wrap gap-2">
+              @for (w of fb.perWordFeedback; track $index) {
+                <span class="px-2 py-1 rounded text-sm border"
+                      [class.bg-green-500\/10]="w.ok"
+                      [class.text-green-300]="w.ok"
+                      [class.border-green-500\/30]="w.ok"
+                      [class.bg-red-500\/10]="!w.ok"
+                      [class.text-red-300]="!w.ok"
+                      [class.border-red-500\/30]="!w.ok"
+                      [attr.title]="w.issue || ''">
+                  {{ w.word }}
+                </span>
+              }
+            </div>
+          </div>
+        }
+      </div>
+
+      <div class="flex gap-3">
+        <button
+          (click)="retryRecording()"
+          class="flex-1 border border-purple-500/60 text-purple-300 hover:bg-purple-500/10 py-3 rounded-lg font-semibold transition"
+          type="button">
+          🔁 Thử lại câu này
+        </button>
+        @if (!isLastSentence()) {
+          <button
+            (click)="nextSentence()"
+            class="flex-1 bg-purple-600 hover:bg-purple-500 text-white py-3 rounded-lg font-semibold transition shadow-lg shadow-purple-500/20"
+            type="button">
+            Câu tiếp theo →
+          </button>
+        } @else {
+          <button
+            (click)="goBackToExercise()"
+            class="flex-1 bg-green-600 hover:bg-green-500 text-white py-3 rounded-lg font-semibold transition shadow-lg shadow-green-500/20"
+            type="button">
+            ✓ Hoàn thành
+          </button>
+        }
+      </div>
+    }
+
+    <!-- Sentence nav -->
+    <div class="flex justify-between mt-8 text-sm">
+      <button
+        (click)="previousSentence()"
+        [disabled]="currentIndex() === 0"
+        class="text-slate-400 hover:text-slate-200 disabled:opacity-30 disabled:cursor-not-allowed transition"
+        type="button">
+        ← Câu trước
+      </button>
+      <button
+        (click)="nextSentence()"
+        [disabled]="isLastSentence()"
+        class="text-slate-400 hover:text-slate-200 disabled:opacity-30 disabled:cursor-not-allowed transition"
+        type="button">
+        Câu sau →
+      </button>
+    </div>
+  }
+</div>

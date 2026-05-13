@@ -5,8 +5,36 @@
 
 import { ExerciseAttempt, SentenceAttempt, FeedbackItem } from '../../models/exercise.model';
 import { DictationPracticeAttempt } from '../../models/dictation.model';
+import { PronunciationAttempt } from '../../models/pronunciation.model';
 
 export class ProgressDecompressor {
+  /**
+   * Decompress pronunciation attempts from `pa` field
+   */
+  static decompressPronunciationAttempts(compressed: any): PronunciationAttempt[] {
+    if (!Array.isArray(compressed)) return [];
+    return compressed.map(a => ({
+      exerciseId: a.e || '',
+      sentenceIndex: a.i ?? 0,
+      expectedText: a.x || '',
+      timestamp: a.t ? new Date(a.t) : new Date(),
+      durationMs: a.d ?? 0,
+      feedback: {
+        overallScore: a.s ?? 0,
+        rawFeedback: a.r || '',
+        pronunciationIssues: Array.isArray(a.is) ? a.is : [],
+        strengths: Array.isArray(a.st) ? a.st : [],
+        perWordFeedback: Array.isArray(a.w)
+          ? a.w.map((w: any) => ({
+              word: w.w || '',
+              ok: w.o === 1,
+              issue: w.i
+            }))
+          : []
+      }
+    }));
+  }
+
   /**
    * Decompress exerciseHistory from database format
    */

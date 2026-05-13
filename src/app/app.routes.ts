@@ -233,6 +233,18 @@ export const routes: Routes = [
     },
   },
   {
+    path: 'exercises/:id/pronunciation',
+    loadComponent: () =>
+      import('./components/pronunciation-practice/pronunciation-practice').then((m) => m.PronunciationPracticeComponent),
+    data: {
+      seo: {
+        title: 'Luyện phát âm (Beta) - Daily English',
+        description: 'Luyện phát âm tiếng Anh với phản hồi AI',
+        noindex: true,
+      } as RouteSeoData,
+    },
+  },
+  {
     path: 'profile',
     loadComponent: () =>
       import('./components/profile/profile').then((m) => m.ProfileComponent),

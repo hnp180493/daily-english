@@ -3,6 +3,7 @@ import { Observable, throwError } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
 import { AIProvider, AIResponse, AIStreamChunk, ExerciseContext } from '../../models/ai.model';
 import { Exercise } from '../../models/exercise.model';
+import { PronunciationContext, PronunciationFeedback } from '../../models/pronunciation.model';
 import { AIProviderFactory } from './ai-provider.factory';
 import { ConfigService } from '../config.service';
 import { AnalyticsService } from '../analytics.service';
@@ -125,6 +126,35 @@ export class AIUnifiedService implements AIProvider {
     const provider = this.getActiveProvider();
     const config = this.getConfig();
     return provider.isConfigured(config) ? new Observable(obs => { obs.next(true); obs.complete(); }) : new Observable(obs => { obs.next(false); obs.complete(); });
+  }
+
+  supportsAudioInput(): boolean {
+    return this.getActiveProvider().supportsAudioInput();
+  }
+
+  analyzePronunciation(
+    audioBlob: Blob,
+    context: PronunciationContext
+  ): Observable<PronunciationFeedback> {
+    const provider = this.getActiveProvider();
+    const config = this.getConfig();
+    const providerType = (config as any)?.provider || environment.aiProvider;
+    const startTime = Date.now();
+
+    this.analyticsService.trackAiRequest(providerType, 'default', 'analyze_pronunciation');
+
+    return provider.analyzePronunciation(audioBlob, context, config).pipe(
+      tap(() => {
+        const responseTime = Date.now() - startTime;
+        this.analyticsService.trackAiResponse(providerType, responseTime, 0);
+      }),
+      catchError(error => {
+        console.error('AI Pronunciation Error:', error);
+        this.analyticsService.trackAiError(providerType, error?.message || 'unknown_error');
+        const errorMessage = error?.message || 'Không phân tích được phát âm. Vui lòng thử lại.';
+        return throwError(() => new Error(errorMessage));
+      })
+    );
   }
 
   // ============================================

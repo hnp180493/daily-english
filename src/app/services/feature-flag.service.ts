@@ -38,4 +38,12 @@ export class FeatureFlagService {
   isFlashcardDeckEnabled = computed(() => {
     return this.isBetaTester();
   });
+
+  /**
+   * Check if Pronunciation Practice is enabled.
+   * Open to all users — the BETA label in UI is for feature quality, not access gating.
+   */
+  isPronunciationPracticeEnabled = computed(() => {
+    return true;
+  });
 }

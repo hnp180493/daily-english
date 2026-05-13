@@ -118,7 +118,13 @@ export class SupabaseDatabase implements IDatabase {
           if (progress.dictationHistory && ProgressDecompressor.isCompressed(progress.dictationHistory)) {
             progress.dictationHistory = ProgressDecompressor.decompressDictationHistory(progress.dictationHistory);
           }
-          
+
+          // Decompress pronunciation attempts if present
+          if (progress.pa) {
+            progress.pronunciationAttempts = ProgressDecompressor.decompressPronunciationAttempts(progress.pa);
+            delete progress.pa;
+          }
+
           return progress as UserProgress;
         })
     ).pipe(catchError(this.handleError));
@@ -151,7 +157,13 @@ export class SupabaseDatabase implements IDatabase {
             if (progress.dictationHistory && ProgressDecompressor.isCompressed(progress.dictationHistory)) {
               progress.dictationHistory = ProgressDecompressor.decompressDictationHistory(progress.dictationHistory);
             }
-            
+
+            // Decompress pronunciation attempts if present
+            if (progress.pa) {
+              progress.pronunciationAttempts = ProgressDecompressor.decompressPronunciationAttempts(progress.pa);
+              delete progress.pa;
+            }
+
             callback(progress as UserProgress);
           } else {
             callback(null);

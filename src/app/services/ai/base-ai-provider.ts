@@ -1,6 +1,7 @@
 import { Observable, Subscriber } from 'rxjs';
 import { AIResponse, AIStreamChunk, ExerciseContext } from '../../models/ai.model';
 import { FeedbackItem } from '../../models/exercise.model';
+import { PronunciationContext, PronunciationFeedback } from '../../models/pronunciation.model';
 
 export interface AIProviderConfig {
   [key: string]: any;
@@ -61,6 +62,174 @@ export abstract class BaseAIProvider {
     config: any
   ): Observable<string> {
     throw new Error('generateHint not implemented for this provider');
+  }
+
+  supportsAudioInput(): boolean {
+    return false;
+  }
+
+  analyzePronunciation(
+    audioBlob: Blob,
+    context: PronunciationContext,
+    config: any
+  ): Observable<PronunciationFeedback> {
+    throw new Error(
+      `${this.name} does not support audio input. Switch to a multimodal provider (Gemini 2.5 Pro/Flash, GPT-4o) for pronunciation analysis.`
+    );
+  }
+
+  protected parsePronunciationResponse(content: string): PronunciationFeedback {
+    let cleanText = content.trim();
+    cleanText = cleanText.replace(/^```json\s*/i, '').replace(/^```\s*/, '');
+    cleanText = cleanText.replace(/\s*```\s*$/, '');
+
+    const objStart = cleanText.indexOf('{');
+    if (objStart < 0) {
+      throw new Error('Pronunciation response is not valid JSON');
+    }
+    const candidate = cleanText.slice(objStart);
+
+    let parsed: any;
+    try {
+      parsed = JSON.parse(candidate);
+    } catch (firstErr) {
+      // Try to repair a truncated response (common with MAX_TOKENS).
+      const repaired = this.repairTruncatedJson(candidate);
+      try {
+        parsed = JSON.parse(repaired);
+        console.warn('[BaseAIProvider] Recovered truncated pronunciation JSON via repair.');
+      } catch (secondErr) {
+        throw firstErr instanceof Error ? firstErr : new Error('Pronunciation response JSON parse failed');
+      }
+    }
+
+    return {
+      overallScore: typeof parsed.overallScore === 'number' ? parsed.overallScore : 0,
+      rawFeedback: parsed.rawFeedback || '',
+      pronunciationIssues: Array.isArray(parsed.pronunciationIssues) ? parsed.pronunciationIssues : [],
+      strengths: Array.isArray(parsed.strengths) ? parsed.strengths : [],
+      perWordFeedback: Array.isArray(parsed.perWordFeedback) ? parsed.perWordFeedback : []
+    };
+  }
+
+  /**
+   * Repair truncated JSON by:
+   *  1. If we ended mid-string, drop everything after the last completed JSON value.
+   *  2. Strip trailing commas / partial fragments.
+   *  3. Append the closing brackets/braces still on the open stack.
+   */
+  private repairTruncatedJson(text: string): string {
+    let inString = false;
+    let escape = false;
+    const stack: Array<'{' | '['> = [];
+    let lastSafeEnd = -1; // index AFTER a completed value at the current stack depth
+
+    for (let i = 0; i < text.length; i++) {
+      const c = text[i];
+
+      if (escape) { escape = false; continue; }
+      if (inString) {
+        if (c === '\\') escape = true;
+        else if (c === '"') inString = false;
+        continue;
+      }
+      if (c === '"') { inString = true; continue; }
+
+      if (c === '{' || c === '[') {
+        stack.push(c as '{' | '[');
+      } else if (c === '}') {
+        if (stack[stack.length - 1] === '{') stack.pop();
+        lastSafeEnd = i + 1;
+      } else if (c === ']') {
+        if (stack[stack.length - 1] === '[') stack.pop();
+        lastSafeEnd = i + 1;
+      } else if (c === ',' && stack.length > 0) {
+        lastSafeEnd = i; // before the comma
+      }
+    }
+
+    // Truncate to the last completed value (drops partial element after final comma / mid-string).
+    let truncated = lastSafeEnd > 0 ? text.slice(0, lastSafeEnd) : text;
+    // Drop a dangling trailing comma if present
+    truncated = truncated.replace(/,\s*$/, '');
+
+    // Recompute open stack on the truncated prefix and close it
+    const closers: string[] = [];
+    let inStr2 = false;
+    let esc2 = false;
+    const stack2: Array<'{' | '['> = [];
+    for (let i = 0; i < truncated.length; i++) {
+      const c = truncated[i];
+      if (esc2) { esc2 = false; continue; }
+      if (inStr2) {
+        if (c === '\\') esc2 = true;
+        else if (c === '"') inStr2 = false;
+        continue;
+      }
+      if (c === '"') { inStr2 = true; continue; }
+      if (c === '{' || c === '[') stack2.push(c as '{' | '[');
+      else if (c === '}' && stack2[stack2.length - 1] === '{') stack2.pop();
+      else if (c === ']' && stack2[stack2.length - 1] === '[') stack2.pop();
+    }
+    while (stack2.length > 0) {
+      const open = stack2.pop()!;
+      closers.push(open === '{' ? '}' : ']');
+    }
+
+    return truncated + closers.join('');
+  }
+
+  /**
+   * Drop hallucinated entries from AI pronunciation feedback.
+   * - perWordFeedback: keep only entries whose `word` is in the expected sentence.
+   * - pronunciationIssues / strengths: drop bullets that quote a word ('foo' or "foo")
+   *   that is NOT in the expected sentence.
+   * Leaves rawFeedback untouched (free-form prose).
+   */
+  protected filterPronunciationFeedback(
+    feedback: PronunciationFeedback,
+    expectedText: string
+  ): PronunciationFeedback {
+    const allowedWords = new Set(
+      expectedText
+        .toLowerCase()
+        .split(/\s+/)
+        .map(w => w.replace(/[^a-z0-9'\-]+/g, ''))
+        .filter(w => w.length > 0)
+    );
+
+    const isAllowedWord = (w: string): boolean =>
+      allowedWords.has(w.toLowerCase().replace(/[^a-z0-9'\-]+/g, ''));
+
+    const bulletReferencesUnknownWord = (bullet: string): boolean => {
+      const quoted = [...bullet.matchAll(/['"`]([a-zA-Z][a-zA-Z'\-]*)['"`]/g)].map(m => m[1]);
+      // If bullet quotes one or more English words and NONE of them are in expected, drop.
+      if (quoted.length === 0) return false;
+      return !quoted.some(w => isAllowedWord(w));
+    };
+
+    return {
+      overallScore: feedback.overallScore,
+      rawFeedback: feedback.rawFeedback,
+      pronunciationIssues: (feedback.pronunciationIssues || []).filter(
+        b => !bulletReferencesUnknownWord(b)
+      ),
+      strengths: (feedback.strengths || []).filter(b => !bulletReferencesUnknownWord(b)),
+      perWordFeedback: (feedback.perWordFeedback || []).filter(w => isAllowedWord(w.word))
+    };
+  }
+
+  protected blobToBase64(blob: Blob): Promise<string> {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const result = reader.result as string;
+        const base64 = result.split(',')[1] ?? '';
+        resolve(base64);
+      };
+      reader.onerror = () => reject(reader.error);
+      reader.readAsDataURL(blob);
+    });
   }
 
   /**

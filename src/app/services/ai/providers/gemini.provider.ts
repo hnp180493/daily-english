@@ -2,6 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { BaseAIProvider, AIRequest, AIMessage } from '../base-ai-provider';
 import { AIResponse, AIStreamChunk, ExerciseContext } from '../../../models/ai.model';
+import { PronunciationContext, PronunciationFeedback } from '../../../models/pronunciation.model';
 import { PromptService } from '../prompt.service';
 import { SettingsService } from '../../settings.service';
 
@@ -220,5 +221,83 @@ export class GeminiProvider extends BaseAIProvider {
       console.error('[Gemini] Failed to parse AI response:', error);
       return { accuracyScore: 50, feedback: [], overallComment: '' };
     }
+  }
+
+  override supportsAudioInput(): boolean {
+    return true;
+  }
+
+  override analyzePronunciation(
+    audioBlob: Blob,
+    context: PronunciationContext,
+    config: any
+  ): Observable<PronunciationFeedback> {
+    return new Observable(observer => {
+      const modelName = config?.gemini?.modelName || 'gemini-2.5-flash';
+      const apiKey = config?.gemini?.apiKey;
+
+      if (!apiKey) {
+        observer.error(new Error('Gemini API key chưa được cấu hình.'));
+        return;
+      }
+
+      const url = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${apiKey}`;
+      const prompt = this.promptService.buildPronunciationPrompt(context);
+      const mimeType = audioBlob.type || 'audio/webm';
+
+      this.blobToBase64(audioBlob)
+        .then(base64Audio =>
+          fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              contents: [
+                {
+                  parts: [
+                    { text: prompt },
+                    { inlineData: { mimeType, data: base64Audio } }
+                  ]
+                }
+              ],
+              generationConfig: {
+                temperature: 0.3,
+                maxOutputTokens: 2500,
+                responseMimeType: 'application/json',
+                // Disable Gemini 2.5 "thinking" budget — it eats output tokens and truncates JSON.
+                // The pronunciation task is small enough that thinking doesn't add value.
+                thinkingConfig: { thinkingBudget: 0 }
+              }
+            })
+          })
+        )
+        .then(async response => {
+          const data = await response.json();
+          if (data.error) {
+            throw new Error(data.error.message || JSON.stringify(data.error));
+          }
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+          return data;
+        })
+        .then(data => {
+          const content = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
+          const finishReason = data.candidates?.[0]?.finishReason;
+          if (!content) {
+            throw new Error('Gemini trả về phản hồi rỗng cho audio.');
+          }
+          if (finishReason === 'MAX_TOKENS') {
+            console.warn('[Gemini] Pronunciation response truncated (MAX_TOKENS). Attempting repair.');
+          }
+          const parsed = this.parsePronunciationResponse(content);
+          const filtered = this.filterPronunciationFeedback(parsed, context.expectedText);
+          observer.next(filtered);
+          observer.complete();
+        })
+        .catch(error => {
+          console.error('[Gemini] Pronunciation analysis error:', error);
+          observer.error(error);
+        });
+    });
   }
 }

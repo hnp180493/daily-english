@@ -27,6 +27,8 @@ import { LearningVelocityComponent } from './learning-velocity/learning-velocity
 import { ErrorPatternsAnalysisComponent } from './error-patterns-analysis/error-patterns-analysis';
 import { DictationStatsWidgetComponent } from './dictation-stats-widget/dictation-stats-widget';
 import { DashboardSkeletonComponent } from './dashboard-skeleton/dashboard-skeleton';
+import { PronunciationStatsComponent } from './pronunciation-stats/pronunciation-stats';
+import { FeatureFlagService } from '../../services/feature-flag.service';
 import { UserProgressHelper } from '../../models/exercise.model';
 
 @Component({
@@ -49,6 +51,7 @@ import { UserProgressHelper } from '../../models/exercise.model';
     LearningVelocityComponent,
     ErrorPatternsAnalysisComponent,
     DashboardSkeletonComponent,
+    PronunciationStatsComponent,
     // DictationStatsWidgetComponent
   ],
   templateUrl: './dashboard.html',
@@ -61,8 +64,14 @@ export class DashboardComponent implements OnInit, OnDestroy {
   private progressService = inject(ProgressService);
   private authService = inject(AuthService);
   private migrationUtility = inject(ProgressMigrationUtility);
+  private featureFlagService = inject(FeatureFlagService);
   private route = inject(ActivatedRoute);
   private router = inject(Router);
+
+  readonly pronunciationAttempts = computed(() => this.userProgress()?.pronunciationAttempts ?? []);
+  readonly showPronunciationStats = computed(() =>
+    this.featureFlagService.isPronunciationPracticeEnabled() || this.pronunciationAttempts().length > 0
+  );
 
   userProgress = toSignal(this.progressService.getUserProgress());
   currentUser = this.authService.currentUser;

@@ -5,6 +5,7 @@
 
 import { ExerciseAttempt, SentenceAttempt, FeedbackItem, UserProgress } from '../../models/exercise.model';
 import { DictationPracticeAttempt } from '../../models/dictation.model';
+import { PronunciationAttempt } from '../../models/pronunciation.model';
 
 export class ProgressCompressor {
   /**
@@ -14,6 +15,7 @@ export class ProgressCompressor {
   static compress(progress: UserProgress): any {
     return {
       exerciseHistory: this.compressAllHistory(progress.exerciseHistory, progress.dictationHistory),
+      pa: this.compressPronunciationAttempts(progress.pronunciationAttempts || []),
       totalPoints: progress.totalPoints,
       lastActivityDate: progress.lastActivityDate,
       currentStreak: progress.currentStreak,
@@ -21,6 +23,29 @@ export class ProgressCompressor {
       lastStreakDate: progress.lastStreakDate,
       achievements: progress.achievements
     };
+  }
+
+  /**
+   * Compress pronunciation attempts array
+   */
+  static compressPronunciationAttempts(attempts: PronunciationAttempt[]): any[] {
+    if (!Array.isArray(attempts)) return [];
+    return attempts.map(a => ({
+      e: a.exerciseId,
+      i: a.sentenceIndex,
+      x: a.expectedText,
+      t: a.timestamp instanceof Date ? a.timestamp.toISOString() : a.timestamp,
+      d: a.durationMs,
+      s: a.feedback.overallScore,
+      r: a.feedback.rawFeedback,
+      is: a.feedback.pronunciationIssues,
+      st: a.feedback.strengths,
+      w: (a.feedback.perWordFeedback || []).map(w => ({
+        w: w.word,
+        o: w.ok ? 1 : 0,
+        i: w.issue
+      }))
+    }));
   }
 
   /**

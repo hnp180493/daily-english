@@ -1,5 +1,6 @@
 import { Observable } from 'rxjs';
 import { DifficultyLevel, ExerciseCategory, FeedbackItem } from './exercise.model';
+import { PronunciationContext, PronunciationFeedback } from './pronunciation.model';
 
 export interface AIProvider {
   analyzeText(
@@ -19,6 +20,11 @@ export interface AIProvider {
     context: ExerciseContext
   ): Observable<string>;
   validateCredentials(): Observable<boolean>;
+  analyzePronunciation?(
+    audioBlob: Blob,
+    context: PronunciationContext
+  ): Observable<PronunciationFeedback>;
+  supportsAudioInput?(): boolean;
 }
 
 export interface AIStreamChunk {

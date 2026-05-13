@@ -47,8 +47,8 @@
             <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
           </svg>
         </button>
-        <button 
-          class="dictation-btn" 
+        <button
+          class="dictation-btn"
           (click)="onPracticeDictationOriginal()"
           aria-label="Practice dictation with original text">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -59,6 +59,22 @@
           </svg>
           <span class="dictation-btn-text">Dictation</span>
         </button>
+        @if (isPronunciationEnabled) {
+          <button
+            class="dictation-btn"
+            (click)="onPracticePronunciation()"
+            aria-label="Luyện phát âm (Beta)"
+            title="Luyện phát âm (Beta)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 2a3 3 0 0 0-3 3v6a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/>
+              <path d="M5 11a7 7 0 0 0 14 0"/>
+              <line x1="12" y1="18" x2="12" y2="22"/>
+              <line x1="8" y1="22" x2="16" y2="22"/>
+            </svg>
+            <span class="dictation-btn-text">Phát âm</span>
+            <span class="ml-1 text-[10px] px-1 py-px rounded bg-purple-500/20 text-purple-300 font-semibold tracking-wider">BETA</span>
+          </button>
+        }
       </div>
       <div class="header-stats">
         <!-- Only show points for non-custom exercises -->
