@@ -29,6 +29,7 @@ import { DictationStatsWidgetComponent } from './dictation-stats-widget/dictatio
 import { DashboardSkeletonComponent } from './dashboard-skeleton/dashboard-skeleton';
 import { PronunciationStatsComponent } from './pronunciation-stats/pronunciation-stats';
 import { FeatureFlagService } from '../../services/feature-flag.service';
+import { TranslationService } from '../../services/translation.service';
 import { UserProgressHelper } from '../../models/exercise.model';
 
 @Component({
@@ -67,6 +68,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   private featureFlagService = inject(FeatureFlagService);
   private route = inject(ActivatedRoute);
   private router = inject(Router);
+  protected translate = inject(TranslationService);
 
   readonly pronunciationAttempts = computed(() => this.userProgress()?.pronunciationAttempts ?? []);
   readonly showPronunciationStats = computed(() =>

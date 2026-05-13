@@ -1,5 +1,6 @@
 import {
   ApplicationConfig,
+  isDevMode,
   provideBrowserGlobalErrorListeners,
   provideZoneChangeDetection,
   provideAppInitializer,
@@ -9,6 +10,7 @@ import { provideRouter, withPreloading, withInMemoryScrolling, RouteReuseStrateg
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { provideClientHydration } from '@angular/platform-browser';
 import { provideAnimations } from '@angular/platform-browser/animations';
+import { provideServiceWorker } from '@angular/service-worker';
 
 import { routes } from './app.routes';
 import { SeoService } from './services/seo.service';
@@ -20,6 +22,8 @@ import { cacheInterceptor } from './interceptors/cache.interceptor';
 import { AnalyticsService } from './services/analytics.service';
 import { AnalyticsProviderFactory } from './services/analytics-provider-factory.service';
 import { SessionTrackingService } from './services/session-tracking.service';
+import { SettingsService } from './services/settings.service';
+import { SwUpdateService } from './services/sw-update.service';
 import { environment } from '../environments/environment';
 
 export function initializeSeo(seoService: SeoService) {
@@ -121,6 +125,19 @@ export const appConfig: ApplicationConfig = {
       // Initialize session tracking service
       const sessionTracking = inject(SessionTrackingService);
       console.log('[App Init]: Session tracking initialized');
+    }),
+    provideAppInitializer(() => {
+      // Eagerly construct SettingsService so saved fontSize / fontFamily / highContrast
+      // are applied to the DOM before the first paint.
+      inject(SettingsService);
+    }),
+    provideServiceWorker('ngsw-worker.js', {
+      enabled: !isDevMode(),
+      registrationStrategy: 'registerWhenStable:30000'
+    }),
+    provideAppInitializer(() => {
+      // Start listening for SW updates (no-op in dev mode where SW is disabled).
+      inject(SwUpdateService).start();
     }),
   ],
 };

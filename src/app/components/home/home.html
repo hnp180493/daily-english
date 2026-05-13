@@ -1,6 +1,6 @@
 <div class="home-container">
   @if (isLoading()) {
-    <app-loading-spinner [message]="'Đang tải...'" />
+    <app-loading-spinner [message]="translate.t('common.loading')" />
   } @else {
     <!-- Learning Path Widgets (only for authenticated users) -->
     @if (isAuthenticated()) {
@@ -9,7 +9,7 @@
         @if (isLoadingChallenge()) {
           <div class="widget daily-challenge-widget loading-skeleton">
             <div class="widget-header">
-              <h3>🎯 Daily Challenge</h3>
+              <h3>{{ translate.t('home.daily_challenge') }}</h3>
             </div>
             <div class="skeleton-content">
               <div class="skeleton-line"></div>
@@ -19,31 +19,31 @@
         } @else if (dailyChallenge(); as challenge) {
           <div class="widget daily-challenge-widget" (click)="navigateToDailyChallenge()">
             <div class="widget-header">
-              <h3>🎯 Daily Challenge</h3>
+              <h3>{{ translate.t('home.daily_challenge') }}</h3>
               @if (currentStreak() >= 7) {
-                <span class="streak-badge">🔥 {{ currentStreak() }} days</span>
+                <span class="streak-badge">🔥 {{ currentStreak() }} {{ translate.t('home.streak_days') }}</span>
               }
             </div>
             @if (challenge.isCompleted) {
               <div class="challenge-completed">
                 <span class="checkmark">✓</span>
-                <p>Challenge completed! Come back tomorrow.</p>
+                <p>{{ translate.t('home.challenge_completed') }}</p>
               </div>
             } @else {
               <div class="challenge-active">
                 <p class="challenge-title">{{ challenge.exercise?.title || 'New Challenge' }}</p>
-                <button class="challenge-btn">Start Challenge →</button>
+                <button class="challenge-btn">{{ translate.t('home.start_challenge') }}</button>
               </div>
             }
           </div>
         } @else {
           <div class="widget daily-challenge-widget inactive">
             <div class="widget-header">
-              <h3>🎯 Daily Challenge</h3>
+              <h3>{{ translate.t('home.daily_challenge') }}</h3>
             </div>
             <div class="challenge-inactive">
-              <p class="inactive-text">Join a learning path to unlock daily challenges</p>
-              <button class="activate-btn" (click)="activateDailyChallenge()">Activate Now →</button>
+              <p class="inactive-text">{{ translate.t('home.unlock_challenges') }}</p>
+              <button class="activate-btn" (click)="activateDailyChallenge()">{{ translate.t('home.activate_now') }}</button>
             </div>
           </div>
         }
@@ -52,7 +52,7 @@
         @if (isLoadingGoal()) {
           <div class="widget weekly-goal-widget loading-skeleton">
             <div class="widget-header">
-              <h3>📊 Weekly Goal</h3>
+              <h3>{{ translate.t('home.weekly_goal') }}</h3>
             </div>
             <div class="skeleton-content">
               <div class="skeleton-circle"></div>
@@ -62,16 +62,16 @@
         } @else if (weeklyGoal(); as goal) {
           <div class="widget weekly-goal-widget" (click)="navigateToLearningPath()">
             <div class="widget-header">
-              <h3>📊 Weekly Goal</h3>
+              <h3>{{ translate.t('home.weekly_goal') }}</h3>
             </div>
             <div class="goal-progress">
               <div class="progress-ring">
                 <svg viewBox="0 0 100 100">
                   <circle cx="50" cy="50" r="45" class="progress-bg" />
-                  <circle 
-                    cx="50" 
-                    cy="50" 
-                    r="45" 
+                  <circle
+                    cx="50"
+                    cy="50"
+                    r="45"
                     class="progress-fill"
                     [style.stroke-dashoffset]="283 - (283 * (goal.completedExercises / goal.targetExercises))" />
                 </svg>
@@ -79,17 +79,17 @@
                   <span class="progress-value">{{ goal.completedExercises }}/{{ goal.targetExercises }}</span>
                 </div>
               </div>
-              <p class="goal-label">Exercises this week</p>
+              <p class="goal-label">{{ translate.t('home.exercises_this_week') }}</p>
             </div>
           </div>
         } @else {
           <div class="widget weekly-goal-widget inactive" (click)="navigateToLearningPath()">
             <div class="widget-header">
-              <h3>📊 Weekly Goal</h3>
+              <h3>{{ translate.t('home.weekly_goal') }}</h3>
             </div>
             <div class="goal-inactive">
-              <p class="inactive-text">Set weekly goals to track your progress</p>
-              <button class="activate-btn">Set Goal →</button>
+              <p class="inactive-text">{{ translate.t('home.set_goals') }}</p>
+              <button class="activate-btn">{{ translate.t('home.set_goal') }}</button>
             </div>
           </div>
         }
@@ -98,7 +98,7 @@
         @if (isLoadingPath()) {
           <div class="widget continue-learning-widget loading-skeleton">
             <div class="widget-header">
-              <h3>📚 Continue Learning</h3>
+              <h3>{{ translate.t('home.continue_learning') }}</h3>
             </div>
             <div class="skeleton-content">
               <div class="skeleton-line"></div>
@@ -109,38 +109,38 @@
         } @else if (currentPath() && currentModule()) {
           <div class="widget continue-learning-widget" (click)="navigateToCurrentModule()">
             <div class="widget-header">
-              <h3>📚 Continue Learning</h3>
+              <h3>{{ translate.t('home.continue_learning') }}</h3>
             </div>
             <div class="path-info">
               <p class="path-name">{{ currentPath()?.name }}</p>
               <p class="module-name">{{ currentModule()?.name }}</p>
               <div class="path-progress-bar">
-                <div 
+                <div
                   class="path-progress-fill"
                   [style.width.%]="pathProgressPercentage()">
                 </div>
               </div>
-              <button class="continue-btn">Continue →</button>
+              <button class="continue-btn">{{ translate.t('home.continue') }}</button>
             </div>
           </div>
         } @else {
           <div class="widget start-path-widget" (click)="navigateToLearningPath()">
             <div class="widget-header">
-              <h3>🚀 Start Your Learning Path</h3>
+              <h3>{{ translate.t('home.start_learning_path') }}</h3>
             </div>
-            <p class="start-path-text">Choose a structured learning path to guide your progress</p>
-            <button class="start-path-btn">Choose Path →</button>
+            <p class="start-path-text">{{ translate.t('home.choose_path_desc') }}</p>
+            <button class="start-path-btn">{{ translate.t('home.choose_path_btn') }}</button>
           </div>
         }
       </section>
     }
 
     <section class="level-selection">
-      <h2 class="section-title">SENTENCE WRITING</h2>
-      <h3 class="section-subtitle">Choose Your Level</h3>
+      <h2 class="section-title">{{ translate.t('home.sentence_writing') }}</h2>
+      <h3 class="section-subtitle">{{ translate.t('home.choose_level') }}</h3>
       <div class="level-cards">
         @for (level of levels; track level) {
-          <app-level-card 
+          <app-level-card
             [level]="level"
             [selected]="selectedLevel() === level"
             (select)="onLevelSelect($event)">
@@ -148,10 +148,10 @@
         }
       </div>
     </section>
-  
+
   @if (selectedLevel()) {
     <section class="category-selection">
-      <h3 class="section-subtitle">Select Category</h3>
+      <h3 class="section-subtitle">{{ translate.t('home.select_category') }}</h3>
       <div class="category-grid">
         @for (category of displayCategories(); track category) {
           <app-category-card
@@ -162,12 +162,12 @@
       </div>
     </section>
   }
-  
+
     @if (selectedLevel() && selectedCategory()) {
-      <button 
+      <button
         class="start-btn"
         (click)="navigateToExercises()">
-        Start Practice →
+        {{ translate.t('home.start_practice') }}
       </button>
     }
   }

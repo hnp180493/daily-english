@@ -1,40 +1,40 @@
 <div class="pronunciation-stats bg-slate-900/60 border border-slate-700/60 rounded-xl p-6 backdrop-blur-sm">
   <div class="flex items-center justify-between mb-4">
     <h3 class="text-lg font-semibold text-slate-100 flex items-center gap-2">
-      <span>🎤</span> Luyện phát âm
+      <span>🎤</span> {{ translate.t('pronunciation_stats.title') }}
       <span class="text-[10px] px-2 py-0.5 rounded-full bg-purple-500/20 text-purple-300 font-semibold tracking-wider">
-        BETA
+        {{ translate.t('common.beta') }}
       </span>
     </h3>
     @if (!isEmpty()) {
-      <span class="text-xs text-slate-500">{{ stats().totalAttempts }} lượt thử</span>
+      <span class="text-xs text-slate-500">{{ stats().totalAttempts }} {{ translate.t('pronunciation_stats.attempts_label') }}</span>
     }
   </div>
 
   @if (isEmpty()) {
     <div class="text-center py-8 text-slate-500">
       <div class="text-4xl mb-2">🎙</div>
-      <p class="text-sm">Chưa có dữ liệu phát âm.</p>
-      <p class="text-xs mt-1">Bắt đầu luyện từ bất kỳ bài tập nào để xem thống kê tại đây.</p>
+      <p class="text-sm">{{ translate.t('pronunciation_stats.no_data') }}</p>
+      <p class="text-xs mt-1">{{ translate.t('pronunciation_stats.start_hint') }}</p>
     </div>
   } @else {
 
     <!-- Summary -->
     <div class="grid grid-cols-3 gap-3 mb-6">
       <div class="bg-slate-800/40 rounded-lg p-3 text-center">
-        <div class="text-xs text-slate-500 mb-1">Điểm TB</div>
+        <div class="text-xs text-slate-500 mb-1">{{ translate.t('pronunciation_stats.average_score') }}</div>
         <div class="text-2xl font-bold" [class]="scoreColor()">
           {{ stats().averageScore }}
         </div>
       </div>
       <div class="bg-slate-800/40 rounded-lg p-3 text-center">
-        <div class="text-xs text-slate-500 mb-1">Điểm cao nhất</div>
+        <div class="text-xs text-slate-500 mb-1">{{ translate.t('pronunciation_stats.best_score') }}</div>
         <div class="text-2xl font-bold text-green-400">
           {{ stats().bestScore }}
         </div>
       </div>
       <div class="bg-slate-800/40 rounded-lg p-3 text-center">
-        <div class="text-xs text-slate-500 mb-1">Bài đã luyện</div>
+        <div class="text-xs text-slate-500 mb-1">{{ translate.t('pronunciation_stats.exercises_practiced') }}</div>
         <div class="text-2xl font-bold text-slate-200">
           {{ stats().uniqueExercises }}
         </div>
@@ -45,8 +45,8 @@
     @if (stats().scoreTrend.length >= 2) {
       <div class="mb-6">
         <div class="flex items-center justify-between mb-2">
-          <span class="text-xs text-slate-500 uppercase tracking-wider">Xu hướng điểm (30 lượt gần nhất)</span>
-          <span class="text-xs text-slate-400">Gần nhất: <span class="text-slate-200 font-medium">{{ lastTrendScore() }}</span></span>
+          <span class="text-xs text-slate-500 uppercase tracking-wider">{{ translate.t('pronunciation_stats.score_trend') }}</span>
+          <span class="text-xs text-slate-400">{{ translate.t('pronunciation_stats.latest') }} <span class="text-slate-200 font-medium">{{ lastTrendScore() }}</span></span>
         </div>
         <svg viewBox="0 0 240 60" class="w-full h-16">
           <path [attr.d]="trendPath()" stroke="rgb(167 139 250)" stroke-width="2" fill="none" />
@@ -60,13 +60,13 @@
     @if (stats().topMispronouncedWords.length > 0) {
       <div class="mb-6">
         <div class="flex items-baseline justify-between mb-2">
-          <span class="text-xs text-slate-500 uppercase tracking-wider">Từ hay sai</span>
-          <span class="text-[10px] text-slate-600 italic">dựa trên lượt mới nhất mỗi câu</span>
+          <span class="text-xs text-slate-500 uppercase tracking-wider">{{ translate.t('pronunciation_stats.common_mispronunciations') }}</span>
+          <span class="text-[10px] text-slate-600 italic">{{ translate.t('pronunciation_stats.based_on_latest') }}</span>
         </div>
         <div class="flex flex-wrap gap-2">
           @for (w of stats().topMispronouncedWords; track w.word) {
             <span class="px-2 py-1 rounded text-sm bg-red-500/10 text-red-300 border border-red-500/30"
-                  [attr.title]="(w.sampleIssue || '') + ' — sai ' + w.errorCount + '/' + w.totalCount + ' lượt (' + w.errorRate + '%)'">
+                  [attr.title]="(w.sampleIssue || '') + ' — ' + w.errorCount + '/' + w.totalCount + ' (' + w.errorRate + '%)'">
               {{ w.word }}
               <span class="text-[10px] text-red-400/80 ml-1">{{ w.errorCount }}</span>
             </span>
@@ -79,15 +79,15 @@
     @if (stats().topIssues.length > 0) {
       <div>
         <div class="flex items-baseline justify-between mb-2">
-          <span class="text-xs text-slate-500 uppercase tracking-wider">Nhóm lỗi phổ biến</span>
-          <span class="text-[10px] text-slate-600 italic">dựa trên lượt mới nhất mỗi câu</span>
+          <span class="text-xs text-slate-500 uppercase tracking-wider">{{ translate.t('pronunciation_stats.common_error_groups') }}</span>
+          <span class="text-[10px] text-slate-600 italic">{{ translate.t('pronunciation_stats.based_on_latest') }}</span>
         </div>
         <div class="space-y-2">
           @for (issue of stats().topIssues; track issue.bucket) {
             <div class="bg-slate-800/40 rounded p-3">
               <div class="flex items-center justify-between mb-1">
                 <span class="text-sm text-slate-200 font-medium">{{ issue.bucket }}</span>
-                <span class="text-xs text-amber-300 font-semibold">{{ issue.count }} lượt</span>
+                <span class="text-xs text-amber-300 font-semibold">{{ issue.count }} {{ translate.t('pronunciation_stats.attempts_count') }}</span>
               </div>
               @if (issue.examples.length > 0) {
                 <div class="text-xs text-slate-400 italic">

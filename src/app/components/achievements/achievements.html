@@ -1,7 +1,7 @@
 <div class="achievements-container">
   <header class="achievements-header">
     <div class="header-top">
-      <h1>Achievements</h1>
+      <h1>{{ translate.t('achievements.title') }}</h1>
       <!-- <button 
         class="export-button" 
         (click)="exportAchievements()"
@@ -13,16 +13,16 @@
     <div class="achievement-summary">
       <span class="summary-item">
         <span class="summary-value">{{ unlockedAchievements().length }}</span>
-        <span class="summary-label">/ {{ achievements().length }} Unlocked</span>
+        <span class="summary-label">/ {{ achievements().length }} {{ translate.t('achievements.summary.unlocked') }}</span>
       </span>
       <span class="summary-item">
         <span class="summary-value">{{ completionPercentage() }}%</span>
-        <span class="summary-label">Complete</span>
+        <span class="summary-label">{{ translate.t('achievements.summary.complete') }}</span>
       </span>
       @if (unclaimedCount() > 0) {
         <span class="summary-item unclaimed">
           <span class="summary-value">{{ unclaimedCount() }}</span>
-          <span class="summary-label">🎁 To Claim</span>
+          <span class="summary-label">{{ translate.t('achievements.summary.to_claim') }}</span>
         </span>
       }
     </div>
@@ -49,8 +49,8 @@
   } @else {
     <div class="empty-state">
       <div class="empty-icon">🏆</div>
-      <h2>No achievements found</h2>
-      <p>Try adjusting your filters to see more achievements.</p>
+      <h2>{{ translate.t('achievements.empty.title') }}</h2>
+      <p>{{ translate.t('achievements.empty.description') }}</p>
     </div>
   }
 

@@ -1,6 +1,6 @@
 <div class="dashboard-container" role="main" aria-label="Learning Dashboard">
   <header class="dashboard-header">
-    <h1 id="dashboard-title">Your Learning Dashboard</h1>
+    <h1 id="dashboard-title">{{ translate.t('dashboard.title') }}</h1>
     <div class="dashboard-actions" role="toolbar" aria-label="Dashboard actions">
       @if (needsMigration() && !migrationComplete()) {
         <button 
@@ -26,7 +26,7 @@
         class="btn-secondary" 
         (click)="printReport()" 
         aria-label="Print this dashboard report">
-        Print Report
+        {{ translate.t('dashboard.print_report') }}
       </button>
     </div>
   </header>
@@ -41,7 +41,7 @@
       [attr.aria-controls]="'tab-overview'"
       (click)="setActiveTab('overview')">
       <span class="tab-icon" aria-hidden="true">📊</span>
-      <span>Overview</span>
+      <span>{{ translate.t('dashboard.tab_overview') }}</span>
     </button>
     <button 
       role="tab"
@@ -51,7 +51,7 @@
       [attr.aria-controls]="'tab-performance'"
       (click)="setActiveTab('performance')">
       <span class="tab-icon" aria-hidden="true">📈</span>
-      <span>Performance</span>
+      <span>{{ translate.t('dashboard.tab_performance') }}</span>
     </button>
     @if (currentUser()) {
       <button 
@@ -62,7 +62,7 @@
         [attr.aria-controls]="'tab-activity'"
         (click)="setActiveTab('activity')">
         <span class="tab-icon" aria-hidden="true">📅</span>
-        <span>Activity</span>
+        <span>{{ translate.t('dashboard.tab_activity') }}</span>
       </button>
     }
     <button 
@@ -73,7 +73,7 @@
       [attr.aria-controls]="'tab-insights'"
       (click)="setActiveTab('insights')">
       <span class="tab-icon" aria-hidden="true">💡</span>
-      <span>Insights</span>
+      <span>{{ translate.t('dashboard.tab_insights') }}</span>
     </button>
   </nav>
 
@@ -84,7 +84,7 @@
     @if (activeTab() === 'overview') {
       <div id="tab-overview" role="tabpanel" aria-labelledby="tab-overview" class="tab-content">
         <section aria-labelledby="overview-heading">
-          <h2 id="overview-heading" class="section-title">Quick Overview</h2>
+          <h2 id="overview-heading" class="section-title">{{ translate.t('dashboard.quick_overview') }}</h2>
           <div class="overview-grid" role="group" aria-label="Overview widgets">
             @if (enhancedAnalytics(); as enhanced) {
               <div class="heatmap-row">
@@ -165,7 +165,7 @@
           </div>
         } @else if (enhancedAnalytics(); as enhanced) {
           <section aria-labelledby="performance-heading">
-            <h2 id="performance-heading" class="section-title">Performance Analysis</h2>
+            <h2 id="performance-heading" class="section-title">{{ translate.t('dashboard.performance_analysis') }}</h2>
             <div class="performance-grid" role="group" aria-label="Performance widgets">
               <div class="trend-row">
                 <app-performance-trend-chart [data]="enhanced.performanceTrends" />
@@ -197,7 +197,7 @@
     @if (activeTab() === 'activity' && currentUser()) {
       <div id="tab-activity" role="tabpanel" aria-labelledby="tab-activity" class="tab-content">
         <section aria-labelledby="activity-heading">
-          <h2 id="activity-heading" class="section-title">Activity History</h2>
+          <h2 id="activity-heading" class="section-title">{{ translate.t('dashboard.activity_history') }}</h2>
           
           <div class="timeline-section">
             <div class="timeline-controls" role="group" aria-label="Time range selector">
@@ -207,7 +207,7 @@
                 [attr.aria-pressed]="historyTimeRange() === '7d'"
                 (click)="setHistoryTimeRange('7d')"
                 aria-label="Show last 7 days">
-                7 Days
+                {{ translate.t('dashboard.time_7d') }}
               </button>
               <button 
                 class="time-range-btn" 
@@ -215,7 +215,7 @@
                 [attr.aria-pressed]="historyTimeRange() === '30d'"
                 (click)="setHistoryTimeRange('30d')"
                 aria-label="Show last 30 days">
-                30 Days
+                {{ translate.t('dashboard.time_30d') }}
               </button>
               <button 
                 class="time-range-btn" 
@@ -223,7 +223,7 @@
                 [attr.aria-pressed]="historyTimeRange() === '90d'"
                 (click)="setHistoryTimeRange('90d')"
                 aria-label="Show last 90 days">
-                90 Days
+                {{ translate.t('dashboard.time_90d') }}
               </button>
             </div>
             <app-activity-timeline-widget [timeRange]="historyTimeRange()" />
@@ -268,7 +268,7 @@
           </div>
         } @else if (enhancedAnalytics(); as enhanced) {
           <section aria-labelledby="insights-heading">
-            <h2 id="insights-heading" class="section-title">Learning Insights</h2>
+            <h2 id="insights-heading" class="section-title">{{ translate.t('dashboard.learning_insights') }}</h2>
             <div class="insights-grid" role="group" aria-label="Insights widgets">
               <div class="weak-areas-row">
                 <app-weak-areas-analysis [data]="enhanced.weakAreas" />
@@ -284,7 +284,7 @@
         } @else {
           <!-- Guest mode - show basic vocabulary stats -->
           <section aria-labelledby="insights-heading">
-            <h2 id="insights-heading" class="section-title">Learning Insights</h2>
+            <h2 id="insights-heading" class="section-title">{{ translate.t('dashboard.learning_insights') }}</h2>
             <div class="insights-grid" role="group" aria-label="Insights widgets">
               <div class="insights-details-row">
                 <app-vocabulary-stats [analytics]="analytics()" />

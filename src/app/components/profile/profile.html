@@ -1,9 +1,9 @@
 <div class="profile-container">
   <div class="profile-header">
-    <button class="back-button" (click)="goBack()" aria-label="Go back">
+    <button class="back-button" (click)="goBack()" [attr.aria-label]="translate.t('common.back')">
       <span class="back-icon">←</span>
     </button>
-    <h1>👤 MY PROFILE</h1>
+    <h1>{{ translate.t('profile.header.title') }}</h1>
   </div>
 
   <div class="profile-content">
@@ -25,18 +25,18 @@
             }
             @if (isAnonymous()) {
               <p class="user-status">
-                <span class="status-badge">Anonymous User</span>
+                <span class="status-badge">{{ translate.t('profile.status.anonymous') }}</span>
               </p>
             }
           </div>
           <div class="user-actions">
             @if (isAnonymous()) {
               <button class="btn btn-link-google" (click)="linkWithGoogle()">
-                🔗 Link with Google
+                {{ translate.t('profile.action.link_google') }}
               </button>
             }
             <button class="btn btn-logout" (click)="signOut()">
-              🚪 Log out
+              {{ translate.t('profile.action.logout') }}
             </button>
           </div>
         </div>
@@ -46,19 +46,19 @@
     <!-- Tabs Navigation -->
     <div class="tabs-container">
       <div class="tabs-nav">
-        <button 
+        <button
           [class.active]="activeTab() === 'achievements'"
           (click)="setActiveTab('achievements')"
           class="tab-button"
           type="button">
-          🏆 Achievements
+          {{ translate.t('profile.tab.achievements') }}
         </button>
-        <button 
+        <button
           [class.active]="activeTab() === 'settings'"
           (click)="setActiveTab('settings')"
           class="tab-button"
           type="button">
-          ⚙️ Settings
+          {{ translate.t('profile.tab.settings') }}
         </button>
       </div>
 
@@ -74,27 +74,27 @@
         @if (activeTab() === 'settings') {
           <div class="tab-panel">
             <div class="ai-provider-section">
-              <h3 class="section-title">🤖 AI Provider</h3>
+              <h3 class="section-title">{{ translate.t('profile.section.ai_provider') }}</h3>
               <app-ai-provider-config />
             </div>
-            
+
             <div class="settings-divider"></div>
-            
+
             <app-settings />
-            
+
             @if (isGuestMode()) {
               <div class="settings-divider"></div>
-              
+
               <div class="export-import-section">
-                <h3 class="section-title">💾 Dữ Liệu</h3>
-                <p class="section-description">Sao lưu hoặc khôi phục tiến trình học tập của bạn</p>
+                <h3 class="section-title">{{ translate.t('profile.section.data') }}</h3>
+                <p class="section-description">{{ translate.t('profile.data.description') }}</p>
                 <button class="export-import-btn" (click)="openExportImportModal()">
                   <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
                     <polyline points="17 8 12 3 7 8"></polyline>
                     <line x1="12" y1="3" x2="12" y2="15"></line>
                   </svg>
-                  <span>Xuất/Nhập Dữ Liệu</span>
+                  <span>{{ translate.t('profile.data.export_import') }}</span>
                 </button>
               </div>
             }
@@ -112,7 +112,7 @@
           <path d="M3.964 10.712c-.18-.54-.282-1.117-.282-1.71 0-.593.102-1.17.282-1.71V4.96H.957C.347 6.175 0 7.55 0 9.002c0 1.452.348 2.827.957 4.042l3.007-2.332z" fill="#FBBC05"/>
           <path d="M9.003 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.464.891 11.426 0 9.003 0 5.485 0 2.44 2.017.96 4.958L3.967 7.29c.708-2.127 2.692-3.71 5.036-3.71z" fill="#EA4335"/>
         </svg>
-        <span>Đăng nhập với Google</span>
+        <span>{{ translate.t('profile.signin.google') }}</span>
       </button>
     }
   </div>

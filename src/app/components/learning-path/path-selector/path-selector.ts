@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { CurriculumService } from '../../../services/curriculum.service';
 import { LearningPath } from '../../../models/learning-path.model';
+import { TranslationService } from '../../../services/translation.service';
 
 @Component({
   selector: 'app-path-selector',
@@ -14,6 +15,7 @@ import { LearningPath } from '../../../models/learning-path.model';
 export class PathSelector implements OnInit {
   private curriculumService = inject(CurriculumService);
   private router = inject(Router);
+  protected translate = inject(TranslationService);
 
   paths = signal<LearningPath[]>([]);
   selectedPathId = signal<string | null>(null);

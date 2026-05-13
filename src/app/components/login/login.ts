@@ -1,6 +1,7 @@
 import { Component, inject, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { AuthService } from '../../services/auth.service';
+import { TranslationService } from '../../services/translation.service';
 
 @Component({
   selector: 'app-login',
@@ -11,6 +12,7 @@ import { AuthService } from '../../services/auth.service';
 })
 export class LoginComponent {
   private authService = inject(AuthService);
+  protected translate = inject(TranslationService);
 
   signInWithGoogle(): void {
     console.log('[Login] Starting Google OAuth flow...');

@@ -10,6 +10,100 @@
   box-sizing: border-box;
 }
 
+/* Font size scale — controlled by FontSizeService via class on <html> */
+html { font-size: 16px; }
+html.font-size-small { font-size: 14px; }
+html.font-size-medium { font-size: 16px; }
+html.font-size-large { font-size: 18px; }
+html.font-size-xlarge { font-size: 20px; }
+
+/* OpenDyslexic font support — opt-in via class on <html> */
+html.font-family-dyslexic body,
+html.font-family-dyslexic input,
+html.font-family-dyslexic textarea,
+html.font-family-dyslexic button {
+  font-family: 'OpenDyslexic', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+/* High contrast mode — boost text contrast and border visibility */
+html.high-contrast body {
+  background: #000000;
+  color: #FFFFFF;
+}
+html.high-contrast * {
+  border-color: #FFFFFF !important;
+}
+html.high-contrast a,
+html.high-contrast button {
+  text-decoration: underline;
+}
+
+/* Skip-to-content link — visible on focus, hidden by default */
+.skip-to-content {
+  position: absolute;
+  top: -100px;
+  left: 0;
+  z-index: 10000;
+  padding: 0.75rem 1rem;
+  background: #8B5CF6;
+  color: #ffffff;
+  font-weight: 600;
+  text-decoration: none;
+  border-radius: 0 0 8px 0;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  transition: top 0.15s ease-in-out;
+
+  &:focus {
+    top: 0;
+    outline: 3px solid #C4B5FD;
+    outline-offset: 2px;
+  }
+}
+
+/* Global focus-visible styles for keyboard navigation */
+*:focus-visible {
+  outline: 2px solid #A78BFA;
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+button:focus-visible,
+a:focus-visible,
+[role='button']:focus-visible,
+[role='radio']:focus-visible,
+[role='tab']:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+  outline: 2px solid #A78BFA;
+  outline-offset: 2px;
+}
+
+/* Respect users who prefer reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Visually hidden — content for screen readers only */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
 body {
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
   background: #0F1419;

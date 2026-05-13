@@ -1,6 +1,7 @@
-import { Component, ChangeDetectionStrategy, input, output, computed } from '@angular/core';
+import { Component, ChangeDetectionStrategy, input, output, computed, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReviewQueueItem as ReviewQueueItemModel, UrgencyLevel } from '../../models/review.model';
+import { TranslationService } from '../../services/translation.service';
 
 @Component({
   selector: 'app-review-queue-item',
@@ -10,6 +11,7 @@ import { ReviewQueueItem as ReviewQueueItemModel, UrgencyLevel } from '../../mod
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ReviewQueueItem {
+  protected translate = inject(TranslationService);
   // Input signals
   item = input.required<ReviewQueueItemModel>();
 

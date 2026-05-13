@@ -1,6 +1,7 @@
-import { Component, ChangeDetectionStrategy, input, output, computed } from '@angular/core';
+import { Component, ChangeDetectionStrategy, input, output, computed, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ExerciseCategory } from '../../models/exercise.model';
+import { TranslationService } from '../../services/translation.service';
 
 @Component({
   selector: 'app-category-card',
@@ -10,64 +11,70 @@ import { ExerciseCategory } from '../../models/exercise.model';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class CategoryCardComponent {
+  protected translate = inject(TranslationService);
   category = input.required<ExerciseCategory | string>();
   select = output<ExerciseCategory | string>();
 
   categoryInfo = computed(() => {
     const cat = this.category();
-    
-    // Handle custom category
+
     if (cat === 'custom') {
       return {
         icon: '✏️',
-        name: 'Custom',
-        description: 'Your personalized exercises'
+        name: this.translate.t('category.custom.name'),
+        description: this.translate.t('category.custom.description')
       };
     }
-    
-    const info: Record<ExerciseCategory, { icon: string; name: string; description: string }> = {
+
+    const meta: Record<ExerciseCategory, { icon: string; nameKey: string; descKey: string }> = {
       [ExerciseCategory.DAILY_LIFE]: {
         icon: '🏠',
-        name: 'Daily Life',
-        description: 'Everyday routines, conversations, and dining'
+        nameKey: 'category.daily_life.name',
+        descKey: 'category.daily_life.description'
       },
       [ExerciseCategory.TRAVEL_TRANSPORTATION]: {
         icon: '✈️',
-        name: 'Travel & Transportation',
-        description: 'Getting around and exploring new places'
+        nameKey: 'category.travel.name',
+        descKey: 'category.travel.description'
       },
       [ExerciseCategory.EDUCATION_WORK]: {
         icon: '💼',
-        name: 'Education & Work',
-        description: 'Learning and professional environments'
+        nameKey: 'category.education_work.name',
+        descKey: 'category.education_work.description'
       },
       [ExerciseCategory.HEALTH_WELLNESS]: {
         icon: '💪',
-        name: 'Health & Wellness',
-        description: 'Medical care, fitness, and physical wellness'
+        nameKey: 'category.health.name',
+        descKey: 'category.health.description'
       },
       [ExerciseCategory.SOCIETY_SERVICES]: {
         icon: '🏛️',
-        name: 'Society & Services',
-        description: 'Public services, shopping, and community'
+        nameKey: 'category.society.name',
+        descKey: 'category.society.description'
       },
       [ExerciseCategory.CULTURE_ARTS]: {
         icon: '🎭',
-        name: 'Culture & Arts',
-        description: 'Entertainment, arts, and cultural practices'
+        nameKey: 'category.culture.name',
+        descKey: 'category.culture.description'
       },
       [ExerciseCategory.SCIENCE_ENVIRONMENT]: {
         icon: '🌍',
-        name: 'Science & Environment',
-        description: 'Technology, nature, and environmental topics'
+        nameKey: 'category.science.name',
+        descKey: 'category.science.description'
       },
       [ExerciseCategory.PHILOSOPHY_BELIEFS]: {
         icon: '🧠',
-        name: 'Philosophy & Beliefs',
-        description: 'Ethics, spirituality, law, politics, and history'
+        nameKey: 'category.philosophy.name',
+        descKey: 'category.philosophy.description'
       }
     };
-    return info[cat as ExerciseCategory];
+
+    const data = meta[cat as ExerciseCategory];
+    return {
+      icon: data.icon,
+      name: this.translate.t(data.nameKey),
+      description: this.translate.t(data.descKey)
+    };
   });
 
   onSelect(): void {

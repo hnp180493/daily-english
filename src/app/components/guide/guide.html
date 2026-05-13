@@ -1,6 +1,6 @@
 <div class="guide-container">
   <aside class="guide-sidebar">
-    <h2 class="sidebar-title">📚 Mục Lục</h2>
+    <h2 class="sidebar-title">{{ translate.t('guide.sidebar.table_of_contents') }}</h2>
     <nav class="sidebar-nav">
       @for (section of sections(); track section.id) {
         <button
@@ -17,7 +17,7 @@
     @if (isLoading()) {
       <div class="loading-state">
         <div class="spinner"></div>
-        <p>Đang tải hướng dẫn...</p>
+        <p>{{ translate.t('guide.loading.message') }}</p>
       </div>
     } @else {
       <div class="content-wrapper">

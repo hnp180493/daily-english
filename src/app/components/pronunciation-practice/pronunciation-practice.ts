@@ -9,7 +9,7 @@ import {
   inject,
   signal
 } from '@angular/core';
-import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Exercise } from '../../models/exercise.model';
 import {
   PRONUNCIATION_DEFAULTS,
@@ -21,11 +21,12 @@ import { AudioRecorderService } from '../../services/pronunciation/audio-recorde
 import { PronunciationPracticeService } from '../../services/pronunciation/pronunciation-practice.service';
 import { TTSService } from '../../services/tts.service';
 import { SeoService } from '../../services/seo.service';
+import { TranslationService } from '../../services/translation.service';
 
 @Component({
   selector: 'app-pronunciation-practice',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule],
   templateUrl: './pronunciation-practice.html',
   styleUrl: './pronunciation-practice.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -38,6 +39,7 @@ export class PronunciationPracticeComponent implements OnInit, OnDestroy {
   private seoService = inject(SeoService);
   readonly recorder = inject(AudioRecorderService);
   readonly tts = inject(TTSService);
+  protected translate = inject(TranslationService);
 
   exercise = signal<Exercise | null>(null);
   sentences = signal<string[]>([]);

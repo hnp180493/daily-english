@@ -401,6 +401,46 @@
   text-align: center;
 }
 
+.lang-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  height: 44px;
+  padding: 0 0.75rem;
+  border-radius: 12px;
+  background: rgba(167, 139, 250, 0.1);
+  border: 1px solid rgba(167, 139, 250, 0.3);
+  color: #C4B5FD;
+  font-weight: 700;
+  font-size: 0.85rem;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  transition: all 0.3s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+    background: rgba(167, 139, 250, 0.18);
+    border-color: rgba(167, 139, 250, 0.6);
+    color: #EDE9FE;
+  }
+
+  &.is-en {
+    background: rgba(99, 102, 241, 0.18);
+    border-color: rgba(129, 140, 248, 0.5);
+    color: #C7D2FE;
+  }
+
+  .lang-icon {
+    font-size: 1rem;
+    line-height: 1;
+  }
+
+  .lang-code {
+    line-height: 1;
+  }
+}
+
 .profile-btn {
   background: #8B5CF6;
   border: none;
@@ -518,6 +558,17 @@
   .favorite-btn {
     width: 36px;
     height: 36px;
+  }
+
+  .lang-toggle {
+    height: 36px;
+    padding: 0 0.5rem;
+    font-size: 0.75rem;
+    gap: 0.25rem;
+
+    .lang-icon {
+      font-size: 0.9rem;
+    }
   }
 
   .achievement-icon {

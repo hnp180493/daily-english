@@ -1,34 +1,34 @@
 <!-- Penalty Breakdown (Review Mode - Only when exercise is complete) -->
 @if ((isReviewMode() || isExerciseComplete()) && penaltyMetrics()) {
   <div class="section-card penalty-card">
-    <h3 class="section-title">📊 Score Breakdown</h3>
+    <h3 class="section-title">{{ translate.t('score_breakdown.title') }}</h3>
     <div class="penalty-breakdown">
       <div class="penalty-item">
-        <span class="penalty-label">Base Score:</span>
+        <span class="penalty-label">{{ translate.t('score_breakdown.base') }}</span>
         <span class="penalty-value">{{ penaltyMetrics()!.baseScore }}%</span>
       </div>
       @if (penaltyMetrics()!.totalIncorrectAttempts > 0) {
         <div class="penalty-item penalty-negative">
-          <span class="penalty-label">Incorrect Attempts ({{ penaltyMetrics()!.totalIncorrectAttempts }} × {{ INCORRECT_PENALTY }}%):</span>
+          <span class="penalty-label">{{ translate.t('score_breakdown.incorrect_attempts') }} ({{ penaltyMetrics()!.totalIncorrectAttempts }} × {{ INCORRECT_PENALTY }}%):</span>
           <span class="penalty-value">-{{ penaltyMetrics()!.totalIncorrectAttempts * INCORRECT_PENALTY }}%</span>
         </div>
       }
       @if (penaltyMetrics()!.totalRetries > 0) {
         <div class="penalty-item penalty-negative">
-          <span class="penalty-label">Retries ({{ penaltyMetrics()!.totalRetries }} × {{ RETRY_PENALTY }}%):</span>
+          <span class="penalty-label">{{ translate.t('score_breakdown.retries') }} ({{ penaltyMetrics()!.totalRetries }} × {{ RETRY_PENALTY }}%):</span>
           <span class="penalty-value">-{{ penaltyMetrics()!.totalRetries * RETRY_PENALTY }}%</span>
         </div>
       }
       @if (penaltyMetrics()!.totalPenalty > 0) {
         <div class="penalty-divider"></div>
         <div class="penalty-item penalty-total">
-          <span class="penalty-label">Total Penalty:</span>
+          <span class="penalty-label">{{ translate.t('score_breakdown.total_penalty') }}</span>
           <span class="penalty-value">-{{ penaltyMetrics()!.totalPenalty }}%</span>
         </div>
       }
       <div class="penalty-divider"></div>
       <div class="penalty-item penalty-final">
-        <span class="penalty-label">Final Score:</span>
+        <span class="penalty-label">{{ translate.t('score_breakdown.final_score') }}</span>
         <span class="penalty-value">{{ penaltyMetrics()!.finalScore }}%</span>
       </div>
     </div>

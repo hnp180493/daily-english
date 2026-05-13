@@ -1,5 +1,6 @@
-import { Component, ChangeDetectionStrategy, output } from '@angular/core';
+import { Component, ChangeDetectionStrategy, output, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { TranslationService } from '../../services/translation.service';
 
 @Component({
   selector: 'app-registration-limit-modal',
@@ -9,6 +10,7 @@ import { CommonModule } from '@angular/common';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class RegistrationLimitModal {
+  protected translate = inject(TranslationService);
   close = output<void>();
 
   onClose(): void {

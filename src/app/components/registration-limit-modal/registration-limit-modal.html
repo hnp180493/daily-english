@@ -8,35 +8,30 @@
           />
         </svg>
       </div>
-      <h2 class="modal-title">Đã Đạt Giới Hạn Đăng Ký</h2>
+      <h2 class="modal-title">{{ translate.t('modal.registration.limit_title') }}</h2>
     </div>
 
     <div class="modal-body">
       <p class="message">
-        Xin lỗi! Hệ thống hiện đã đạt giới hạn và không thể tạo
-        tài khoản mới.
+        {{ translate.t('modal.registration.limit_message') }}
       </p>
 
       <div class="info-box">
-        <h3 class="info-title">🙏 Lý do giới hạn:</h3>
+        <h3 class="info-title">{{ translate.t('modal.registration.reason_title') }}</h3>
         <ul class="info-list">
-          <li>
-            Chúng tôi đang sử dụng <strong>database miễn phí</strong> với dung lượng và tài nguyên
-            có giới hạn
-          </li>
-          <li>Để đảm bảo trải nghiệm tốt cho người dùng hiện tại, chúng tôi phải giới hạn số lượng</li>
-          <li>Người dùng đã đăng ký vẫn có thể đăng nhập và sử dụng bình thường</li>
+          <li>{{ translate.t('modal.registration.reason_limited_db') }}</li>
+          <li>{{ translate.t('modal.registration.reason_ensure_quality') }}</li>
+          <li>{{ translate.t('modal.registration.reason_existing_access') }}</li>
         </ul>
       </div>
 
       <p class="hint">
-        Mong bạn thông cảm! Chúng tôi đang nỗ lực nâng cấp hệ thống để phục vụ nhiều người dùng
-        hơn trong tương lai.
+        {{ translate.t('modal.registration.understanding_message') }}
       </p>
     </div>
 
     <div class="modal-footer">
-      <button class="btn btn-primary" (click)="onClose()">Đã hiểu</button>
+      <button class="btn btn-primary" (click)="onClose()">{{ translate.t('common.understood') }}</button>
     </div>
   </div>
 </div>

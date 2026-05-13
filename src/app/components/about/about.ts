@@ -2,6 +2,7 @@ import { Component, ChangeDetectionStrategy, OnInit, inject } from '@angular/cor
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { SeoService } from '../../services/seo.service';
+import { TranslationService } from '../../services/translation.service';
 
 @Component({
   selector: 'app-about',
@@ -12,6 +13,7 @@ import { SeoService } from '../../services/seo.service';
 })
 export class AboutComponent implements OnInit {
   private seoService = inject(SeoService);
+  protected translate = inject(TranslationService);
 
   ngOnInit(): void {
     this.seoService.updateTags({

@@ -1,6 +1,7 @@
 import { Component, ChangeDetectionStrategy, signal, OnInit, OnDestroy, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { GuideService, GuideSection } from '../../services/guide.service';
+import { TranslationService } from '../../services/translation.service';
 
 @Component({
   selector: 'app-guide',
@@ -14,6 +15,7 @@ import { GuideService, GuideSection } from '../../services/guide.service';
 })
 export class GuideComponent implements OnInit, OnDestroy {
   private guideService = inject(GuideService);
+  protected translate = inject(TranslationService);
   
   sections = signal<GuideSection[]>([]);
   activeSection = signal<string>('');

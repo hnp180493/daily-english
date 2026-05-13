@@ -20,7 +20,7 @@
           [attr.aria-pressed]="selectedUrgency() === 'all'"
           aria-label="Show all reviews"
         >
-          All Reviews
+          {{ translate.t('review_queue.all_reviews') }}
         </button>
         <button
           (click)="filterByUrgency('high')"
@@ -35,7 +35,7 @@
           [attr.aria-pressed]="selectedUrgency() === 'high'"
           aria-label="Show urgent reviews - exercises with scores below 60%"
         >
-          🔴 Urgent
+          🔴 {{ translate.t('review_queue.urgent') }}
         </button>
         <button
           (click)="filterByUrgency('medium')"
@@ -50,7 +50,7 @@
           [attr.aria-pressed]="selectedUrgency() === 'medium'"
           aria-label="Show medium urgency reviews - exercises with scores between 60% and 75%"
         >
-          🟡 Due Soon
+          🟡 {{ translate.t('review_queue.due_soon') }}
         </button>
         <button
           (click)="filterByUrgency('low')"
@@ -65,7 +65,7 @@
           [attr.aria-pressed]="selectedUrgency() === 'low'"
           aria-label="Show scheduled reviews - exercises due for review"
         >
-          🟢 Scheduled
+          🟢 {{ translate.t('review_queue.scheduled') }}
         </button>
       </div>
 
@@ -116,16 +116,16 @@
 
         <!-- Sort Dropdown -->
         <div class="sort-section flex items-center gap-2">
-          <label for="sort-select" class="text-xs font-medium text-gray-400">Sort:</label>
+          <label for="sort-select" class="text-xs font-medium text-gray-400">{{ translate.t('review_queue.sort_label') }}</label>
           <select
             id="sort-select"
             (change)="setSortBy($any($event.target).value)"
             [value]="sortBy()"
             class="px-2.5 py-1.5 text-sm bg-gray-700 text-gray-200 border border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
           >
-            <option value="urgency">Urgency</option>
-            <option value="date">Review Date</option>
-            <option value="difficulty">Difficulty</option>
+            <option value="urgency">{{ translate.t('review_queue.sort_urgency') }}</option>
+            <option value="date">{{ translate.t('review_queue.sort_date') }}</option>
+            <option value="difficulty">{{ translate.t('review_queue.sort_difficulty') }}</option>
           </select>
         </div>
       </div>
@@ -195,16 +195,16 @@
             />
           </svg>
           <h3 class="text-xl font-semibold text-gray-100 mb-2">
-            All caught up!
+            {{ translate.t('review_queue.all_caught_up') }}
           </h3>
           <p class="text-gray-400 mb-6">
-            You don't have any reviews due right now. Great job staying on top of your learning!
+            {{ translate.t('review_queue.empty_desc') }}
           </p>
           <a
             href="/exercises"
             class="inline-block px-6 py-3 bg-indigo-600 text-white font-medium rounded-lg hover:bg-indigo-700 transition-colors"
           >
-            Explore New Exercises
+            {{ translate.t('review_queue.explore_new') }}
           </a>
         </div>
       </div>

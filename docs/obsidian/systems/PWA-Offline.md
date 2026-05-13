@@ -74,9 +74,22 @@ App là **Progressive Web App** (PWA) — có thể "Add to home screen" trên m
 - Reuse component state khi back/forward giữa các route đã visit.
 - Cải thiện UX: scroll position, form state, filter state được giữ.
 
-## Service worker?
+## Service Worker
 
-**Hiện không** có Angular Service Worker (`@angular/service-worker`) trong dependencies — offline support đang dựa vào localStorage + HTTP cache + event queue.
+✅ **Đã cài** `@angular/service-worker@20.3.9` (2026-05-13).
+
+- **Config:** [ngsw-config.json](../../ngsw-config.json) ở root.
+- **Asset groups:**
+  - `app-shell` (prefetch) — `index.html`, `*.css`, `*.js`, `favicon.ico`, `manifest.json`.
+  - `fonts-and-icons` (lazy) — `/assets/**` + font/image files.
+- **Data groups (lazy cache):**
+  - `exercises-data` — `/data/exercises/**`, `/data/all-exercises.json`, `/data/learning-paths/**`. Strategy `performance` (cache-first), maxSize 200, maxAge 30 ngày.
+  - `vietnamese-seo-config` — 7 ngày TTL.
+  - `api-cache-freshness` — `/api/**` strategy `freshness` (network-first, fallback cache), 1h TTL, 5s timeout.
+- **Registration:** [app.config.ts](../../src/app/app.config.ts) qua `provideServiceWorker('ngsw-worker.js', { enabled: !isDevMode(), registrationStrategy: 'registerWhenStable:30000' })`. **Production only** — dev không register để tránh cache stale.
+- **Update flow:** [services/sw-update.service.ts](../../src/app/services/sw-update.service.ts) subscribe `swUpdate.versionUpdates`, poll mỗi 30 phút, toast "Có bản cập nhật mới" khi `VERSION_READY`. Gọi `applyUpdate()` để activate + reload.
+
+**Chưa có:** SW-driven scheduled notification (cần Periodic Background Sync API — Chrome/Edge only, yêu cầu PWA install). Hiện `NotificationService` vẫn dùng `setTimeout` trong tab.
 
 ## Liên kết
 

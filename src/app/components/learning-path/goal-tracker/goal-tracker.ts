@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { DatabaseService } from '../../../services/database/database.service';
 import { ProgressService } from '../../../services/progress.service';
 import { NotificationService } from '../../../services/notification.service';
+import { TranslationService } from '../../../services/translation.service';
 import { WeeklyGoal } from '../../../models/weekly-goal.model';
 import { ExerciseHistoryRecord } from '../../../models/exercise-history.model';
 import { getWeekStartLocalDate } from '../../../utils/date.utils';
@@ -19,6 +20,7 @@ export class GoalTracker implements OnInit {
   private databaseService = inject(DatabaseService);
   private progressService = inject(ProgressService);
   private notificationService = inject(NotificationService);
+  protected translate = inject(TranslationService);
 
   currentGoal = signal<WeeklyGoal | null>(null);
   targetExercises = signal(10);

@@ -8,33 +8,33 @@
           <button
             (click)="setTab('overview')"
             [class]="'flex-1 py-3 px-4 rounded-md font-medium transition-colors duration-200 whitespace-nowrap ' + getTabClass('overview')">
-            Path Overview
+            {{ translate.t('learning_path.tab.overview') }}
           </button>
           <button
             (click)="setTab('exercises')"
             [class]="'flex-1 py-3 px-4 rounded-md font-medium transition-colors duration-200 whitespace-nowrap ' + getTabClass('exercises')">
-            Exercise List
+            {{ translate.t('learning_path.tab.exercises') }}
           </button>
           <button
             (click)="setTab('challenge')"
             [class]="'flex-1 py-3 px-4 rounded-md font-medium transition-colors duration-200 whitespace-nowrap ' + getTabClass('challenge')">
-            Daily Challenge
+            {{ translate.t('learning_path.tab.daily_challenge') }}
           </button>
           <button
             (click)="setTab('progress')"
             [class]="'flex-1 py-3 px-4 rounded-md font-medium transition-colors duration-200 whitespace-nowrap ' + getTabClass('progress')">
-            Progress
+            {{ translate.t('learning_path.tab.progress') }}
           </button>
           <button
             (click)="setTab('goals')"
             [class]="'flex-1 py-3 px-4 rounded-md font-medium transition-colors duration-200 whitespace-nowrap ' + getTabClass('goals')">
-            Weekly Goals
+            {{ translate.t('learning_path.tab.weekly_goals') }}
           </button>
           @if (certificates().length > 0) {
             <button
               (click)="setTab('certificates')"
               [class]="'flex-1 py-3 px-4 rounded-md font-medium transition-colors duration-200 whitespace-nowrap ' + getTabClass('certificates')">
-              Certificates
+              {{ translate.t('learning_path.tab.certificates') }}
             </button>
           }
         </nav>
@@ -61,7 +61,7 @@
             <app-certificate [completion]="selectedCertificate()!"></app-certificate>
           } @else {
             <div class="certificates-list">
-              <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-6">Your Certificates</h2>
+              <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-6">{{ translate.t('learning_path.certificates.title') }}</h2>
               <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 @for (cert of certificates(); track cert.certificateId) {
                   <div 
@@ -70,13 +70,13 @@
                     <div class="text-4xl mb-4">🎓</div>
                     <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">{{ cert.pathName }}</h3>
                     <p class="text-sm text-gray-600 dark:text-gray-400 mb-2">
-                      Completed: {{ cert.completedAt | date:'mediumDate' }}
+                      {{ translate.t('learning_path.certificate_card.completed') }} {{ cert.completedAt | date:'mediumDate' }}
                     </p>
                     <p class="text-sm text-gray-600 dark:text-gray-400">
-                      Score: {{ cert.finalScore }}%
+                      {{ translate.t('learning_path.certificate_card.score') }} {{ cert.finalScore }}%
                     </p>
                     <button class="mt-4 w-full py-2 bg-primary-600 text-white rounded-md hover:bg-primary-700 transition-colors">
-                      View Certificate
+                      {{ translate.t('learning_path.certificate_card.view') }}
                     </button>
                   </div>
                 }

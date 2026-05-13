@@ -21,6 +21,7 @@ Bảng tra cứu mọi route → component → feature documentation.
 | `/exercises/:id/dictation` | `DictationPracticeComponent` | — | — | [[Dictation-Practice]] |
 | `/exercises/:id/pronunciation` | `PronunciationPracticeComponent` | — | — | [[Pronunciation-Practice]] (Beta — mở cho mọi user) |
 | `/profile` | `ProfileComponent` | — | — | [[Authentication]] + [[Achievements]] showcase |
+| `/settings` | `SettingsPageComponent` | — | — | App Settings (appearance, language placeholder, practice prefs, notifications) |
 | `/favorites` | `FavoritesComponent` | — | — | [[Favorites]] |
 | `/dashboard` | `DashboardComponent` | — | `high` | [[Dashboard-Analytics]] |
 | `/achievements` | `Achievements` | — | — | [[Achievements]] |

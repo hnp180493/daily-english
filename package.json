@@ -14,6 +14,7 @@
     "combine-exercises": "node scripts/combine-exercises.js",
     "generate:sitemap": "node scripts/generate-sitemap.js",
     "generate:static": "node scripts/generate-static-pages.js",
+    "extract-i18n": "ng extract-i18n --output-path src/locale --format=xlf",
     "prebuild": "npm run generate:sitemap",
     "postbuild": "npm run generate:static"
   },
@@ -37,8 +38,10 @@
     "@angular/compiler": "^20.3.0",
     "@angular/core": "^20.3.0",
     "@angular/forms": "^20.3.0",
+    "@angular/localize": "^20.3.9",
     "@angular/platform-browser": "^20.3.0",
     "@angular/router": "^20.3.0",
+    "@angular/service-worker": "^20.3.9",
     "@supabase/supabase-js": "^2.80.0",
     "chart.js": "^4.5.1",
     "date-fns": "^4.1.0",

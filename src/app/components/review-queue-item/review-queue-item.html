@@ -36,7 +36,7 @@
   <div class="flex items-center gap-6 mb-3 text-xs" role="group" aria-label="Exercise statistics">
     <!-- Last score -->
     <div class="flex items-center gap-1.5">
-      <span class="text-gray-500">Last Score</span>
+      <span class="text-gray-500">{{ translate.t('review_item.last_score') }}</span>
       <span 
         class="font-bold text-sm" 
         [class.text-red-400]="item().lastScore < 60"
@@ -49,7 +49,7 @@
 
     <!-- Next review date -->
     <div class="flex items-center gap-1.5">
-      <span class="text-gray-500">Next Review</span>
+      <span class="text-gray-500">{{ translate.t('review_item.next_review') }}</span>
       <span 
         class="font-semibold" 
         [class.text-gray-200]="!isOverdue() && !isToday() && !isTomorrow()"
@@ -84,9 +84,9 @@
 
     <!-- Estimated time -->
     <div class="flex items-center gap-1.5">
-      <span class="text-gray-500">Est. Time</span>
+      <span class="text-gray-500">{{ translate.t('review_item.est_time') }}</span>
       <span class="font-semibold text-gray-200" role="status">
-        {{ item().estimatedTime }} min
+        {{ item().estimatedTime }} {{ translate.t('review_item.min') }}
       </span>
     </div>
   </div>
@@ -104,7 +104,7 @@
       (click)="onStartReview()"
       class="flex-1 bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-indigo-700 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500"
       aria-label="Start full review of {{ item().exercise.title }}">
-      Start Review
+      {{ translate.t('review_item.start_review') }}
     </button>
     
     @if (item().incorrectQuestionCount > 0) {
@@ -112,7 +112,7 @@
         (click)="onStartQuickReview()"
         class="flex-1 bg-green-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-green-700 transition-colors focus:outline-none focus:ring-2 focus:ring-green-500"
         aria-label="Start quick review of incorrect questions for {{ item().exercise.title }}">
-        Quick Review
+        {{ translate.t('review_item.quick_review') }}
       </button>
     }
   </div>

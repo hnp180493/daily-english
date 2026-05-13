@@ -1,5 +1,6 @@
-import { Component, ChangeDetectionStrategy, input, output } from '@angular/core';
+import { Component, ChangeDetectionStrategy, input, output, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { TranslationService } from '../../services/translation.service';
 
 @Component({
   selector: 'app-error-modal',
@@ -9,9 +10,10 @@ import { CommonModule } from '@angular/common';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ErrorModal {
+  protected translate = inject(TranslationService);
   errorMessage = input.required<string>();
   title = input<string>('Error');
-  
+
   close = output<void>();
 
   onClose(): void {

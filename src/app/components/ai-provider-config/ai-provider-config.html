@@ -1,6 +1,6 @@
 <div class="config-section">
-  <h2>AI Provider Configuration</h2>
-  <p class="section-description">Choose your preferred AI provider and configure credentials</p>
+  <h2>{{ translate.t('ai_config.title') }}</h2>
+  <p class="section-description">{{ translate.t('ai_config.subtitle') }}</p>
 
   <!-- Provider Cards -->
   <div class="provider-cards">
@@ -16,13 +16,13 @@
             <img src="assets/icons/gemini-logo.svg" alt="Google Gemini" width="24" height="24" />
           </span>
           <div>
-            <h3>Google Gemini <span class="recommended-badge">Recommended</span></h3>
-            <p class="provider-desc">Google's multimodal AI model  - No credit card required</p>
+            <h3>Google Gemini <span class="recommended-badge">{{ translate.t('ai_config.recommended') }}</span></h3>
+            <p class="provider-desc">{{ translate.t('ai_config.provider_gemini_desc') }}</p>
           </div>
         </div>
         <div class="card-actions">
           @if (config().provider === 'gemini') {
-          <span class="active-badge">Active</span>
+          <span class="active-badge">{{ translate.t('ai_config.active') }}</span>
           }
           <button
             type="button"
@@ -115,13 +115,13 @@
             <img src="assets/icons/openrouter-logo.svg" alt="OpenRouter" width="24" height="24" />
           </span>
           <div>
-            <h3>OpenRouter <span class="recommended-badge">Recommended</span></h3>
-            <p class="provider-desc">Multiple free AI models - No credit card required</p>
+            <h3>OpenRouter <span class="recommended-badge">{{ translate.t('ai_config.recommended') }}</span></h3>
+            <p class="provider-desc">{{ translate.t('ai_config.provider_openrouter_desc') }}</p>
           </div>
         </div>
         <div class="card-actions">
           @if (config().provider === 'openrouter') {
-          <span class="active-badge">Active</span>
+          <span class="active-badge">{{ translate.t('ai_config.active') }}</span>
           }
           <button
             type="button"
@@ -260,12 +260,12 @@
           </span>
           <div>
             <h3>OpenAI</h3>
-            <p class="provider-desc">Direct access to GPT models</p>
+            <p class="provider-desc">{{ translate.t('ai_config.provider_openai_desc') }}</p>
           </div>
         </div>
         <div class="card-actions">
           @if (config().provider === 'openai') {
-          <span class="active-badge">Active</span>
+          <span class="active-badge">{{ translate.t('ai_config.active') }}</span>
           }
           <button
             type="button"
@@ -357,12 +357,12 @@
           <span class="provider-icon">🔷</span>
           <div>
             <h3>Azure OpenAI</h3>
-            <p class="provider-desc">Enterprise-grade AI with enhanced security</p>
+            <p class="provider-desc">{{ translate.t('ai_config.provider_azure_desc') }}</p>
           </div>
         </div>
         <div class="card-actions">
           @if (config().provider === 'azure') {
-          <span class="active-badge">Active</span>
+          <span class="active-badge">{{ translate.t('ai_config.active') }}</span>
           }
           <button
             type="button"
@@ -428,16 +428,15 @@
 
   <!-- Action Buttons -->
   <div class="action-buttons">
-    <button class="btn btn-primary" (click)="saveConfig()">💾 Save Configuration</button>
-    <button class="btn btn-secondary" (click)="clearConfig()">🗑️ Clear All</button>
+    <button class="btn btn-primary" (click)="saveConfig()">{{ translate.t('ai_config.save') }}</button>
+    <button class="btn btn-secondary" (click)="clearConfig()">{{ translate.t('ai_config.clear_all') }}</button>
   </div>
 
   <!-- Info Box -->
   <div class="info-box">
-    <h4>🔒 Privacy & Security</h4>
+    <h4>{{ translate.t('ai_config.privacy_title') }}</h4>
     <p>
-      Your API keys are stored locally in your browser and never sent to any server except the AI
-      provider you configure.
+      {{ translate.t('ai_config.privacy_desc') }}
     </p>
   </div>
 </div>

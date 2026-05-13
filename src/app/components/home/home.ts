@@ -12,6 +12,7 @@ import { AuthService } from '../../services/auth.service';
 import { LevelCardComponent } from '../level-card/level-card';
 import { CategoryCardComponent } from '../category-card/category-card';
 import { LoadingSpinnerComponent } from '../loading-spinner/loading-spinner';
+import { TranslationService } from '../../services/translation.service';
 
 @Component({
   selector: 'app-home',
@@ -28,6 +29,7 @@ export class HomeComponent implements OnInit {
   private streakService = inject(StreakService);
   private authService = inject(AuthService);
   private router = inject(Router);
+  protected translate = inject(TranslationService);
   
   isLoading = signal(true);
   isAuthenticated = computed(() => this.authService.isAuthenticated());

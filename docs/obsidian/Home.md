@@ -49,7 +49,8 @@
 - [[Storage-Sync]] — Multi-DB Supabase + localStorage + adapter pattern
 - [[Analytics]] — GA4 + internal analytics + event queue
 - [[SEO]] — SEO tiếng Việt, Cốc Cốc, sitemap generator
-- [[PWA-Offline]] — PWA manifest, offline queue, session lock
+- [[PWA-Offline]] — PWA manifest, Service Worker offline-first caching, session lock
+- [[i18n-Migration]] — Pattern di chuyển từ Vietnamese-only sang multi-locale (foundation ready)
 
 ### 📚 Tham chiếu (reference/)
 - [[Routes-Map]] — Bảng route → component → feature

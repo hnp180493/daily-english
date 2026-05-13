@@ -1,6 +1,7 @@
-import { Component, ChangeDetectionStrategy, input, output } from '@angular/core';
+import { Component, ChangeDetectionStrategy, input, output, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Achievement, AchievementProgress } from '../../../models/achievement.model';
+import { TranslationService } from '../../../services/translation.service';
 
 @Component({
   selector: 'app-achievement-card',
@@ -10,6 +11,7 @@ import { Achievement, AchievementProgress } from '../../../models/achievement.mo
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class AchievementCard {
+  protected translate = inject(TranslationService);
   achievement = input.required<Achievement>();
   progress = input.required<AchievementProgress | undefined>();
 

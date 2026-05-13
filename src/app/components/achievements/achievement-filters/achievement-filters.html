@@ -1,38 +1,38 @@
 <div class="achievement-filters">
   <div class="filter-group">
-    <label for="type-filter">Type</label>
-    <select 
+    <label for="type-filter">{{ translate.t('achievement_filters.type') }}</label>
+    <select
       id="type-filter"
       [value]="selectedType()"
       (change)="onTypeChange($event)"
       class="filter-select">
-      @for (option of typeOptions; track option.value) {
+      @for (option of typeOptions(); track option.value) {
         <option [value]="option.value">{{ option.label }}</option>
       }
     </select>
   </div>
 
   <div class="filter-group">
-    <label for="status-filter">Status</label>
-    <select 
+    <label for="status-filter">{{ translate.t('achievement_filters.status') }}</label>
+    <select
       id="status-filter"
       [value]="selectedStatus()"
       (change)="onStatusChange($event)"
       class="filter-select">
-      @for (option of statusOptions; track option.value) {
+      @for (option of statusOptions(); track option.value) {
         <option [value]="option.value">{{ option.label }}</option>
       }
     </select>
   </div>
 
   <div class="filter-group">
-    <label for="rarity-filter">Rarity</label>
-    <select 
+    <label for="rarity-filter">{{ translate.t('achievement_filters.rarity') }}</label>
+    <select
       id="rarity-filter"
       [value]="selectedRarity()"
       (change)="onRarityChange($event)"
       class="filter-select">
-      @for (option of rarityOptions; track option.value) {
+      @for (option of rarityOptions(); track option.value) {
         <option [value]="option.value">{{ option.label }}</option>
       }
     </select>

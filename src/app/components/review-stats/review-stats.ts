@@ -1,6 +1,7 @@
-import { Component, ChangeDetectionStrategy, input } from '@angular/core';
+import { Component, ChangeDetectionStrategy, input, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReviewStats } from '../../models/review.model';
+import { TranslationService } from '../../services/translation.service';
 
 @Component({
   selector: 'app-review-stats',
@@ -10,8 +11,6 @@ import { ReviewStats } from '../../models/review.model';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ReviewStatsComponent {
-  // Input signal
+  protected translate = inject(TranslationService);
   stats = input.required<ReviewStats>();
-
-
 }

@@ -9,6 +9,9 @@ import { PointsAnimationService } from '../../services/points-animation.service'
 import { ReviewService } from '../../services/review.service';
 import { AuthService } from '../../services/auth.service';
 import { FeatureFlagService } from '../../services/feature-flag.service';
+import { SettingsService } from '../../services/settings.service';
+import { ToastService } from '../../services/toast.service';
+import { TranslationService } from '../../services/translation.service';
 import { UserProgressHelper } from '../../models/exercise.model';
 
 @Component({
@@ -26,8 +29,31 @@ export class HeaderComponent implements OnInit {
   private reviewService = inject(ReviewService);
   private authService = inject(AuthService);
   private featureFlagService = inject(FeatureFlagService);
+  private settingsService = inject(SettingsService);
+  private toastService = inject(ToastService);
   private router = inject(Router);
-  
+  protected translate = inject(TranslationService);
+
+  // Language toggle (vi ↔ en)
+  private settingsSignal = this.settingsService.getSettingsSignal();
+  currentLanguage = computed(() => this.settingsSignal().uiLanguage);
+  languageLabel = computed(() => this.currentLanguage() === 'vi' ? 'VI' : 'EN');
+  languageTooltip = computed(() =>
+    this.currentLanguage() === 'vi'
+      ? this.translate.t('header.lang.tooltip_to_en')
+      : this.translate.t('header.lang.tooltip_to_vi')
+  );
+
+  toggleLanguage(): void {
+    const next = this.currentLanguage() === 'vi' ? 'en' : 'vi';
+    this.settingsService.setUILanguage(next);
+    if (next === 'en') {
+      this.toastService.info(this.translate.t('toast.lang.switched_to_en'), 5000);
+    } else {
+      this.toastService.success(this.translate.t('toast.lang.switched_to_vi'), 2000);
+    }
+  }
+
   // Check if user is authenticated
   isAuthenticated = computed(() => !!this.authService.currentUser());
   

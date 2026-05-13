@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+  <file source-language="vi" target-language="en" datatype="plaintext" original="ng2.template">
+    <body>
+      <!--
+        Placeholder file. Run `npm run extract-i18n` to populate from templates marked with i18n attribute.
+        Each <trans-unit> needs a corresponding <target> with the English translation.
+
+        Example after extraction:
+
+        <trans-unit id="settings.title" datatype="html">
+          <source>⚙️ Cài đặt ứng dụng</source>
+          <target>⚙️ App Settings</target>
+        </trans-unit>
+      -->
+    </body>
+  </file>
+</xliff>

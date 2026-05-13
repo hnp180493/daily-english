@@ -1,18 +1,103 @@
 <div class="settings-container">
-  <h2 class="settings-title">⚙️ Cài đặt ứng dụng</h2>
+  <h2 class="settings-title">{{ translate.t('settings.title') }}</h2>
 
-  <!-- Exercise Settings Section -->
+  <!-- Hidden: Appearance & Language sections (chờ hoàn thiện Accessibility audit + i18n) -->
+  @if (false) {
+    <div class="settings-section">
+      <h3 class="section-title">🎨 Hiển thị</h3>
+
+      <div class="setting-item setting-item--block">
+        <div class="setting-info setting-info--full">
+          <label class="setting-label">Cỡ chữ</label>
+          <p class="setting-description">Áp dụng toàn bộ ứng dụng. Tự động lưu.</p>
+        </div>
+        <div class="font-size-grid" role="radiogroup" aria-label="Chọn cỡ chữ">
+          @for (option of fontSizeOptions; track option.value) {
+            <button
+              type="button"
+              role="radio"
+              class="font-size-option"
+              [class.active]="fontSize() === option.value"
+              [attr.aria-checked]="fontSize() === option.value"
+              (click)="setFontSize(option.value)">
+              <span class="font-size-sample" [attr.data-size]="option.value">{{ option.sample }}</span>
+              <span class="font-size-label">{{ option.label }}</span>
+            </button>
+          }
+        </div>
+      </div>
+
+      <div class="setting-item">
+        <div class="setting-info">
+          <label class="setting-label" for="dyslexicFont">📖 Font hỗ trợ chứng khó đọc (dyslexia)</label>
+          <p class="setting-description">Dùng font OpenDyslexic nếu trình duyệt hỗ trợ.</p>
+        </div>
+        <div class="setting-control">
+          <label class="toggle-switch">
+            <input
+              type="checkbox"
+              id="dyslexicFont"
+              [checked]="fontFamily() === 'dyslexic'"
+              (change)="toggleFontFamily()" />
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+      </div>
+
+      <div class="setting-item">
+        <div class="setting-info">
+          <label class="setting-label" for="highContrast">🔲 Chế độ tương phản cao</label>
+          <p class="setting-description">Tăng độ tương phản cho người gặp khó khăn về thị giác.</p>
+        </div>
+        <div class="setting-control">
+          <label class="toggle-switch">
+            <input
+              type="checkbox"
+              id="highContrast"
+              [checked]="highContrast()"
+              (change)="toggleHighContrast()" />
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <div class="settings-section">
+      <h3 class="section-title">🌐 Ngôn ngữ giao diện</h3>
+
+      <div class="setting-item setting-item--block">
+        <div class="setting-info setting-info--full">
+          <label class="setting-label">Ngôn ngữ</label>
+          <p class="setting-description">English UI sẽ có trong bản cập nhật tới.</p>
+        </div>
+        <div class="language-grid" role="radiogroup" aria-label="Chọn ngôn ngữ">
+          @for (option of languageOptions; track option.value) {
+            <button
+              type="button"
+              role="radio"
+              class="language-option"
+              [class.active]="uiLanguage() === option.value"
+              [class.disabled]="option.value === 'en'"
+              [attr.aria-checked]="uiLanguage() === option.value"
+              [attr.aria-disabled]="option.value === 'en'"
+              [disabled]="option.value === 'en'"
+              (click)="setUILanguage(option.value)">
+              {{ option.label }}
+            </button>
+          }
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- Practice Section -->
   <div class="settings-section">
-    <h3 class="section-title">🎯 Bài tập</h3>
-    
+    <h3 class="section-title">{{ translate.t('settings.section.exercise') }}</h3>
+
     <div class="setting-item">
       <div class="setting-info">
-        <label class="setting-label" for="autoPlayTTS">
-          🔊 Tự động phát âm sau khi dịch
-        </label>
-        <p class="setting-description">
-          Tự động phát âm bản dịch của bạn sau khi hoàn thành mỗi câu
-        </p>
+        <label class="setting-label" for="autoPlayTTS">{{ translate.t('settings.autoplay_tts.label') }}</label>
+        <p class="setting-description">{{ translate.t('settings.autoplay_tts.desc') }}</p>
       </div>
       <div class="setting-control">
         <label class="toggle-switch">
@@ -20,8 +105,7 @@
             type="checkbox"
             id="autoPlayTTS"
             [checked]="autoPlayTTS()"
-            (change)="toggleAutoPlayTTS()"
-          />
+            (change)="toggleAutoPlayTTS()" />
           <span class="toggle-slider"></span>
         </label>
       </div>
@@ -29,12 +113,8 @@
 
     <div class="setting-item">
       <div class="setting-info">
-        <label class="setting-label" for="translateFeedback">
-          🌐 Dịch phản hồi sang tiếng Việt
-        </label>
-        <p class="setting-description">
-          Tự động dịch phản hồi AI từ tiếng Anh sang tiếng Việt
-        </p>
+        <label class="setting-label" for="translateFeedback">{{ translate.t('settings.translate_feedback.label') }}</label>
+        <p class="setting-description">{{ translate.t('settings.translate_feedback.desc') }}</p>
       </div>
       <div class="setting-control">
         <label class="toggle-switch">
@@ -42,18 +122,63 @@
             type="checkbox"
             id="translateFeedback"
             [checked]="translateFeedback()"
-            (change)="toggleTranslateFeedback()"
-          />
+            (change)="toggleTranslateFeedback()" />
           <span class="toggle-slider"></span>
         </label>
       </div>
     </div>
   </div>
 
+  <!-- Notifications Section -->
+  <div class="settings-section">
+    <h3 class="section-title">{{ translate.t('settings.section.notifications') }}</h3>
+
+    @if (notificationPermission() === 'denied') {
+      <div class="notification-blocked">
+        {{ translate.t('settings.notifications.blocked') }}
+      </div>
+    }
+
+    <div class="setting-item">
+      <div class="setting-info">
+        <label class="setting-label" for="notificationsEnabled">{{ translate.t('settings.notifications.enable.label') }}</label>
+        <p class="setting-description">{{ translate.t('settings.notifications.enable.desc') }}</p>
+      </div>
+      <div class="setting-control">
+        <label class="toggle-switch">
+          <input
+            type="checkbox"
+            id="notificationsEnabled"
+            [disabled]="notificationPermission() === 'denied'"
+            [checked]="!!notificationPrefs()?.enabled"
+            (change)="toggleNotifications()" />
+          <span class="toggle-slider"></span>
+        </label>
+      </div>
+    </div>
+
+    @if (notificationPrefs()?.enabled) {
+      <div class="setting-item">
+        <div class="setting-info">
+          <label class="setting-label" for="reminderTime">{{ translate.t('settings.notifications.reminder_time.label') }}</label>
+          <p class="setting-description">{{ translate.t('settings.notifications.reminder_time.desc') }}</p>
+        </div>
+        <div class="setting-control">
+          <input
+            type="time"
+            id="reminderTime"
+            class="time-input"
+            [value]="notificationPrefs()?.reminderTime || '19:00'"
+            (change)="updateReminderTime($any($event.target).value)" />
+        </div>
+      </div>
+    }
+  </div>
+
   <!-- Reset Settings -->
   <div class="settings-actions">
     <button class="btn-reset" (click)="resetSettings()" type="button">
-      🔄 Đặt lại cài đặt mặc định
+      {{ translate.t('settings.reset') }}
     </button>
   </div>
 </div>

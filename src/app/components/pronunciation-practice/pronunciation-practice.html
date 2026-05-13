@@ -4,23 +4,23 @@
     <button
       (click)="goBackToExercise()"
       class="text-sm text-slate-400 hover:text-slate-200 flex items-center gap-1 transition"
-      aria-label="Quay lại bài tập">
-      <span aria-hidden="true">←</span> Quay lại
+      [attr.aria-label]="translate.t('common.back')">
+      {{ translate.t('common.back') }}
     </button>
     <span class="text-[10px] px-2 py-1 rounded-full bg-purple-500/20 text-purple-300 font-semibold tracking-wider">
-      BETA
+      {{ translate.t('common.beta') }}
     </span>
   </div>
 
   <h1 class="text-2xl font-bold mb-2 flex items-center gap-2">
-    <span>🎤</span> Luyện phát âm
+    <span>🎤</span> {{ translate.t('pronunciation_practice.title') }}
   </h1>
   <p class="text-sm text-slate-400 mb-6">
-    Nhấn micro để bắt đầu, đọc câu tiếng Anh, rồi nhấn lại để dừng. AI sẽ nghe và nhận xét.
+    {{ translate.t('pronunciation_practice.instruction') }}
   </p>
 
   @if (isLoading()) {
-    <div class="text-center text-slate-500 py-12">Đang tải bài tập...</div>
+    <div class="text-center text-slate-500 py-12">{{ translate.t('common.loading_exercises') }}</div>
   } @else if (errorMessage() && !exercise()) {
     <div class="bg-red-500/10 border border-red-500/30 text-red-300 rounded-lg p-4">
       {{ errorMessage() }}
@@ -29,20 +29,19 @@
 
     @if (!recorderSupported()) {
       <div class="bg-amber-500/10 border border-amber-500/30 text-amber-300 rounded-lg p-4 mb-4 text-sm">
-        ⚠️ Trình duyệt của bạn không hỗ trợ ghi âm. Hãy thử Chrome / Edge / Safari mới nhất.
+        {{ translate.t('pronunciation_practice.no_recorder_support') }}
       </div>
     }
 
     @if (!providerSupportsAudio()) {
-      <div class="bg-amber-500/10 border border-amber-500/30 text-amber-300 rounded-lg p-4 mb-4 text-sm">
-        ⚠️ AI provider hiện tại không hỗ trợ audio input. Hãy chuyển sang <strong class="text-amber-200">Gemini 2.5 Pro/Flash</strong> trong Profile → Cấu hình AI để dùng tính năng này.
+      <div class="bg-amber-500/10 border border-amber-500/30 text-amber-300 rounded-lg p-4 mb-4 text-sm" [innerHTML]="translate.t('pronunciation_practice.no_audio_support_html')">
       </div>
     }
 
     <!-- Progress -->
     <div class="flex items-center justify-between text-xs text-slate-500 mb-2">
-      <span>Câu {{ currentIndex() + 1 }} / {{ totalSentences() }}</span>
-      <span>Tối đa {{ maxRecordingMs / 1000 }}s mỗi câu</span>
+      <span>{{ translate.t('pronunciation_practice.sentence_label') }} {{ currentIndex() + 1 }} / {{ totalSentences() }}</span>
+      <span>{{ translate.t('pronunciation_practice.max_per_sentence').replace('{{ms}}', (maxRecordingMs / 1000).toString()) }}</span>
     </div>
     <div class="w-full h-1 bg-slate-800 rounded mb-6 overflow-hidden">
       <div class="h-full bg-purple-500 transition-all"
@@ -51,7 +50,7 @@
 
     <!-- Current sentence -->
     <div class="bg-slate-900/60 border border-slate-700/60 rounded-xl p-6 mb-6 backdrop-blur-sm">
-      <div class="text-xs text-slate-500 uppercase tracking-wider mb-2">Đọc câu sau:</div>
+      <div class="text-xs text-slate-500 uppercase tracking-wider mb-2">{{ translate.t('pronunciation_practice.read_sentence') }}</div>
       <p class="text-xl leading-relaxed font-medium text-slate-100 mb-3">
         {{ currentSentence() }}
       </p>
@@ -59,7 +58,7 @@
         (click)="playExpectedSentence()"
         class="text-sm text-purple-400 hover:text-purple-300 flex items-center gap-1 transition"
         type="button">
-        🔊 Nghe mẫu
+        {{ translate.t('pronunciation_practice.listen_sample') }}
       </button>
     </div>
 
@@ -75,7 +74,7 @@
         [class.animate-pulse]="recorder.state() === 'recording'"
         class="w-20 h-20 rounded-full flex items-center justify-center text-white text-3xl shadow-xl hover:scale-105 transition-transform disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:scale-100"
         type="button"
-        [attr.aria-label]="recorder.state() === 'recording' ? 'Dừng ghi âm' : 'Bắt đầu ghi âm'">
+        [attr.aria-label]="recorder.state() === 'recording' ? translate.t('pronunciation_practice.stop_recording') : translate.t('pronunciation_practice.start_recording')">
         @if (recorder.state() === 'recording') {
           ⏹
         } @else {
@@ -85,17 +84,17 @@
 
       <div class="mt-3 text-sm h-5">
         @if (recorder.state() === 'requesting') {
-          <span class="text-slate-400">Đang xin quyền micro...</span>
+          <span class="text-slate-400">{{ translate.t('pronunciation_practice.requesting_permission') }}</span>
         } @else if (recorder.state() === 'recording') {
           <span class="text-red-400 font-medium">
-            ● Đang ghi {{ formatSeconds(recorder.elapsedMs()) }}
+            {{ translate.t('pronunciation_practice.recording_now') }} {{ formatSeconds(recorder.elapsedMs()) }}
           </span>
         } @else if (audioBlob()) {
           <span class="text-slate-400">
-            Đã ghi {{ formatSeconds(durationMs()) }}
+            {{ translate.t('pronunciation_practice.recorded') }} {{ formatSeconds(durationMs()) }}
           </span>
         } @else {
-          <span class="text-slate-500">Nhấn micro để bắt đầu</span>
+          <span class="text-slate-500">{{ translate.t('pronunciation_practice.press_to_start') }}</span>
         }
       </div>
     </div>
@@ -103,7 +102,7 @@
     <!-- Playback -->
     @if (audioUrl()) {
       <div class="bg-slate-900/60 border border-slate-700/60 rounded-lg p-4 mb-4">
-        <div class="text-xs text-slate-500 uppercase tracking-wider mb-2">Nghe lại bản ghi của bạn:</div>
+        <div class="text-xs text-slate-500 uppercase tracking-wider mb-2">{{ translate.t('pronunciation_practice.playback_label') }}</div>
         <audio [src]="audioUrl()" controls class="w-full"></audio>
       </div>
     }
@@ -117,9 +116,9 @@
           class="flex-1 bg-purple-600 hover:bg-purple-500 text-white py-3 rounded-lg font-semibold transition disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-purple-500/20"
           type="button">
           @if (isAnalyzing()) {
-            Đang phân tích...
+            {{ translate.t('pronunciation_practice.analyzing') }}
           } @else {
-            ✨ Phân tích phát âm
+            {{ translate.t('pronunciation_practice.analyze') }}
           }
         </button>
         <button
@@ -127,7 +126,7 @@
           [disabled]="isAnalyzing()"
           class="px-4 py-3 border border-slate-700 rounded-lg text-slate-300 hover:bg-slate-800/60 transition disabled:opacity-50"
           type="button">
-          Ghi lại
+          {{ translate.t('pronunciation_practice.retry_recording') }}
         </button>
       </div>
     }
@@ -143,7 +142,7 @@
     @if (feedback(); as fb) {
       <div class="bg-slate-900/60 border border-slate-700/60 rounded-xl p-6 mb-6 backdrop-blur-sm">
         <div class="flex items-center justify-between mb-4">
-          <h2 class="text-lg font-semibold text-slate-100">Phản hồi AI</h2>
+          <h2 class="text-lg font-semibold text-slate-100">{{ translate.t('pronunciation_practice.feedback_title') }}</h2>
           <div class="text-right">
             <div class="text-3xl font-bold"
                  [class.text-green-400]="fb.overallScore >= 85"
@@ -157,7 +156,7 @@
 
         @if (fb.strengths.length > 0) {
           <div class="mb-3">
-            <div class="text-sm font-semibold text-green-400 mb-1">✓ Điểm tốt</div>
+            <div class="text-sm font-semibold text-green-400 mb-1">{{ translate.t('pronunciation_practice.strengths') }}</div>
             <ul class="list-disc list-inside text-sm text-slate-300 space-y-1">
               @for (s of fb.strengths; track s) {
                 <li>{{ s }}</li>
@@ -168,7 +167,7 @@
 
         @if (fb.pronunciationIssues.length > 0) {
           <div class="mb-3">
-            <div class="text-sm font-semibold text-amber-400 mb-1">⚠ Cần luyện thêm</div>
+            <div class="text-sm font-semibold text-amber-400 mb-1">{{ translate.t('pronunciation_practice.practice_more') }}</div>
             <ul class="list-disc list-inside text-sm text-slate-300 space-y-1">
               @for (issue of fb.pronunciationIssues; track issue) {
                 <li>{{ issue }}</li>
@@ -179,7 +178,7 @@
 
         @if (fb.perWordFeedback && fb.perWordFeedback.length > 0) {
           <div class="mt-4 pt-4 border-t border-slate-700/60">
-            <div class="text-sm font-semibold text-slate-200 mb-2">Chi tiết từng từ</div>
+            <div class="text-sm font-semibold text-slate-200 mb-2">{{ translate.t('pronunciation_practice.word_by_word') }}</div>
             <div class="flex flex-wrap gap-2">
               @for (w of fb.perWordFeedback; track $index) {
                 <span class="px-2 py-1 rounded text-sm border"
@@ -203,21 +202,21 @@
           (click)="retryRecording()"
           class="flex-1 border border-purple-500/60 text-purple-300 hover:bg-purple-500/10 py-3 rounded-lg font-semibold transition"
           type="button">
-          🔁 Thử lại câu này
+          {{ translate.t('pronunciation_practice.retry_sentence') }}
         </button>
         @if (!isLastSentence()) {
           <button
             (click)="nextSentence()"
             class="flex-1 bg-purple-600 hover:bg-purple-500 text-white py-3 rounded-lg font-semibold transition shadow-lg shadow-purple-500/20"
             type="button">
-            Câu tiếp theo →
+            {{ translate.t('pronunciation_practice.next_sentence') }}
           </button>
         } @else {
           <button
             (click)="goBackToExercise()"
             class="flex-1 bg-green-600 hover:bg-green-500 text-white py-3 rounded-lg font-semibold transition shadow-lg shadow-green-500/20"
             type="button">
-            ✓ Hoàn thành
+            {{ translate.t('pronunciation_practice.complete') }}
           </button>
         }
       </div>
@@ -230,14 +229,14 @@
         [disabled]="currentIndex() === 0"
         class="text-slate-400 hover:text-slate-200 disabled:opacity-30 disabled:cursor-not-allowed transition"
         type="button">
-        ← Câu trước
+        {{ translate.t('pronunciation_practice.prev_sentence_nav') }}
       </button>
       <button
         (click)="nextSentence()"
         [disabled]="isLastSentence()"
         class="text-slate-400 hover:text-slate-200 disabled:opacity-30 disabled:cursor-not-allowed transition"
         type="button">
-        Câu sau →
+        {{ translate.t('pronunciation_practice.next_sentence_nav') }}
       </button>
     </div>
   }

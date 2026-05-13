@@ -1,6 +1,7 @@
 import { Component, inject, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ExportImportService, ExportData } from '../../services/export-import.service';
+import { TranslationService } from '../../services/translation.service';
 
 @Component({
   selector: 'app-export-import-modal',
@@ -10,6 +11,7 @@ import { ExportImportService, ExportData } from '../../services/export-import.se
 })
 export class ExportImportModal {
   private exportImportService = inject(ExportImportService);
+  protected translate = inject(TranslationService);
 
   @Output() close = new EventEmitter<void>();
 

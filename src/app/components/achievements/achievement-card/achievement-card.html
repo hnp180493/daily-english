@@ -48,21 +48,21 @@
     @if (achievement().unlocked) {
       <div class="unlock-date">
         <span class="icon">✓</span>
-        <span>Unlocked {{ formatDate(achievement().unlockedAt!) }}</span>
+        <span>{{ translate.t('achievement_card.unlocked_at') }} {{ formatDate(achievement().unlockedAt!) }}</span>
       </div>
-      
+
       @if (canClaim()) {
-        <button 
+        <button
           class="claim-button"
           type="button"
           (click)="handleClaimClick($event)"
           aria-label="Claim rewards for {{ achievement().name }}">
-          🎁 Claim Rewards
+          {{ translate.t('achievement_card.claim_rewards') }}
         </button>
       } @else if (achievement().rewardsClaimed) {
         <div class="claimed-badge">
           <span class="icon">✓</span>
-          <span>Rewards Claimed</span>
+          <span>{{ translate.t('achievement_card.rewards_claimed') }}</span>
         </div>
       }
     }

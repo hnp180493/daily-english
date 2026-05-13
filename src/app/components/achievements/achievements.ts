@@ -2,6 +2,7 @@ import { Component, ChangeDetectionStrategy, inject, signal, computed } from '@a
 import { CommonModule } from '@angular/common';
 import { AchievementService } from '../../services/achievement.service';
 import { PointsAnimationService } from '../../services/points-animation.service';
+import { TranslationService } from '../../services/translation.service';
 import { Achievement, AchievementType, RarityLevel, AchievementProgress } from '../../models/achievement.model';
 import { AchievementCard } from './achievement-card/achievement-card';
 import { AchievementDetailModal } from './achievement-detail-modal/achievement-detail-modal';
@@ -17,6 +18,7 @@ import { AchievementFilters } from './achievement-filters/achievement-filters';
 export class Achievements {
   private achievementService = inject(AchievementService);
   private pointsAnimationService = inject(PointsAnimationService);
+  protected translate = inject(TranslationService);
 
   // Filter signals
   selectedType = signal<AchievementType | 'all'>('all');

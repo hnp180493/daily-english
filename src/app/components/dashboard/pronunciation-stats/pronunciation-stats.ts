@@ -8,6 +8,7 @@ import {
 } from '@angular/core';
 import { PronunciationAttempt } from '../../../models/pronunciation.model';
 import { PronunciationAggregatorService } from '../../../services/pronunciation/pronunciation-aggregator.service';
+import { TranslationService } from '../../../services/translation.service';
 
 @Component({
   selector: 'app-pronunciation-stats',
@@ -21,6 +22,7 @@ export class PronunciationStatsComponent {
   attempts = input.required<PronunciationAttempt[]>();
 
   private aggregator = inject(PronunciationAggregatorService);
+  protected translate = inject(TranslationService);
 
   stats = computed(() => this.aggregator.aggregate(this.attempts()));
   isEmpty = computed(() => this.stats().totalAttempts === 0);

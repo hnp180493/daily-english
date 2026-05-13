@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { AchievementService } from '../../../services/achievement.service';
 import { RarityLevel } from '../../../models/achievement.model';
+import { TranslationService } from '../../../services/translation.service';
 
 interface RarityCount {
   level: RarityLevel;
@@ -18,6 +19,7 @@ interface RarityCount {
 })
 export class AchievementShowcase {
   private achievementService = inject(AchievementService);
+  protected translate = inject(TranslationService);
 
   userId = input<string>();
   maxDisplay = input<number>(3);

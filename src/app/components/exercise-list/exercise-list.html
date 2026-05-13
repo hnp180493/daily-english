@@ -1,38 +1,38 @@
 <div class="exercise-list-container">
   <header class="list-header">
-    <h2 class="page-title">Available Exercises</h2>
+    <h2 class="page-title">{{ translate.t('exercise_list.title') }}</h2>
     @if (!isLoading()) {
-      <p class="exercise-count">Displaying {{ paginatedExercises().length }} of {{ totalExercises() }} exercises</p>
+      <p class="exercise-count">{{ translate.t('exercise_list.displaying_prefix') }} {{ paginatedExercises().length }} {{ translate.t('exercise_list.of') }} {{ totalExercises() }} {{ translate.t('exercise_list.exercises_suffix') }}</p>
     }
   </header>
 
   <!-- Status Filter -->
   <div class="filter-section">
-    <label class="filter-label">Exercise Status:</label>
+    <label class="filter-label">{{ translate.t('exercise_list.status_filter') }}</label>
     <div class="filter-buttons">
-      <button 
+      <button
         class="filter-btn"
         [class.active]="!statusFilter()"
         (click)="setStatusFilter(null)">
-        All Exercises
+        {{ translate.t('exercise_list.all') }}
       </button>
-      <button 
+      <button
         class="filter-btn"
         [class.active]="statusFilter() === 'available'"
         (click)="setStatusFilter('available')">
-        📝 Available
+        {{ translate.t('exercise_list.available') }}
       </button>
-      <button 
+      <button
         class="filter-btn"
         [class.active]="statusFilter() === 'completed'"
         (click)="setStatusFilter('completed')">
-        ✓ Completed
+        {{ translate.t('exercise_list.completed_filter') }}
       </button>
     </div>
   </div>
 
   @if (isLoading()) {
-    <app-loading-spinner [message]="'Đang tải bài tập...'" />
+    <app-loading-spinner [message]="translate.t('common.loading_exercises')" />
   } @else if (paginatedExercises().length > 0) {
     <div class="exercises-grid">
       @for (exercise of paginatedExercises(); track exercise.id) {
@@ -44,18 +44,18 @@
     </div>
   } @else {
     <div class="no-exercises">
-      <p>No exercises found for the selected level and category.</p>
-      <p>Please select a different combination.</p>
+      <p>{{ translate.t('exercise_list.no_exercises') }}</p>
+      <p>{{ translate.t('exercise_list.select_different') }}</p>
     </div>
   }
 
   @if (!isLoading() && totalPages() > 1) {
     <div class="pagination">
-      <button 
+      <button
         class="page-btn"
         (click)="previousPage()"
         [disabled]="currentPage() === 0">
-        ← Previous
+        {{ translate.t('exercise_list.previous') }}
       </button>
 
       <div class="page-numbers">
@@ -69,11 +69,11 @@
         }
       </div>
 
-      <button 
+      <button
         class="page-btn"
         (click)="nextPage()"
         [disabled]="currentPage() === totalPages() - 1">
-        Next →
+        {{ translate.t('exercise_list.next') }}
       </button>
     </div>
   }

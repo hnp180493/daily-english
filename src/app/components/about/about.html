@@ -3,14 +3,14 @@
     <!-- Hero Section -->
     <div class="text-center mb-16">
       <h1 class="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-6">
-        Học Tiếng Anh Miễn Phí với AI
+        {{ translate.t('about.hero.title') }}
       </h1>
       <p class="text-xl text-gray-600 dark:text-gray-300 mb-8">
-        Nền tảng học tiếng Anh trực tuyến với 250+ bài tập dịch câu và phản hồi AI thông minh
+        {{ translate.t('about.hero.subtitle') }}
       </p>
-      <a routerLink="/exercises" 
+      <a routerLink="/exercises"
          class="inline-block bg-indigo-600 hover:bg-indigo-700 text-white font-semibold px-8 py-3 rounded-lg transition-colors">
-        Bắt đầu học ngay
+        {{ translate.t('about.hero.cta') }}
       </a>
     </div>
 
@@ -18,79 +18,70 @@
     <div class="prose prose-lg dark:prose-invert max-w-none">
       <section class="mb-12">
         <h2 class="text-3xl font-bold text-gray-900 dark:text-white mb-4">
-          Daily English là gì?
+          {{ translate.t('about.section.what_is') }}
         </h2>
         <p class="text-gray-700 dark:text-gray-300 leading-relaxed">
-          <strong>Daily English</strong> là nền tảng học tiếng Anh trực tuyến hoàn toàn miễn phí, 
-          được thiết kế đặc biệt cho người Việt Nam muốn cải thiện kỹ năng tiếng Anh của mình. 
-          Với hơn <strong>250 bài tập dịch câu</strong> từ cơ bản đến nâng cao, bạn sẽ được luyện tập 
-          và nhận phản hồi chi tiết từ <strong>AI thông minh</strong> (GPT-4, Gemini).
+          {{ translate.t('about.what_is.description') }}
         </p>
       </section>
 
       <section class="mb-12">
         <h2 class="text-3xl font-bold text-gray-900 dark:text-white mb-6">
-          Tính năng nổi bật
+          {{ translate.t('about.section.features') }}
         </h2>
-        
+
         <div class="grid md:grid-cols-2 gap-6">
           <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm">
             <h3 class="text-xl font-semibold text-indigo-600 dark:text-indigo-400 mb-3">
-              🤖 Phản hồi AI thông minh
+              {{ translate.t('about.feature.ai_feedback') }}
             </h3>
             <p class="text-gray-700 dark:text-gray-300">
-              Nhận phản hồi chi tiết về ngữ pháp, từ vựng, cấu trúc câu từ AI. 
-              Hệ thống phân tích lỗi sai và đưa ra gợi ý cải thiện cụ thể.
+              {{ translate.t('about.feature.ai_feedback.desc') }}
             </p>
           </div>
 
           <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm">
             <h3 class="text-xl font-semibold text-indigo-600 dark:text-indigo-400 mb-3">
-              📚 250+ Bài tập đa dạng
+              {{ translate.t('about.feature.exercises') }}
             </h3>
             <p class="text-gray-700 dark:text-gray-300">
-              Bài tập dịch câu từ tiếng Việt sang tiếng Anh với 3 cấp độ: 
-              Sơ cấp, Trung cấp, Cao cấp. Bao gồm 8 chủ đề thực tế.
+              {{ translate.t('about.feature.exercises.desc') }}
             </p>
           </div>
 
           <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm">
             <h3 class="text-xl font-semibold text-indigo-600 dark:text-indigo-400 mb-3">
-              🎯 Lộ trình học tập cá nhân
+              {{ translate.t('about.feature.personalized_path') }}
             </h3>
             <p class="text-gray-700 dark:text-gray-300">
-              Hệ thống tự động tạo lộ trình học tập phù hợp với trình độ của bạn. 
-              Theo dõi tiến độ và đạt thành tích mỗi ngày.
+              {{ translate.t('about.feature.personalized_path.desc') }}
             </p>
           </div>
 
           <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm">
             <h3 class="text-xl font-semibold text-indigo-600 dark:text-indigo-400 mb-3">
-              🔄 Hệ thống ôn tập thông minh
+              {{ translate.t('about.feature.smart_review') }}
             </h3>
             <p class="text-gray-700 dark:text-gray-300">
-              Ôn tập các bài tập đã làm sai với thuật toán spaced repetition. 
-              Giúp ghi nhớ lâu dài và cải thiện điểm yếu.
+              {{ translate.t('about.feature.smart_review.desc') }}
             </p>
           </div>
 
           <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm">
             <h3 class="text-xl font-semibold text-indigo-600 dark:text-indigo-400 mb-3">
-              🎤 Luyện nghe với TTS
+              {{ translate.t('about.feature.tts_listening') }}
             </h3>
             <p class="text-gray-700 dark:text-gray-300">
-              Nghe phát âm chuẩn của câu tiếng Anh với công nghệ Text-to-Speech. 
-              Cải thiện kỹ năng nghe và phát âm.
+              {{ translate.t('about.feature.tts_listening.desc') }}
             </p>
           </div>
 
           <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm">
             <h3 class="text-xl font-semibold text-indigo-600 dark:text-indigo-400 mb-3">
-              📊 Thống kê chi tiết
+              {{ translate.t('about.feature.detailed_stats') }}
             </h3>
             <p class="text-gray-700 dark:text-gray-300">
-              Dashboard với biểu đồ tiến độ, phân tích điểm mạnh/yếu, 
-              streak học tập và nhiều thống kê hữu ích khác.
+              {{ translate.t('about.feature.detailed_stats.desc') }}
             </p>
           </div>
         </div>
@@ -98,120 +89,100 @@
 
       <section class="mb-12">
         <h2 class="text-3xl font-bold text-gray-900 dark:text-white mb-4">
-          Phương pháp học hiệu quả
+          {{ translate.t('about.section.learning_method') }}
         </h2>
         <ol class="list-decimal list-inside space-y-4 text-gray-700 dark:text-gray-300">
-          <li>
-            <strong>Học theo cấp độ:</strong> Bắt đầu từ Sơ cấp (Beginner) với 96 bài tập cơ bản, 
-            sau đó tiến lên Trung cấp (120 bài) và Cao cấp (44 bài).
-          </li>
-          <li>
-            <strong>Luyện tập hàng ngày:</strong> Hoàn thành ít nhất 1-2 bài tập mỗi ngày 
-            để duy trì streak và cải thiện đều đặn.
-          </li>
-          <li>
-            <strong>Học từ phản hồi AI:</strong> Đọc kỹ phản hồi của AI về lỗi sai, 
-            ghi nhớ các cấu trúc ngữ pháp và từ vựng mới.
-          </li>
-          <li>
-            <strong>Ôn tập thường xuyên:</strong> Sử dụng hệ thống Review Queue 
-            để ôn lại các bài đã làm sai.
-          </li>
-          <li>
-            <strong>Thử thách bản thân:</strong> Tham gia Daily Challenge 
-            và đặt mục tiêu tuần để duy trì động lực.
-          </li>
+          <li>{{ translate.t('about.method.learn_by_level') }}</li>
+          <li>{{ translate.t('about.method.daily_practice') }}</li>
+          <li>{{ translate.t('about.method.learn_from_feedback') }}</li>
+          <li>{{ translate.t('about.method.regular_review') }}</li>
+          <li>{{ translate.t('about.method.challenge_yourself') }}</li>
         </ol>
       </section>
 
       <section class="mb-12">
         <h2 class="text-3xl font-bold text-gray-900 dark:text-white mb-4">
-          Ai nên sử dụng Daily English?
+          {{ translate.t('about.section.who_should_use') }}
         </h2>
         <ul class="space-y-3 text-gray-700 dark:text-gray-300">
           <li class="flex items-start">
             <span class="text-indigo-600 dark:text-indigo-400 mr-2">✓</span>
-            <span><strong>Học sinh, sinh viên</strong> muốn cải thiện điểm tiếng Anh</span>
+            <span>{{ translate.t('about.target.students') }}</span>
           </li>
           <li class="flex items-start">
             <span class="text-indigo-600 dark:text-indigo-400 mr-2">✓</span>
-            <span><strong>Người đi làm</strong> cần tiếng Anh giao tiếp trong công việc</span>
+            <span>{{ translate.t('about.target.professionals') }}</span>
           </li>
           <li class="flex items-start">
             <span class="text-indigo-600 dark:text-indigo-400 mr-2">✓</span>
-            <span><strong>Người tự học</strong> muốn luyện tập tiếng Anh mỗi ngày</span>
+            <span>{{ translate.t('about.target.self_learners') }}</span>
           </li>
           <li class="flex items-start">
             <span class="text-indigo-600 dark:text-indigo-400 mr-2">✓</span>
-            <span><strong>Người chuẩn bị thi</strong> TOEIC, IELTS cần luyện dịch câu</span>
+            <span>{{ translate.t('about.target.exam_prep') }}</span>
           </li>
           <li class="flex items-start">
             <span class="text-indigo-600 dark:text-indigo-400 mr-2">✓</span>
-            <span><strong>Bất kỳ ai</strong> muốn học tiếng Anh miễn phí và hiệu quả</span>
+            <span>{{ translate.t('about.target.anyone') }}</span>
           </li>
         </ul>
       </section>
 
       <section class="mb-12">
         <h2 class="text-3xl font-bold text-gray-900 dark:text-white mb-4">
-          Tại sao chọn Daily English?
+          {{ translate.t('about.section.why_choose') }}
         </h2>
         <div class="bg-indigo-50 dark:bg-indigo-900/20 p-6 rounded-lg">
           <ul class="space-y-3 text-gray-700 dark:text-gray-300">
-            <li>✅ <strong>100% miễn phí</strong> - Không có phí ẩn, không cần thanh toán</li>
-            <li>✅ <strong>AI thông minh</strong> - Sử dụng GPT-4 và Gemini cho phản hồi chính xác</li>
-            <li>✅ <strong>Không quảng cáo</strong> - Tập trung 100% vào việc học</li>
-            <li>✅ <strong>Học mọi lúc mọi nơi</strong> - Chỉ cần trình duyệt web</li>
-            <li>✅ <strong>Tiếng Việt</strong> - Giao diện và hướng dẫn hoàn toàn bằng tiếng Việt</li>
-            <li>✅ <strong>Cập nhật thường xuyên</strong> - Thêm bài tập và tính năng mới liên tục</li>
+            <li>✅ {{ translate.t('about.why.free') }}</li>
+            <li>✅ {{ translate.t('about.why.smart_ai') }}</li>
+            <li>✅ {{ translate.t('about.why.no_ads') }}</li>
+            <li>✅ {{ translate.t('about.why.learn_anywhere') }}</li>
+            <li>✅ {{ translate.t('about.why.vietnamese') }}</li>
+            <li>✅ {{ translate.t('about.why.regular_updates') }}</li>
           </ul>
         </div>
       </section>
 
       <section class="mb-12">
         <h2 class="text-3xl font-bold text-gray-900 dark:text-white mb-4">
-          Câu hỏi thường gặp
+          {{ translate.t('about.section.faq') }}
         </h2>
-        
+
         <div class="space-y-6">
           <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm">
             <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">
-              Daily English có thực sự miễn phí không?
+              {{ translate.t('about.faq.is_free') }}
             </h3>
             <p class="text-gray-700 dark:text-gray-300">
-              Có, hoàn toàn miễn phí! Tất cả 250+ bài tập, phản hồi AI, lộ trình học tập, 
-              và các tính năng khác đều không mất phí. Bạn chỉ cần đăng nhập bằng Google để bắt đầu.
+              {{ translate.t('about.faq.is_free.answer') }}
             </p>
           </div>
 
           <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm">
             <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">
-              Tôi cần trình độ tiếng Anh như thế nào để bắt đầu?
+              {{ translate.t('about.faq.required_level') }}
             </h3>
             <p class="text-gray-700 dark:text-gray-300">
-              Daily English phù hợp với mọi trình độ từ sơ cấp đến cao cấp. 
-              Nếu bạn mới bắt đầu, hãy chọn cấp độ Beginner với các câu đơn giản về cuộc sống hàng ngày.
+              {{ translate.t('about.faq.required_level.answer') }}
             </p>
           </div>
 
           <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm">
             <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">
-              AI phản hồi có chính xác không?
+              {{ translate.t('about.faq.ai_accuracy') }}
             </h3>
             <p class="text-gray-700 dark:text-gray-300">
-              Chúng tôi sử dụng các mô hình AI tiên tiến nhất (GPT-4, Gemini) để đảm bảo 
-              phản hồi chính xác và hữu ích. AI sẽ phân tích ngữ pháp, từ vựng, cấu trúc câu 
-              và đưa ra gợi ý cải thiện cụ thể.
+              {{ translate.t('about.faq.ai_accuracy.answer') }}
             </p>
           </div>
 
           <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm">
             <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">
-              Tôi có thể học trên điện thoại không?
+              {{ translate.t('about.faq.mobile_learning') }}
             </h3>
             <p class="text-gray-700 dark:text-gray-300">
-              Có! Daily English hoạt động tốt trên mọi thiết bị: máy tính, tablet, điện thoại. 
-              Giao diện responsive giúp bạn học mọi lúc mọi nơi.
+              {{ translate.t('about.faq.mobile_learning.answer') }}
             </p>
           </div>
         </div>
@@ -220,14 +191,14 @@
       <!-- CTA Section -->
       <section class="text-center bg-gradient-to-r from-indigo-600 to-purple-600 text-white p-12 rounded-xl">
         <h2 class="text-3xl font-bold mb-4">
-          Sẵn sàng cải thiện tiếng Anh của bạn?
+          {{ translate.t('about.cta.improvement') }}
         </h2>
         <p class="text-xl mb-8 opacity-90">
-          Tham gia cùng hàng nghìn người đang học tiếng Anh mỗi ngày
+          {{ translate.t('about.cta.join') }}
         </p>
-        <a routerLink="/exercises" 
+        <a routerLink="/exercises"
            class="inline-block bg-white text-indigo-600 font-semibold px-8 py-3 rounded-lg hover:bg-gray-100 transition-colors">
-          Bắt đầu học miễn phí
+          {{ translate.t('about.cta.free_start') }}
         </a>
       </section>
     </div>

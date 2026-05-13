@@ -1,7 +1,7 @@
 <div class="modal-overlay" (click)="onClose()">
   <div class="modal-content" (click)="$event.stopPropagation()">
     <div class="modal-header">
-      <h2>Tài khoản đã ngừng hoạt động</h2>
+      <h2>{{ translate.t('modal.account.inactive_title') }}</h2>
     </div>
     
     <div class="modal-body">
@@ -12,13 +12,13 @@
       </div>
       
       <p class="message">
-        Tài khoản của bạn đã bị tạm ngừng hoạt động. Vui lòng liên hệ với quản trị viên để biết thêm thông tin.
+        {{ translate.t('modal.account.inactive_message') }}
       </p>
     </div>
     
     <div class="modal-footer">
       <button class="btn-primary" (click)="onClose()">
-        Đã hiểu
+        {{ translate.t('common.understood') }}
       </button>
     </div>
   </div>

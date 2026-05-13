@@ -7,6 +7,7 @@ import { CustomExerciseService } from '../../services/custom-exercise.service';
 import { ToastService } from '../../services/toast.service';
 import { DifficultyLevel } from '../../models/exercise.model';
 import { LoadingSpinnerComponent } from '../loading-spinner/loading-spinner';
+import { TranslationService } from '../../services/translation.service';
 
 @Component({
   selector: 'app-custom-exercise-library',
@@ -21,6 +22,7 @@ export class CustomExerciseLibrary {
   private toastService = inject(ToastService);
   private router = inject(Router);
   private route = inject(ActivatedRoute);
+  protected translate = inject(TranslationService);
 
   // State signals
   exercises = toSignal(this.customExerciseService.getCustomExercises(), { initialValue: [] });

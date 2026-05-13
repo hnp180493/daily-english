@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { ConfigService, AIConfig } from '../../services/config.service';
 import { ToastService } from '../../services/toast.service';
 import { AuthService } from '../../services/auth.service';
+import { TranslationService } from '../../services/translation.service';
 
 @Component({
   selector: 'app-ai-provider-config',
@@ -17,6 +18,7 @@ export class AiProviderConfig implements OnInit {
   private configService = inject(ConfigService);
   private toastService = inject(ToastService);
   private authService = inject(AuthService);
+  protected translate = inject(TranslationService);
 
   // Chỉ hiển thị Azure OpenAI cho email cụ thể
   showAzureProvider = computed(() => {

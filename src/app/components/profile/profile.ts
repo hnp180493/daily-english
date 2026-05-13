@@ -8,6 +8,7 @@ import { AppSettingsComponent } from '../app-settings/app-settings';
 import { AuthService } from '../../services/auth.service';
 import { ModalService } from '../../services/modal.service';
 import { ExportImportModal } from '../export-import-modal/export-import-modal';
+import { TranslationService } from '../../services/translation.service';
 
 type TabType = 'achievements' | 'settings';
 
@@ -25,6 +26,7 @@ export class ProfileComponent implements OnInit {
   private location = inject(Location);
   private authService = inject(AuthService);
   private modalService = inject(ModalService);
+  protected translate = inject(TranslationService);
 
   currentUser = this.authService.currentUser;
   displayName = () => this.authService.getDisplayName();

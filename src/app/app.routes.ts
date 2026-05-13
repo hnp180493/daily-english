@@ -259,6 +259,19 @@ export const routes: Routes = [
     },
   },
   {
+    path: 'settings',
+    loadComponent: () =>
+      import('./components/settings-page/settings-page').then((m) => m.SettingsPageComponent),
+    data: {
+      seo: {
+        title: 'Cài đặt - Daily English',
+        description: 'Tùy chỉnh giao diện, ngôn ngữ, thông báo, và trải nghiệm học tập.',
+        keywords: ['cài đặt', 'settings', 'tùy chỉnh', 'giao diện', 'thông báo'],
+        noindex: true,
+      } as RouteSeoData,
+    },
+  },
+  {
     path: 'favorites',
     loadComponent: () =>
       import('./components/favorites/favorites').then((m) => m.FavoritesComponent),

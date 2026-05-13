@@ -7,13 +7,13 @@
     </div>
     
     <nav class="nav-links">
-      <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" class="nav-link">✍️ WRITING</a>
+      <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" class="nav-link">{{ translate.t('header.nav.writing') }}</a>
       <div class="nav-dropdown">
         <button class="nav-link dropdown-trigger" 
                 [class.active]="isLearningMenuActive()"
                 (mouseenter)="onMenuMouseEnter()" 
                 (mouseleave)="onMenuMouseLeave()">
-          📖 LEARNING
+          {{ translate.t('header.nav.learning') }}
           <span class="dropdown-arrow">▼</span>
         </button>
         @if (showLearningMenu()) {
@@ -22,29 +22,29 @@
                (mouseleave)="onMenuMouseLeave()">
             @if (isAuthenticated()) {
               <a routerLink="/learning-path" routerLinkActive="active" class="dropdown-item">
-                🎯 Learning Path
+                🎯 {{ translate.t('header.menu.learning_path') }}
               </a>
               <a routerLink="/dashboard" routerLinkActive="active" class="dropdown-item">
-                📊 Dashboard
+                📊 {{ translate.t('header.menu.dashboard') }}
               </a>
             }
             @if (isBetaTester()) {
               <a routerLink="/flashcards" routerLinkActive="active" class="dropdown-item">
-                🃏 Flashcards
-                <span class="beta-tag">BETA</span>
+                🃏 {{ translate.t('header.menu.flashcards') }}
+                <span class="beta-tag">{{ translate.t('common.beta') }}</span>
               </a>
             }
             <a routerLink="/exercises/custom" routerLinkActive="active" class="dropdown-item">
-              📝 Custom Exercises
+              📝 {{ translate.t('header.menu.custom_exercises') }}
             </a>
             <a routerLink="/guide" routerLinkActive="active" class="dropdown-item">
-              📚 Guide
+              📚 {{ translate.t('header.menu.guide') }}
             </a>
           </div>
         }
       </div>
-      <a routerLink="/review-queue" routerLinkActive="active" class="nav-link review-link" title="Review Queue">
-        🔄 REVIEW
+      <a routerLink="/review-queue" routerLinkActive="active" class="nav-link review-link" [title]="translate.t('header.tooltip.review')">
+        {{ translate.t('header.nav.review') }}
         @if (dueReviewCount() > 0) {
           <span class="review-badge" [class.urgent]="urgentReviewCount() > 0">
             {{ dueReviewCount() }}
@@ -60,12 +60,12 @@
       <app-auth-status />
       <div class="stats-group">
         @if (streak() >= 0) {
-          <div class="streak-display" title="Số ngày học liên tục">
+          <div class="streak-display" [title]="translate.t('header.tooltip.streak')">
             <span class="streak-icon">🔥</span>
             <span class="streak-count">{{ streak() }}</span>
           </div>
         }
-        <div class="points-display" title="Tổng điểm tích lũy">
+        <div class="points-display" [title]="translate.t('header.tooltip.points')">
           <span class="points-icon">⭐</span>
           <span class="points-count">{{ displayPoints() }}</span>
           
@@ -80,13 +80,13 @@
           }
         </div>
       </div>
-      <a routerLink="/achievements" routerLinkActive="active" class="achievement-btn" title="Achievements">
+      <a routerLink="/achievements" routerLinkActive="active" class="achievement-btn" [title]="translate.t('header.tooltip.achievements')">
         <span class="achievement-icon">🏆</span>
         @if (displayAchievementCount() > 0) {
           <span class="achievement-badge">{{ displayAchievementCount() }}</span>
         }
       </a>
-      <a routerLink="/favorites" routerLinkActive="active" class="favorite-btn" title="Bài tập yêu thích">
+      <a routerLink="/favorites" routerLinkActive="active" class="favorite-btn" [title]="translate.t('header.tooltip.favorites')">
         <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
           <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
         </svg>
@@ -94,9 +94,22 @@
           <span class="favorite-badge">{{ favoriteCount() }}</span>
         }
       </a>
+      <!-- Hidden: language toggle (translations not polished yet — re-enable when ready) -->
+      @if (false) {
+        <button
+          type="button"
+          class="lang-toggle"
+          [class.is-en]="currentLanguage() === 'en'"
+          (click)="toggleLanguage()"
+          [attr.aria-label]="languageTooltip()"
+          [title]="languageTooltip()">
+          <span class="lang-icon" aria-hidden="true">🌐</span>
+          <span class="lang-code">{{ languageLabel() }}</span>
+        </button>
+      }
       <a routerLink="/profile" class="profile-btn">
         <span class="profile-icon">👤</span>
-        <span class="profile-text">MY PROFILE</span>
+        <span class="profile-text">{{ translate.t('header.profile') }}</span>
       </a>
     </div>
   </div>

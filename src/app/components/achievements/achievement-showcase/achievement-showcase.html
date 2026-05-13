@@ -1,6 +1,6 @@
 <div class="achievement-showcase">
   <div class="showcase-header">
-    <h3>Achievements</h3>
+    <h3>{{ translate.t('achievements.section_title') }}</h3>
     @if (hasLegendary()) {
       <span class="elite-badge" title="Has unlocked at least one Legendary achievement">
         ⭐ Elite Learner
@@ -11,11 +11,11 @@
   <div class="showcase-stats">
     <div class="stat">
       <span class="stat-value">{{ totalUnlocked() }}</span>
-      <span class="stat-label">Unlocked</span>
+      <span class="stat-label">{{ translate.t('achievements.summary.unlocked') }}</span>
     </div>
     <div class="stat">
       <span class="stat-value">{{ completionPercentage() }}%</span>
-      <span class="stat-label">Complete</span>
+      <span class="stat-label">{{ translate.t('achievements.summary.complete') }}</span>
     </div>
   </div>
 
@@ -32,7 +32,7 @@
 
   @if (recentAchievements().length > 0) {
     <div class="recent-achievements">
-      <h4>Recent Achievements</h4>
+      <h4>{{ translate.t('achievements.recent') }}</h4>
       <div class="achievements-list">
         @for (achievement of recentAchievements(); track achievement.id) {
           <div class="showcase-achievement" [class]="achievement.rarity">
@@ -51,6 +51,6 @@
   }
 
   <a routerLink="/achievements" class="view-all-link">
-    View All Achievements →
+    {{ translate.t('achievements.view_all') }}
   </a>
 </div>

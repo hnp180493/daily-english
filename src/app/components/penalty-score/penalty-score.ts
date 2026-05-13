@@ -1,6 +1,7 @@
-import { Component, ChangeDetectionStrategy, input } from '@angular/core';
+import { Component, ChangeDetectionStrategy, input, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { PENALTY_CONSTANTS } from '../../models/penalty.constants';
+import { TranslationService } from '../../services/translation.service';
 
 export interface PenaltyMetrics {
   baseScore: number;
@@ -26,6 +27,8 @@ export interface CurrentPenaltyMetrics {
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class PenaltyScore {
+  protected translate = inject(TranslationService);
+
   // Review mode metrics
   penaltyMetrics = input<PenaltyMetrics | null>(null);
   

@@ -6,6 +6,7 @@ import { CurriculumService } from '../../../services/curriculum.service';
 import { AdaptiveEngineService } from '../../../services/adaptive-engine.service';
 import { StreakService } from '../../../services/streak.service';
 import { DatabaseService } from '../../../services/database/database.service';
+import { TranslationService } from '../../../services/translation.service';
 import { DailyChallenge as DailyChallengeModel } from '../../../models/daily-challenge.model';
 import { Exercise } from '../../../models/exercise.model';
 import { getTodayLocalDate, toLocalDateString } from '../../../utils/date.utils';
@@ -23,6 +24,7 @@ export class DailyChallenge implements OnInit, OnDestroy {
   private adaptiveEngine = inject(AdaptiveEngineService);
   private streakService = inject(StreakService);
   private databaseService = inject(DatabaseService);
+  protected translate = inject(TranslationService);
 
   challenge = signal<DailyChallengeModel | null>(null);
   exercise = signal<Exercise | null>(null);

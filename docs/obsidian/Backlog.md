@@ -37,18 +37,52 @@ Mọi feature nào cần server-side logic (custom moderation, push notification
 
 ## 📦 Phase 1 — Hạ tầng & Personalization (1–2 tuần)
 
-- [ ] **Service Worker (offline-first)** — `@angular/service-worker`. Phạm vi FE-only:
-    - ✅ Precache app shell + static exercise JSON cho offline thật.
-    - ✅ Background sync flush event queue ([[Analytics]], [[Storage-Sync]]) khi online lại.
-    - ✅ **Local scheduled notification** (Service Worker tự trigger theo thời gian đã lưu — vd. nhắc streak lúc 21h).
-    - ❌ **Bỏ:** push notification từ server (cần BE để push).
-    - **Effort:** 3–4 ngày. **Phụ thuộc:** [[PWA-Offline]].
-- [ ] **App Settings page** thống nhất — gom: theme picker, font size (S/M/L/XL), AI provider switch, TTS preferences, notification toggle, language UI. Hiện rải rác qua nhiều modal.
-    - **Effort:** 3 ngày. **Phụ thuộc:** [[AI-Providers]], [[TTS-Audio]], [[Notifications]].
-- [ ] **Accessibility audit + fix** — ARIA labels, keyboard nav full app, high contrast mode, dyslexia-friendly font option (OpenDyslexic). Test với screen reader.
-    - **Effort:** 4–5 ngày.
-- [ ] **Multi-language UI (i18n)** — hiện 100% Vietnamese hardcoded. Tách qua `@angular/localize` để thêm English UI (giữ tài liệu vẫn tiếng Việt). Liên kết [[SEO]] (hreflang đã sẵn).
-    - **Effort:** 5–7 ngày. Pure FE.
+- [x] **Service Worker (offline-first)** — ✅ shipped 2026-05-13. `@angular/service-worker@20.3.9` cài, `ngsw-config.json` precache app-shell + lazy cache `/data/exercises/**` (200 entries, 30d TTL) + `/data/learning-paths/**`. `provideServiceWorker` registered trong `app.config.ts` (production only, `registerWhenStable:30000`). `SwUpdateService` poll mỗi 30 phút + toast "Có bản cập nhật" khi VERSION_READY. **Scheduled notification từ SW** chuyển thành item riêng phía dưới (cần Periodic Background Sync API — browser support hạn chế).
+- [ ] **SW-scheduled notification** (sau Service Worker) — Periodic Background Sync API để SW tự fire notification dù tab đóng. Yêu cầu user "install PWA" + browser support (Chrome/Edge). Hiện tại `NotificationService.scheduleNotifications()` dùng `setTimeout` chỉ chạy khi tab mở.
+    - **Effort:** 2–3 ngày.
+- [x] **App Settings page** thống nhất — ✅ shipped tại `/settings` ([SettingsPageComponent](../../src/app/components/settings-page/settings-page.ts) + extended [AppSettingsComponent](../../src/app/components/app-settings/app-settings.ts)). Có font size (S/M/L/XL via html class), OpenDyslexic font toggle, high contrast mode, language picker (vi only — en chờ i18n), TTS auto-play, translate feedback, notification toggle + reminder time. AI Provider Config vẫn ở `/profile` (giữ tab Settings) để tránh duplicate.
+- [~] **Accessibility — first pass** — ✅ shipped 2026-05-13:
+    - Skip-to-content link ([app.html](../../src/app/app.html)) — Tab vào trang thấy ngay link "Bỏ qua menu".
+    - Global `:focus-visible` outline cho mọi interactive element.
+    - `prefers-reduced-motion` media query — tắt mọi animation/transition cho user OS-level setting.
+    - `.sr-only` utility class cho text screen-reader-only.
+    - High contrast mode + OpenDyslexic font option đã có sẵn trong `SettingsService` (UI hiện ẩn — toggle `@if (false)` trong app-settings).
+- [ ] **Accessibility — deep audit** (tiếp theo) — manual component-by-component review với screen reader (NVDA/VoiceOver). Cần check: ARIA roles, label associations, focus management trong modals, dynamic content announcements, color contrast ratio (WCAG AA 4.5:1). Bật lại Display section trong Settings sau khi audit xong.
+    - **Effort:** 3–4 ngày.
+- [x] **Multi-language UI — runtime translation** ✅ 2026-05-13
+    - `TranslationService` ([translation.service.ts](../../src/app/services/translation.service.ts)) — signal-based dictionary 250+ keys, toggle vi ↔ en tức thì không cần rebuild.
+    - **Đã apply translate.t() cho:** Header (tooltips + dropdown + 🌐 lang toggle), Settings page (full), About page (full ~40 strings), Login page (full), Profile page, Achievements page header + empty state, Learning Path tabs + certificates list, Guide page header, 4 modals (account-inactive, registration-limit, error-modal AI suggestion, export-import full), Pronunciation Stats widget (dashboard).
+    - **Toggle hoạt động:** click 🌐 ở header → mọi trang đã wire chuyển vi ↔ en tức thì + toast confirm.
+    - `@angular/localize@20.3.9` cài sẵn cho future build-time i18n. Vault doc [[i18n-Migration]] giải thích cả 2 cơ chế.
+- [x] **i18n — additional page coverage** ✅ 2026-05-13 (wave 2):
+    - Pronunciation Practice page (full)
+    - Home page (Daily Challenge / Weekly Goal / Continue Learning widgets, level/category section)
+    - Learning Path Daily Challenge widget (full)
+    - Learning Path Goal Tracker widget (full)
+    - Dictionary now has **400+ keys** total (vi + en).
+- [ ] **i18n — remaining LP sub-components & dashboard widgets**:
+    - Learning Path: Path Selector, Progress Dashboard, Certificate, Exercise List (keys đã có sẵn trong dictionary — chỉ cần apply `{{ translate.t('...') }}`).
+    - Dictation overview tooltips (keys ready).
+    - Exercise card favorite tooltips (keys ready).
+- [ ] **i18n — Surface-level findings (most files already English):**
+    - Dashboard widgets (Performance, Vocabulary, Best, Most Practiced, Velocity, Time-of-Day, Weak Areas, Activity Heatmap, Activity Timeline, Recent History, Error Patterns Analysis, Progress Charts, Practice Stats): **all English**, no work.
+    - Achievement sub-components (card, detail-modal, filters, notification, showcase): **all English**.
+    - Dictation sub-components (header, audio-controls, input, actions, completion, shortcuts): **all English**.
+    - TTS Settings, Dictation Settings, AI Provider Config: **all English**.
+    - Small components (exercise-card, category-card, level-card, auth-status, api-key-prompt, feedback-panel, etc.): **all English** except 2 favorites tooltips.
+    - Custom Exercise Library, Exercise Creator, Flashcard Deck: **mostly English** with some Vietnamese sprinkled.
+    - Review Queue, Error Patterns, Favorites: **all English**.
+- [ ] **i18n — TS file strings**: toast/alert messages, `confirm()` dialogs, dynamic strings (notification messages). Currently English in most services; Vietnamese in a few (vd. `login.ts` alert, `export-import-modal.ts` success/error messages). **Effort:** 1 ngày.
+- [ ] **i18n — Achievement model strings** (`achievement.model.ts` có hardcoded English `name`/`description` cho 60+ achievement) — quyết định: giữ English tất cả, hoặc dịch sang Vietnamese qua dictionary key `achievement.<id>.name`. **Effort:** 1 ngày.
+- [ ] **i18n — Route SEO data** (`app.routes.ts` có title/description/keywords hardcoded Vietnamese trong `route.data.seo`). Cần Router event listener gọi `SeoService.updateTags` với keys translated. **Effort:** 0.5 ngày.
+
+**Pattern apply cho component còn (nếu có Vietnamese):**
+1. `import { TranslationService } from '../../services/translation.service'` (path tuỳ depth)
+2. `protected translate = inject(TranslationService)` trong constructor field block
+3. HTML: thay literal Vietnamese bằng `{{ translate.t('key') }}` hoặc `[attr.something]="translate.t('key')"`
+4. Dictionary mới: thêm vào cả `vi:` và `en:` block trong `translation.service.ts`
+- [ ] **i18n — Achievement model strings** (`achievement.model.ts` có hardcoded English `name`/`description` cho 60+ achievement) — quyết định: giữ English tất cả, hoặc dịch sang Vietnamese qua dictionary key `achievement.<id>.name`. **Effort:** 1 ngày.
+- [ ] **i18n — Route SEO data** (`app.routes.ts` có title/description/keywords hardcoded Vietnamese trong `route.data.seo`). Cần Router event listener gọi `SeoService.updateTags` với keys translated. **Effort:** 0.5 ngày.
 
 ---
 

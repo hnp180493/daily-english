@@ -1,6 +1,7 @@
-import { Component, ChangeDetectionStrategy, input, output } from '@angular/core';
+import { Component, ChangeDetectionStrategy, input, output, computed, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { AchievementType, RarityLevel } from '../../../models/achievement.model';
+import { TranslationService } from '../../../services/translation.service';
 
 @Component({
   selector: 'app-achievement-filters',
@@ -10,6 +11,8 @@ import { AchievementType, RarityLevel } from '../../../models/achievement.model'
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class AchievementFilters {
+  protected translate = inject(TranslationService);
+
   selectedType = input<AchievementType | 'all'>('all');
   selectedStatus = input<'all' | 'unlocked' | 'locked' | 'in-progress'>('all');
   selectedRarity = input<RarityLevel | 'all'>('all');
@@ -18,28 +21,28 @@ export class AchievementFilters {
   statusChange = output<'all' | 'unlocked' | 'locked' | 'in-progress'>();
   rarityChange = output<RarityLevel | 'all'>();
 
-  readonly typeOptions: { value: AchievementType | 'all'; label: string }[] = [
-    { value: 'all', label: 'All Types' },
-    { value: AchievementType.MILESTONE, label: 'Milestone' },
-    { value: AchievementType.STREAK, label: 'Streak' },
-    { value: AchievementType.PERFORMANCE, label: 'Performance' },
-    { value: AchievementType.CATEGORY_MASTER, label: 'Category Master' }
-  ];
+  readonly typeOptions = computed(() => [
+    { value: 'all' as const, label: this.translate.t('achievement_filters.all_types') },
+    { value: AchievementType.MILESTONE, label: this.translate.t('achievement_filters.milestone') },
+    { value: AchievementType.STREAK, label: this.translate.t('achievement_filters.streak') },
+    { value: AchievementType.PERFORMANCE, label: this.translate.t('achievement_filters.performance') },
+    { value: AchievementType.CATEGORY_MASTER, label: this.translate.t('achievement_filters.category_master') }
+  ]);
 
-  readonly statusOptions: { value: 'all' | 'unlocked' | 'locked' | 'in-progress'; label: string }[] = [
-    { value: 'all', label: 'All Status' },
-    { value: 'unlocked', label: 'Unlocked' },
-    { value: 'locked', label: 'Locked' },
-    { value: 'in-progress', label: 'In Progress' }
-  ];
+  readonly statusOptions = computed(() => [
+    { value: 'all' as const, label: this.translate.t('achievement_filters.all_status') },
+    { value: 'unlocked' as const, label: this.translate.t('achievement_filters.unlocked') },
+    { value: 'locked' as const, label: this.translate.t('achievement_filters.locked') },
+    { value: 'in-progress' as const, label: this.translate.t('achievement_filters.in_progress') }
+  ]);
 
-  readonly rarityOptions: { value: RarityLevel | 'all'; label: string }[] = [
-    { value: 'all', label: 'All Rarities' },
-    { value: RarityLevel.COMMON, label: 'Common' },
-    { value: RarityLevel.RARE, label: 'Rare' },
-    { value: RarityLevel.EPIC, label: 'Epic' },
-    { value: RarityLevel.LEGENDARY, label: 'Legendary' }
-  ];
+  readonly rarityOptions = computed(() => [
+    { value: 'all' as const, label: this.translate.t('achievement_filters.all_rarities') },
+    { value: RarityLevel.COMMON, label: this.translate.t('achievement_filters.common') },
+    { value: RarityLevel.RARE, label: this.translate.t('achievement_filters.rare') },
+    { value: RarityLevel.EPIC, label: this.translate.t('achievement_filters.epic') },
+    { value: RarityLevel.LEGENDARY, label: this.translate.t('achievement_filters.legendary') }
+  ]);
 
   onTypeChange(event: Event): void {
     const value = (event.target as HTMLSelectElement).value as AchievementType | 'all';

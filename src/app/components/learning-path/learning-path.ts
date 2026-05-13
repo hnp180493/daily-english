@@ -9,6 +9,7 @@ import { ExerciseList } from './exercise-list/exercise-list';
 import { CertificateComponent } from './certificate/certificate';
 import { CurriculumService } from '../../services/curriculum.service';
 import { PathCompletion } from '../../models/learning-path.model';
+import { TranslationService } from '../../services/translation.service';
 
 type TabType = 'overview' | 'exercises' | 'challenge' | 'progress' | 'goals' | 'certificates';
 
@@ -32,6 +33,7 @@ export class LearningPath implements OnInit {
   private curriculumService = inject(CurriculumService);
   private router = inject(Router);
   private route = inject(ActivatedRoute);
+  protected translate = inject(TranslationService);
 
   activeTab = signal<TabType>('overview');
   hasActivePath = signal(false);

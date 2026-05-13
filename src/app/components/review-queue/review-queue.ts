@@ -6,6 +6,7 @@ import { ReviewService } from '../../services/review.service';
 import { ReviewQueueItem, ReviewStats } from '../../models/review.model';
 import { ReviewQueueItem as ReviewQueueItemComponent } from '../review-queue-item/review-queue-item';
 import { ReviewStatsComponent } from '../review-stats/review-stats';
+import { TranslationService } from '../../services/translation.service';
 
 @Component({
   selector: 'app-review-queue',
@@ -17,6 +18,7 @@ import { ReviewStatsComponent } from '../review-stats/review-stats';
 export class ReviewQueueComponent implements OnInit {
   private reviewService = inject(ReviewService);
   private router = inject(Router);
+  protected translate = inject(TranslationService);
 
   // Signals from service
   reviewQueue = this.reviewService.getReviewQueueSignal();

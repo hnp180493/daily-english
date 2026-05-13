@@ -8,6 +8,7 @@ import { ExerciseService } from '../../services/exercise.service';
 import { ProgressService } from '../../services/progress.service';
 import { ExerciseCardComponent } from '../exercise-card/exercise-card';
 import { LoadingSpinnerComponent } from '../loading-spinner/loading-spinner';
+import { TranslationService } from '../../services/translation.service';
 
 @Component({
   selector: 'app-exercise-list',
@@ -21,6 +22,7 @@ export class ExerciseListComponent {
   private progressService = inject(ProgressService);
   private router = inject(Router);
   private route = inject(ActivatedRoute);
+  protected translate = inject(TranslationService);
 
   allExercises = toSignal(this.exerciseService.getFilteredExercises(), { initialValue: [] });
   queryParams = toSignal(this.route.queryParams, { initialValue: {} });
