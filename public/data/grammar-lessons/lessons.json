@@ -1,0 +1,1436 @@
+{
+  "version": 2,
+  "updated": "2026-05-14",
+  "lessons": [
+    {
+      "id": "lesson-verb-tenses-overview",
+      "slug": "verb-tenses-overview",
+      "title": "Verb Tenses Overview",
+      "description": "Tell present from past from future without thinking — pick the right verb form by spotting time signals.",
+      "rule": "Each tense pairs with signal words. Spot the signal, pick the form.",
+      "examples": [
+        "I walk every day. (present)",
+        "I walked yesterday. (past)",
+        "I have walked since 2020. (present perfect)",
+        "I will walk tomorrow. (future)"
+      ],
+      "relatedErrorPattern": "tense",
+      "level": "beginner",
+      "category": "grammar",
+      "estimatedMinutes": 6,
+      "errorPatternKeys": ["tense", "verb-tense", "tenses"],
+      "tldr": {
+        "rule": "Signal word → tense. 'Yesterday' = past, 'since' = present perfect, 'tomorrow' = future.",
+        "example": "I saw her yesterday. I have known her since 2020.",
+        "exampleVietnamese": "Tôi gặp cô ấy hôm qua. Tôi biết cô ấy từ năm 2020."
+      },
+      "scenarios": [
+        {
+          "context": "📅 Telling someone what you did",
+          "why": "Past actions with a clear when → simple past.",
+          "english": "I had pho for lunch yesterday.",
+          "vietnamese": "Hôm qua tôi ăn phở trưa."
+        },
+        {
+          "context": "💼 Saying how long you've worked somewhere",
+          "why": "Started in past, still true now → present perfect with 'for'/'since'.",
+          "english": "I've worked at this company for three years.",
+          "vietnamese": "Tôi đã làm ở công ty này được ba năm."
+        },
+        {
+          "context": "🗓 Making plans with a friend",
+          "why": "Future arrangement → 'will' for decisions, 'going to' for plans.",
+          "english": "I'll text you when I arrive.",
+          "vietnamese": "Tôi sẽ nhắn khi đến nơi."
+        },
+        {
+          "context": "🌅 Describing a routine",
+          "why": "Habits/repeated actions → simple present.",
+          "english": "She drinks coffee every morning.",
+          "vietnamese": "Cô ấy uống cà phê mỗi sáng."
+        }
+      ],
+      "quickChecks": [
+        {
+          "question": "She ___ to Hanoi last summer.",
+          "options": ["goes", "went", "has gone", "is going"],
+          "correctIndex": 1,
+          "explanation": "'Last summer' is a finished past time → simple past 'went'."
+        },
+        {
+          "question": "I ___ him since 2019.",
+          "options": ["know", "knew", "have known", "will know"],
+          "correctIndex": 2,
+          "explanation": "'Since' signals a state that started in the past and continues → present perfect."
+        },
+        {
+          "question": "Tomorrow we ___ to the new cafe.",
+          "options": ["go", "went", "going", "will go"],
+          "correctIndex": 3,
+          "explanation": "'Tomorrow' → future. After 'will', use the base form ('go'), not '-ing'."
+        },
+        {
+          "question": "Water ___ at 100°C.",
+          "options": ["boil", "boils", "is boiling", "boiled"],
+          "correctIndex": 1,
+          "explanation": "Universal facts → simple present. Subject 'water' (singular) → 'boils'."
+        }
+      ],
+      "sections": [
+        {
+          "heading": "Simple Present — habits & facts",
+          "body": "For routines, repeated actions, and universal truths.",
+          "bullets": [
+            "Signals: every day, usually, always, often, sometimes",
+            "3rd person singular (he/she/it) takes -s/-es"
+          ],
+          "examples": [
+            { "english": "She drinks coffee every morning.", "vietnamese": "Cô ấy uống cà phê mỗi sáng." },
+            { "english": "Water boils at 100°C." }
+          ]
+        },
+        {
+          "heading": "Simple Past — finished, dated",
+          "body": "Action completed at a specific time in the past.",
+          "bullets": [
+            "Signals: yesterday, last week, ago, in 2020",
+            "Negative uses 'didn't + base verb' (NOT past form)"
+          ],
+          "examples": [
+            { "english": "I visited Hue last summer.", "vietnamese": "Tôi đã đi Huế mùa hè năm ngoái." },
+            { "english": "We didn't see the movie.", "note": "Negative: didn't + see, NOT didn't + saw." }
+          ]
+        },
+        {
+          "heading": "Present Perfect — past affecting now",
+          "body": "Bridges past and present: experience up to now, or actions that started before and continue.",
+          "bullets": [
+            "Signals: since, for, already, yet, just, ever, never",
+            "have/has + V3 (past participle)"
+          ],
+          "examples": [
+            { "english": "I have lived in Hanoi for 5 years.", "vietnamese": "Tôi đã sống ở Hà Nội 5 năm (vẫn còn)." }
+          ]
+        },
+        {
+          "heading": "Simple Future — predictions, decisions",
+          "body": "For things that haven't happened yet.",
+          "bullets": [
+            "Signals: tomorrow, next week, soon",
+            "will + base verb (no 'to', no -ing)"
+          ],
+          "examples": [
+            { "english": "It will rain tonight.", "vietnamese": "Tối nay trời sẽ mưa." }
+          ]
+        }
+      ],
+      "vietnameseTips": [
+        "Tiếng Việt không chia động từ → nhớ thêm -s ở 'he/she/it' và đổi V → V2 cho quá khứ.",
+        "'Yesterday', 'last…', 'ago' luôn đi với simple past, KHÔNG đi với present perfect.",
+        "Sau 'will' luôn là động từ nguyên thể, không bao giờ V2 hay -ing."
+      ],
+      "commonMistakes": [
+        { "wrong": "I have seen him yesterday.", "right": "I saw him yesterday.", "explanation": "'Yesterday' = thời điểm xác định → simple past." },
+        { "wrong": "She don't likes coffee.", "right": "She doesn't like coffee.", "explanation": "'doesn't + V nguyên thể', không V + -s." },
+        { "wrong": "I will going home.", "right": "I will go home.", "explanation": "Sau 'will' luôn dùng V nguyên thể." }
+      ],
+      "practice": [
+        { "vietnamese": "Tôi đã ăn tối với gia đình tuần trước.", "english": "I had dinner with my family last week.", "hint": "Signal: last week → simple past." },
+        { "vietnamese": "Cô ấy đã sống ở đây từ năm 2020.", "english": "She has lived here since 2020.", "hint": "Signal: since → present perfect." },
+        { "vietnamese": "Ngày mai tôi sẽ học tiếng Anh.", "english": "I will study English tomorrow." }
+      ]
+    },
+    {
+      "id": "lesson-articles",
+      "slug": "articles-a-an-the",
+      "title": "Articles: a, an, the",
+      "description": "Master a / an / the in 5 minutes — the #1 mistake for Vietnamese learners.",
+      "rule": "'a/an' = unknown one. 'the' = the specific one we both know. No article for general plurals.",
+      "examples": [
+        "I bought a book. The book is great.",
+        "She is an honest person.",
+        "Music makes me happy."
+      ],
+      "relatedErrorPattern": "article",
+      "level": "beginner",
+      "category": "grammar",
+      "estimatedMinutes": 5,
+      "errorPatternKeys": ["article", "articles", "a-an-the"],
+      "tldr": {
+        "rule": "First mention → a/an. Second mention or unique thing → the. General plural → nothing.",
+        "example": "I saw a cat. The cat was orange. I love cats.",
+        "exampleVietnamese": "Tôi thấy một con mèo. Con mèo đó màu cam. Tôi thích mèo."
+      },
+      "scenarios": [
+        {
+          "context": "👋 Introducing yourself",
+          "why": "Naming your job/role = singular countable → needs 'a/an'.",
+          "english": "I'm a software engineer.",
+          "vietnamese": "Tôi là kỹ sư phần mềm."
+        },
+        {
+          "context": "🍽 Ordering at a restaurant",
+          "why": "Something general from the menu → 'a/an' for one item.",
+          "english": "I'll have a coffee and the chicken sandwich.",
+          "vietnamese": "Cho tôi một cà phê và món bánh mì gà."
+        },
+        {
+          "context": "🌍 Talking about a country",
+          "why": "Most country names take no article. The Netherlands / The UK are exceptions.",
+          "english": "I live in Vietnam, but I've visited the UK.",
+          "vietnamese": "Tôi sống ở Việt Nam, nhưng đã đi Anh."
+        },
+        {
+          "context": "📚 Talking about a hobby",
+          "why": "Plural noun used in general sense → no article.",
+          "english": "I love reading books.",
+          "vietnamese": "Tôi thích đọc sách."
+        }
+      ],
+      "quickChecks": [
+        {
+          "question": "She is ___ honest person.",
+          "options": ["a", "an", "the", "(no article)"],
+          "correctIndex": 1,
+          "explanation": "'Honest' starts with a vowel SOUND (h is silent) → 'an'."
+        },
+        {
+          "question": "I love ___ music.",
+          "options": ["a", "an", "the", "(no article)"],
+          "correctIndex": 3,
+          "explanation": "General love for music in general → no article. 'The music' = a specific song/genre."
+        },
+        {
+          "question": "We saw ___ amazing show. ___ show was incredible.",
+          "options": ["a, A", "an, The", "the, The", "an, A"],
+          "correctIndex": 1,
+          "explanation": "First time → 'an' (vowel sound). Second mention → 'the' (now specific)."
+        },
+        {
+          "question": "He is ___ university student.",
+          "options": ["a", "an", "the", "(no article)"],
+          "correctIndex": 0,
+          "explanation": "'University' starts with /ju:/ — a consonant sound — so use 'a', not 'an'."
+        }
+      ],
+      "sections": [
+        {
+          "heading": "a vs an — by SOUND, not letter",
+          "body": "Use 'an' before a vowel sound; 'a' before a consonant sound. The rule is about pronunciation.",
+          "examples": [
+            { "english": "an hour", "vietnamese": "một giờ", "note": "Silent h → vowel sound → 'an'." },
+            { "english": "a university", "note": "Starts with /j/ → consonant sound → 'a'." }
+          ]
+        },
+        {
+          "heading": "When to use 'the'",
+          "body": "When the thing is specific or already known to both speakers.",
+          "bullets": [
+            "Already mentioned (I saw a dog. The dog was…)",
+            "Unique (the sun, the moon, the Earth)",
+            "Superlatives & ordinals (the best, the first)"
+          ]
+        },
+        {
+          "heading": "No article — general plurals & uncountables",
+          "body": "When talking about something in general, drop the article.",
+          "examples": [
+            { "english": "Coffee is bitter." },
+            { "english": "Dogs are loyal animals." },
+            { "english": "I live in Vietnam." }
+          ]
+        }
+      ],
+      "vietnameseTips": [
+        "Tiếng Việt không có mạo từ → người Việt hay quên 'a/an/the'. Phản xạ: danh từ đếm được số ít LUÔN cần mạo từ.",
+        "Lần đầu nhắc → a/an. Nhắc lại → the. Quy tắc nhanh."
+      ],
+      "commonMistakes": [
+        { "wrong": "I am student.", "right": "I am a student.", "explanation": "Singular countable noun cần 'a/an'." },
+        { "wrong": "She is a honest girl.", "right": "She is an honest girl.", "explanation": "'Honest' bắt đầu bằng âm nguyên âm." },
+        { "wrong": "I love the music.", "right": "I love music.", "explanation": "Music nói chung — không 'the'." }
+      ],
+      "practice": [
+        { "vietnamese": "Cô ấy là một giáo viên.", "english": "She is a teacher." },
+        { "vietnamese": "Mặt trời mọc ở hướng đông.", "english": "The sun rises in the east." },
+        { "vietnamese": "Tôi thích đọc sách.", "english": "I like reading books.", "hint": "General plural — no article." }
+      ]
+    },
+    {
+      "id": "lesson-subject-verb",
+      "slug": "subject-verb-agreement",
+      "title": "Subject-Verb Agreement",
+      "description": "Singular subject = singular verb. Sounds easy, but 'everyone', 'a lot of', 'there is/are' all hide traps.",
+      "rule": "Match the verb to the subject. Singular → adds -s. Plural → no -s.",
+      "examples": [
+        "She plays tennis.",
+        "They play tennis.",
+        "Everyone likes pizza."
+      ],
+      "relatedErrorPattern": "subject-verb",
+      "level": "beginner",
+      "category": "grammar",
+      "estimatedMinutes": 5,
+      "errorPatternKeys": ["subject-verb", "agreement", "verb-agreement"],
+      "tldr": {
+        "rule": "He / she / it / singular noun → verb + s. 'Everyone' counts as singular.",
+        "example": "Everyone is here. The team plays well.",
+        "exampleVietnamese": "Mọi người đều ở đây. Đội bóng chơi tốt."
+      },
+      "scenarios": [
+        {
+          "context": "🗣 Talking about a group",
+          "why": "Collective nouns (team, family, staff) are usually singular in American English.",
+          "english": "The team is winning.",
+          "vietnamese": "Đội đang thắng."
+        },
+        {
+          "context": "🙋 Describing what people in your office do",
+          "why": "Plural subject → plural verb (no -s).",
+          "english": "My colleagues work remotely.",
+          "vietnamese": "Đồng nghiệp tôi làm việc từ xa."
+        },
+        {
+          "context": "🍕 Saying 'everyone likes…'",
+          "why": "'Everyone' looks plural but is grammatically singular.",
+          "english": "Everyone loves Friday.",
+          "vietnamese": "Ai cũng yêu thứ Sáu."
+        },
+        {
+          "context": "📋 Saying how many things there are",
+          "why": "'There is' for 1; 'There are' for 2+ or 'a lot of [plural]'.",
+          "english": "There are five people in the meeting.",
+          "vietnamese": "Có 5 người trong cuộc họp."
+        }
+      ],
+      "quickChecks": [
+        {
+          "question": "She ___ to the gym every day.",
+          "options": ["go", "goes", "going", "gone"],
+          "correctIndex": 1,
+          "explanation": "Subject 'she' (3rd person singular) → verb + es."
+        },
+        {
+          "question": "Everyone in the room ___ excited.",
+          "options": ["is", "are", "be", "were"],
+          "correctIndex": 0,
+          "explanation": "'Everyone' is singular even though it feels plural."
+        },
+        {
+          "question": "There ___ many cars on the road today.",
+          "options": ["is", "are", "be", "have"],
+          "correctIndex": 1,
+          "explanation": "'Cars' is plural → 'there are'."
+        },
+        {
+          "question": "My family ___ from Hue.",
+          "options": ["is", "are", "have", "been"],
+          "correctIndex": 0,
+          "explanation": "'Family' is a collective noun, treated as singular here."
+        }
+      ],
+      "sections": [
+        {
+          "heading": "Basic rule — add -s at 3rd person singular",
+          "body": "In simple present, he/she/it + verb takes -s/-es.",
+          "bullets": [
+            "I / you / we / they → base verb",
+            "he / she / it / singular noun → verb + s/es",
+            "Verbs ending in -s, -sh, -ch, -x, -o: add -es (watches, goes)"
+          ]
+        },
+        {
+          "heading": "Indefinite pronouns — always singular",
+          "body": "Words that feel plural but grammatically count as one: everyone, somebody, each, neither, either.",
+          "examples": [
+            { "english": "Everyone is here." },
+            { "english": "Neither answer is correct." }
+          ]
+        },
+        {
+          "heading": "'There is' vs 'There are'",
+          "body": "Match the verb to the noun right after it.",
+          "examples": [
+            { "english": "There is a book on the table." },
+            { "english": "There are many books on the table." },
+            { "english": "There is some water in the bottle.", "note": "Uncountable → singular." }
+          ]
+        }
+      ],
+      "vietnameseTips": [
+        "Tiếng Việt không chia động từ. Phản xạ: thấy 'he/she/it' → thêm -s.",
+        "'Everyone/everybody' luôn đi với động từ số ít — đừng dịch theo nghĩa."
+      ],
+      "commonMistakes": [
+        { "wrong": "He go to work by bus.", "right": "He goes to work by bus.", "explanation": "He → goes (+es)." },
+        { "wrong": "Everyone are happy.", "right": "Everyone is happy.", "explanation": "Everyone là singular." },
+        { "wrong": "There is many people.", "right": "There are many people.", "explanation": "People số nhiều → there are." }
+      ],
+      "practice": [
+        { "vietnamese": "Cô ấy thường thức dậy lúc 6 giờ.", "english": "She usually wakes up at 6.", "hint": "She → wakes." },
+        { "vietnamese": "Có rất nhiều ô tô trên đường.", "english": "There are many cars on the street." },
+        { "vietnamese": "Mỗi học sinh đều có một quyển sách.", "english": "Each student has a book." }
+      ]
+    },
+    {
+      "id": "lesson-prepositions",
+      "slug": "prepositions-time-place",
+      "title": "Prepositions: in / on / at",
+      "description": "Time and place prepositions follow a 'big to small' logic. Master 3 prepositions, cover 80% of cases.",
+      "rule": "Big container → IN. Surface or date → ON. Specific point → AT.",
+      "examples": [
+        "in 2026 / in May / in Vietnam",
+        "on Monday / on the table / on May 14",
+        "at 5 PM / at home / at the door"
+      ],
+      "relatedErrorPattern": "preposition",
+      "level": "beginner",
+      "category": "grammar",
+      "estimatedMinutes": 5,
+      "errorPatternKeys": ["preposition", "prepositions", "in-on-at"],
+      "tldr": {
+        "rule": "Time/place from big to small: IN (year/month/country) → ON (day/surface) → AT (clock time/exact point).",
+        "example": "I'll meet you at 5 PM on Friday in May.",
+        "exampleVietnamese": "Tôi sẽ gặp bạn lúc 5 giờ chiều thứ Sáu vào tháng Năm."
+      },
+      "scenarios": [
+        {
+          "context": "📅 Saying when something happens",
+          "why": "Pick by precision: clock time → at, day → on, larger period → in.",
+          "english": "Class starts at 9 on Monday in September.",
+          "vietnamese": "Lớp bắt đầu lúc 9 giờ thứ Hai vào tháng Chín."
+        },
+        {
+          "context": "🏠 Saying where you are",
+          "why": "Inside a place → in. At a point → at. On a surface → on.",
+          "english": "I'm at the cafe in District 1, sitting on the terrace.",
+          "vietnamese": "Tôi đang ở quán cà phê trong quận 1, ngồi trên ban công."
+        },
+        {
+          "context": "🚌 Talking about transport",
+          "why": "Big vehicles → on. Small/private → in.",
+          "english": "I'm on the bus, but my friend is in a taxi.",
+          "vietnamese": "Tôi đang trên xe buýt, còn bạn tôi trong taxi."
+        },
+        {
+          "context": "🎂 Telling someone your birthday",
+          "why": "Specific date → on. Month only → in.",
+          "english": "My birthday is on May 14 — in May, basically.",
+          "vietnamese": "Sinh nhật tôi vào 14 tháng Năm — đại loại là tháng Năm."
+        }
+      ],
+      "quickChecks": [
+        {
+          "question": "I was born ___ May 14.",
+          "options": ["in", "on", "at", "by"],
+          "correctIndex": 1,
+          "explanation": "Specific date → 'on'."
+        },
+        {
+          "question": "I'll see you ___ 5 PM.",
+          "options": ["in", "on", "at", "by"],
+          "correctIndex": 2,
+          "explanation": "Exact clock time → 'at'."
+        },
+        {
+          "question": "She is ___ the kitchen.",
+          "options": ["in", "on", "at", "by"],
+          "correctIndex": 0,
+          "explanation": "Inside a space → 'in'."
+        },
+        {
+          "question": "I commute ___ the bus.",
+          "options": ["in", "on", "at", "by"],
+          "correctIndex": 1,
+          "explanation": "Public transport (bus, train, plane) → 'on'. Cars/taxis → 'in'."
+        }
+      ],
+      "sections": [
+        {
+          "heading": "Time — big to small",
+          "body": "Move from large period to single point: IN year/month → ON day → AT clock time.",
+          "bullets": [
+            "IN: century, decade, year, month, season, parts of day (in the morning)",
+            "ON: specific day, date, holiday",
+            "AT: clock time, night, weekend"
+          ]
+        },
+        {
+          "heading": "Place — same big-to-small logic",
+          "body": "IN inside a space, ON a surface, AT a precise point.",
+          "examples": [
+            { "english": "She is in the kitchen." },
+            { "english": "The book is on the shelf." },
+            { "english": "I'll meet you at the cafe." }
+          ]
+        },
+        {
+          "heading": "Exceptions to memorize",
+          "body": "A few cases break the pattern. Learn them as set phrases.",
+          "bullets": [
+            "at night, in the morning/afternoon/evening",
+            "on time = punctual, in time = early enough",
+            "at home / at school / at work"
+          ]
+        }
+      ],
+      "vietnameseTips": [
+        "Tiếng Việt dùng 'ở/vào/lúc' cho mọi thứ — tiếng Anh phân tay 3 giới từ riêng.",
+        "Phương tiện: 'in a car/taxi' nhưng 'on a bus/plane/train'."
+      ],
+      "commonMistakes": [
+        { "wrong": "I was born in May 14.", "right": "I was born on May 14.", "explanation": "Ngày cụ thể → on." },
+        { "wrong": "Meet me in 5 PM.", "right": "Meet me at 5 PM.", "explanation": "Giờ cụ thể → at." },
+        { "wrong": "She is at the kitchen.", "right": "She is in the kitchen.", "explanation": "Trong không gian → in." }
+      ],
+      "practice": [
+        { "vietnamese": "Tôi sinh năm 1995.", "english": "I was born in 1995." },
+        { "vietnamese": "Cuộc họp vào thứ Hai lúc 9 giờ sáng.", "english": "The meeting is on Monday at 9 AM." },
+        { "vietnamese": "Anh ấy đang ở nhà.", "english": "He is at home." }
+      ]
+    },
+    {
+      "id": "lesson-plural-nouns",
+      "slug": "plural-nouns",
+      "title": "Plural Nouns & Uncountables",
+      "description": "When to add -s, and which 'logical-feeling-plural' words are actually uncountable.",
+      "rule": "Countable + > 1 → add -s/-es. Uncountable (information, advice, water) → never -s.",
+      "examples": [
+        "one book → two books",
+        "one box → two boxes",
+        "one child → two children",
+        "water (uncountable — no -s)"
+      ],
+      "relatedErrorPattern": "plural",
+      "level": "beginner",
+      "category": "grammar",
+      "estimatedMinutes": 5,
+      "errorPatternKeys": ["plural", "plurals", "countable", "uncountable"],
+      "tldr": {
+        "rule": "Many things → +s. But 'advice', 'information', 'news' are uncountable — say 'a piece of advice'.",
+        "example": "She gave me three pieces of advice and lots of useful information.",
+        "exampleVietnamese": "Cô ấy cho tôi 3 lời khuyên và nhiều thông tin hữu ích."
+      },
+      "scenarios": [
+        {
+          "context": "🛒 Listing what you bought",
+          "why": "Counting items → add -s.",
+          "english": "I bought three books and two pens.",
+          "vietnamese": "Tôi mua 3 quyển sách và 2 cây bút."
+        },
+        {
+          "context": "💡 Asking for advice",
+          "why": "'Advice' is uncountable — no 'an advice'.",
+          "english": "Can I get some advice?",
+          "vietnamese": "Cho tôi xin lời khuyên được không?"
+        },
+        {
+          "context": "📰 Talking about news",
+          "why": "'News' ends in -s but is singular → 'is', not 'are'.",
+          "english": "The news is shocking today.",
+          "vietnamese": "Tin tức hôm nay gây sốc."
+        },
+        {
+          "context": "👶 Talking about your kids",
+          "why": "Irregular plural — child → children.",
+          "english": "My two children play piano.",
+          "vietnamese": "Hai con tôi chơi piano."
+        }
+      ],
+      "quickChecks": [
+        {
+          "question": "I have two ___.",
+          "options": ["book", "books", "bookes", "booken"],
+          "correctIndex": 1,
+          "explanation": "Regular plural → just add -s."
+        },
+        {
+          "question": "She gave me ___ advice.",
+          "options": ["an", "two", "many", "some"],
+          "correctIndex": 3,
+          "explanation": "'Advice' is uncountable — use 'some', 'a lot of', or 'a piece of'."
+        },
+        {
+          "question": "Three ___ are playing.",
+          "options": ["child", "childs", "children", "childes"],
+          "correctIndex": 2,
+          "explanation": "Irregular plural: child → children."
+        },
+        {
+          "question": "The news ___ shocking.",
+          "options": ["is", "are", "have", "be"],
+          "correctIndex": 0,
+          "explanation": "'News' looks plural but acts singular."
+        }
+      ],
+      "sections": [
+        {
+          "heading": "Regular plurals",
+          "body": "Add -s for most nouns. Spelling shifts for endings -s/-sh/-ch/-x/-o (+es) and consonant + y (y → ies).",
+          "bullets": [
+            "book → books, dog → dogs",
+            "box → boxes, watch → watches",
+            "baby → babies",
+            "Irregulars: man/men, woman/women, child/children, foot/feet, tooth/teeth, person/people"
+          ]
+        },
+        {
+          "heading": "Common uncountable nouns",
+          "body": "No -s, no a/an, takes singular verb. Count them with units.",
+          "bullets": [
+            "Liquids/materials: water, milk, rice",
+            "Abstract: information, advice, news, work, homework",
+            "Units: a glass of water, a piece of advice, a slice of bread"
+          ]
+        },
+        {
+          "heading": "False plurals — end in -s but singular",
+          "body": "Don't be fooled by the spelling.",
+          "examples": [
+            { "english": "The news is bad today." },
+            { "english": "Mathematics is my favorite subject." }
+          ]
+        }
+      ],
+      "vietnameseTips": [
+        "Tiếng Việt không có hình thức số nhiều — người Việt thường quên thêm -s.",
+        "'Information', 'advice', 'news' KHÔNG đếm được — đừng nói 'an advice'."
+      ],
+      "commonMistakes": [
+        { "wrong": "I have two book.", "right": "I have two books.", "explanation": "Số đếm > 1 → +s." },
+        { "wrong": "She gave me a good advice.", "right": "She gave me good advice.", "explanation": "Advice không đếm được." },
+        { "wrong": "Three childs are playing.", "right": "Three children are playing.", "explanation": "Child → children (bất quy tắc)." }
+      ],
+      "practice": [
+        { "vietnamese": "Tôi có ba quyển sách.", "english": "I have three books." },
+        { "vietnamese": "Cô ấy cho tôi nhiều lời khuyên.", "english": "She gave me a lot of advice." },
+        { "vietnamese": "Hai đứa trẻ đang chơi.", "english": "Two children are playing." }
+      ]
+    },
+    {
+      "id": "lesson-pronouns",
+      "slug": "pronouns",
+      "title": "Pronouns: I, me, my, mine",
+      "description": "Subject vs object pronouns, possessive forms, and reflexive — pick the right one in one second.",
+      "rule": "Before verb → I, he, she. After verb/preposition → me, him, her. Possessive → my (before noun), mine (alone).",
+      "examples": [
+        "I love her.",
+        "She gave it to me.",
+        "This is my book = This book is mine.",
+        "I did it myself."
+      ],
+      "relatedErrorPattern": "pronoun",
+      "level": "beginner",
+      "category": "grammar",
+      "estimatedMinutes": 5,
+      "errorPatternKeys": ["pronoun", "pronouns"],
+      "tldr": {
+        "rule": "Subject (I/he) before verb. Object (me/him) after verb or preposition. Always 'between you and me', never 'and I'.",
+        "example": "My friend and I went to the park. She gave gifts to my friend and me.",
+        "exampleVietnamese": "Bạn tôi và tôi đi công viên. Cô ấy tặng quà cho bạn tôi và tôi."
+      },
+      "scenarios": [
+        {
+          "context": "🍽 Inviting someone",
+          "why": "After 'with', use object pronoun.",
+          "english": "Come with me to the cafe.",
+          "vietnamese": "Đi cà phê với tôi đi."
+        },
+        {
+          "context": "🏠 Showing your house",
+          "why": "Possessive adjective (my) before noun, possessive pronoun (mine) alone.",
+          "english": "That's my room. The room next door is hers.",
+          "vietnamese": "Đó là phòng của tôi. Phòng bên cạnh là của cô ấy."
+        },
+        {
+          "context": "💪 Talking about doing something alone",
+          "why": "Reflexive pronoun emphasizes 'no help from anyone'.",
+          "english": "I built this website myself.",
+          "vietnamese": "Tôi tự xây trang web này một mình."
+        },
+        {
+          "context": "✉️ Writing a formal email",
+          "why": "'Between you and me' — never 'between you and I'.",
+          "english": "This is between you and me.",
+          "vietnamese": "Chuyện này chỉ giữa bạn và tôi."
+        }
+      ],
+      "quickChecks": [
+        {
+          "question": "He went to the cafe with ___.",
+          "options": ["I", "me", "my", "mine"],
+          "correctIndex": 1,
+          "explanation": "After preposition 'with' → object pronoun 'me'."
+        },
+        {
+          "question": "This book is ___.",
+          "options": ["my", "mine", "me", "I"],
+          "correctIndex": 1,
+          "explanation": "No noun after it → possessive pronoun 'mine'."
+        },
+        {
+          "question": "She introduced ___ to the audience.",
+          "options": ["her", "she", "herself", "hers"],
+          "correctIndex": 2,
+          "explanation": "Subject and object are the same person → reflexive 'herself'."
+        },
+        {
+          "question": "___ went to school.",
+          "options": ["Me and my friend", "My friend and me", "My friend and I", "I and my friend"],
+          "correctIndex": 2,
+          "explanation": "Subject of the sentence → 'I' (and place yourself last for politeness)."
+        }
+      ],
+      "sections": [
+        {
+          "heading": "Subject vs Object",
+          "body": "Subject pronoun starts the action. Object pronoun receives it.",
+          "bullets": [
+            "Subject: I, you, he, she, it, we, they",
+            "Object: me, you, him, her, it, us, them",
+            "After every preposition → object form"
+          ]
+        },
+        {
+          "heading": "Possessive adjective vs pronoun",
+          "body": "Adjective sits before a noun. Pronoun stands alone.",
+          "bullets": [
+            "Adjective: my, your, his, her, its, our, their + noun",
+            "Pronoun: mine, yours, his, hers, ours, theirs (alone)"
+          ]
+        },
+        {
+          "heading": "Reflexive — when subject = object",
+          "body": "Use -self/-selves when the doer and receiver are the same person.",
+          "examples": [
+            { "english": "I cut myself." },
+            { "english": "They taught themselves coding." }
+          ]
+        }
+      ],
+      "vietnameseTips": [
+        "Tiếng Việt dùng 'tôi/của tôi' cho mọi vị trí. Tiếng Anh phân biệt rõ → sau giới từ luôn dùng me, không I."
+      ],
+      "commonMistakes": [
+        { "wrong": "Me and my friend went…", "right": "My friend and I went…", "explanation": "Subject → I, và đặt mình sau." },
+        { "wrong": "This book is my.", "right": "This book is mine.", "explanation": "Không có noun sau → mine." },
+        { "wrong": "She introduced she to me.", "right": "She introduced herself to me.", "explanation": "Cùng người → reflexive." }
+      ],
+      "practice": [
+        { "vietnamese": "Anh ấy đi với chúng tôi.", "english": "He went with us." },
+        { "vietnamese": "Đây là điện thoại của tôi.", "english": "This is my phone." },
+        { "vietnamese": "Tôi tự làm nó.", "english": "I did it myself." }
+      ]
+    },
+    {
+      "id": "lesson-comparatives",
+      "slug": "comparatives-superlatives",
+      "title": "Comparatives & Superlatives",
+      "description": "Faster, fastest. More beautiful, most beautiful. Pick the right form by syllable count.",
+      "rule": "1-syllable → +er/+est. 3+ syllables → more/most. 2-syllable: depends on ending.",
+      "examples": [
+        "fast → faster → fastest",
+        "happy → happier → happiest",
+        "beautiful → more beautiful → most beautiful",
+        "good → better → best"
+      ],
+      "relatedErrorPattern": "comparison",
+      "level": "intermediate",
+      "category": "grammar",
+      "estimatedMinutes": 5,
+      "errorPatternKeys": ["comparative", "comparatives", "superlative", "comparison"],
+      "tldr": {
+        "rule": "Short adj → +er/+est. Long adj → more/most. Never combine: 'more taller' is wrong.",
+        "example": "She runs faster than me, but he's the most consistent runner.",
+        "exampleVietnamese": "Cô ấy chạy nhanh hơn tôi, nhưng anh ấy chạy đều nhất."
+      },
+      "scenarios": [
+        {
+          "context": "🏃 Comparing two friends",
+          "why": "Comparing 2 things → comparative + 'than'.",
+          "english": "Lan is taller than Mai.",
+          "vietnamese": "Lan cao hơn Mai."
+        },
+        {
+          "context": "🏆 Picking the best of a group",
+          "why": "Comparing 3+ → superlative with 'the'.",
+          "english": "She is the smartest student in the class.",
+          "vietnamese": "Cô ấy là học sinh thông minh nhất lớp."
+        },
+        {
+          "context": "💸 Talking about prices",
+          "why": "Use comparative with 'than' for direct comparison.",
+          "english": "Coffee here is more expensive than at home.",
+          "vietnamese": "Cà phê ở đây đắt hơn ở nhà."
+        },
+        {
+          "context": "🎬 Reviewing a movie",
+          "why": "Irregular: good → better → best. No 'more good'.",
+          "english": "This is the best film of the year.",
+          "vietnamese": "Đây là phim hay nhất năm."
+        }
+      ],
+      "quickChecks": [
+        {
+          "question": "She is ___ than me.",
+          "options": ["taller", "more taller", "tallest", "the tallest"],
+          "correctIndex": 0,
+          "explanation": "1-syllable adj → +er. Never combine 'more' with '-er'."
+        },
+        {
+          "question": "This is ___ book I have ever read.",
+          "options": ["good", "better", "the best", "most good"],
+          "correctIndex": 2,
+          "explanation": "Superlative of 'good' is 'best', and we say 'the best'."
+        },
+        {
+          "question": "English is ___ than Vietnamese for me.",
+          "options": ["difficult", "more difficult", "most difficult", "difficulter"],
+          "correctIndex": 1,
+          "explanation": "'Difficult' is long (3 syllables) → use 'more'."
+        },
+        {
+          "question": "She is ___ in our group.",
+          "options": ["young", "younger", "the youngest", "more young"],
+          "correctIndex": 2,
+          "explanation": "Comparing more than 2 people in a group → superlative."
+        }
+      ],
+      "sections": [
+        {
+          "heading": "Short adj — +er / +est",
+          "body": "1-syllable and many 2-syllable adjectives.",
+          "bullets": [
+            "Default: +er/+est (tall → taller → tallest)",
+            "Ends in -e: +r/+st (large → larger → largest)",
+            "Consonant + y: y → ier/iest (happy → happier → happiest)",
+            "CVC pattern: double the consonant (big → bigger → biggest)"
+          ]
+        },
+        {
+          "heading": "Long adj — more / most",
+          "body": "3+ syllables and most 2-syllable adjectives.",
+          "examples": [
+            { "english": "more interesting → most interesting" },
+            { "english": "the most talented person", "note": "Always 'the' before superlative." }
+          ]
+        },
+        {
+          "heading": "Irregulars — memorize",
+          "body": "These don't follow the pattern.",
+          "bullets": [
+            "good → better → best",
+            "bad → worse → worst",
+            "far → farther/further → farthest/furthest",
+            "little → less → least",
+            "many/much → more → most"
+          ]
+        }
+      ],
+      "vietnameseTips": [
+        "Tiếng Việt 'hơn'/'nhất' đứng SAU adj. Tiếng Anh thêm đuôi hoặc more/most TRƯỚC adj.",
+        "KHÔNG kết hợp 'more' với '-er': 'more taller' SAI."
+      ],
+      "commonMistakes": [
+        { "wrong": "She is more taller than me.", "right": "She is taller than me.", "explanation": "Không kết hợp more với -er." },
+        { "wrong": "This is the most good book.", "right": "This is the best book.", "explanation": "Good → best." },
+        { "wrong": "She is most beautiful girl.", "right": "She is the most beautiful girl.", "explanation": "Superlative cần 'the'." }
+      ],
+      "practice": [
+        { "vietnamese": "Anh ấy nhanh hơn tôi.", "english": "He is faster than me." },
+        { "vietnamese": "Đây là cuốn sách hay nhất tôi từng đọc.", "english": "This is the best book I have ever read." },
+        { "vietnamese": "Tiếng Anh khó hơn tiếng Việt.", "english": "English is more difficult than Vietnamese." }
+      ]
+    },
+    {
+      "id": "lesson-modal-verbs",
+      "slug": "modal-verbs",
+      "title": "Modal Verbs: can, should, must, may",
+      "description": "Modals add flavor: ability, obligation, advice, possibility. Mix them up and your sentence means something different.",
+      "rule": "Modal + base verb (no 'to', no -s, no -ing). Choose by intent: ability (can), advice (should), obligation (must), possibility (may).",
+      "examples": [
+        "I can swim.",
+        "You should rest.",
+        "You must wear a seatbelt.",
+        "It may rain."
+      ],
+      "relatedErrorPattern": "modal",
+      "level": "intermediate",
+      "category": "grammar",
+      "estimatedMinutes": 6,
+      "errorPatternKeys": ["modal", "modals", "modal-verb"],
+      "tldr": {
+        "rule": "Pick by intent: CAN (can do) · SHOULD (advice) · MUST (obligation) · MAY (possibility). Always + base verb.",
+        "example": "You should see a doctor. You must rest. It may help.",
+        "exampleVietnamese": "Bạn nên đi khám. Bạn phải nghỉ ngơi. Có thể sẽ đỡ."
+      },
+      "scenarios": [
+        {
+          "context": "🙏 Asking politely",
+          "why": "'Could you' is more polite than 'can you'.",
+          "english": "Could you help me with this?",
+          "vietnamese": "Bạn có thể giúp tôi việc này không?"
+        },
+        {
+          "context": "🏥 Giving advice",
+          "why": "'Should' is for suggestions and recommendations.",
+          "english": "You should drink more water.",
+          "vietnamese": "Bạn nên uống nhiều nước hơn."
+        },
+        {
+          "context": "🚦 Following a rule",
+          "why": "'Must' for strong obligation (rules, laws).",
+          "english": "You must stop at red lights.",
+          "vietnamese": "Bạn phải dừng khi đèn đỏ."
+        },
+        {
+          "context": "☔ Guessing the weather",
+          "why": "'May/might' = possibility, not certainty.",
+          "english": "It might rain this afternoon.",
+          "vietnamese": "Chiều nay có thể mưa."
+        }
+      ],
+      "quickChecks": [
+        {
+          "question": "She ___ swim very well.",
+          "options": ["can", "cans", "can to", "is can"],
+          "correctIndex": 0,
+          "explanation": "Modal verb: no -s, no 'to'. Just 'can swim'."
+        },
+        {
+          "question": "You ___ smoke in this building. It's against the rules.",
+          "options": ["don't have to", "mustn't", "shouldn't", "may not"],
+          "correctIndex": 1,
+          "explanation": "Strict prohibition → 'mustn't'. 'Don't have to' means 'not necessary', different meaning."
+        },
+        {
+          "question": "You look tired. You ___ go to bed early.",
+          "options": ["must", "should", "may", "can"],
+          "correctIndex": 1,
+          "explanation": "Friendly advice → 'should'."
+        },
+        {
+          "question": "___ I borrow your pen?",
+          "options": ["Will", "Should", "May", "Must"],
+          "correctIndex": 2,
+          "explanation": "Polite request for permission → 'May I…?'"
+        }
+      ],
+      "sections": [
+        {
+          "heading": "Can / Could — ability & permission",
+          "body": "Can = present ability. Could = past ability or polite request.",
+          "examples": [
+            { "english": "I can speak English." },
+            { "english": "Could you help me?", "note": "More polite than 'Can you'." }
+          ]
+        },
+        {
+          "heading": "Must / Have to — obligation",
+          "body": "Must = internal sense of duty or strict rule. Have to = external obligation.",
+          "bullets": [
+            "Mustn't = strictly forbidden (You mustn't smoke here)",
+            "Don't have to = not required (different from mustn't!)"
+          ]
+        },
+        {
+          "heading": "Should — advice",
+          "body": "Friendly suggestion, weaker than must.",
+          "examples": [
+            { "english": "You should see a doctor." },
+            { "english": "We shouldn't waste water." }
+          ]
+        },
+        {
+          "heading": "May / Might — possibility",
+          "body": "Something is possible but not certain.",
+          "examples": [
+            { "english": "It may rain tomorrow." },
+            { "english": "She might come to the party.", "note": "Slightly less certain than 'may'." }
+          ]
+        }
+      ],
+      "vietnameseTips": [
+        "Modal verbs KHÔNG thêm -s, KHÔNG đi với 'to'. Sai phổ biến: 'She cans speak' → đúng 'She can speak'.",
+        "'Mustn't' (cấm) ≠ 'don't have to' (không cần). Phân biệt rõ."
+      ],
+      "commonMistakes": [
+        { "wrong": "She can to swim.", "right": "She can swim.", "explanation": "Sau modal không có 'to'." },
+        { "wrong": "He musts go home.", "right": "He must go home.", "explanation": "Modal không thêm -s." },
+        { "wrong": "You don't have to smoke here.", "right": "You mustn't smoke here.", "explanation": "Cấm → mustn't, không 'don't have to'." }
+      ],
+      "practice": [
+        { "vietnamese": "Bạn có thể giúp tôi mở cửa không?", "english": "Could you help me open the door?" },
+        { "vietnamese": "Anh ấy nên đi ngủ sớm.", "english": "He should go to bed early." },
+        { "vietnamese": "Trời có thể mưa chiều nay.", "english": "It may rain this afternoon." }
+      ]
+    },
+    {
+      "id": "lesson-conditionals",
+      "slug": "conditionals",
+      "title": "Conditionals (if-clauses)",
+      "description": "Real, possible, imaginary, regret — 4 types of 'if' for 4 different feelings.",
+      "rule": "Each conditional pairs a tense in the if-clause with a tense in the result. Mix correctly or the meaning shifts.",
+      "examples": [
+        "If water boils, it evaporates. (zero — fact)",
+        "If it rains, I will stay home. (first — likely)",
+        "If I were rich, I would travel. (second — imagined)",
+        "If I had studied, I would have passed. (third — past regret)"
+      ],
+      "relatedErrorPattern": "conditional",
+      "level": "intermediate",
+      "category": "grammar",
+      "estimatedMinutes": 7,
+      "errorPatternKeys": ["conditional", "conditionals", "if-clause"],
+      "tldr": {
+        "rule": "Ask: how real is it? Fact → zero. Likely → first. Imagined now → second. Past regret → third.",
+        "example": "If I were you, I would apologize. (you're not me, but imagining)",
+        "exampleVietnamese": "Nếu tôi là bạn, tôi sẽ xin lỗi. (giả định)"
+      },
+      "scenarios": [
+        {
+          "context": "🌧 Planning around the weather",
+          "why": "Likely future event → first conditional.",
+          "english": "If it rains tomorrow, I'll bring an umbrella.",
+          "vietnamese": "Nếu mai trời mưa, tôi sẽ mang ô."
+        },
+        {
+          "context": "💭 Daydreaming",
+          "why": "Imagining something not true → second conditional with 'were'.",
+          "english": "If I won the lottery, I would travel the world.",
+          "vietnamese": "Nếu tôi trúng số, tôi sẽ đi du lịch khắp thế giới."
+        },
+        {
+          "context": "😔 Regretting a past decision",
+          "why": "Past possibility that didn't happen → third conditional.",
+          "english": "If I had studied harder, I would have passed.",
+          "vietnamese": "Nếu tôi học chăm hơn, tôi đã đậu rồi."
+        },
+        {
+          "context": "🔬 Stating a fact",
+          "why": "Always-true cause-effect → zero conditional, present tense both sides.",
+          "english": "If you heat ice, it melts.",
+          "vietnamese": "Nếu bạn đun đá, nó tan."
+        }
+      ],
+      "quickChecks": [
+        {
+          "question": "If it ___ tomorrow, I will stay home.",
+          "options": ["rain", "rains", "will rain", "rained"],
+          "correctIndex": 1,
+          "explanation": "First conditional: if + present, result + will. Never 'will' in the if-clause."
+        },
+        {
+          "question": "If I ___ you, I would tell the truth.",
+          "options": ["am", "was", "were", "be"],
+          "correctIndex": 2,
+          "explanation": "Second conditional traditionally uses 'were' for all subjects (formal/standard)."
+        },
+        {
+          "question": "If she had known, she ___ helped.",
+          "options": ["would", "would have", "will have", "had"],
+          "correctIndex": 1,
+          "explanation": "Third conditional: if + had + V3, result = would have + V3."
+        },
+        {
+          "question": "If you heat water to 100°C, it ___.",
+          "options": ["boil", "boils", "will boil", "boiled"],
+          "correctIndex": 1,
+          "explanation": "Zero conditional (universal fact): both sides in present simple."
+        }
+      ],
+      "sections": [
+        {
+          "heading": "Zero — facts",
+          "body": "If + present, present. For scientific facts and rules.",
+          "examples": [
+            { "english": "If you heat ice, it melts." }
+          ]
+        },
+        {
+          "heading": "First — likely future",
+          "body": "If + present, will + base. For things that may actually happen.",
+          "bullets": [
+            "Never use 'will' in the if-clause",
+            "Can swap 'will' for can/may/should depending on certainty"
+          ]
+        },
+        {
+          "heading": "Second — imagined now",
+          "body": "If + past, would + base. For unreal or unlikely present situations.",
+          "examples": [
+            { "english": "If I were rich, I would buy a house.", "note": "'Were' for all subjects in formal English." }
+          ]
+        },
+        {
+          "heading": "Third — regret about past",
+          "body": "If + had + V3, would have + V3. About what could have happened but didn't.",
+          "examples": [
+            { "english": "If I had studied, I would have passed." }
+          ]
+        }
+      ],
+      "vietnameseTips": [
+        "Tiếng Việt 'nếu… thì…' không phân biệt thực tế hay tưởng tượng — tiếng Anh chia tense.",
+        "Second/third conditional dùng 'were' (không 'was') cho mọi ngôi (chuẩn)."
+      ],
+      "commonMistakes": [
+        { "wrong": "If it will rain, I will stay home.", "right": "If it rains, I will stay home.", "explanation": "Vế if không dùng 'will'." },
+        { "wrong": "If I was rich…", "right": "If I were rich…", "explanation": "Second conditional dùng 'were'." },
+        { "wrong": "If I had studied, I would pass.", "right": "If I had studied, I would have passed.", "explanation": "Third conditional: would HAVE + V3." }
+      ],
+      "practice": [
+        { "vietnamese": "Nếu trời mưa, tôi sẽ mang ô.", "english": "If it rains, I will bring an umbrella." },
+        { "vietnamese": "Nếu tôi là bạn, tôi sẽ học chăm hơn.", "english": "If I were you, I would study harder." },
+        { "vietnamese": "Nếu tôi biết, tôi đã giúp bạn rồi.", "english": "If I had known, I would have helped you." }
+      ]
+    },
+    {
+      "id": "lesson-passive-voice",
+      "slug": "passive-voice",
+      "title": "Passive Voice",
+      "description": "Shift the focus from doer to receiver. Use it when WHO doesn't matter — or matters less than WHAT.",
+      "rule": "Passive = be + V3 (past participle). The original object becomes the new subject.",
+      "examples": [
+        "They build houses. → Houses are built.",
+        "She wrote the book. → The book was written by her."
+      ],
+      "relatedErrorPattern": "passive",
+      "level": "intermediate",
+      "category": "grammar",
+      "estimatedMinutes": 6,
+      "errorPatternKeys": ["passive", "passive-voice", "voice"],
+      "tldr": {
+        "rule": "Use when the doer is unknown, obvious, or unimportant. Form: be (matching tense) + V3.",
+        "example": "My wallet was stolen. (We don't know who.)",
+        "exampleVietnamese": "Ví của tôi bị trộm. (Không biết ai.)"
+      },
+      "scenarios": [
+        {
+          "context": "🚨 Reporting a theft",
+          "why": "Doer unknown → passive.",
+          "english": "My bike was stolen last night.",
+          "vietnamese": "Xe đạp của tôi bị trộm tối qua."
+        },
+        {
+          "context": "🏗 Describing a famous building",
+          "why": "Builder name is less important than the building itself.",
+          "english": "The Sydney Opera House was designed in 1957.",
+          "vietnamese": "Nhà hát Opera Sydney được thiết kế năm 1957."
+        },
+        {
+          "context": "🌐 Stating a fact",
+          "why": "Subject is universal — saying everyone speaks English globally.",
+          "english": "English is spoken in over 50 countries.",
+          "vietnamese": "Tiếng Anh được nói ở hơn 50 quốc gia."
+        },
+        {
+          "context": "📦 Describing a process",
+          "why": "Focus on the steps, not the workers.",
+          "english": "The package is delivered within 3 days.",
+          "vietnamese": "Hàng được giao trong 3 ngày."
+        }
+      ],
+      "quickChecks": [
+        {
+          "question": "The book ___ by Hemingway.",
+          "options": ["wrote", "was wrote", "was written", "is writing"],
+          "correctIndex": 2,
+          "explanation": "Past passive: was + V3 (written, not wrote)."
+        },
+        {
+          "question": "My wallet ___ yesterday.",
+          "options": ["was steal", "was stolen", "stole", "is stolen"],
+          "correctIndex": 1,
+          "explanation": "Past passive of 'steal' → was stolen."
+        },
+        {
+          "question": "The work ___ tomorrow.",
+          "options": ["will do", "will be do", "will done", "will be done"],
+          "correctIndex": 3,
+          "explanation": "Future passive: will be + V3."
+        },
+        {
+          "question": "English ___ everywhere.",
+          "options": ["speaks", "is speaking", "is spoken", "spoken"],
+          "correctIndex": 2,
+          "explanation": "Present passive: am/is/are + V3."
+        }
+      ],
+      "sections": [
+        {
+          "heading": "Forming passive — match the tense",
+          "body": "Conjugate 'be' to match the tense, then add V3.",
+          "bullets": [
+            "Present: is/are + V3 → 'Coffee is grown in Brazil'",
+            "Past: was/were + V3 → 'The cake was eaten'",
+            "Present perfect: has/have been + V3",
+            "Future: will be + V3",
+            "Modal: modal + be + V3 → 'It must be done'"
+          ]
+        },
+        {
+          "heading": "When to use passive",
+          "body": "Pick passive when the doer doesn't matter, is unknown, or is obvious.",
+          "examples": [
+            { "english": "My wallet was stolen.", "note": "Don't know who." },
+            { "english": "English is spoken worldwide.", "note": "Doesn't matter who." }
+          ]
+        },
+        {
+          "heading": "Use 'by' only when relevant",
+          "body": "Mention the doer only if it adds meaning.",
+          "examples": [
+            { "english": "The novel was written by Hemingway.", "note": "Author matters." },
+            { "english": "The bridge was built in 1990.", "note": "Builder doesn't matter — no 'by'." }
+          ]
+        }
+      ],
+      "vietnameseTips": [
+        "Tiếng Việt 'được/bị' không luôn = passive trong tiếng Anh. 'Tôi bị mất ví' = 'I lost my wallet' chứ không phải 'I was lost my wallet'."
+      ],
+      "commonMistakes": [
+        { "wrong": "The book is wrote by him.", "right": "The book is written by him.", "explanation": "Sau be phải là V3 (written)." },
+        { "wrong": "My wallet was stolen by someone.", "right": "My wallet was stolen.", "explanation": "Tác nhân không cụ thể → bỏ 'by'." },
+        { "wrong": "The work will be do tomorrow.", "right": "The work will be done tomorrow.", "explanation": "Modal + be + V3." }
+      ],
+      "practice": [
+        { "vietnamese": "Cuốn sách này được viết năm 1990.", "english": "This book was written in 1990." },
+        { "vietnamese": "Tiếng Anh được dạy ở khắp nơi.", "english": "English is taught everywhere." },
+        { "vietnamese": "Dự án đã được hoàn thành.", "english": "The project has been finished." }
+      ]
+    },
+    {
+      "id": "lesson-word-order",
+      "slug": "word-order",
+      "title": "Word Order",
+      "description": "Subject-Verb-Object is fixed. Where do adverbs go? How do adjectives stack? Master the order so your English sounds natural.",
+      "rule": "S+V+O. Frequency adverbs before main verb, after 'be'. Multiple adjectives follow OSASCOMP order.",
+      "examples": [
+        "She always drinks coffee.",
+        "She is always happy.",
+        "a beautiful big old red wooden table"
+      ],
+      "relatedErrorPattern": "word-order",
+      "level": "intermediate",
+      "category": "structure",
+      "estimatedMinutes": 6,
+      "errorPatternKeys": ["word-order", "structure", "order"],
+      "tldr": {
+        "rule": "Adverbs of frequency before normal verb, after 'be'. Adjectives: opinion → size → age → color → origin → material → noun.",
+        "example": "She is always late. I bought a beautiful small red Vietnamese basket.",
+        "exampleVietnamese": "Cô ấy luôn đến muộn. Tôi mua một cái giỏ Việt Nam nhỏ xinh màu đỏ."
+      },
+      "scenarios": [
+        {
+          "context": "🌅 Talking about your daily routine",
+          "why": "Frequency adverb (always/often/never) before the main verb.",
+          "english": "I always check my email first thing.",
+          "vietnamese": "Tôi luôn kiểm tra email đầu tiên."
+        },
+        {
+          "context": "🛍 Describing a product",
+          "why": "Stack adjectives in OSASCOMP order — opinion comes first.",
+          "english": "She wore a pretty long silk dress.",
+          "vietnamese": "Cô ấy mặc một cái váy lụa dài đẹp."
+        },
+        {
+          "context": "💼 Describing what you do well",
+          "why": "Manner adverb after the object, not between verb and object.",
+          "english": "He speaks English fluently.",
+          "vietnamese": "Anh ấy nói tiếng Anh trôi chảy."
+        },
+        {
+          "context": "🎁 Saying who got what",
+          "why": "Indirect + direct object order: give someone something.",
+          "english": "I gave my friend a book.",
+          "vietnamese": "Tôi tặng bạn tôi một quyển sách."
+        }
+      ],
+      "quickChecks": [
+        {
+          "question": "I ___ to the gym.",
+          "options": ["go always", "always go", "go to always", "always to go"],
+          "correctIndex": 1,
+          "explanation": "Frequency adverb 'always' goes BEFORE the main verb."
+        },
+        {
+          "question": "She speaks ___.",
+          "options": ["very well English", "well English very", "English very well", "very English well"],
+          "correctIndex": 2,
+          "explanation": "Manner adverb 'well' goes after the object 'English'."
+        },
+        {
+          "question": "I bought a ___ car.",
+          "options": ["red big", "big red", "big and red", "red, big"],
+          "correctIndex": 1,
+          "explanation": "Size comes before color in OSASCOMP order."
+        },
+        {
+          "question": "She is ___ late.",
+          "options": ["never", "never is", "is never the", "the never"],
+          "correctIndex": 0,
+          "explanation": "After 'be', frequency adverb comes RIGHT AFTER: 'She is never late'."
+        }
+      ],
+      "sections": [
+        {
+          "heading": "Basic word order",
+          "body": "Subject + Verb + Object is fixed. Vietnamese is more flexible, English is not.",
+          "examples": [
+            { "english": "I love you.", "vietnamese": "Tôi yêu bạn." },
+            { "english": "She gave me a book.", "note": "S + V + indirect O + direct O" }
+          ]
+        },
+        {
+          "heading": "Frequency adverbs",
+          "body": "Always, usually, often, sometimes, rarely, never.",
+          "bullets": [
+            "Before the main verb: I always brush my teeth.",
+            "After 'be': She is never late.",
+            "After modals: We can usually finish on time."
+          ]
+        },
+        {
+          "heading": "Adjective order — OSASCOMP",
+          "body": "Opinion → Size → Age → Shape → Color → Origin → Material → Purpose → Noun.",
+          "examples": [
+            { "english": "a beautiful small old round red Vietnamese wooden cooking pot", "note": "Theoretical — in practice 2-3 adjectives max." },
+            { "english": "a nice young Vietnamese woman" }
+          ]
+        }
+      ],
+      "vietnameseTips": [
+        "Tiếng Việt: tính từ đứng SAU danh từ ('nhà to'). Tiếng Anh: TRƯỚC ('a big house').",
+        "Có nhiều tính từ? OSASCOMP order, hoặc đơn giản hơn: tách thành 2 câu."
+      ],
+      "commonMistakes": [
+        { "wrong": "I like very much English.", "right": "I like English very much.", "explanation": "'Very much' đặt cuối câu." },
+        { "wrong": "She speaks well English.", "right": "She speaks English well.", "explanation": "Trạng từ cách thức sau tân ngữ." },
+        { "wrong": "a red big car", "right": "a big red car", "explanation": "Size trước Color." }
+      ],
+      "practice": [
+        { "vietnamese": "Tôi luôn ăn sáng lúc 7 giờ.", "english": "I always have breakfast at 7." },
+        { "vietnamese": "Cô ấy là một cô gái Việt Nam xinh đẹp.", "english": "She is a beautiful Vietnamese girl." },
+        { "vietnamese": "Anh ấy nói tiếng Anh rất giỏi.", "english": "He speaks English very well." }
+      ]
+    },
+    {
+      "id": "lesson-relative-clauses",
+      "slug": "relative-clauses",
+      "title": "Relative Clauses",
+      "description": "Who, which, that, whose, where — add information to a noun without starting a new sentence.",
+      "rule": "Who = people. Which = things. That = either (in defining clauses only). Whose = possession. Where = place.",
+      "examples": [
+        "The man who lives next door is friendly.",
+        "The book which I bought is interesting.",
+        "The city where I was born is Hanoi."
+      ],
+      "relatedErrorPattern": "relative-clause",
+      "level": "intermediate",
+      "category": "structure",
+      "estimatedMinutes": 6,
+      "errorPatternKeys": ["relative-clause", "relative", "who-which-that"],
+      "tldr": {
+        "rule": "Who for people, which for things, that for either. Commas → non-defining (extra info, can drop).",
+        "example": "My brother, who lives in Hanoi, is a doctor.",
+        "exampleVietnamese": "Anh tôi, sống ở Hà Nội, là bác sĩ."
+      },
+      "scenarios": [
+        {
+          "context": "👋 Introducing a friend",
+          "why": "Add info about a person → 'who'.",
+          "english": "This is Lan, who works with me.",
+          "vietnamese": "Đây là Lan, đồng nghiệp tôi."
+        },
+        {
+          "context": "📖 Recommending a book",
+          "why": "Identify which specific book → defining clause, no commas.",
+          "english": "The book that I recommended is on the table.",
+          "vietnamese": "Cuốn sách tôi giới thiệu nằm trên bàn."
+        },
+        {
+          "context": "🏘 Telling someone your hometown",
+          "why": "Reference a place → 'where'.",
+          "english": "This is the town where I grew up.",
+          "vietnamese": "Đây là thị trấn tôi lớn lên."
+        },
+        {
+          "context": "👨‍👩‍👧 Talking about a friend's family",
+          "why": "Possession → 'whose'.",
+          "english": "I have a friend whose mom is a chef.",
+          "vietnamese": "Tôi có một người bạn có mẹ là đầu bếp."
+        }
+      ],
+      "quickChecks": [
+        {
+          "question": "The book ___ I read was great.",
+          "options": ["who", "which", "where", "whose"],
+          "correctIndex": 1,
+          "explanation": "Book is a thing → 'which' (or 'that')."
+        },
+        {
+          "question": "The man ___ called me is my uncle.",
+          "options": ["which", "who", "where", "whose"],
+          "correctIndex": 1,
+          "explanation": "Man is a person → 'who'."
+        },
+        {
+          "question": "This is the school ___ I studied.",
+          "options": ["who", "which", "where", "whose"],
+          "correctIndex": 2,
+          "explanation": "Location → 'where'."
+        },
+        {
+          "question": "I met a woman ___ son is famous.",
+          "options": ["who", "which", "where", "whose"],
+          "correctIndex": 3,
+          "explanation": "Possession (the woman's son) → 'whose'."
+        }
+      ],
+      "sections": [
+        {
+          "heading": "Defining vs Non-defining",
+          "body": "Defining = essential info, no commas. Non-defining = extra info, commas both sides.",
+          "examples": [
+            { "english": "The man who called you is my friend.", "note": "Defining — which man?" },
+            { "english": "My father, who lives in Hanoi, is a doctor.", "note": "Non-defining — just adding info." }
+          ],
+          "bullets": [
+            "Defining: no commas, 'that' is OK",
+            "Non-defining: commas both sides, NEVER 'that'"
+          ]
+        },
+        {
+          "heading": "When to drop the pronoun",
+          "body": "If who/which/that is the OBJECT of a defining clause, you can drop it.",
+          "examples": [
+            { "english": "The book (that) I bought is interesting.", "note": "That = object of 'bought' → droppable." },
+            { "english": "The man who called me is here.", "note": "Who = subject → keep it." }
+          ]
+        },
+        {
+          "heading": "Whose & Where",
+          "body": "Special cases for possession and location.",
+          "examples": [
+            { "english": "I met a woman whose son is famous." },
+            { "english": "This is the school where I studied." }
+          ]
+        }
+      ],
+      "vietnameseTips": [
+        "Tiếng Việt dùng 'mà' cho cả người và vật. Tiếng Anh phân biệt who (người) vs which (vật).",
+        "'That' KHÔNG dùng trong non-defining clause (có dấu phẩy)."
+      ],
+      "commonMistakes": [
+        { "wrong": "The book who I read…", "right": "The book which I read…", "explanation": "Book là vật → which." },
+        { "wrong": "My mother that lives in HCMC is a teacher.", "right": "My mother, who lives in HCMC, is a teacher.", "explanation": "Non-defining (chỉ một mẹ) → comma + who." }
+      ],
+      "practice": [
+        { "vietnamese": "Người phụ nữ đang ngồi đó là cô tôi.", "english": "The woman who is sitting there is my aunt." },
+        { "vietnamese": "Bộ phim tôi xem hôm qua rất hay.", "english": "The movie (that) I watched yesterday was great." },
+        { "vietnamese": "Đây là thành phố tôi lớn lên.", "english": "This is the city where I grew up." }
+      ]
+    }
+  ]
+}

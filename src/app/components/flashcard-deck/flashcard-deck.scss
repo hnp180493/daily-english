@@ -190,7 +190,7 @@
 
 // Actions Section
 .actions-section {
-  @apply mb-6 text-center;
+  @apply mb-6 flex flex-wrap justify-center gap-3;
 }
 
 .action-btn {
@@ -395,5 +395,168 @@
 
   .btn-icon {
     @apply text-2xl font-bold;
+  }
+}
+
+// =====================
+// Smart Decks section
+// =====================
+.smart-decks-section,
+.custom-decks-section {
+  @apply mb-6;
+}
+
+.section-header {
+  @apply flex items-center justify-between mb-3 flex-wrap gap-2;
+}
+
+.smart-decks-grid {
+  @apply grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2;
+}
+
+.smart-deck-card {
+  @apply flex flex-col items-center justify-center p-3 rounded-lg cursor-pointer transition;
+  @apply bg-slate-100 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/60;
+  @apply hover:border-purple-400 dark:hover:border-purple-500/60 hover:bg-purple-50 dark:hover:bg-slate-800;
+  text-align: center;
+
+  &:disabled,
+  &.empty {
+    @apply opacity-40 cursor-not-allowed;
+  }
+
+  .deck-icon {
+    @apply text-3xl mb-1;
+  }
+
+  .deck-label {
+    @apply text-sm font-medium text-slate-700 dark:text-slate-200;
+  }
+
+  .deck-count {
+    @apply text-xs text-slate-500 dark:text-slate-400 mt-0.5;
+  }
+}
+
+.link-btn {
+  @apply text-sm text-purple-600 dark:text-purple-300 hover:underline;
+}
+
+.create-deck-form,
+.create-card-form {
+  @apply bg-slate-50 dark:bg-slate-900/40 border border-slate-200 dark:border-slate-700/60 rounded-lg p-3 mb-3;
+}
+
+.form-input {
+  @apply w-full px-3 py-2 rounded-md mb-2 text-sm;
+  @apply bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700;
+  @apply text-slate-900 dark:text-slate-100 placeholder:text-slate-400;
+  @apply focus:outline-none focus:ring-2 focus:ring-purple-500/40;
+}
+
+.form-hint {
+  @apply text-xs text-slate-500 dark:text-slate-400 mb-2;
+}
+
+.form-actions {
+  @apply flex gap-2 flex-wrap;
+}
+
+.custom-decks-list {
+  @apply space-y-2;
+}
+
+.custom-deck-item {
+  @apply flex items-center justify-between gap-3 p-3 rounded-lg;
+  @apply bg-white dark:bg-slate-900/60 border border-slate-200 dark:border-slate-700/60;
+}
+
+.deck-info {
+  @apply flex-1 min-w-0;
+
+  .deck-name {
+    @apply text-slate-900 dark:text-slate-100 mr-2;
+  }
+
+  .deck-meta {
+    @apply text-xs text-slate-500 dark:text-slate-400;
+  }
+
+  .deck-desc {
+    @apply text-xs text-slate-500 dark:text-slate-400 mt-1 truncate;
+  }
+}
+
+.deck-actions {
+  @apply flex gap-2;
+}
+
+.action-btn.small {
+  @apply px-3 py-1.5 text-sm;
+}
+
+.leech-banner {
+  @apply bg-amber-50 dark:bg-amber-500/10 border border-amber-200 dark:border-amber-500/30;
+  @apply text-amber-900 dark:text-amber-200 text-sm rounded-lg p-3 mb-3;
+}
+
+.select-hint {
+  @apply text-xs text-purple-600 dark:text-purple-300 font-normal ml-2;
+}
+
+.card-item.selectable {
+  @apply cursor-pointer;
+
+  &:hover {
+    @apply border-purple-400 dark:border-purple-500/50;
+  }
+}
+
+.card-item.selected {
+  @apply bg-purple-50 dark:bg-purple-500/10 border-purple-400 dark:border-purple-500/60;
+}
+
+.card-item.suspended {
+  @apply opacity-50;
+}
+
+.card-lapses {
+  @apply text-xs text-red-600 dark:text-red-300 mt-1;
+}
+
+.meta-btn {
+  @apply text-sm text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200;
+  @apply px-2 py-1 rounded transition;
+  cursor: pointer;
+  background: none;
+  border: none;
+
+  &:hover {
+    @apply bg-slate-200 dark:bg-slate-700/60;
+  }
+}
+
+.empty-options {
+  @apply max-w-xl mx-auto mt-6 space-y-4 text-left;
+}
+
+.empty-option {
+  @apply flex gap-3 p-4 rounded-lg;
+  @apply bg-slate-100 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-700/60;
+
+  .opt-num {
+    @apply text-2xl text-purple-600 dark:text-purple-300 font-bold leading-none;
+  }
+
+  .opt-body {
+    @apply flex-1 min-w-0;
+
+    strong {
+      @apply block text-slate-900 dark:text-slate-100 mb-1;
+    }
+
+    p {
+      @apply text-sm text-slate-600 dark:text-slate-400 mb-2;
+    }
   }
 }

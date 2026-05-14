@@ -1,0 +1,177 @@
+{
+  "version": 1,
+  "updated": "2026-05-14",
+  "prompts": [
+    {
+      "id": "writing-favorite-place",
+      "slug": "describe-your-favorite-place",
+      "title": "Describe your favorite place",
+      "prompt": "Describe a place where you feel most relaxed and happy. Explain where it is, what makes it special, and how often you go there.",
+      "guidingQuestions": [
+        "Where is this place and how did you discover it?",
+        "What do you usually do when you are there?",
+        "Why do you feel relaxed in this place compared to others?"
+      ],
+      "level": "beginner",
+      "type": "descriptive",
+      "wordCountTarget": { "min": 120, "max": 180 },
+      "estimatedMinutes": 20,
+      "hints": [
+        "Use sensory details — sight, sound, smell.",
+        "Use simple present tense to describe the place.",
+        "Connect ideas with 'because', 'so', 'when'."
+      ],
+      "sampleOutline": [
+        "Paragraph 1: Introduce the place and its location.",
+        "Paragraph 2: Describe what makes it special (sights, sounds, atmosphere).",
+        "Paragraph 3: Explain how often you go and how it makes you feel."
+      ]
+    },
+    {
+      "id": "writing-daily-routine",
+      "slug": "your-typical-day",
+      "title": "Describe your typical day",
+      "prompt": "Write about your typical day from morning to evening. Mention what you eat, where you go, who you meet, and what you usually feel.",
+      "guidingQuestions": [
+        "What time do you wake up and what is your morning routine?",
+        "How do you spend the middle of the day?",
+        "What do you do in the evening before bed?"
+      ],
+      "level": "beginner",
+      "type": "descriptive",
+      "wordCountTarget": { "min": 100, "max": 150 },
+      "estimatedMinutes": 15,
+      "hints": [
+        "Use simple present tense for routine.",
+        "Use sequencing words: first, then, after that, finally.",
+        "Try to vary the verbs you use."
+      ]
+    },
+    {
+      "id": "writing-tech-pros-cons",
+      "slug": "smartphones-pros-and-cons",
+      "title": "Are smartphones helping or hurting young people?",
+      "prompt": "Some people say smartphones help young people stay connected and learn. Others say smartphones reduce focus and damage real-world relationships. Discuss both views and give your opinion.",
+      "guidingQuestions": [
+        "What are the main benefits people mention?",
+        "What problems do critics point out?",
+        "What is your own view, and why?"
+      ],
+      "level": "intermediate",
+      "type": "discussion",
+      "wordCountTarget": { "min": 200, "max": 280 },
+      "estimatedMinutes": 30,
+      "hints": [
+        "Spend one paragraph on each view, then state your opinion.",
+        "Use linking phrases: on one hand, on the other hand, however, in my opinion.",
+        "Give a real example or short anecdote to support each view."
+      ],
+      "sampleOutline": [
+        "Introduction: paraphrase the question and state position.",
+        "Body 1: arguments in favor of smartphones (connection, learning).",
+        "Body 2: arguments against (focus, real relationships).",
+        "Conclusion: restate your opinion clearly."
+      ]
+    },
+    {
+      "id": "writing-work-from-home",
+      "slug": "work-from-home-opinion",
+      "title": "Should companies allow employees to work from home permanently?",
+      "prompt": "Some companies allow employees to work from home permanently, while others insist on returning to the office. Do you think permanent remote work is a good idea? Give reasons for your answer.",
+      "guidingQuestions": [
+        "What are the benefits of permanent remote work for employees?",
+        "What problems might it cause for companies or teams?",
+        "What is your overall position?"
+      ],
+      "level": "intermediate",
+      "type": "opinion",
+      "wordCountTarget": { "min": 220, "max": 300 },
+      "estimatedMinutes": 30,
+      "hints": [
+        "Take a clear position in the introduction.",
+        "Each body paragraph should make one main point and develop it.",
+        "Use specific examples — a job role or a real company helps."
+      ]
+    },
+    {
+      "id": "writing-traffic-solutions",
+      "slug": "city-traffic-problems",
+      "title": "Solutions to city traffic problems",
+      "prompt": "Traffic in many large cities, including Vietnamese cities, has become a serious problem. What are the causes of this problem, and what can governments and citizens do to solve it?",
+      "guidingQuestions": [
+        "What are the main causes of city traffic problems?",
+        "What can governments do? (infrastructure, policy)",
+        "What can ordinary people do? (habits, transportation choice)"
+      ],
+      "level": "intermediate",
+      "type": "problem-solution",
+      "wordCountTarget": { "min": 220, "max": 300 },
+      "estimatedMinutes": 30,
+      "hints": [
+        "Structure: causes → government solutions → citizen solutions → conclusion.",
+        "Use Vietnam-specific examples — Ho Chi Minh, Hanoi.",
+        "Avoid vague phrases like 'do something' — be specific."
+      ]
+    },
+    {
+      "id": "writing-childhood-memory",
+      "slug": "memorable-childhood-event",
+      "title": "Write about a memorable event from your childhood",
+      "prompt": "Tell the story of an event from your childhood that you still remember clearly today. Describe what happened, who was involved, and why it stayed with you.",
+      "guidingQuestions": [
+        "When and where did the event happen?",
+        "Who was involved and what did each person do?",
+        "Why is this memory still important to you?"
+      ],
+      "level": "intermediate",
+      "type": "narrative",
+      "wordCountTarget": { "min": 180, "max": 260 },
+      "estimatedMinutes": 25,
+      "hints": [
+        "Use simple past and past continuous tense.",
+        "Include direct dialogue if relevant.",
+        "End with a reflection on what you learned."
+      ]
+    },
+    {
+      "id": "writing-climate-action",
+      "slug": "individual-climate-action",
+      "title": "Can individuals really fight climate change?",
+      "prompt": "Some argue that climate change is too large a problem for individuals to address, and that only governments and corporations can make a real difference. Others believe that personal choices matter. Discuss both views and give your own opinion, supported by examples.",
+      "guidingQuestions": [
+        "Why might individual action seem useless against climate change?",
+        "What evidence supports the value of personal choices?",
+        "How do individual and systemic action relate?"
+      ],
+      "level": "advanced",
+      "type": "argumentative",
+      "wordCountTarget": { "min": 280, "max": 380 },
+      "estimatedMinutes": 40,
+      "hints": [
+        "Acknowledge the strongest version of the opposing view (steelman it).",
+        "Use precise vocabulary: emissions, decarbonization, externalities, nudge.",
+        "Avoid simply listing — analyze and connect ideas."
+      ]
+    },
+    {
+      "id": "writing-ai-education",
+      "slug": "ai-in-education",
+      "title": "Should schools encourage students to use AI tools?",
+      "prompt": "AI tools like chatbots can write essays, solve math problems, and explain difficult ideas. Should schools encourage students to use these tools in their studies, or should their use be restricted? Justify your view with concrete examples.",
+      "guidingQuestions": [
+        "How might AI tools help genuine learning?",
+        "What are the risks if students rely on them too much?",
+        "What policies do you think schools should adopt?"
+      ],
+      "level": "advanced",
+      "type": "opinion",
+      "wordCountTarget": { "min": 280, "max": 380 },
+      "estimatedMinutes": 40,
+      "hints": [
+        "Distinguish between using AI as a tutor vs. as a substitute for thinking.",
+        "Use hedging language: 'might', 'tends to', 'in many cases'.",
+        "Show awareness of the trade-offs rather than a one-sided view."
+      ]
+    }
+  ]
+}

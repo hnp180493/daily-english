@@ -39,6 +39,10 @@ export class TranslationService {
       'header.menu.dashboard': 'Bảng điều khiển',
       'header.menu.flashcards': 'Thẻ ghi nhớ',
       'header.menu.custom_exercises': 'Bài tập tùy chỉnh',
+      'header.menu.grammar_lessons': 'Bài học ngữ pháp',
+      'header.menu.reading': 'Đọc hiểu',
+      'header.menu.writing': 'Luyện viết (AI)',
+      'header.menu.listening': 'Nghe hiểu',
       'header.menu.guide': 'Hướng dẫn',
 
       // Toast
@@ -617,6 +621,10 @@ export class TranslationService {
       'header.menu.dashboard': 'Dashboard',
       'header.menu.flashcards': 'Flashcards',
       'header.menu.custom_exercises': 'Custom Exercises',
+      'header.menu.grammar_lessons': 'Grammar Lessons',
+      'header.menu.reading': 'Reading',
+      'header.menu.writing': 'Writing (AI)',
+      'header.menu.listening': 'Listening',
       'header.menu.guide': 'Guide',
 
       // Toast

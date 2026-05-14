@@ -89,6 +89,79 @@ export interface GrammarLesson {
   rule: string;
   examples: string[];
   relatedErrorPattern: string;
+
+  // Extended fields (optional — populated by static JSON content in public/data/grammar-lessons/).
+  // Existing code that constructs GrammarLesson with the 6 required fields keeps working.
+  slug?: string;
+  level?: 'beginner' | 'intermediate' | 'advanced';
+  category?: string;
+  estimatedMinutes?: number;
+  errorPatternKeys?: string[]; // matches against ErrorPattern.id / WeakPoint.category tokens
+  sections?: GrammarLessonSection[];
+  vietnameseTips?: string[];
+  commonMistakes?: GrammarLessonMistake[];
+  practice?: GrammarPracticeItem[];
+
+  // Lively / practical fields (2026-05-14 redesign).
+  /** One-line memorable rule + one example shown as the hero of the lesson. */
+  tldr?: GrammarTldr;
+  /** Real-world contexts where this grammar shows up. */
+  scenarios?: GrammarScenario[];
+  /** Inline MCQ checks placed between sections — keep the learner active. */
+  quickChecks?: GrammarQuickCheck[];
+}
+
+export interface GrammarTldr {
+  /** Short memorable rule, 1 sentence, ≤ 18 words. */
+  rule: string;
+  /** Concrete example showing the rule. */
+  example: string;
+  /** Optional Vietnamese gloss of the example, displayed under it. */
+  exampleVietnamese?: string;
+}
+
+export interface GrammarScenario {
+  /** Emoji + short label, e.g. "☕ Ordering coffee". */
+  context: string;
+  /** Why this grammar matters here, ≤ 1 sentence. */
+  why: string;
+  /** A representative English sentence for this scenario. */
+  english: string;
+  /** Vietnamese gloss for the example. */
+  vietnamese?: string;
+}
+
+export interface GrammarQuickCheck {
+  question: string;
+  options: string[];
+  correctIndex: number;
+  /** ≤ 18 words explanation revealed after answering. */
+  explanation: string;
+}
+
+export interface GrammarLessonSection {
+  heading: string;
+  body: string;
+  bullets?: string[];
+  examples?: GrammarLessonExample[];
+}
+
+export interface GrammarLessonExample {
+  english: string;
+  vietnamese?: string;
+  note?: string;
+}
+
+export interface GrammarLessonMistake {
+  wrong: string;
+  right: string;
+  explanation: string;
+}
+
+export interface GrammarPracticeItem {
+  vietnamese: string;
+  english: string;
+  hint?: string;
 }
 
 // Vocabulary Drill

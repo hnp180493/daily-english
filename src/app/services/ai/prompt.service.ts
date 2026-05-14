@@ -1,6 +1,8 @@
 import { Injectable } from '@angular/core';
 import { ExerciseContext } from '../../models/ai.model';
 import { PronunciationContext } from '../../models/pronunciation.model';
+import { WritingPrompt } from '../../models/writing.model';
+import { GrammarLesson } from '../../models/review.model';
 
 @Injectable({
   providedIn: 'root'
@@ -174,6 +176,126 @@ Format rules:
 - "perWordFeedback" MUST list every word in the same order as the "Words in the expected sentence" list — no additions, no omissions, no reordering.
 - If pronunciation is excellent, still list at least 1 strength.
 - Output JSON only — no markdown, no prose before/after.`;
+  }
+
+  buildWritingPrompt(prompt: WritingPrompt, essay: string, wordCount: number): string {
+    const targetRange = `${prompt.wordCountTarget.min}-${prompt.wordCountTarget.max}`;
+    const guiding = (prompt.guidingQuestions || []).map((q, i) => `  ${i + 1}. ${q}`).join('\n');
+
+    return `You are an experienced English writing teacher grading a Vietnamese learner's essay using a 4-category rubric.
+
+================================================================
+ESSAY PROMPT (the student was given this)
+================================================================
+Title: ${prompt.title}
+Level: ${prompt.level}
+Type: ${prompt.type}
+Word count target: ${targetRange}
+Prompt: ${prompt.prompt}
+${guiding ? `Guiding questions:\n${guiding}` : ''}
+
+================================================================
+STUDENT'S ESSAY (${wordCount} words)
+================================================================
+${essay}
+
+================================================================
+RUBRIC — 4 categories, 0-9 each (IELTS-style)
+================================================================
+1. taskAchievement: Does the essay answer ALL parts of the prompt? Are ideas relevant, developed, supported?
+2. coherenceCohesion: Is the essay logically organized? Are paragraphs clear? Are linking words used naturally?
+3. lexicalResource: Range and accuracy of vocabulary. Natural collocation. Avoidance of repetition.
+4. grammar: Grammatical range and accuracy. Sentence variety. Punctuation.
+
+Scoring guide:
+- 0-3: very weak — many issues, hard to understand
+- 4-5: weak to fair — comprehensible but with frequent errors
+- 6-7: good — mostly clear, occasional errors
+- 8-9: excellent — very few errors, sophisticated
+
+Be HONEST but ENCOURAGING. Do not inflate scores. If word count is well below the target, lower taskAchievement.
+
+================================================================
+OUTPUT FORMAT (single JSON object, NO markdown fences)
+================================================================
+{
+  "scores": {
+    "taskAchievement": <0-9 number, can use 0.5 increments>,
+    "coherenceCohesion": <0-9>,
+    "lexicalResource": <0-9>,
+    "grammar": <0-9>
+  },
+  "overallComment": "<2-3 sentences in Vietnamese summarizing the essay overall>",
+  "strengths": ["<bullet in Vietnamese>", ...],
+  "improvements": ["<bullet in Vietnamese>", ...],
+  "errors": [
+    {
+      "type": "grammar|vocabulary|spelling|meaning|tense|structure",
+      "wrong": "<exact text from the essay>",
+      "right": "<corrected version>",
+      "explanation": "<short Vietnamese explanation>"
+    }
+  ]
+}
+
+Rules:
+- All commentary in Vietnamese, except "wrong"/"right" which keep English exactly as in the essay.
+- 3-5 strengths, 3-5 improvements, up to 5 most important errors. Quote "wrong" EXACTLY from the essay (no paraphrasing).
+- If essay is below 40 words or off-topic, still grade fairly — likely 0-3 across categories — but explain politely.
+- Output JSON only, no prose before/after, no markdown fences.`;
+  }
+
+  buildLessonPracticePrompt(lesson: GrammarLesson, count: number, exclude: string[]): string {
+    const level = lesson.level || 'intermediate';
+    const ruleSummary = lesson.tldr?.rule || lesson.rule;
+    const examples = (lesson.examples || []).slice(0, 4).map((e) => `  - ${e}`).join('\n');
+    const excludeList = exclude.length > 0
+      ? `\n\nDO NOT repeat or paraphrase these (already shown to the user):\n${exclude.map((s) => `  - ${s}`).join('\n')}`
+      : '';
+
+    return `You are an English teacher generating fresh translation practice for a Vietnamese learner.
+
+============================================================
+LESSON CONTEXT
+============================================================
+Lesson: ${lesson.title}
+Level: ${level}
+Grammar rule: ${ruleSummary}
+
+Reference examples (do NOT copy verbatim):
+${examples}
+${excludeList}
+
+============================================================
+YOUR TASK
+============================================================
+Generate ${count} NEW Vietnamese → English translation pairs that:
+
+1. **MUST** practice the lesson's grammar rule above. Every English sentence MUST clearly demonstrate the rule (e.g. for "Verb Tenses" use the right tense + signal word; for "Conditionals" use a complete if-clause).
+2. Match the ${level} level — simple vocabulary for beginner, broader for advanced.
+3. Use real-life everyday situations (work, family, food, travel, study, hobbies). Avoid abstract or academic topics.
+4. Each English sentence: natural, between 6 and 16 words, no obscure idioms.
+5. Each Vietnamese sentence: natural Vietnamese, what a Vietnamese speaker would actually say.
+6. Add a short "hint" (≤ 12 words, in English) only if the grammar trap is non-obvious.
+
+============================================================
+OUTPUT FORMAT — strict JSON, no markdown fences
+============================================================
+{
+  "items": [
+    {
+      "vietnamese": "<Vietnamese sentence>",
+      "english": "<English translation>",
+      "hint": "<optional short hint, omit field if not needed>"
+    }
+  ]
+}
+
+Rules:
+- Output ${count} items.
+- JSON ONLY — no prose before/after, no \`\`\` fences.
+- "vietnamese" must NOT contain English; "english" must NOT contain Vietnamese.
+- Don't repeat the reference examples or the exclude list.`;
   }
 
   /**

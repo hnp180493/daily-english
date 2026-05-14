@@ -1,8 +1,11 @@
 import { Component, ChangeDetectionStrategy, signal, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
+import { firstValueFrom } from 'rxjs';
 import { ReviewService } from '../../services/review.service';
 import { ErrorPattern, WeakPoint, GrammarLesson, VocabularyDrill } from '../../models/review.model';
+import { GrammarLessonsService } from '../../services/grammar-lessons.service';
+import { ToastService } from '../../services/toast.service';
 
 @Component({
   selector: 'app-error-patterns',
@@ -13,6 +16,8 @@ import { ErrorPattern, WeakPoint, GrammarLesson, VocabularyDrill } from '../../m
 })
 export class ErrorPatternsComponent implements OnInit {
   private reviewService = inject(ReviewService);
+  private grammarLessons = inject(GrammarLessonsService);
+  private toast = inject(ToastService);
   private router = inject(Router);
 
   // Signals for component state
@@ -39,10 +44,19 @@ export class ErrorPatternsComponent implements OnInit {
     });
   }
 
-  viewGrammarLesson(pattern: ErrorPattern): void {
-    // Navigate to grammar lesson or show modal
-    console.log('[ErrorPatternsComponent] View grammar lesson for:', pattern);
-    // TODO: Implement grammar lesson view
+  async viewGrammarLesson(pattern: ErrorPattern): Promise<void> {
+    const suggestions = await firstValueFrom(this.grammarLessons.suggestForPattern(pattern));
+    if (suggestions.length === 0) {
+      this.toast.show(
+        `Chưa có bài học khớp với "${pattern.description}". Mở danh sách bài học để duyệt.`,
+        'info',
+        3500
+      );
+      this.router.navigate(['/grammar-lessons']);
+      return;
+    }
+    const top = suggestions[0];
+    this.router.navigate(['/grammar-lessons', top.slug || top.id]);
   }
 
   startVocabularyDrill(pattern: ErrorPattern): void {

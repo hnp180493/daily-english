@@ -1,0 +1,364 @@
+{
+  "version": 1,
+  "updated": "2026-05-14",
+  "passages": [
+    {
+      "id": "reading-coffee-vietnam",
+      "slug": "coffee-in-vietnam",
+      "title": "How Vietnam Became the World's Second-Largest Coffee Producer",
+      "topic": "Business & Culture",
+      "level": "intermediate",
+      "estimatedMinutes": 4,
+      "wordCount": 360,
+      "passage": "Most coffee drinkers in Hanoi or Ho Chi Minh City would tell you that coffee is part of daily life. What many do not realize is that Vietnam produces more coffee than any country except Brazil. The story of how Vietnam reached this position is short but remarkable.\n\nCoffee was first introduced to Vietnam by French missionaries in the mid-nineteenth century. For more than a hundred years, production remained modest, concentrated in small plots in the Central Highlands. After the country opened its economy in the late 1980s, the government encouraged farmers to plant coffee on a large scale. Within two decades, Vietnam transformed from a minor producer into a global powerhouse, with exports growing more than fifty times.\n\nThe coffee grown in Vietnam is mostly Robusta, a variety known for its strong, bitter taste and high caffeine content. While Arabica beans dominate specialty cafes in Western countries, Robusta is preferred for instant coffee blends and is widely used by global brands that need a consistent supply at a reasonable price. This focus on Robusta is one reason Vietnamese coffee is sometimes overlooked by foreign critics, but it is also why the country has been so successful commercially.\n\nIn recent years, a new generation of Vietnamese roasters has begun to challenge the old image. Small companies in Da Lat and Buon Ma Thuot are experimenting with Arabica beans and refined processing techniques. Their goal is not to replace Robusta, but to show that Vietnam can produce high-quality specialty coffee as well. International competitions have already started to recognize beans from these regions.\n\nThe future of Vietnamese coffee will depend on several factors. Climate change threatens traditional growing areas, and younger farmers are leaving the countryside for jobs in the city. At the same time, the global appetite for coffee continues to grow, and Vietnam has the experience and infrastructure to remain a leading supplier. Whether the country becomes known for quantity, quality, or both, coffee will almost certainly continue to be a defining part of its economy and identity.",
+      "vocabulary": [
+        { "word": "remarkable", "partOfSpeech": "adj", "meaning": "đáng chú ý, đáng kinh ngạc", "example": "Her remarkable progress surprised the teacher." },
+        { "word": "modest", "partOfSpeech": "adj", "meaning": "khiêm tốn, không lớn", "example": "He runs a modest business from home." },
+        { "word": "concentrated", "partOfSpeech": "adj", "meaning": "tập trung", "example": "Production was concentrated in three provinces." },
+        { "word": "powerhouse", "partOfSpeech": "n", "meaning": "thế lực, trung tâm có sức mạnh lớn", "example": "Vietnam is now a manufacturing powerhouse." },
+        { "word": "dominate", "partOfSpeech": "v", "meaning": "chiếm ưu thế, thống trị", "example": "Apple dominates the smartphone market in some countries." },
+        { "word": "consistent", "partOfSpeech": "adj", "meaning": "ổn định, nhất quán", "example": "Her work is consistent and reliable." },
+        { "word": "overlooked", "partOfSpeech": "adj/v", "meaning": "bị bỏ qua, không được chú ý", "example": "Small details are often overlooked." },
+        { "word": "threaten", "partOfSpeech": "v", "meaning": "đe dọa", "example": "Rising sea levels threaten coastal cities." }
+      ],
+      "quiz": [
+        {
+          "id": "q1",
+          "question": "According to the passage, which country produces more coffee than Vietnam?",
+          "options": ["Colombia", "Brazil", "Indonesia", "Ethiopia"],
+          "correctIndex": 1,
+          "explanation": "The first paragraph states Vietnam produces more coffee than any country except Brazil.",
+          "paragraphRef": 0
+        },
+        {
+          "id": "q2",
+          "question": "When did Vietnam's coffee production grow rapidly?",
+          "options": [
+            "In the mid-nineteenth century when the French arrived",
+            "Throughout the early twentieth century",
+            "After the economy opened in the late 1980s",
+            "Only in the last five years"
+          ],
+          "correctIndex": 2,
+          "explanation": "The second paragraph explains that large-scale planting was encouraged after the economy opened in the late 1980s, and exports grew more than fifty times in the following two decades.",
+          "paragraphRef": 1
+        },
+        {
+          "id": "q3",
+          "question": "Why is Robusta important to Vietnam's commercial success?",
+          "options": [
+            "It tastes better than Arabica according to most critics",
+            "It is used in instant coffee and bought consistently by global brands",
+            "It only grows in Vietnam",
+            "It can be sold at a higher price than Arabica"
+          ],
+          "correctIndex": 1,
+          "explanation": "Paragraph 3 says Robusta is preferred for instant coffee blends and used by global brands that need consistent supply at a reasonable price.",
+          "paragraphRef": 2
+        },
+        {
+          "id": "q4",
+          "question": "What is the goal of the new generation of Vietnamese roasters?",
+          "options": [
+            "To completely replace Robusta with Arabica",
+            "To stop exporting coffee abroad",
+            "To prove that Vietnam can also produce high-quality specialty coffee",
+            "To convince farmers to switch to other crops"
+          ],
+          "correctIndex": 2,
+          "explanation": "Paragraph 4 clearly states their goal is not to replace Robusta, but to show that Vietnam can produce high-quality specialty coffee as well.",
+          "paragraphRef": 3
+        },
+        {
+          "id": "q5",
+          "question": "Which challenge does the passage NOT mention as a threat to Vietnam's coffee future?",
+          "options": [
+            "Climate change",
+            "Younger farmers leaving for the city",
+            "Declining global demand for coffee",
+            "Pressure on traditional growing areas"
+          ],
+          "correctIndex": 2,
+          "explanation": "The final paragraph says the global appetite for coffee continues to grow, so declining demand is NOT mentioned as a threat. The others are.",
+          "paragraphRef": 4
+        }
+      ],
+      "discussion": [
+        "Do you prefer Vietnamese-style coffee or Western-style coffee? Why?",
+        "Should Vietnam focus on quality (specialty Arabica) or quantity (Robusta)?",
+        "How might climate change affect daily life in your hometown?"
+      ]
+    },
+    {
+      "id": "reading-remote-work",
+      "slug": "the-rise-of-remote-work",
+      "title": "The Rise of Remote Work and Its Hidden Costs",
+      "topic": "Work & Society",
+      "level": "intermediate",
+      "estimatedMinutes": 4,
+      "wordCount": 380,
+      "passage": "Five years ago, working from home was a privilege offered to a small number of employees. Today, it is normal for entire teams to meet only through video calls. The shift began during the global pandemic, but it has continued long after offices reopened. Many workers say they would resign rather than return full time to a traditional office.\n\nThe benefits are clear. Without commuting, people save money on transportation and food. Parents can pick up children from school without missing meetings. Workers in expensive cities can move to smaller towns where housing is more affordable. Companies, in turn, can hire talented people from anywhere in the world, which used to be much harder.\n\nHowever, remote work has hidden costs that are only now becoming visible. New employees often struggle to build relationships with colleagues they have never met in person. Casual conversations in the office, which once led to creative ideas, no longer happen as easily. Managers report that it is harder to evaluate junior staff fairly when most of the work is done in private. Some studies suggest that fully remote workers are promoted less often than those who appear in the office regularly.\n\nMental health is another concern. While working from home gives flexibility, it also blurs the line between work and personal life. Without the routine of leaving the office, many employees end up working longer hours and feeling that they are always available. Loneliness has become a real problem, especially for those who live alone and rarely meet colleagues face to face.\n\nIn response, many companies are experimenting with hybrid arrangements. Employees might work from home three days a week and come to the office for the other two. This approach attempts to keep the flexibility that workers value while preserving the human connections that fully remote work tends to weaken. It is not a perfect solution, and it is still being adjusted in real time.\n\nThe long-term picture is unclear. Remote work has changed expectations forever, but the right balance between home and office is still being worked out. The companies that find that balance first will likely gain a competitive advantage in attracting and keeping the people they need most.",
+      "vocabulary": [
+        { "word": "privilege", "partOfSpeech": "n", "meaning": "đặc quyền", "example": "Working flexibly used to be a privilege, not a right." },
+        { "word": "resign", "partOfSpeech": "v", "meaning": "xin nghỉ việc, từ chức", "example": "He resigned after a disagreement with the manager." },
+        { "word": "commute", "partOfSpeech": "v/n", "meaning": "đi lại đến chỗ làm", "example": "My commute takes one hour each way." },
+        { "word": "evaluate", "partOfSpeech": "v", "meaning": "đánh giá", "example": "It is hard to evaluate work you cannot see." },
+        { "word": "blur", "partOfSpeech": "v", "meaning": "làm mờ, làm khó phân biệt", "example": "Working from home blurs work and family time." },
+        { "word": "loneliness", "partOfSpeech": "n", "meaning": "sự cô đơn", "example": "Many remote workers report loneliness." },
+        { "word": "hybrid", "partOfSpeech": "adj", "meaning": "kết hợp, hỗn hợp", "example": "Our team uses a hybrid schedule." },
+        { "word": "competitive advantage", "partOfSpeech": "n", "meaning": "lợi thế cạnh tranh", "example": "Flexible policies give us a competitive advantage." }
+      ],
+      "quiz": [
+        {
+          "id": "q1",
+          "question": "When did the shift to remote work begin?",
+          "options": [
+            "More than ten years ago, slowly",
+            "During the global pandemic",
+            "Only after offices reopened",
+            "It has not begun yet for most companies"
+          ],
+          "correctIndex": 1,
+          "explanation": "Paragraph 1 states 'The shift began during the global pandemic, but it has continued long after offices reopened.'",
+          "paragraphRef": 0
+        },
+        {
+          "id": "q2",
+          "question": "Which benefit of remote work is NOT mentioned in paragraph 2?",
+          "options": [
+            "Saving money on transportation",
+            "Easier childcare logistics",
+            "Higher salaries for remote workers",
+            "Hiring talent from anywhere"
+          ],
+          "correctIndex": 2,
+          "explanation": "Higher salaries are NOT mentioned. The other three benefits are all in paragraph 2.",
+          "paragraphRef": 1
+        },
+        {
+          "id": "q3",
+          "question": "What hidden cost of remote work do studies suggest?",
+          "options": [
+            "Remote workers earn less than office workers",
+            "Remote workers are promoted less often",
+            "Remote workers quit more often",
+            "Remote workers produce lower-quality work"
+          ],
+          "correctIndex": 1,
+          "explanation": "Paragraph 3 says 'Some studies suggest that fully remote workers are promoted less often than those who appear in the office regularly.'",
+          "paragraphRef": 2
+        },
+        {
+          "id": "q4",
+          "question": "Why does the passage say loneliness is a real problem?",
+          "options": [
+            "Because employees refuse to use video calls",
+            "Because remote workers must work alone with no software",
+            "Because workers who live alone rarely meet colleagues face to face",
+            "Because companies fired all their remote employees"
+          ],
+          "correctIndex": 2,
+          "explanation": "Paragraph 4 mentions loneliness, especially for those who live alone and rarely meet colleagues face to face.",
+          "paragraphRef": 3
+        },
+        {
+          "id": "q5",
+          "question": "What is the main idea of paragraph 5?",
+          "options": [
+            "Hybrid work is a perfect solution to all problems",
+            "Companies are trying hybrid arrangements to balance flexibility and human connection",
+            "Most companies have given up on remote work",
+            "Three days at home is the only valid schedule"
+          ],
+          "correctIndex": 1,
+          "explanation": "Paragraph 5 explains hybrid arrangements as an attempt to balance flexibility and human connections, and explicitly says it is not perfect.",
+          "paragraphRef": 4
+        }
+      ],
+      "discussion": [
+        "Would you prefer fully remote, hybrid, or fully in-office work? Why?",
+        "What kinds of work are difficult to do remotely, and which are easy?",
+        "How do you set boundaries between work and personal time when working from home?"
+      ]
+    },
+    {
+      "id": "reading-sleep-science",
+      "slug": "why-we-need-sleep",
+      "title": "What Modern Science Tells Us About Sleep",
+      "topic": "Health & Science",
+      "level": "beginner",
+      "estimatedMinutes": 3,
+      "wordCount": 310,
+      "passage": "Everyone sleeps, but few people think about why. For most of history, sleep was a mystery. Some cultures believed that the soul left the body during sleep. Others thought sleep was wasted time that could be reduced with the right diet or willpower. Modern science has finally begun to explain what really happens when we close our eyes.\n\nWhen you fall asleep, your brain does not switch off. Instead, it enters a complex cycle of stages. Light sleep helps the body relax. Deep sleep allows the body to repair muscles and release growth hormones. The final stage, called REM sleep, is when most dreams happen. During REM, the brain is almost as active as when you are awake, but the body is paralyzed so you do not act out your dreams.\n\nEach stage plays a different role. Deep sleep is important for the physical body. REM sleep, on the other hand, is now believed to help with memory and emotional health. If you study a list of English words and then sleep well, your brain will organize what you learned overnight. The next day, you will remember more than someone who stayed up all night studying.\n\nWhen sleep is short or interrupted, the consequences are real. People who sleep less than six hours a night for many days show slower reaction times and worse decision-making, similar to mild alcohol intoxication. Long-term lack of sleep is linked to weight gain, depression, and heart disease. In short, your bed is not a place where time is wasted. It is one of the most important medical tools you own — and it costs nothing to use.\n\nThe simplest advice from researchers is also the hardest to follow: go to bed at the same time every night, keep the room cool and dark, and put your phone in another room.",
+      "vocabulary": [
+        { "word": "mystery", "partOfSpeech": "n", "meaning": "điều bí ẩn", "example": "How the brain stores memory remains a mystery." },
+        { "word": "soul", "partOfSpeech": "n", "meaning": "linh hồn", "example": "Some religions believe the soul never dies." },
+        { "word": "willpower", "partOfSpeech": "n", "meaning": "sức mạnh ý chí", "example": "Quitting smoking takes willpower." },
+        { "word": "cycle", "partOfSpeech": "n", "meaning": "chu kỳ", "example": "Sleep happens in cycles of about 90 minutes." },
+        { "word": "paralyzed", "partOfSpeech": "adj", "meaning": "bị liệt, không cử động được", "example": "During REM sleep, the body is temporarily paralyzed." },
+        { "word": "consequence", "partOfSpeech": "n", "meaning": "hậu quả", "example": "Skipping sleep has serious consequences." },
+        { "word": "intoxication", "partOfSpeech": "n", "meaning": "say (rượu)", "example": "Driving while sleepy is similar to mild alcohol intoxication." },
+        { "word": "interrupted", "partOfSpeech": "adj", "meaning": "bị gián đoạn", "example": "Interrupted sleep is almost as bad as no sleep." }
+      ],
+      "quiz": [
+        {
+          "id": "q1",
+          "question": "What did some cultures historically believe about sleep?",
+          "options": [
+            "That the brain is more active during sleep than waking",
+            "That sleep was a mystery and the soul might leave the body",
+            "That sleep was caused by certain foods",
+            "That sleep was unnecessary"
+          ],
+          "correctIndex": 1,
+          "explanation": "Paragraph 1 mentions that 'Some cultures believed that the soul left the body during sleep.'",
+          "paragraphRef": 0
+        },
+        {
+          "id": "q2",
+          "question": "What happens during REM sleep?",
+          "options": [
+            "The brain shuts down completely",
+            "The body grows taller",
+            "The brain is very active and most dreams happen",
+            "Body temperature rises sharply"
+          ],
+          "correctIndex": 2,
+          "explanation": "Paragraph 2: REM is when most dreams happen, and the brain is almost as active as when awake.",
+          "paragraphRef": 1
+        },
+        {
+          "id": "q3",
+          "question": "According to the passage, why is REM sleep important?",
+          "options": [
+            "It repairs muscles only",
+            "It helps with memory and emotional health",
+            "It controls breathing",
+            "It produces growth hormones"
+          ],
+          "correctIndex": 1,
+          "explanation": "Paragraph 3 says REM is believed to help with memory and emotional health. Muscle repair and growth hormones belong to deep sleep.",
+          "paragraphRef": 2
+        },
+        {
+          "id": "q4",
+          "question": "Long-term lack of sleep is linked to all of the following EXCEPT:",
+          "options": ["Weight gain", "Depression", "Heart disease", "Improved vision"],
+          "correctIndex": 3,
+          "explanation": "Paragraph 4 lists weight gain, depression, and heart disease — improved vision is NOT mentioned.",
+          "paragraphRef": 3
+        }
+      ],
+      "discussion": [
+        "How many hours of sleep do you usually get? Do you feel it is enough?",
+        "What stops you from going to bed at the same time every night?",
+        "What is one habit you could change this week to sleep better?"
+      ]
+    },
+    {
+      "id": "reading-ai-jobs",
+      "slug": "ai-and-the-future-of-jobs",
+      "title": "Will Artificial Intelligence Take Our Jobs?",
+      "topic": "Technology & Society",
+      "level": "advanced",
+      "estimatedMinutes": 5,
+      "wordCount": 460,
+      "passage": "Every major technological revolution in history has caused two things at the same time: it has eliminated certain kinds of work and it has created new kinds. The arrival of the steam engine, electricity, and personal computers each followed this pattern. Many of the jobs people perform today did not exist a hundred years ago. The current debate about artificial intelligence is asking whether AI will follow the same path or break it.\n\nUnlike previous technologies, AI does not simply automate physical labor. It is increasingly capable of tasks that were once considered uniquely human: writing reports, analyzing legal documents, designing visuals, and even producing music. A growing number of office workers, including those with university degrees, are watching tools that can do parts of their job in seconds. For some, this is convenient. For others, it raises serious questions about whether their skills will still be valued in five or ten years.\n\nEconomists who study these shifts tend to be cautiously optimistic. They argue that AI will reshape work rather than destroy it. Routine cognitive tasks — writing standard emails, summarizing meetings, producing first drafts — may be handled by software. But the tasks that remain will likely involve judgment, communication, persuasion, and the ability to coordinate with other people. Those skills may become more valuable, not less.\n\nHowever, the transition is unlikely to be smooth. Workers in industries that are hit first will face real pressure to retrain. The people most affected are not usually the engineers who build the tools, but ordinary professionals — translators, junior accountants, content writers, customer support staff. Without intentional policy support, the gap between people who adapt and people who do not could widen quickly.\n\nThere is also a deeper question that economists rarely answer directly: even if new jobs are created, will there be enough of them, and will workers be able to move into them in time? History suggests it is possible, but the transition periods can last decades. During those periods, many individuals are left behind, even as overall productivity rises.\n\nFor students and young professionals, the practical advice is consistent across experts. Learn to use AI tools well — they are tools, not enemies. Develop skills that are hard to automate: deep technical expertise, creative problem solving, and the human side of work that depends on trust and judgment. Stay curious, because the most valuable skills five years from now may not yet have a name.\n\nThe history of technology suggests that AI alone will not cause a permanent crisis of work. But it also suggests that pretending nothing will change is a poor strategy. The people who do best are usually not those who fear the future or those who deny it, but those who study it carefully and prepare.",
+      "vocabulary": [
+        { "word": "eliminate", "partOfSpeech": "v", "meaning": "loại bỏ, xóa bỏ", "example": "Automation can eliminate repetitive tasks." },
+        { "word": "uniquely", "partOfSpeech": "adv", "meaning": "một cách độc đáo, riêng biệt", "example": "These are skills that were uniquely human." },
+        { "word": "cautiously", "partOfSpeech": "adv", "meaning": "một cách thận trọng", "example": "Economists are cautiously optimistic." },
+        { "word": "reshape", "partOfSpeech": "v", "meaning": "định hình lại", "example": "AI will reshape, not destroy, most jobs." },
+        { "word": "transition", "partOfSpeech": "n", "meaning": "giai đoạn chuyển đổi", "example": "The transition to remote work was painful." },
+        { "word": "retrain", "partOfSpeech": "v", "meaning": "đào tạo lại", "example": "Older workers may need to retrain." },
+        { "word": "widen", "partOfSpeech": "v", "meaning": "mở rộng ra", "example": "The gap could widen quickly." },
+        { "word": "permanent", "partOfSpeech": "adj", "meaning": "lâu dài, vĩnh viễn", "example": "There may not be a permanent crisis." }
+      ],
+      "quiz": [
+        {
+          "id": "q1",
+          "question": "What pattern does the passage say has appeared with past technological revolutions?",
+          "options": [
+            "They eliminated all human work",
+            "They created jobs and eliminated jobs at the same time",
+            "They had no effect on employment",
+            "They only created new jobs"
+          ],
+          "correctIndex": 1,
+          "explanation": "Paragraph 1 explicitly says revolutions eliminated certain kinds of work AND created new kinds.",
+          "paragraphRef": 0
+        },
+        {
+          "id": "q2",
+          "question": "How is AI different from earlier technological waves, according to the passage?",
+          "options": [
+            "It only affects factory workers",
+            "It can perform cognitive tasks once considered uniquely human",
+            "It cannot create text",
+            "It is only used by engineers"
+          ],
+          "correctIndex": 1,
+          "explanation": "Paragraph 2: AI does not simply automate physical labor — it can do tasks once considered uniquely human like writing, analyzing, designing.",
+          "paragraphRef": 1
+        },
+        {
+          "id": "q3",
+          "question": "What is the main view of economists in the passage?",
+          "options": [
+            "AI will destroy work permanently",
+            "AI will reshape work, with cognitive routine tasks automated but judgment-heavy ones remaining",
+            "AI will not affect the labor market at all",
+            "AI will replace only engineers"
+          ],
+          "correctIndex": 1,
+          "explanation": "Paragraph 3 says economists are cautiously optimistic — AI will reshape, not destroy, and judgment/coordination skills become more valuable.",
+          "paragraphRef": 2
+        },
+        {
+          "id": "q4",
+          "question": "Who does paragraph 4 say is most likely to feel the pressure to retrain?",
+          "options": [
+            "The engineers who build the AI tools",
+            "Senior executives",
+            "Ordinary professionals like translators, junior accountants, content writers",
+            "Only factory workers"
+          ],
+          "correctIndex": 2,
+          "explanation": "Paragraph 4 directly lists translators, junior accountants, content writers, customer support staff as the most affected.",
+          "paragraphRef": 3
+        },
+        {
+          "id": "q5",
+          "question": "What is the deeper question economists rarely answer?",
+          "options": [
+            "Whether AI is conscious",
+            "Whether enough new jobs will be created in time for workers to move into",
+            "Whether AI tools are accurate",
+            "Whether AI should be banned"
+          ],
+          "correctIndex": 1,
+          "explanation": "Paragraph 5: even if new jobs are created, will there be enough of them, and will workers be able to move into them in time?",
+          "paragraphRef": 4
+        },
+        {
+          "id": "q6",
+          "question": "What practical advice is given to students and young professionals?",
+          "options": [
+            "Avoid AI tools completely",
+            "Specialize in only one technical skill",
+            "Learn to use AI tools, build hard-to-automate skills, and stay curious",
+            "Stop studying and start a company immediately"
+          ],
+          "correctIndex": 2,
+          "explanation": "Paragraph 6 advises learning AI tools, developing hard-to-automate skills (expertise, creative problem-solving, trust-based judgment), and staying curious.",
+          "paragraphRef": 5
+        }
+      ],
+      "discussion": [
+        "Which parts of your current or future job do you think AI could automate first?",
+        "What is one skill you would like to develop that you think AI cannot easily replace?",
+        "Should governments do more to help workers retrain? If so, what?"
+      ]
+    }
+  ]
+}

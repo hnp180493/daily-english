@@ -138,7 +138,165 @@ export interface Flashcard {
   reviewCount: number;
   /** Date of the last review */
   lastReviewDate?: Date;
+
+  // FSRS state (optional — populated on first FSRS rating; migrated on load if missing)
+  /** FSRS card state */
+  state?: FsrsCardState;
+  /** FSRS stability (days the memory will last) */
+  stability?: number;
+  /** FSRS difficulty 1-10 */
+  difficulty?: number;
+  /** Number of times user has lapsed (rated Again in review state) */
+  lapses?: number;
+  /** Last user rating (1=Again, 2=Hard, 3=Good, 4=Easy) */
+  lastRating?: ReviewRating;
+  /** Days that elapsed since last review when this state was computed */
+  elapsedDays?: number;
+  /** Days scheduled until next review (from FSRS) */
+  scheduledDays?: number;
+  /** Number of times this card has been answered incorrectly in current learning step */
+  learningStep?: number;
+
+  // Extended fields
+  /** User-added tags for grouping/filtering. */
+  tags?: string[];
+  /** True if the user created this manually (vs auto-generated from an exercise). */
+  customCreated?: boolean;
+  /** True if user (or auto-leech detector) suspended this card from due queue. */
+  suspended?: boolean;
 }
+
+/**
+ * FSRS card state machine.
+ *  new       — never reviewed
+ *  learning  — in initial learning phase, short steps
+ *  review    — in main spaced repetition phase
+ *  relearning— failed in review, going back through short steps
+ */
+export type FsrsCardState = 'new' | 'learning' | 'review' | 'relearning';
+
+/**
+ * 4-button rating (Anki/FSRS standard).
+ *  1 Again — total miss; restart learning
+ *  2 Hard  — got it but with difficulty
+ *  3 Good  — recalled correctly with normal effort
+ *  4 Easy  — recalled with no hesitation
+ */
+export type ReviewRating = 1 | 2 | 3 | 4;
+
+/**
+ * Review mode for the study session. Different modes test the same card in
+ * different ways to avoid "recognizing the card layout" rather than the content.
+ */
+export type CardType =
+  | 'flip' // classic: see front, flip to back
+  | 'cloze' // example sentence with the word blanked out
+  | 'multiple-choice' // 4 options, pick the meaning
+  | 'type-answer' // type the target word (fuzzy match)
+  | 'audio-cue' // TTS reads the word, user picks meaning
+  | 'reverse'; // see meaning first, recall word
+
+/** Prompt payload produced by FlashcardModeService for the study UI. */
+export interface CardPrompt {
+  type: CardType;
+  /** The flashcard being studied. */
+  card: Flashcard;
+  /** What to show before the answer is revealed. */
+  questionText: string;
+  /** What the correct answer is, in canonical form. */
+  answerText: string;
+  /** For multiple-choice: 4 options (one is correct). */
+  options?: string[];
+  /** For multiple-choice: index 0-3 of the correct option. */
+  correctIndex?: number;
+  /** For cloze: word that was blanked out. */
+  clozeAnswer?: string;
+  /** Whether to use TTS to read questionText aloud. */
+  speakQuestion?: boolean;
+}
+
+/**
+ * A smart deck dynamically gathers cards based on a rule rather than a fixed list.
+ * Used for "Due today", "Words you keep failing", "By category", etc.
+ */
+export type SmartDeckKind = 'due' | 'weak' | 'leech' | 'new' | 'category' | 'all';
+
+export interface SmartDeckDefinition {
+  id: string;
+  kind: SmartDeckKind;
+  label: string;
+  description: string;
+  icon: string;
+  /** Optional kind-specific argument (e.g. category name). */
+  argument?: string;
+  /** Live count, computed at render time. */
+  cardCount?: number;
+}
+
+/**
+ * User-defined deck — a fixed list of card IDs the user picked manually.
+ * Stored in localStorage alongside flashcards.
+ */
+export interface CustomDeck {
+  id: string;
+  name: string;
+  description?: string;
+  cardIds: string[];
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+/**
+ * Constants for FSRS-4.5 algorithm (simplified, FE-only — no model weights pulled
+ * from server). The defaults below match the FSRS-4.5 paper's published values.
+ * https://github.com/open-spaced-repetition/fsrs4anki
+ */
+export const FSRS_CONSTANTS = {
+  /** Initial stability per rating (Again is unused — failure restarts). */
+  INITIAL_STABILITY: { 1: 0.4, 2: 1.2, 3: 2.5, 4: 6.0 } as const,
+  /** Initial difficulty per first rating. */
+  INITIAL_DIFFICULTY: { 1: 8.0, 2: 6.0, 3: 5.0, 4: 4.0 } as const,
+  /** Target retention probability (90%). Lower → longer intervals. */
+  REQUEST_RETENTION: 0.9,
+  /** Maximum scheduled interval in days. */
+  MAX_INTERVAL: 365,
+  /** Minimum scheduled interval in days. */
+  MIN_INTERVAL: 1,
+  /** Learning steps (in minutes — short-term repeats before entering review). */
+  LEARNING_STEPS_MIN: [1, 10] as const,
+  /** Relearning steps (after lapsing). */
+  RELEARNING_STEPS_MIN: [10] as const,
+  /** Number of lapses before a card is flagged as leech. */
+  LEECH_THRESHOLD: 4,
+  /** Difficulty change per rating step. */
+  DIFFICULTY_DECAY: -0.5,
+  /** Stability multiplier ceiling on Easy rating. */
+  EASY_BONUS: 1.3,
+  /** Stability multiplier penalty on Hard rating. */
+  HARD_FACTOR: 1.2,
+} as const;
+
+export const CUSTOM_DECK_STORAGE_KEY = 'flashcard-custom-decks-v1';
+export const FLASHCARD_STUDY_PREFS_KEY = 'flashcard-study-prefs-v1';
+
+/** User study preferences for the flashcard study screen. */
+export interface FlashcardStudyPrefs {
+  /** Mode preference: 'auto' picks mode based on mastery, otherwise fixed. */
+  modePreference: 'auto' | CardType;
+  /** Whether to play TTS on every card automatically. */
+  autoSpeak: boolean;
+  /** Daily new card cap. */
+  newPerDay: number;
+  /** Daily review cap. */
+  reviewsPerDay: number;
+}
+
+export const FLASHCARD_STUDY_DEFAULTS: FlashcardStudyPrefs = {
+  modePreference: 'auto',
+  autoSpeak: false,
+  newPerDay: 15,
+  reviewsPerDay: 100,
+};
 
 /**
  * Filter options for flashcard queries.

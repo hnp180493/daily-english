@@ -7,9 +7,12 @@ import {
   FlashcardStats,
   FlashcardMasteryLevel,
   FLASHCARD_DEFAULTS,
-  SPACED_REPETITION_CONSTANTS
+  FSRS_CONSTANTS,
+  ReviewRating,
+  SPACED_REPETITION_CONSTANTS,
 } from '../models/memory-retention.model';
 import { AuthService } from './auth.service';
+import { FsrsService } from './fsrs.service';
 
 /**
  * FlashcardService manages flashcard operations with spaced repetition algorithm.
@@ -22,6 +25,7 @@ import { AuthService } from './auth.service';
 })
 export class FlashcardService {
   private authService = inject(AuthService);
+  private fsrs = inject(FsrsService);
 
   // Private signal for flashcard state
   private flashcardsSignal = signal<Flashcard[]>([]);
@@ -41,12 +45,21 @@ export class FlashcardService {
   readonly dueFlashcards = computed(() => {
     const now = new Date();
     return this.flashcardsSignal()
+      .filter(card => !card.suspended)
       .filter(card => new Date(card.nextReviewDate) <= now)
       .sort(
         (a, b) =>
           new Date(a.nextReviewDate).getTime() - new Date(b.nextReviewDate).getTime()
       );
   });
+
+  /**
+   * Cards marked as leeches — repeatedly failed in review state, candidate for
+   * re-learning or suspension.
+   */
+  readonly leechFlashcards = computed(() =>
+    this.flashcardsSignal().filter((card) => (card.lapses ?? 0) >= FSRS_CONSTANTS.LEECH_THRESHOLD)
+  );
 
   /**
    * Computed signal for flashcard statistics.
@@ -136,58 +149,166 @@ export class FlashcardService {
   }
 
   /**
-   * Mark a flashcard as "Know" or "Don't Know" and update spaced repetition data.
-   * Requirements: 3.4 - Allow marking as "Know" or "Don't Know"
-   * Requirements: 3.5 - Schedule earlier review for "Don't Know"
-   * Requirements: 3.6 - Increase interval for "Know"
-   * Requirements: 7.1 - Calculate next review date based on interval and response
-   * Requirements: 7.2 - Multiply interval by 2.5 for "Know" (min 1, max 180)
-   * Requirements: 7.3 - Reset interval to 1 for "Don't Know"
+   * Apply a 4-button FSRS rating (1=Again, 2=Hard, 3=Good, 4=Easy) and persist.
+   * Preferred over the legacy `markCard` boolean — supports the modern study UI.
    */
-  markCard(cardId: string, known: boolean): Observable<void> {
-    this.flashcardsSignal.update(cards =>
-      cards.map(card => {
+  rateCard(cardId: string, rating: ReviewRating): Observable<void> {
+    this.flashcardsSignal.update((cards) =>
+      cards.map((card) => {
         if (card.id !== cardId) return card;
-
-        const { MIN_INTERVAL, MAX_INTERVAL, KNOW_MULTIPLIER, DONT_KNOW_INTERVAL } =
-          SPACED_REPETITION_CONSTANTS;
-
-        // Calculate new interval based on response
-        let newInterval: number;
-        if (known) {
-          // Requirements: 7.2 - Multiply by 2.5, min 1, max 180
-          newInterval = Math.min(
-            Math.max(Math.round(card.interval * KNOW_MULTIPLIER), MIN_INTERVAL),
-            MAX_INTERVAL
-          );
-        } else {
-          // Requirements: 7.3 - Reset to 1 day
-          newInterval = DONT_KNOW_INTERVAL;
-        }
-
-        // Calculate new ease factor
-        const { MIN_EASE_FACTOR, MAX_EASE_FACTOR, EASE_INCREASE, EASE_DECREASE } =
-          SPACED_REPETITION_CONSTANTS;
-        const newEaseFactor = known
-          ? Math.min(card.easeFactor + EASE_INCREASE, MAX_EASE_FACTOR)
-          : Math.max(card.easeFactor - EASE_DECREASE, MIN_EASE_FACTOR);
-
-        // Calculate next review date
-        const nextReviewDate = new Date();
-        nextReviewDate.setDate(nextReviewDate.getDate() + newInterval);
-
-        return {
-          ...card,
-          interval: newInterval,
-          easeFactor: newEaseFactor,
-          nextReviewDate,
-          reviewCount: card.reviewCount + 1,
-          lastReviewDate: new Date()
-        };
+        const migrated = this.fsrs.migrateFromLegacy(card);
+        return this.fsrs.schedule(migrated, rating);
       })
     );
-
     return this.persist();
+  }
+
+  /**
+   * Toggle suspended state — suspended cards drop out of `dueFlashcards`.
+   * Used for leech management and user-initiated pausing.
+   */
+  setSuspended(cardId: string, suspended: boolean): Observable<void> {
+    this.flashcardsSignal.update((cards) =>
+      cards.map((c) => (c.id === cardId ? { ...c, suspended } : c))
+    );
+    return this.persist();
+  }
+
+  /**
+   * Reset a card to "new" state — useful for cards that became leeches.
+   */
+  resetCard(cardId: string): Observable<void> {
+    this.flashcardsSignal.update((cards) =>
+      cards.map((c) =>
+        c.id === cardId
+          ? {
+              ...c,
+              state: 'new',
+              stability: 0,
+              difficulty: 5,
+              lapses: 0,
+              learningStep: 0,
+              reviewCount: 0,
+              interval: 0,
+              easeFactor: FLASHCARD_DEFAULTS.easeFactor,
+              nextReviewDate: new Date(),
+              suspended: false,
+            }
+          : c
+      )
+    );
+    return this.persist();
+  }
+
+  /**
+   * Update arbitrary fields of a flashcard (used for custom card edit + tag changes).
+   */
+  updateCard(cardId: string, patch: Partial<Flashcard>): Observable<void> {
+    this.flashcardsSignal.update((cards) => cards.map((c) => (c.id === cardId ? { ...c, ...patch } : c)));
+    return this.persist();
+  }
+
+  /**
+   * Create a manually-added flashcard (vs the auto-generated ones from exercises).
+   */
+  createCustomCard(input: {
+    front: string;
+    back: string;
+    example?: string;
+    category?: string;
+    tags?: string[];
+  }): Observable<Flashcard> {
+    const now = new Date();
+    const card: Flashcard = {
+      id: this.generateId(),
+      front: input.front.trim(),
+      back: input.back.trim(),
+      example: input.example?.trim(),
+      exerciseId: '',
+      category: input.category,
+      tags: input.tags,
+      customCreated: true,
+      createdAt: now,
+      easeFactor: FLASHCARD_DEFAULTS.easeFactor,
+      interval: FLASHCARD_DEFAULTS.interval,
+      nextReviewDate: now,
+      reviewCount: FLASHCARD_DEFAULTS.reviewCount,
+      state: 'new',
+      stability: 0,
+      difficulty: 5,
+      lapses: 0,
+    };
+    this.flashcardsSignal.update((existing) => [...existing, card]);
+    return this.persist().pipe(map(() => card));
+  }
+
+  /**
+   * Batch-add vocabulary items as custom flashcards. Used by Reading / Listening
+   * pages where each passage/track has a vocabulary list the user can save.
+   *
+   * Deduplicates by lowercase `front` against the current deck — repeats are
+   * skipped silently. Returns counts so the caller can toast the result.
+   */
+  addFromVocabList(
+    items: { word: string; meaning: string; example?: string }[],
+    options: { tag?: string; category?: string } = {}
+  ): { added: number; skipped: number } {
+    const existing = new Set(this.flashcardsSignal().map((c) => c.front.toLowerCase()));
+    const now = new Date();
+    const newCards: Flashcard[] = [];
+
+    for (const item of items) {
+      const front = (item.word || '').trim();
+      const back = (item.meaning || '').trim();
+      if (!front || !back) continue;
+      if (existing.has(front.toLowerCase())) continue;
+      existing.add(front.toLowerCase()); // avoid duplicates within the same batch too
+
+      newCards.push({
+        id: this.generateId(),
+        front,
+        back,
+        example: item.example?.trim(),
+        exerciseId: '',
+        category: options.category,
+        tags: options.tag ? [options.tag] : undefined,
+        customCreated: true,
+        createdAt: now,
+        easeFactor: FLASHCARD_DEFAULTS.easeFactor,
+        interval: FLASHCARD_DEFAULTS.interval,
+        nextReviewDate: now,
+        reviewCount: FLASHCARD_DEFAULTS.reviewCount,
+        state: 'new',
+        stability: 0,
+        difficulty: 5,
+        lapses: 0,
+      });
+    }
+
+    if (newCards.length > 0) {
+      this.flashcardsSignal.update((existingCards) => [...existingCards, ...newCards]);
+      this.persist().subscribe();
+    }
+
+    return { added: newCards.length, skipped: items.length - newCards.length };
+  }
+
+  /**
+   * Check whether the user already has a card with this front (lowercase match).
+   * Used to swap "Add" → "Added" in UIs that surface vocabulary lists.
+   */
+  hasCardForWord(word: string): boolean {
+    if (!word) return false;
+    const target = word.trim().toLowerCase();
+    return this.flashcardsSignal().some((c) => c.front.toLowerCase() === target);
+  }
+
+  /**
+   * Legacy Know/Don't Know toggle — preserved so older callers keep working.
+   * Internally maps Know → Good (3), Don't Know → Again (1) and uses FSRS.
+   */
+  markCard(cardId: string, known: boolean): Observable<void> {
+    return this.rateCard(cardId, known ? 3 : 1);
   }
 
   /**
@@ -405,12 +526,11 @@ export class FlashcardService {
   // Private helper methods
 
   /**
-   * Determine the mastery level of a card.
+   * Determine the mastery level of a card (uses FSRS stability if available,
+   * falls back to legacy interval for unmigrated cards).
    */
   private getCardMastery(card: Flashcard): FlashcardMasteryLevel {
-    if (card.reviewCount === 0) return 'new';
-    if (card.interval >= 21) return 'mastered';
-    return 'learning';
+    return this.fsrs.computeMastery(card);
   }
 
   /**
@@ -493,8 +613,8 @@ export class FlashcardService {
           console.log(`[FlashcardService] Loading flashcards from ${key}`);
           if (data) {
             const cards = JSON.parse(data) as Flashcard[];
-            // Convert date strings back to Date objects
-            const parsedCards = cards.map(card => ({
+            // Convert date strings back to Date objects + run FSRS migration once
+            const parsedCards = cards.map(card => this.fsrs.migrateFromLegacy({
               ...card,
               createdAt: new Date(card.createdAt),
               nextReviewDate: new Date(card.nextReviewDate),

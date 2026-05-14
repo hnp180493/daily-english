@@ -2,6 +2,7 @@ import { Observable, Subscriber } from 'rxjs';
 import { AIResponse, AIStreamChunk, ExerciseContext } from '../../models/ai.model';
 import { FeedbackItem } from '../../models/exercise.model';
 import { PronunciationContext, PronunciationFeedback } from '../../models/pronunciation.model';
+import { WritingFeedback, WritingRubricScores } from '../../models/writing.model';
 
 export interface AIProviderConfig {
   [key: string]: any;
@@ -68,6 +69,37 @@ export abstract class BaseAIProvider {
     return false;
   }
 
+  /**
+   * Grade a writing submission. Default implementation delegates to `generateText()`
+   * with a writing-specific JSON prompt — works for every provider that supports
+   * basic text generation. Override only if you need provider-specific tuning.
+   */
+  analyzeWriting(
+    builtPrompt: string,
+    promptId: string,
+    wordCount: number,
+    config: any
+  ): Observable<WritingFeedback> {
+    return new Observable((observer) => {
+      const messages: AIMessage[] = [
+        { role: 'system', content: 'You are an experienced English writing teacher. Return ONLY valid JSON, no markdown fences.' },
+        { role: 'user', content: builtPrompt },
+      ];
+      this.generateText({ messages, temperature: 0.3, maxTokens: 2400 }, config).subscribe({
+        next: (content) => {
+          try {
+            const feedback = this.parseWritingResponse(content, promptId, wordCount);
+            observer.next(feedback);
+            observer.complete();
+          } catch (err) {
+            observer.error(err);
+          }
+        },
+        error: (err) => observer.error(err),
+      });
+    });
+  }
+
   analyzePronunciation(
     audioBlob: Blob,
     context: PronunciationContext,
@@ -76,6 +108,68 @@ export abstract class BaseAIProvider {
     throw new Error(
       `${this.name} does not support audio input. Switch to a multimodal provider (Gemini 2.5 Pro/Flash, GPT-4o) for pronunciation analysis.`
     );
+  }
+
+  protected parseWritingResponse(content: string, promptId: string, wordCount: number): WritingFeedback {
+    let cleanText = content.trim();
+    cleanText = cleanText.replace(/^```json\s*/i, '').replace(/^```\s*/, '');
+    cleanText = cleanText.replace(/\s*```\s*$/, '');
+
+    const objStart = cleanText.indexOf('{');
+    if (objStart < 0) {
+      throw new Error('Writing response is not valid JSON');
+    }
+    const candidate = cleanText.slice(objStart);
+
+    let parsed: any;
+    try {
+      parsed = JSON.parse(candidate);
+    } catch (firstErr) {
+      const repaired = this.repairTruncatedJson(candidate);
+      try {
+        parsed = JSON.parse(repaired);
+        console.warn('[BaseAIProvider] Recovered truncated writing JSON via repair.');
+      } catch (secondErr) {
+        throw firstErr instanceof Error ? firstErr : new Error('Writing response JSON parse failed');
+      }
+    }
+
+    const rawScores = parsed.scores || {};
+    const scores: WritingRubricScores = {
+      taskAchievement: this.clampBand(rawScores.taskAchievement),
+      coherenceCohesion: this.clampBand(rawScores.coherenceCohesion),
+      lexicalResource: this.clampBand(rawScores.lexicalResource),
+      grammar: this.clampBand(rawScores.grammar),
+    };
+    const sum = scores.taskAchievement + scores.coherenceCohesion + scores.lexicalResource + scores.grammar;
+    const overallBand = Math.round((sum / 4) * 2) / 2; // nearest 0.5
+
+    return {
+      promptId,
+      scores,
+      overallBand,
+      overallComment: typeof parsed.overallComment === 'string' ? parsed.overallComment : '',
+      strengths: Array.isArray(parsed.strengths) ? parsed.strengths.filter((s: any) => typeof s === 'string') : [],
+      improvements: Array.isArray(parsed.improvements) ? parsed.improvements.filter((s: any) => typeof s === 'string') : [],
+      errors: Array.isArray(parsed.errors)
+        ? parsed.errors
+            .filter((e: any) => e && typeof e === 'object')
+            .map((e: any) => ({
+              type: typeof e.type === 'string' ? e.type : 'other',
+              wrong: typeof e.wrong === 'string' ? e.wrong : '',
+              right: typeof e.right === 'string' ? e.right : '',
+              explanation: typeof e.explanation === 'string' ? e.explanation : '',
+            }))
+            .filter((e: any) => e.wrong && e.right)
+        : [],
+      wordCount,
+    };
+  }
+
+  private clampBand(value: any): number {
+    const n = typeof value === 'number' ? value : parseFloat(value);
+    if (!Number.isFinite(n)) return 0;
+    return Math.max(0, Math.min(9, n));
   }
 
   protected parsePronunciationResponse(content: string): PronunciationFeedback {

@@ -146,14 +146,14 @@ export class ExerciseDetailComponent implements OnInit, OnDestroy {
   isPausedTTS = computed(() => this.ttsService.isPaused());
   currentTTSSentenceIndex = computed(() => this.ttsService.currentSentenceIndex());
 
-  // Memory Boost computed - show when score >= 75% AND user is beta tester
+  // Memory Boost — public (BETA label stays). Show when score >= 75% in review mode.
   canShowMemoryBoost = computed(() => {
     const metrics = this.penaltyMetrics();
-    const isBetaTester = this.featureFlagService.isMemoryBoostEnabled();
-    return isBetaTester &&
-           this.isExerciseComplete() && 
-           this.isReviewMode() && 
-           metrics && 
+    const enabled = this.featureFlagService.isMemoryBoostEnabled();
+    return enabled &&
+           this.isExerciseComplete() &&
+           this.isReviewMode() &&
+           metrics &&
            metrics.finalScore >= QUIZ_CONSTANTS.MIN_SCORE_FOR_QUIZ;
   });
 

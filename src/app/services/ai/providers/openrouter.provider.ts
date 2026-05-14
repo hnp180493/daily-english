@@ -2,8 +2,11 @@ import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { BaseAIProvider, AIRequest, AIMessage } from '../base-ai-provider';
 import { AIResponse, AIStreamChunk, ExerciseContext } from '../../../models/ai.model';
+import { PronunciationContext, PronunciationFeedback } from '../../../models/pronunciation.model';
 import { PromptService } from '../prompt.service';
 import { SettingsService } from '../../settings.service';
+import { ConfigService } from '../../config.service';
+import { AudioConverterService } from '../../pronunciation/audio-converter.service';
 
 @Injectable({
   providedIn: 'root'
@@ -11,6 +14,8 @@ import { SettingsService } from '../../settings.service';
 export class OpenRouterProvider extends BaseAIProvider {
   private promptService = inject(PromptService);
   private settingsService = inject(SettingsService);
+  private configService = inject(ConfigService);
+  private audioConverter = inject(AudioConverterService);
 
   get name(): string {
     return 'openrouter';
@@ -324,6 +329,87 @@ export class OpenRouterProvider extends BaseAIProvider {
       console.error('[OpenRouter] Content was:', content);
       return { accuracyScore: 50, feedback: [], overallComment: '' };
     }
+  }
+
+  override supportsAudioInput(): boolean {
+    const modelName = (this.configService.getConfig()?.openrouter?.modelName || '').toLowerCase();
+    // OpenRouter routes to many providers — we trust models tagged 'audio' or 'gemini' to support audio input.
+    return modelName.includes('audio') || modelName.includes('gemini');
+  }
+
+  override analyzePronunciation(
+    audioBlob: Blob,
+    context: PronunciationContext,
+    config: any
+  ): Observable<PronunciationFeedback> {
+    return new Observable((observer) => {
+      const apiKey = config?.openrouter?.apiKey;
+      const modelName = config?.openrouter?.modelName || '';
+      if (!apiKey || !modelName) {
+        observer.error(new Error('OpenRouter chưa được cấu hình.'));
+        return;
+      }
+      const audioCapable = modelName.toLowerCase().includes('audio') || modelName.toLowerCase().includes('gemini');
+      if (!audioCapable) {
+        observer.error(
+          new Error(
+            `Model "${modelName}" không hỗ trợ audio qua OpenRouter. Chọn model có "audio" (vd. openai/gpt-4o-audio-preview) hoặc gemini.`
+          )
+        );
+        return;
+      }
+
+      const prompt = this.promptService.buildPronunciationPrompt(context);
+
+      this.audioConverter
+        .toWav(audioBlob)
+        .then(({ blob }) => this.audioConverter.blobToBase64(blob))
+        .then((base64) => {
+          const headers: Record<string, string> = {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${apiKey}`,
+          };
+          if (config.openrouter.siteUrl) headers['HTTP-Referer'] = config.openrouter.siteUrl;
+          if (config.openrouter.siteName) headers['X-Title'] = config.openrouter.siteName;
+
+          return fetch('https://openrouter.ai/api/v1/chat/completions', {
+            method: 'POST',
+            headers,
+            body: JSON.stringify({
+              model: modelName,
+              modalities: ['text'],
+              messages: [
+                {
+                  role: 'user',
+                  content: [
+                    { type: 'text', text: prompt },
+                    { type: 'input_audio', input_audio: { data: base64, format: 'wav' } },
+                  ],
+                },
+              ],
+              temperature: 0.3,
+            }),
+          });
+        })
+        .then(async (response) => {
+          const data = await response.json();
+          if (data.error) throw new Error(data.error.message || JSON.stringify(data.error));
+          if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+          return data;
+        })
+        .then((data) => {
+          const content = data.choices?.[0]?.message?.content || '';
+          if (!content) throw new Error('OpenRouter trả về phản hồi rỗng cho audio.');
+          const parsed = this.parsePronunciationResponse(content);
+          const filtered = this.filterPronunciationFeedback(parsed, context.expectedText);
+          observer.next(filtered);
+          observer.complete();
+        })
+        .catch((error) => {
+          console.error('[OpenRouter] Pronunciation analysis error:', error);
+          observer.error(error);
+        });
+    });
   }
 
   private handleError(error: any, config?: any): string {

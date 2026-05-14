@@ -9,13 +9,17 @@ import {
   OnDestroy
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { Router, RouterLink } from '@angular/router';
 import {
+  CustomDeck,
   Flashcard,
   FlashcardFilter,
   FlashcardMasteryLevel,
-  ReviewSessionStats
+  ReviewSessionStats,
+  SmartDeckDefinition
 } from '../../models/memory-retention.model';
 import { FlashcardService } from '../../services/flashcard.service';
+import { FlashcardDecksService } from '../../services/flashcard-decks.service';
 
 /**
  * FlashcardDeck page for reviewing all flashcards.
@@ -23,13 +27,15 @@ import { FlashcardService } from '../../services/flashcard.service';
  */
 @Component({
   selector: 'app-flashcard-deck',
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, RouterLink],
   templateUrl: './flashcard-deck.html',
   styleUrl: './flashcard-deck.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class FlashcardDeckComponent implements OnInit, OnDestroy {
   private flashcardService = inject(FlashcardService);
+  private decksService = inject(FlashcardDecksService);
+  private router = inject(Router);
 
   // State signals
   filter = signal<FlashcardFilter>({ exercise: null, category: null, mastery: null });
@@ -41,6 +47,25 @@ export class FlashcardDeckComponent implements OnInit, OnDestroy {
   // Import/Export state
   importMessage = signal<string>('');
   importSuccess = signal<boolean>(false);
+
+  // Smart + custom decks
+  smartDecks = computed(() => this.decksService.smartDecks());
+  customDecks = computed(() => this.decksService.customDecks());
+  leechCount = computed(() => this.flashcardService.leechFlashcards().length);
+
+  // Custom deck creator
+  showCreateDeck = signal(false);
+  newDeckName = signal('');
+  newDeckDescription = signal('');
+  selectedCardIds = signal<Set<string>>(new Set());
+  isMultiSelectMode = signal(false);
+
+  // Custom card creator
+  showCreateCard = signal(false);
+  newCardFront = signal('');
+  newCardBack = signal('');
+  newCardExample = signal('');
+  newCardCategory = signal('');
   
   // Session cards snapshot - frozen list of cards for the current review session
   private sessionCards = signal<Flashcard[]>([]);
@@ -340,5 +365,122 @@ export class FlashcardDeckComponent implements OnInit, OnDestroy {
    */
   clearImportMessage(): void {
     this.importMessage.set('');
+  }
+
+  // -----------------------------
+  // Smart deck / custom deck nav
+  // -----------------------------
+
+  studySmartDeck(deck: SmartDeckDefinition): void {
+    if ((deck.cardCount ?? 0) === 0) return;
+    this.router.navigate(['/flashcards/study'], { queryParams: { deck: deck.id } });
+  }
+
+  studyCustomDeck(deck: CustomDeck): void {
+    if (deck.cardIds.length === 0) return;
+    this.router.navigate(['/flashcards/study'], { queryParams: { deck: deck.id, custom: '1' } });
+  }
+
+  // -----------------------------
+  // Custom deck creator
+  // -----------------------------
+
+  toggleCreateDeck(): void {
+    this.showCreateDeck.update((v) => !v);
+    if (this.showCreateDeck()) {
+      this.isMultiSelectMode.set(true);
+    }
+  }
+
+  cancelCreateDeck(): void {
+    this.showCreateDeck.set(false);
+    this.newDeckName.set('');
+    this.newDeckDescription.set('');
+    this.selectedCardIds.set(new Set());
+    this.isMultiSelectMode.set(false);
+  }
+
+  toggleCardSelection(cardId: string): void {
+    this.selectedCardIds.update((current) => {
+      const next = new Set(current);
+      if (next.has(cardId)) {
+        next.delete(cardId);
+      } else {
+        next.add(cardId);
+      }
+      return next;
+    });
+  }
+
+  isCardSelected(cardId: string): boolean {
+    return this.selectedCardIds().has(cardId);
+  }
+
+  submitCreateDeck(): void {
+    const name = this.newDeckName().trim();
+    const ids = Array.from(this.selectedCardIds());
+    if (!name || ids.length === 0) return;
+    this.decksService.createCustomDeck(name, ids, this.newDeckDescription().trim() || undefined).subscribe(() => {
+      this.cancelCreateDeck();
+    });
+  }
+
+  deleteCustomDeck(deck: CustomDeck): void {
+    if (!confirm(`Xoá custom deck "${deck.name}"?`)) return;
+    this.decksService.deleteCustomDeck(deck.id);
+  }
+
+  toggleCardInDeck(deckId: string, cardId: string): void {
+    this.decksService.toggleCardInDeck(deckId, cardId);
+  }
+
+  // -----------------------------
+  // Custom card creator
+  // -----------------------------
+
+  toggleCreateCard(): void {
+    this.showCreateCard.update((v) => !v);
+    if (!this.showCreateCard()) {
+      this.resetCreateCardForm();
+    }
+  }
+
+  submitCreateCard(): void {
+    const front = this.newCardFront().trim();
+    const back = this.newCardBack().trim();
+    if (!front || !back) return;
+    this.flashcardService
+      .createCustomCard({
+        front,
+        back,
+        example: this.newCardExample().trim() || undefined,
+        category: this.newCardCategory().trim() || undefined,
+      })
+      .subscribe(() => {
+        this.resetCreateCardForm();
+        this.showCreateCard.set(false);
+      });
+  }
+
+  private resetCreateCardForm(): void {
+    this.newCardFront.set('');
+    this.newCardBack.set('');
+    this.newCardExample.set('');
+    this.newCardCategory.set('');
+  }
+
+  // -----------------------------
+  // Suspend / reset (for leech management)
+  // -----------------------------
+
+  toggleSuspend(card: Flashcard, event: Event): void {
+    event.stopPropagation();
+    this.flashcardService.setSuspended(card.id, !card.suspended).subscribe();
+  }
+
+  resetCard(card: Flashcard, event: Event): void {
+    event.stopPropagation();
+    if (!confirm(`Reset "${card.front}" về trạng thái new?`)) return;
+    this.flashcardService.resetCard(card.id).subscribe();
   }
 }

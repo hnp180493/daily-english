@@ -3,7 +3,7 @@ import { BehaviorSubject, Observable } from 'rxjs';
 import { AnalyticsService } from './analytics.service';
 
 export interface AIConfig {
-  provider: 'azure' | 'gemini' | 'openai' | 'openrouter';
+  provider: 'azure' | 'gemini' | 'openai' | 'openrouter' | 'anthropic';
   azure: {
     endpoint: string;
     apiKey: string;
@@ -22,6 +22,10 @@ export interface AIConfig {
     modelName: string;
     siteUrl?: string;
     siteName?: string;
+  };
+  anthropic?: {
+    apiKey: string;
+    modelName: string;
   };
 }
 
@@ -96,6 +100,8 @@ export class ConfigService {
       return !!(config.openai.apiKey && config.openai.modelName);
     } else if (config.provider === 'openrouter') {
       return !!(config.openrouter?.apiKey && config.openrouter?.modelName);
+    } else if (config.provider === 'anthropic') {
+      return !!(config.anthropic?.apiKey && config.anthropic?.modelName);
     }
     return false;
   }

@@ -401,10 +401,21 @@ export const routes: Routes = [
     },
   },
   {
+    path: 'flashcards/study',
+    loadComponent: () =>
+      import('./components/flashcard-study/flashcard-study').then((m) => m.FlashcardStudyComponent),
+    data: {
+      seo: {
+        title: 'Học thẻ ghi nhớ - Daily English',
+        description: 'Học thẻ ghi nhớ với FSRS và 5 chế độ ôn',
+        noindex: true,
+      } as RouteSeoData,
+    },
+  },
+  {
     path: 'flashcards',
     loadComponent: () =>
       import('./components/flashcard-deck/flashcard-deck').then((m) => m.FlashcardDeckComponent),
-    canActivate: [betaFeatureGuard],
     data: {
       seo: {
         title: 'Thẻ ghi nhớ - Daily English',
@@ -428,6 +439,113 @@ export const routes: Routes = [
           ],
         },
       } as VietnameseRouteSeoData,
+    },
+  },
+  {
+    path: 'listening',
+    loadComponent: () =>
+      import('./components/listening-list/listening-list').then((m) => m.ListeningListComponent),
+    canActivate: [betaFeatureGuard],
+    data: {
+      seo: {
+        title: 'Nghe hiểu tiếng Anh - Daily English',
+        description: 'Bài nghe tiếng Anh với TTS, transcript ẩn/hiện, quiz hiểu nghĩa từ cơ bản đến nâng cao',
+        keywords: ['nghe hiểu tiếng anh', 'listening practice', 'luyện nghe tiếng anh'],
+        noindex: true,
+      } as RouteSeoData,
+    },
+  },
+  {
+    path: 'listening/:slug',
+    loadComponent: () =>
+      import('./components/listening-player/listening-player').then((m) => m.ListeningPlayerComponent),
+    canActivate: [betaFeatureGuard],
+    data: {
+      seo: {
+        title: 'Bài nghe - Daily English',
+        description: 'Bài nghe với transcript và quiz',
+        noindex: true,
+      } as RouteSeoData,
+    },
+  },
+  {
+    path: 'writing',
+    loadComponent: () =>
+      import('./components/writing-list/writing-list').then((m) => m.WritingListComponent),
+    canActivate: [betaFeatureGuard],
+    data: {
+      seo: {
+        title: 'Luyện viết tiếng Anh với AI (Beta) - Daily English',
+        description: 'Viết essay tự do, AI chấm theo thang IELTS 4 tiêu chí với phản hồi chi tiết',
+        keywords: ['luyện viết tiếng anh', 'writing practice', 'ielts writing'],
+        noindex: true,
+      } as RouteSeoData,
+    },
+  },
+  {
+    path: 'writing/:slug',
+    loadComponent: () =>
+      import('./components/writing-room/writing-room').then((m) => m.WritingRoomComponent),
+    canActivate: [betaFeatureGuard],
+    data: {
+      seo: {
+        title: 'Phòng viết - Daily English',
+        description: 'Viết essay tiếng Anh và nhận chấm AI',
+        noindex: true,
+      } as RouteSeoData,
+    },
+  },
+  {
+    path: 'reading',
+    loadComponent: () =>
+      import('./components/reading-list/reading-list').then((m) => m.ReadingListComponent),
+    canActivate: [betaFeatureGuard],
+    data: {
+      seo: {
+        title: 'Đọc hiểu tiếng Anh (Beta) - Daily English',
+        description: 'Bài đọc tiếng Anh 300-500 từ kèm từ vựng, quiz hiểu nghĩa và câu hỏi thảo luận',
+        keywords: ['đọc hiểu tiếng anh', 'reading comprehension'],
+        noindex: true,
+      } as RouteSeoData,
+    },
+  },
+  {
+    path: 'reading/:slug',
+    loadComponent: () =>
+      import('./components/reading-detail/reading-detail').then((m) => m.ReadingDetailComponent),
+    canActivate: [betaFeatureGuard],
+    data: {
+      seo: {
+        title: 'Bài đọc - Daily English',
+        description: 'Bài đọc tiếng Anh kèm từ vựng và quiz hiểu nghĩa',
+        noindex: true,
+      } as RouteSeoData,
+    },
+  },
+  {
+    path: 'grammar-lessons',
+    loadComponent: () =>
+      import('./components/grammar-lessons/grammar-lessons').then((m) => m.GrammarLessonsComponent),
+    data: {
+      seo: {
+        title: 'Grammar Lessons (Beta) - Daily English',
+        description:
+          'Grammar lessons for Vietnamese learners with bilingual examples, common mistakes, and applied practice',
+        keywords: ['english grammar', 'grammar lessons', 'ngữ pháp tiếng anh'],
+      } as RouteSeoData,
+    },
+  },
+  {
+    path: 'grammar-lessons/:slug',
+    loadComponent: () =>
+      import('./components/grammar-lesson-detail/grammar-lesson-detail').then(
+        (m) => m.GrammarLessonDetailComponent
+      ),
+    data: {
+      seo: {
+        title: 'Grammar lesson - Daily English',
+        description: 'Detailed grammar lesson with bilingual examples, tips, and practice',
+      } as RouteSeoData,
     },
   },
   {

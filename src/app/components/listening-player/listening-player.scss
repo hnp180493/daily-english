@@ -1,0 +1,205 @@
+.listening-player {
+  min-height: 100vh;
+
+  .mode-tabs {
+    overflow-x: auto;
+  }
+
+  .tab-btn {
+    padding: 0.6rem 1rem;
+    color: #94a3b8;
+    font-weight: 500;
+    font-size: 0.9rem;
+    border-bottom: 2px solid transparent;
+    transition: color 0.15s, border-color 0.15s;
+    white-space: nowrap;
+
+    &:hover {
+      color: #c4b5fd;
+    }
+
+    &.tab-active {
+      color: #c4b5fd;
+      border-color: #7c3aed;
+    }
+  }
+
+  .ctrl-btn {
+    padding: 0.6rem 1rem;
+    background: rgba(30, 41, 59, 0.6);
+    color: #cbd5e1;
+    border: 1px solid rgba(71, 85, 105, 0.4);
+    border-radius: 0.5rem;
+    font-weight: 500;
+    font-size: 1rem;
+    transition: background 0.15s, border-color 0.15s;
+
+    &:hover:not(:disabled) {
+      background: rgba(51, 65, 85, 0.7);
+      border-color: rgba(124, 58, 237, 0.4);
+    }
+
+    &:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+
+    &.ctrl-primary {
+      background: linear-gradient(135deg, #7c3aed, #6d28d9);
+      color: #fff;
+      border-color: rgba(124, 58, 237, 0.5);
+
+      &:hover:not(:disabled) {
+        box-shadow: 0 4px 14px rgba(124, 58, 237, 0.4);
+      }
+    }
+  }
+
+  .progress-bar {
+    height: 6px;
+    background: rgba(30, 41, 59, 0.8);
+    border-radius: 999px;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #7c3aed, #a855f7);
+    transition: width 0.3s;
+  }
+
+  .segment {
+    transition: background 0.15s;
+
+    &:hover {
+      background: rgba(51, 65, 85, 0.4);
+    }
+
+    &.segment-active {
+      background: rgba(124, 58, 237, 0.15);
+      border-left: 3px solid #7c3aed;
+      padding-left: 0.6rem;
+    }
+  }
+
+  .option-btn {
+    cursor: pointer;
+    background: rgba(15, 23, 42, 0.6);
+    border-color: rgba(71, 85, 105, 0.5);
+    color: #e2e8f0;
+
+    &:hover:not(:disabled):not(.option-correct):not(.option-incorrect):not(.option-disabled) {
+      border-color: rgba(124, 58, 237, 0.5);
+      background: rgba(30, 27, 75, 0.4);
+    }
+
+    &.option-selected {
+      border-color: rgba(124, 58, 237, 0.7);
+      background: rgba(124, 58, 237, 0.15);
+      color: #ddd6fe;
+    }
+
+    &.option-correct {
+      border-color: rgba(16, 185, 129, 0.5);
+      background: rgba(16, 185, 129, 0.12);
+      color: #86efac;
+      cursor: default;
+    }
+
+    &.option-incorrect {
+      border-color: rgba(239, 68, 68, 0.5);
+      background: rgba(239, 68, 68, 0.12);
+      color: #fca5a5;
+      cursor: default;
+    }
+
+    &.option-disabled {
+      opacity: 0.5;
+      cursor: default;
+    }
+  }
+
+  .btn-primary {
+    background: linear-gradient(135deg, #7c3aed, #6d28d9);
+    color: #fff;
+    padding: 0.55rem 1.2rem;
+    border-radius: 0.5rem;
+    font-weight: 500;
+    transition: transform 0.15s, box-shadow 0.15s;
+    box-shadow: 0 4px 14px rgba(124, 58, 237, 0.25);
+
+    &:hover:not(:disabled) {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px rgba(124, 58, 237, 0.4);
+    }
+  }
+
+  .btn-secondary {
+    background: rgba(30, 41, 59, 0.6);
+    color: #cbd5e1;
+    padding: 0.55rem 1.2rem;
+    border-radius: 0.5rem;
+    font-weight: 500;
+    border: 1px solid rgba(71, 85, 105, 0.4);
+    transition: background 0.15s;
+
+    &:hover:not(:disabled) {
+      background: rgba(51, 65, 85, 0.7);
+    }
+  }
+
+  .add-all-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.4rem 0.85rem;
+    border-radius: 0.5rem;
+    background: linear-gradient(135deg, rgba(168, 85, 247, 0.25), rgba(124, 58, 237, 0.35));
+    color: #e9d5ff;
+    font-size: 0.78rem;
+    font-weight: 600;
+    border: 1px solid rgba(168, 85, 247, 0.5);
+    cursor: pointer;
+    transition: transform 0.12s, box-shadow 0.15s;
+
+    &:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 14px rgba(124, 58, 237, 0.3);
+    }
+  }
+
+  .flashcard-pill {
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 1.75rem;
+    height: 1.5rem;
+    padding: 0 0.5rem;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    border: 1px solid;
+    line-height: 1;
+  }
+
+  .flashcard-add {
+    background: rgba(124, 58, 237, 0.15);
+    border-color: rgba(168, 85, 247, 0.5);
+    color: #c4b5fd;
+    cursor: pointer;
+    transition: background 0.12s, color 0.12s;
+
+    &:hover {
+      background: rgba(168, 85, 247, 0.3);
+      color: #f3e8ff;
+    }
+  }
+
+  .flashcard-added {
+    background: rgba(16, 185, 129, 0.15);
+    border-color: rgba(16, 185, 129, 0.45);
+    color: #6ee7b7;
+    cursor: default;
+  }
+}

@@ -1,0 +1,297 @@
+<div class="lesson-detail max-w-3xl mx-auto p-4 md:p-6 text-slate-100">
+  <button (click)="goBack()" class="text-sm text-slate-500 hover:text-slate-300 mb-4">← All lessons</button>
+
+  @if (isLoading()) {
+    <p class="text-center text-slate-500 py-12">Loading lesson...</p>
+  } @else if (!lesson()) {
+    <div class="text-center py-12">
+      <p class="text-slate-300 mb-3">Lesson not found.</p>
+      <a routerLink="/grammar-lessons" class="text-purple-400 hover:text-purple-300">Back to lessons</a>
+    </div>
+  } @else {
+    @if (lesson(); as l) {
+      <article>
+        <!-- Meta row -->
+        <div class="flex items-center gap-3 mb-3 flex-wrap">
+          @if (l.level) {
+            <span class="px-2 py-1 rounded-full text-xs font-medium bg-purple-500/20 text-purple-300 border border-purple-500/30">
+              {{ levelLabel(l.level) }}
+            </span>
+          }
+          @if (l.estimatedMinutes) {
+            <span class="text-xs text-slate-500">⏱ ~{{ l.estimatedMinutes }} min</span>
+          }
+          @if (quickCheckScore(); as score) {
+            <span class="text-xs text-slate-500 ml-auto">
+              ✓ Checks: <strong [class.text-green-300]="score.allDone && score.correct === score.total">{{ score.correct }}/{{ score.total }}</strong>
+            </span>
+          }
+        </div>
+
+        <h1 class="text-3xl font-bold text-slate-100 mb-3 leading-tight">{{ l.title }}</h1>
+        <p class="text-slate-400 leading-relaxed mb-6">{{ l.description }}</p>
+
+        <!-- TL;DR Hero -->
+        @if (l.tldr; as t) {
+          <section class="tldr-hero mb-8">
+            <div class="tldr-label">
+              <span class="tldr-icon">⚡</span>
+              <span>Quick rule</span>
+            </div>
+            <p class="tldr-rule">{{ t.rule }}</p>
+            <div class="tldr-example">
+              <p class="tldr-example-en">"{{ t.example }}"</p>
+              @if (t.exampleVietnamese) {
+                <p class="tldr-example-vi">🇻🇳 {{ t.exampleVietnamese }}</p>
+              }
+            </div>
+          </section>
+        } @else if (l.rule) {
+          <!-- Fallback for old lessons without tldr -->
+          <section class="rule-box bg-purple-500/10 border-l-4 border-purple-500 p-4 mb-8 rounded">
+            <h2 class="font-semibold text-purple-200 mb-1">📐 Rule</h2>
+            <p class="text-slate-200 leading-relaxed">{{ l.rule }}</p>
+          </section>
+        }
+
+        <!-- Real-world scenarios -->
+        @if (l.scenarios && l.scenarios.length > 0) {
+          <section class="mb-8">
+            <h2 class="section-heading">🌍 When you'll use it</h2>
+            <div class="scenarios-grid">
+              @for (s of l.scenarios; track $index; let i = $index) {
+                <div class="scenario-card" [class]="scenarioGradient(i)">
+                  <div class="scenario-context">{{ s.context }}</div>
+                  <p class="scenario-english">"{{ s.english }}"</p>
+                  @if (s.vietnamese) {
+                    <p class="scenario-vietnamese">🇻🇳 {{ s.vietnamese }}</p>
+                  }
+                  <p class="scenario-why">{{ s.why }}</p>
+                </div>
+              }
+            </div>
+          </section>
+        }
+
+        <!-- Inline Quick Checks -->
+        @if (quickCheckStates().length > 0) {
+          <section class="mb-8">
+            <div class="flex items-center justify-between mb-3 flex-wrap gap-2">
+              <h2 class="section-heading mb-0">🎯 Quick checks</h2>
+              @if (quickCheckScore(); as score) {
+                <span class="text-sm text-slate-400">
+                  {{ score.correct }} / {{ score.total }} answered correctly
+                </span>
+              }
+            </div>
+            <div class="space-y-4">
+              @for (state of quickCheckStates(); track $index; let i = $index) {
+                <div class="quick-check-card">
+                  <p class="qc-question">
+                    <span class="qc-num">{{ i + 1 }}</span>
+                    {{ state.check.question }}
+                  </p>
+                  <div class="qc-options">
+                    @for (opt of state.check.options; track $index; let oi = $index) {
+                      <button
+                        type="button"
+                        [class]="quickCheckOptionClass(i, oi)"
+                        [disabled]="state.selected !== null"
+                        (click)="selectQuickCheck(i, oi)"
+                      >
+                        <span class="qc-letter">{{ ['A', 'B', 'C', 'D'][oi] }}</span>
+                        <span class="qc-opt-text">{{ opt }}</span>
+                        @if (state.selected !== null && oi === state.check.correctIndex) {
+                          <span class="qc-icon">✓</span>
+                        } @else if (state.selected === oi && oi !== state.check.correctIndex) {
+                          <span class="qc-icon">✗</span>
+                        }
+                      </button>
+                    }
+                  </div>
+                  @if (state.selected !== null) {
+                    <div class="qc-explanation" [class.correct]="state.selected === state.check.correctIndex">
+                      💡 {{ state.check.explanation }}
+                    </div>
+                  }
+                </div>
+              }
+            </div>
+          </section>
+        }
+
+        <!-- Practice -->
+        @if (practiceStates().length > 0) {
+          <section class="mb-8">
+            <div class="flex items-center justify-between mb-3 flex-wrap gap-2">
+              <h2 class="section-heading mb-0">📝 Try translating</h2>
+              @if (practiceScore(); as score) {
+                <span class="text-sm text-slate-400">{{ score.correct }} / {{ score.total }} ({{ score.percent }}%)</span>
+              }
+            </div>
+            <div class="space-y-3">
+              @for (state of practiceStates(); track $index; let i = $index) {
+                <div class="practice-item" [class.practice-ai]="isGeneratedItem(i)" [attr.data-practice-index]="i">
+                  <p class="text-slate-100 font-medium mb-2 flex items-center gap-2 flex-wrap">
+                    <span class="practice-num">{{ i + 1 }}</span>
+                    <span class="flex-1 min-w-0">{{ state.item.vietnamese }}</span>
+                    @if (isGeneratedItem(i)) {
+                      <span class="ai-badge">✨ AI</span>
+                    }
+                  </p>
+                  <input
+                    type="text"
+                    [value]="state.userAnswer"
+                    (input)="updateAnswer(i, $any($event.target).value)"
+                    [disabled]="state.revealed"
+                    placeholder="Type your English translation..."
+                    class="practice-input"
+                  />
+                  <div class="flex gap-2 mt-2 items-center flex-wrap">
+                    @if (!state.revealed) {
+                      @if (state.item.hint && !state.hintShown) {
+                        <button (click)="showHint(i)" class="text-xs text-purple-400 hover:text-purple-300">💡 Hint</button>
+                      }
+                      <button (click)="reveal(i)" class="practice-check-btn">Check</button>
+                    } @else {
+                      <span
+                        class="practice-result"
+                        [class.correct]="isAnswerCorrect(state)"
+                        [class.wrong]="!isAnswerCorrect(state)"
+                      >
+                        {{ isAnswerCorrect(state) ? '✓ Correct' : '✗ Not yet' }}
+                      </span>
+                      <span class="text-xs text-slate-400">
+                        Answer: <span class="font-mono text-slate-100">{{ state.item.english }}</span>
+                      </span>
+                    }
+                  </div>
+                  @if (state.hintShown && state.item.hint && !state.revealed) {
+                    <p class="text-xs text-purple-300 italic mt-2">💡 {{ state.item.hint }}</p>
+                  }
+                </div>
+              }
+            </div>
+
+            <!-- Generate more practice (AI) -->
+            <div class="generate-more-row">
+              <button
+                type="button"
+                class="generate-more-btn"
+                [disabled]="isGeneratingPractice()"
+                (click)="generateMorePractice()"
+              >
+                @if (isGeneratingPractice()) {
+                  <span class="gm-spinner"></span>
+                  <span>Generating fresh sentences...</span>
+                } @else {
+                  <span class="gm-icon">✨</span>
+                  <span>Generate 5 more with AI</span>
+                }
+              </button>
+              <p class="generate-more-hint">
+                Tailored to this lesson's grammar &amp; your level. Needs an AI provider configured in Profile.
+              </p>
+            </div>
+          </section>
+        }
+
+        <!-- Deep dive (collapsible) -->
+        @if (l.sections?.length || l.vietnameseTips?.length || l.commonMistakes?.length) {
+          <section class="mb-8 deep-dive">
+            <button class="deep-dive-toggle" type="button" (click)="toggleDeepDive()">
+              <span>{{ showDeepDive() ? '▼' : '▶' }} Deep dive — full rules, tips & mistakes</span>
+              <span class="text-xs text-slate-500">{{ showDeepDive() ? 'Hide' : 'Expand' }}</span>
+            </button>
+
+            @if (showDeepDive()) {
+              <div class="deep-dive-content">
+                @if (l.sections && l.sections.length > 0) {
+                  @for (section of l.sections; track section.heading) {
+                    <div class="dd-section">
+                      <h3 class="dd-heading">{{ section.heading }}</h3>
+                      <p class="text-slate-300 leading-relaxed mb-3">{{ section.body }}</p>
+                      @if (section.bullets && section.bullets.length > 0) {
+                        <ul class="list-disc list-inside space-y-1 mb-3 text-slate-300 text-sm">
+                          @for (bullet of section.bullets; track $index) {
+                            <li>{{ bullet }}</li>
+                          }
+                        </ul>
+                      }
+                      @if (section.examples && section.examples.length > 0) {
+                        <div class="space-y-2">
+                          @for (ex of section.examples; track $index) {
+                            <div class="dd-example">
+                              <p class="font-medium text-slate-100">{{ ex.english }}</p>
+                              @if (ex.vietnamese) {
+                                <p class="text-sm text-slate-400 mt-1">🇻🇳 {{ ex.vietnamese }}</p>
+                              }
+                              @if (ex.note) {
+                                <p class="text-xs text-slate-500 mt-1 italic">💡 {{ ex.note }}</p>
+                              }
+                            </div>
+                          }
+                        </div>
+                      }
+                    </div>
+                  }
+                }
+
+                @if (l.vietnameseTips && l.vietnameseTips.length > 0) {
+                  <div class="dd-section dd-tips">
+                    <h3 class="dd-heading">🇻🇳 Tips for Vietnamese learners</h3>
+                    <ul class="list-disc list-inside space-y-2 text-amber-100/90">
+                      @for (tip of l.vietnameseTips; track $index) {
+                        <li>{{ tip }}</li>
+                      }
+                    </ul>
+                  </div>
+                }
+
+                @if (l.commonMistakes && l.commonMistakes.length > 0) {
+                  <div class="dd-section">
+                    <h3 class="dd-heading">⚠️ Common mistakes</h3>
+                    <div class="space-y-3">
+                      @for (m of l.commonMistakes; track $index) {
+                        <div class="dd-mistake">
+                          <p class="text-red-300 mb-1">❌ <span class="font-mono">{{ m.wrong }}</span></p>
+                          <p class="text-green-300 mb-2">✅ <span class="font-mono">{{ m.right }}</span></p>
+                          <p class="text-sm text-slate-400">{{ m.explanation }}</p>
+                        </div>
+                      }
+                    </div>
+                  </div>
+                }
+              </div>
+            }
+          </section>
+        }
+
+        <footer class="mt-10 pt-6 border-t border-slate-700/60">
+          <div class="text-center mb-5">
+            <button
+              type="button"
+              class="learned-toggle"
+              [class.is-learned]="isCurrentLessonLearned()"
+              (click)="toggleLearned()"
+            >
+              @if (isCurrentLessonLearned()) {
+                ✓ Marked as learned — click to undo
+              } @else {
+                ☐ Mark this lesson as learned
+              }
+            </button>
+            <p class="text-xs text-slate-500 mt-2">Saved locally — your progress stays on this device.</p>
+          </div>
+
+          <p class="text-sm text-slate-500 mb-3 text-center">Keep practicing:</p>
+          <div class="flex gap-3 justify-center flex-wrap">
+            <a routerLink="/grammar-lessons" class="text-purple-400 hover:text-purple-300 text-sm">📘 More lessons</a>
+            <a routerLink="/review-queue" class="text-purple-400 hover:text-purple-300 text-sm">🔁 Review queue</a>
+            <a routerLink="/error-patterns" class="text-purple-400 hover:text-purple-300 text-sm">🔍 Error patterns</a>
+          </div>
+        </footer>
+      </article>
+    }
+  }
+</div>

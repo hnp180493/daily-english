@@ -33,8 +33,16 @@
       </div>
     }
 
-    @if (!providerSupportsAudio()) {
+    @if (!providerSupportsAudio() && !useWebSpeechFallback()) {
       <div class="bg-amber-500/10 border border-amber-500/30 text-amber-300 rounded-lg p-4 mb-4 text-sm" [innerHTML]="translate.t('pronunciation_practice.no_audio_support_html')">
+      </div>
+    }
+
+    @if (useWebSpeechFallback()) {
+      <div class="bg-blue-500/10 border border-blue-500/30 text-blue-200 rounded-lg p-4 mb-4 text-sm">
+        <strong class="text-blue-300">🎙 Web Speech mode (Tier 1)</strong> — Your active AI provider doesn't support audio, so we fall back to the browser's speech recognition.
+        Grades at the <strong>word level only</strong> (correct / wrong / missing) — no phoneme scoring.
+        For richer feedback, switch to <em>Gemini 2.5</em> in Profile.
       </div>
     }
 
@@ -62,42 +70,90 @@
       </button>
     </div>
 
-    <!-- Recording area -->
-    <div class="flex flex-col items-center mb-6">
-      <button
-        (click)="toggleRecording()"
-        [disabled]="isAnalyzing() || !recorderSupported() || !providerSupportsAudio()"
-        [class.bg-red-500]="recorder.state() === 'recording'"
-        [class.bg-purple-600]="recorder.state() !== 'recording'"
-        [class.shadow-purple-500\/40]="recorder.state() !== 'recording'"
-        [class.shadow-red-500\/40]="recorder.state() === 'recording'"
-        [class.animate-pulse]="recorder.state() === 'recording'"
-        class="w-20 h-20 rounded-full flex items-center justify-center text-white text-3xl shadow-xl hover:scale-105 transition-transform disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:scale-100"
-        type="button"
-        [attr.aria-label]="recorder.state() === 'recording' ? translate.t('pronunciation_practice.stop_recording') : translate.t('pronunciation_practice.start_recording')">
-        @if (recorder.state() === 'recording') {
-          ⏹
-        } @else {
-          🎤
-        }
-      </button>
+    @if (!useWebSpeechFallback()) {
+      <!-- Recording area (AI-provider audio mode) -->
+      <div class="flex flex-col items-center mb-6">
+        <button
+          (click)="toggleRecording()"
+          [disabled]="isAnalyzing() || !recorderSupported() || !providerSupportsAudio()"
+          [class.bg-red-500]="recorder.state() === 'recording'"
+          [class.bg-purple-600]="recorder.state() !== 'recording'"
+          [class.shadow-purple-500\/40]="recorder.state() !== 'recording'"
+          [class.shadow-red-500\/40]="recorder.state() === 'recording'"
+          [class.animate-pulse]="recorder.state() === 'recording'"
+          class="w-20 h-20 rounded-full flex items-center justify-center text-white text-3xl shadow-xl hover:scale-105 transition-transform disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:scale-100"
+          type="button"
+          [attr.aria-label]="recorder.state() === 'recording' ? translate.t('pronunciation_practice.stop_recording') : translate.t('pronunciation_practice.start_recording')">
+          @if (recorder.state() === 'recording') {
+            ⏹
+          } @else {
+            🎤
+          }
+        </button>
 
-      <div class="mt-3 text-sm h-5">
-        @if (recorder.state() === 'requesting') {
-          <span class="text-slate-400">{{ translate.t('pronunciation_practice.requesting_permission') }}</span>
-        } @else if (recorder.state() === 'recording') {
-          <span class="text-red-400 font-medium">
-            {{ translate.t('pronunciation_practice.recording_now') }} {{ formatSeconds(recorder.elapsedMs()) }}
-          </span>
-        } @else if (audioBlob()) {
-          <span class="text-slate-400">
-            {{ translate.t('pronunciation_practice.recorded') }} {{ formatSeconds(durationMs()) }}
-          </span>
-        } @else {
-          <span class="text-slate-500">{{ translate.t('pronunciation_practice.press_to_start') }}</span>
+        <div class="mt-3 text-sm h-5">
+          @if (recorder.state() === 'requesting') {
+            <span class="text-slate-400">{{ translate.t('pronunciation_practice.requesting_permission') }}</span>
+          } @else if (recorder.state() === 'recording') {
+            <span class="text-red-400 font-medium">
+              {{ translate.t('pronunciation_practice.recording_now') }} {{ formatSeconds(recorder.elapsedMs()) }}
+            </span>
+          } @else if (audioBlob()) {
+            <span class="text-slate-400">
+              {{ translate.t('pronunciation_practice.recorded') }} {{ formatSeconds(durationMs()) }}
+            </span>
+          } @else {
+            <span class="text-slate-500">{{ translate.t('pronunciation_practice.press_to_start') }}</span>
+          }
+        </div>
+      </div>
+    } @else {
+      <!-- Web Speech fallback mode -->
+      <div class="flex flex-col items-center mb-6">
+        <button
+          (click)="toggleWebSpeech()"
+          [disabled]="isAnalyzing()"
+          [class.bg-red-500]="speechRecognition.state() === 'listening'"
+          [class.bg-blue-600]="speechRecognition.state() !== 'listening'"
+          [class.shadow-blue-500\/40]="speechRecognition.state() !== 'listening'"
+          [class.shadow-red-500\/40]="speechRecognition.state() === 'listening'"
+          [class.animate-pulse]="speechRecognition.state() === 'listening'"
+          class="w-20 h-20 rounded-full flex items-center justify-center text-white text-3xl shadow-xl hover:scale-105 transition-transform disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:scale-100"
+          type="button"
+          [attr.aria-label]="speechRecognition.state() === 'listening' ? 'Stop listening' : 'Start speaking'">
+          @if (speechRecognition.state() === 'listening') {
+            ⏹
+          } @else {
+            🎙
+          }
+        </button>
+
+        <div class="mt-3 text-sm h-5">
+          @if (speechRecognition.state() === 'requesting') {
+            <span class="text-slate-400">Requesting microphone permission...</span>
+          } @else if (speechRecognition.state() === 'listening') {
+            <span class="text-red-400 font-medium">Listening... tap again to stop</span>
+          } @else if (lastTranscript()) {
+            <span class="text-slate-400">Transcript ready</span>
+          } @else {
+            <span class="text-slate-500">Tap the mic and read the sentence aloud</span>
+          }
+        </div>
+
+        @if (speechRecognition.interimTranscript() && speechRecognition.state() === 'listening') {
+          <div class="mt-3 text-xs italic text-slate-500 max-w-md text-center">
+            "{{ speechRecognition.interimTranscript() }}"
+          </div>
+        }
+
+        @if (lastTranscript() && speechRecognition.state() !== 'listening') {
+          <div class="mt-3 text-sm text-slate-300 max-w-md text-center bg-slate-900/60 border border-slate-700/60 rounded-lg p-3">
+            <span class="text-xs text-slate-500 block mb-1">📝 Transcript:</span>
+            "{{ lastTranscript() }}"
+          </div>
         }
       </div>
-    </div>
+    }
 
     <!-- Playback -->
     @if (audioUrl()) {
@@ -195,6 +251,109 @@
             </div>
           </div>
         }
+
+        @if (fb.phoneme; as ph) {
+          <div class="mt-4 pt-4 border-t border-slate-700/60">
+            <div class="flex items-center justify-between mb-3">
+              <div class="text-sm font-semibold text-purple-300">🔬 Phoneme scores (Azure Speech)</div>
+              <div class="text-xs text-slate-500">Tier 3</div>
+            </div>
+            <div class="grid grid-cols-4 gap-2 mb-3 text-center">
+              <div class="bg-slate-800/60 rounded p-2">
+                <div class="text-lg font-bold" [ngClass]="phonemeScoreColor(ph.pronScore)">{{ ph.pronScore | number:'1.0-0' }}</div>
+                <div class="text-[10px] text-slate-500">Overall</div>
+              </div>
+              <div class="bg-slate-800/60 rounded p-2">
+                <div class="text-lg font-bold" [ngClass]="phonemeScoreColor(ph.accuracyScore)">{{ ph.accuracyScore | number:'1.0-0' }}</div>
+                <div class="text-[10px] text-slate-500">Accuracy</div>
+              </div>
+              <div class="bg-slate-800/60 rounded p-2">
+                <div class="text-lg font-bold" [ngClass]="phonemeScoreColor(ph.fluencyScore)">{{ ph.fluencyScore | number:'1.0-0' }}</div>
+                <div class="text-[10px] text-slate-500">Fluency</div>
+              </div>
+              <div class="bg-slate-800/60 rounded p-2">
+                <div class="text-lg font-bold" [ngClass]="phonemeScoreColor(ph.completenessScore)">{{ ph.completenessScore | number:'1.0-0' }}</div>
+                <div class="text-[10px] text-slate-500">Completeness</div>
+              </div>
+            </div>
+            <div class="space-y-2">
+              @for (w of ph.words; track $index) {
+                <div class="text-xs bg-slate-800/40 rounded p-2">
+                  <div class="flex items-center justify-between mb-1">
+                    <strong class="text-slate-200">{{ w.word }}</strong>
+                    <span [ngClass]="phonemeScoreColor(w.accuracyScore)">
+                      {{ w.accuracyScore | number:'1.0-0' }}{{ w.errorType !== 'None' ? ' · ' + w.errorType : '' }}
+                    </span>
+                  </div>
+                  @if (w.phonemes.length > 0) {
+                    <div class="flex flex-wrap gap-1">
+                      @for (p of w.phonemes; track $index) {
+                        <span class="px-1.5 py-0.5 rounded font-mono text-[10px] bg-slate-900/60 border border-slate-700/40"
+                              [ngClass]="phonemeScoreColor(p.accuracyScore)">
+                          /{{ p.phoneme }}/ {{ p.accuracyScore | number:'1.0-0' }}
+                        </span>
+                      }
+                    </div>
+                  }
+                </div>
+              }
+            </div>
+          </div>
+        }
+
+        <div class="mt-4 pt-4 border-t border-slate-700/60">
+          @if (!fb.phoneme && audioBlob() && !useWebSpeechFallback()) {
+            <div class="flex gap-2 flex-wrap items-center">
+              @if (azureSpeech.isConfigured()) {
+                <button
+                  (click)="enrichPhonemes()"
+                  [disabled]="isEnrichingPhonemes()"
+                  class="px-3 py-2 rounded-lg bg-purple-600/30 border border-purple-500/50 text-purple-200 text-sm hover:bg-purple-600/40 transition disabled:opacity-50"
+                  type="button">
+                  @if (isEnrichingPhonemes()) {
+                    ⏳ Scoring phonemes...
+                  } @else {
+                    🔬 Add phoneme score (Azure Speech)
+                  }
+                </button>
+                <button (click)="toggleAzureConfig()" class="text-xs text-slate-500 hover:text-slate-300">⚙️ Change key</button>
+              } @else {
+                <button (click)="toggleAzureConfig()" class="px-3 py-2 rounded-lg border border-slate-700 text-slate-300 text-sm hover:bg-slate-800/60 transition" type="button">
+                  ⚙️ Configure Azure Speech (phoneme detail)
+                </button>
+              }
+            </div>
+          }
+
+          @if (showAzureConfig()) {
+            <div class="bg-slate-800/40 border border-slate-700 rounded-lg p-3 mt-3 text-sm">
+              <p class="text-xs text-slate-400 mb-2">
+                Enter your Azure Speech subscription key and region (free tier ~5h/month). The key is stored in localStorage — the browser calls Azure directly, no server proxy.
+              </p>
+              <input
+                type="password"
+                placeholder="Azure Speech subscription key"
+                [ngModel]="azureKeyInput()"
+                (ngModelChange)="azureKeyInput.set($event)"
+                class="w-full px-2 py-1.5 mb-2 rounded bg-slate-900 border border-slate-700 text-slate-100 text-xs focus:outline-none focus:border-purple-500"
+              />
+              <input
+                type="text"
+                placeholder="Region (e.g. eastus, southeastasia)"
+                [ngModel]="azureRegionInput()"
+                (ngModelChange)="azureRegionInput.set($event)"
+                class="w-full px-2 py-1.5 mb-2 rounded bg-slate-900 border border-slate-700 text-slate-100 text-xs focus:outline-none focus:border-purple-500"
+              />
+              <div class="flex gap-2">
+                <button (click)="saveAzureConfig()" class="text-xs px-3 py-1.5 rounded bg-purple-600 hover:bg-purple-500 text-white">Save</button>
+                @if (azureSpeech.isConfigured()) {
+                  <button (click)="clearAzureConfig()" class="text-xs px-3 py-1.5 rounded border border-slate-700 text-slate-300 hover:bg-slate-800">Clear</button>
+                }
+                <button (click)="toggleAzureConfig()" class="text-xs px-3 py-1.5 text-slate-400 hover:text-slate-200">Close</button>
+              </div>
+            </div>
+          }
+        </div>
       </div>
 
       <div class="flex gap-3">

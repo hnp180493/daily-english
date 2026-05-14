@@ -1,0 +1,312 @@
+{
+  "version": 1,
+  "updated": "2026-05-14",
+  "tracks": [
+    {
+      "id": "listening-airport-announcement",
+      "slug": "airport-announcement",
+      "title": "Airport Boarding Announcement",
+      "description": "A typical flight boarding announcement at an international airport.",
+      "level": "beginner",
+      "style": "announcement",
+      "estimatedMinutes": 2,
+      "segments": [
+        { "text": "Good afternoon, passengers." },
+        { "text": "This is the final boarding call for Vietnam Airlines flight VN310 to Hanoi." },
+        { "text": "All remaining passengers, please proceed immediately to gate 14." },
+        { "text": "The boarding doors will close in five minutes." },
+        { "text": "Please have your boarding pass and identification ready for inspection." },
+        { "text": "If you are traveling with small children or require special assistance, our crew will be happy to help you." },
+        { "text": "We thank you for choosing Vietnam Airlines and wish you a pleasant flight." }
+      ],
+      "vocabulary": [
+        { "word": "passenger", "partOfSpeech": "n", "meaning": "hành khách", "example": "All passengers must show their boarding pass." },
+        { "word": "boarding", "partOfSpeech": "n", "meaning": "việc lên máy bay", "example": "Boarding begins at 3 PM." },
+        { "word": "proceed", "partOfSpeech": "v", "meaning": "tiến tới, đi tới", "example": "Please proceed to security." },
+        { "word": "inspection", "partOfSpeech": "n", "meaning": "việc kiểm tra", "example": "Bags are subject to inspection." },
+        { "word": "remaining", "partOfSpeech": "adj", "meaning": "còn lại", "example": "All remaining seats are taken." }
+      ],
+      "quiz": [
+        {
+          "id": "q1",
+          "question": "Which flight number is being called?",
+          "options": ["VN130", "VN310", "VN301", "VN013"],
+          "correctIndex": 1,
+          "explanation": "The announcement says 'flight VN310 to Hanoi'."
+        },
+        {
+          "id": "q2",
+          "question": "Which gate should passengers go to?",
+          "options": ["Gate 4", "Gate 14", "Gate 40", "Gate 41"],
+          "correctIndex": 1,
+          "explanation": "The announcement says 'please proceed immediately to gate 14'."
+        },
+        {
+          "id": "q3",
+          "question": "What two documents should passengers have ready?",
+          "options": [
+            "Visa and passport",
+            "Boarding pass and identification",
+            "Ticket and credit card",
+            "Passport and customs form"
+          ],
+          "correctIndex": 1,
+          "explanation": "'Please have your boarding pass and identification ready for inspection.'"
+        },
+        {
+          "id": "q4",
+          "question": "Who will the crew help, according to the announcement?",
+          "options": [
+            "First-class passengers only",
+            "Passengers traveling with small children or needing special assistance",
+            "Only Vietnamese passengers",
+            "No one — the announcement does not say"
+          ],
+          "correctIndex": 1,
+          "explanation": "'If you are traveling with small children or require special assistance, our crew will be happy to help you.'"
+        }
+      ]
+    },
+    {
+      "id": "listening-news-clip",
+      "slug": "morning-news-brief",
+      "title": "Morning News Brief: Vietnam's Tech Sector",
+      "description": "A short news segment about Vietnam's growing technology industry.",
+      "level": "intermediate",
+      "style": "news",
+      "estimatedMinutes": 2,
+      "segments": [
+        { "text": "Good morning. Here are today's top stories." },
+        { "text": "Vietnam's technology sector continues to attract foreign investment, with several major companies opening new offices in Ho Chi Minh City this month." },
+        { "text": "According to a report released yesterday, the country now has more than two thousand registered tech startups, double the number from five years ago." },
+        { "text": "Most of these companies focus on financial services, e-commerce, and digital media." },
+        { "text": "Government officials say that supportive policies and a young workforce are the main reasons for this growth." },
+        { "text": "However, experts also warn that infrastructure and education must keep pace with demand if the sector is to remain competitive." },
+        { "text": "In other news, the weather in northern Vietnam will remain cool with light rain through the weekend." },
+        { "text": "Stay with us for more updates after the break." }
+      ],
+      "vocabulary": [
+        { "word": "sector", "partOfSpeech": "n", "meaning": "ngành, lĩnh vực", "example": "The technology sector is growing fast." },
+        { "word": "investment", "partOfSpeech": "n", "meaning": "sự đầu tư", "example": "Foreign investment has doubled." },
+        { "word": "startup", "partOfSpeech": "n", "meaning": "công ty khởi nghiệp", "example": "She works at a tech startup." },
+        { "word": "workforce", "partOfSpeech": "n", "meaning": "lực lượng lao động", "example": "Vietnam has a young workforce." },
+        { "word": "competitive", "partOfSpeech": "adj", "meaning": "cạnh tranh", "example": "We must remain competitive globally." },
+        { "word": "infrastructure", "partOfSpeech": "n", "meaning": "cơ sở hạ tầng", "example": "Better infrastructure is needed." }
+      ],
+      "quiz": [
+        {
+          "id": "q1",
+          "question": "How many tech startups does the report mention?",
+          "options": ["Less than 500", "Around 1,000", "More than 2,000", "More than 5,000"],
+          "correctIndex": 2,
+          "explanation": "'The country now has more than two thousand registered tech startups.'"
+        },
+        {
+          "id": "q2",
+          "question": "How has the number of startups changed?",
+          "options": [
+            "It has decreased",
+            "It is the same as five years ago",
+            "It has doubled in five years",
+            "It has tripled in five years"
+          ],
+          "correctIndex": 2,
+          "explanation": "'Double the number from five years ago.'"
+        },
+        {
+          "id": "q3",
+          "question": "Which sectors do most startups focus on?",
+          "options": [
+            "Agriculture, tourism, manufacturing",
+            "Financial services, e-commerce, digital media",
+            "Education, healthcare, real estate",
+            "Mining, oil, gas"
+          ],
+          "correctIndex": 1,
+          "explanation": "'Most of these companies focus on financial services, e-commerce, and digital media.'"
+        },
+        {
+          "id": "q4",
+          "question": "What do experts warn about?",
+          "options": [
+            "Too many tech jobs",
+            "Infrastructure and education must keep pace with demand",
+            "Foreign investment is too low",
+            "The workforce is too old"
+          ],
+          "correctIndex": 1,
+          "explanation": "'Experts also warn that infrastructure and education must keep pace with demand.'"
+        },
+        {
+          "id": "q5",
+          "question": "What will the weather be like in northern Vietnam?",
+          "options": ["Hot and dry", "Snowy", "Cool with light rain", "Very humid"],
+          "correctIndex": 2,
+          "explanation": "'The weather in northern Vietnam will remain cool with light rain through the weekend.'"
+        }
+      ]
+    },
+    {
+      "id": "listening-coffee-shop-dialog",
+      "slug": "coffee-shop-dialogue",
+      "title": "Ordering at a Coffee Shop",
+      "description": "A short dialogue between a customer and a barista.",
+      "level": "beginner",
+      "style": "dialogue",
+      "estimatedMinutes": 2,
+      "segments": [
+        { "speaker": "Barista", "text": "Hi there, what can I get for you today?" },
+        { "speaker": "Customer", "text": "Hi. Can I have a medium iced coffee, please?" },
+        { "speaker": "Barista", "text": "Sure. Would you like it with milk or sugar?" },
+        { "speaker": "Customer", "text": "A little milk, please. No sugar." },
+        { "speaker": "Barista", "text": "Anything to eat with that?" },
+        { "speaker": "Customer", "text": "Could I also get a chocolate croissant?" },
+        { "speaker": "Barista", "text": "Of course. That comes to seventy-five thousand dong. Will that be for here or to go?" },
+        { "speaker": "Customer", "text": "For here, please." },
+        { "speaker": "Barista", "text": "Great. I'll bring it to your table in a few minutes." }
+      ],
+      "vocabulary": [
+        { "word": "medium", "partOfSpeech": "adj", "meaning": "cỡ vừa", "example": "I'd like a medium drink." },
+        { "word": "iced", "partOfSpeech": "adj", "meaning": "có đá", "example": "An iced tea, please." },
+        { "word": "croissant", "partOfSpeech": "n", "meaning": "bánh sừng bò", "example": "She ordered a chocolate croissant." },
+        { "word": "for here / to go", "partOfSpeech": "phr", "meaning": "ăn/uống tại quán / mang đi", "example": "Is that for here or to go?" }
+      ],
+      "quiz": [
+        {
+          "id": "q1",
+          "question": "What did the customer order to drink?",
+          "options": [
+            "A small hot coffee",
+            "A medium iced coffee",
+            "A large latte",
+            "A cappuccino"
+          ],
+          "correctIndex": 1,
+          "explanation": "The customer says 'Can I have a medium iced coffee, please?'"
+        },
+        {
+          "id": "q2",
+          "question": "How does the customer take their coffee?",
+          "options": [
+            "Black, no milk no sugar",
+            "With lots of sugar, no milk",
+            "A little milk, no sugar",
+            "Lots of milk and sugar"
+          ],
+          "correctIndex": 2,
+          "explanation": "'A little milk, please. No sugar.'"
+        },
+        {
+          "id": "q3",
+          "question": "What food did the customer order?",
+          "options": ["A sandwich", "Nothing", "A chocolate croissant", "A donut"],
+          "correctIndex": 2,
+          "explanation": "'Could I also get a chocolate croissant?'"
+        },
+        {
+          "id": "q4",
+          "question": "Is the order for here or to go?",
+          "options": ["To go", "For here", "Delivery", "The customer did not say"],
+          "correctIndex": 1,
+          "explanation": "'For here, please.'"
+        }
+      ]
+    },
+    {
+      "id": "listening-podcast-habits",
+      "slug": "podcast-on-habits",
+      "title": "Podcast: The Science of Building Habits",
+      "description": "A short podcast monologue about how habits form.",
+      "level": "advanced",
+      "style": "monologue",
+      "estimatedMinutes": 3,
+      "segments": [
+        { "text": "Welcome back to The Quiet Edge, the podcast about small changes that lead to large results." },
+        { "text": "In this episode, we explore the science of habits — why some behaviors stick easily and others fade away within days." },
+        { "text": "Researchers describe habits as automatic responses to recurring situations." },
+        { "text": "When you wake up in the morning and reach for your phone without thinking, that is a habit in action." },
+        { "text": "The brain is using a shortcut to save energy, instead of consciously deciding what to do." },
+        { "text": "Three elements typically work together: a cue, a routine, and a reward." },
+        { "text": "The cue is what triggers the behavior — for example, the sound of an alarm." },
+        { "text": "The routine is what you actually do — reaching for the phone." },
+        { "text": "The reward is what your brain receives — perhaps the small pleasure of seeing messages or news." },
+        { "text": "Understanding this loop is the first step to changing it." },
+        { "text": "To build a new habit, you do not need motivation — you need a small, reliable cue and an immediate reward." },
+        { "text": "To break an old one, you keep the cue and reward but change the routine in between." },
+        { "text": "We will go deeper into specific techniques in next week's episode." },
+        { "text": "Until then, take care, and keep your changes small." }
+      ],
+      "vocabulary": [
+        { "word": "behavior", "partOfSpeech": "n", "meaning": "hành vi", "example": "Children copy their parents' behavior." },
+        { "word": "stick", "partOfSpeech": "v", "meaning": "duy trì, gắn bó", "example": "This new habit stuck after three weeks." },
+        { "word": "fade", "partOfSpeech": "v", "meaning": "mờ đi, biến mất dần", "example": "Motivation can fade quickly." },
+        { "word": "recurring", "partOfSpeech": "adj", "meaning": "lặp đi lặp lại", "example": "Recurring meetings every Monday." },
+        { "word": "cue", "partOfSpeech": "n", "meaning": "tín hiệu kích hoạt", "example": "A cue can be a place, time, or sound." },
+        { "word": "trigger", "partOfSpeech": "v", "meaning": "kích hoạt", "example": "The alarm triggers my morning routine." },
+        { "word": "reliable", "partOfSpeech": "adj", "meaning": "đáng tin cậy", "example": "Use a reliable cue every day." }
+      ],
+      "quiz": [
+        {
+          "id": "q1",
+          "question": "How do researchers describe habits?",
+          "options": [
+            "Random choices we make",
+            "Automatic responses to recurring situations",
+            "Decisions that always require willpower",
+            "Genetic traits we inherit"
+          ],
+          "correctIndex": 1,
+          "explanation": "'Researchers describe habits as automatic responses to recurring situations.'"
+        },
+        {
+          "id": "q2",
+          "question": "What three elements form a habit loop?",
+          "options": [
+            "Trigger, action, punishment",
+            "Cue, routine, reward",
+            "Goal, plan, evaluation",
+            "Motivation, willpower, time"
+          ],
+          "correctIndex": 1,
+          "explanation": "'Three elements typically work together: a cue, a routine, and a reward.'"
+        },
+        {
+          "id": "q3",
+          "question": "What does the speaker say you need to build a new habit?",
+          "options": [
+            "Lots of motivation",
+            "A small, reliable cue and an immediate reward",
+            "A big punishment if you fail",
+            "Expensive tools"
+          ],
+          "correctIndex": 1,
+          "explanation": "'You do not need motivation — you need a small, reliable cue and an immediate reward.'"
+        },
+        {
+          "id": "q4",
+          "question": "How do you break an old habit, according to the podcast?",
+          "options": [
+            "Change everything — cue, routine, and reward",
+            "Remove the cue completely",
+            "Keep the cue and reward, change the routine in between",
+            "Punish yourself when you slip"
+          ],
+          "correctIndex": 2,
+          "explanation": "'Keep the cue and reward but change the routine in between.'"
+        },
+        {
+          "id": "q5",
+          "question": "What is the speaker's closing advice?",
+          "options": [
+            "Aim for big, dramatic changes",
+            "Take care, and keep your changes small",
+            "Listen to motivational music",
+            "Try a hundred new habits at once"
+          ],
+          "correctIndex": 1,
+          "explanation": "'Take care, and keep your changes small.'"
+        }
+      ]
+    }
+  ]
+}

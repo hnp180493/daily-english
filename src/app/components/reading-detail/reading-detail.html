@@ -1,0 +1,178 @@
+<div class="reading-detail max-w-3xl mx-auto p-4 md:p-6 text-slate-100">
+  <button (click)="goBackToList()" class="text-sm text-slate-500 hover:text-slate-300 mb-4">← All passages</button>
+
+  @if (isLoading()) {
+    <p class="text-center text-slate-500 py-12">Loading passage...</p>
+  } @else if (!passage()) {
+    <div class="text-center py-12">
+      <p class="text-slate-300 mb-3">Passage not found.</p>
+      <a routerLink="/reading" class="text-purple-400 hover:text-purple-300">Back to list</a>
+    </div>
+  } @else {
+    @if (passage(); as p) {
+      <header class="mb-5">
+        <div class="flex items-center gap-3 mb-2 flex-wrap">
+          <span class="px-2 py-1 rounded-full text-xs font-medium bg-purple-500/20 text-purple-300 border border-purple-500/30">{{ levelLabel(p.level) }}</span>
+          <span class="text-xs text-slate-500">{{ p.topic }}</span>
+          <span class="text-xs text-slate-500">⏱ ~{{ p.estimatedMinutes }} min</span>
+          <span class="text-xs text-slate-500">📝 {{ p.wordCount }} words</span>
+        </div>
+        <h1 class="text-2xl md:text-3xl font-bold text-slate-100 leading-tight">{{ p.title }}</h1>
+      </header>
+
+      <nav class="mode-tabs flex border-b border-slate-700/60 mb-6">
+        <button (click)="setMode('read')" [class.tab-active]="mode() === 'read'" class="tab-btn">📖 Read</button>
+        <button (click)="setMode('vocabulary')" [class.tab-active]="mode() === 'vocabulary'" class="tab-btn">📚 Vocabulary</button>
+        <button (click)="setMode('quiz')" [class.tab-active]="mode() === 'quiz' || mode() === 'result'" class="tab-btn">
+          ❓ Quiz
+          @if (quizSubmitted()) {
+            <span class="ml-1 text-xs text-green-300">({{ quizScore() }}%)</span>
+          }
+        </button>
+      </nav>
+
+      @switch (mode()) {
+        @case ('read') {
+          <article class="prose-content">
+            @for (para of paragraphs(); track $index) {
+              <p class="mb-4 text-slate-200 leading-relaxed">{{ para }}</p>
+            }
+            <div class="mt-8 text-center">
+              <button (click)="setMode('vocabulary')" class="btn-primary">Next: Vocabulary →</button>
+            </div>
+          </article>
+        }
+        @case ('vocabulary') {
+          <section>
+            <div class="flex items-center justify-between mb-3 flex-wrap gap-2">
+              <h2 class="text-xl font-semibold text-slate-100">📚 Key vocabulary</h2>
+              @if (hasUnaddedVocab()) {
+                <button (click)="addAllVocabToFlashcards()" class="add-all-btn">
+                  ✨ Add all to flashcards
+                </button>
+              }
+            </div>
+            <p class="text-sm text-slate-400 mb-4">Study these before the quiz. Tap ➕ on a word to add it to your flashcard deck.</p>
+            <div class="space-y-3">
+              @for (v of p.vocabulary; track v.word) {
+                <div class="vocab-card bg-slate-900/60 border border-slate-700/60 rounded-lg p-4">
+                  <div class="flex items-baseline justify-between gap-2 flex-wrap mb-1">
+                    <div class="flex items-baseline gap-2 flex-wrap">
+                      <strong class="text-slate-100 text-lg">{{ v.word }}</strong>
+                      @if (v.partOfSpeech) {
+                        <em class="text-xs text-slate-500">({{ v.partOfSpeech }})</em>
+                      }
+                    </div>
+                    @if (isInFlashcards(v.word)) {
+                      <span class="flashcard-pill flashcard-added">✓ In flashcards</span>
+                    } @else {
+                      <button (click)="addWordToFlashcards(v)" class="flashcard-pill flashcard-add">
+                        ➕ Add
+                      </button>
+                    }
+                  </div>
+                  <p class="text-sm text-slate-300 mb-1">🇻🇳 {{ v.meaning }}</p>
+                  @if (v.example) {
+                    <p class="text-xs text-slate-500 italic">"{{ v.example }}"</p>
+                  }
+                </div>
+              }
+            </div>
+            <div class="mt-8 text-center flex gap-3 justify-center">
+              <button (click)="setMode('read')" class="btn-secondary">← Re-read</button>
+              <button (click)="setMode('quiz')" class="btn-primary">Take quiz →</button>
+            </div>
+          </section>
+        }
+        @case ('quiz') {
+          @if (currentQuestion(); as q) {
+            <section>
+              <div class="flex justify-between items-center mb-4">
+                <span class="text-sm text-slate-400">Question {{ quizIndex() + 1 }} / {{ p.quiz.length }}</span>
+                <div class="progress-bar w-32">
+                  <div class="progress-fill" [style.width.%]="((quizIndex() + 1) / p.quiz.length) * 100"></div>
+                </div>
+              </div>
+              <h3 class="text-lg font-medium text-slate-100 mb-4 leading-relaxed">{{ q.question }}</h3>
+              <div class="space-y-2 mb-6">
+                @for (opt of q.options; track $index; let i = $index) {
+                  <button
+                    type="button"
+                    (click)="selectAnswer(q.id, i)"
+                    [class]="optionClass(q.id, i, q.correctIndex)"
+                    class="option-btn w-full text-left p-3 rounded-md border transition"
+                  >
+                    <span class="font-mono mr-2 text-slate-500">{{ ['A', 'B', 'C', 'D'][i] }}.</span>
+                    {{ opt }}
+                  </button>
+                }
+              </div>
+              <div class="flex items-center justify-between">
+                <button (click)="prevQuestion()" [disabled]="quizIndex() === 0" class="btn-secondary disabled:opacity-40">← Previous</button>
+                @if (isLastQuestion()) {
+                  <button
+                    (click)="submitQuiz()"
+                    [disabled]="!isQuizComplete()"
+                    class="btn-primary disabled:opacity-40"
+                  >
+                    Submit →
+                  </button>
+                } @else {
+                  <button
+                    (click)="nextQuestion()"
+                    [disabled]="selectedForCurrent() === undefined"
+                    class="btn-primary disabled:opacity-40"
+                  >
+                    Next →
+                  </button>
+                }
+              </div>
+            </section>
+          }
+        }
+        @case ('result') {
+          <section>
+            <div class="text-center mb-6">
+              <p class="text-5xl font-bold text-purple-400 mb-2">{{ quizScore() }}%</p>
+              <p class="text-slate-300">You got {{ correctCount() }} / {{ p.quiz.length }} correct</p>
+            </div>
+
+            <h2 class="text-xl font-semibold text-slate-100 mb-3">Review answers</h2>
+            <div class="space-y-4 mb-8">
+              @for (q of p.quiz; track q.id; let qi = $index) {
+                <div class="border border-slate-700/60 rounded-lg p-4 bg-slate-900/60">
+                  <p class="font-medium text-slate-100 mb-3">{{ qi + 1 }}. {{ q.question }}</p>
+                  <div class="space-y-2">
+                    @for (opt of q.options; track $index; let oi = $index) {
+                      <div [class]="optionClass(q.id, oi, q.correctIndex)" class="option-btn p-2 rounded-md border text-sm">
+                        <span class="font-mono mr-2 text-slate-500">{{ ['A', 'B', 'C', 'D'][oi] }}.</span>
+                        {{ opt }}
+                      </div>
+                    }
+                  </div>
+                  <p class="text-sm text-slate-300 mt-3 bg-slate-800/60 border border-slate-700/40 p-3 rounded">💡 {{ q.explanation }}</p>
+                </div>
+              }
+            </div>
+
+            @if (p.discussion && p.discussion.length > 0) {
+              <section class="bg-purple-500/10 border border-purple-500/30 rounded-lg p-5 mb-6">
+                <h2 class="text-lg font-semibold text-purple-200 mb-3">💭 Discussion questions</h2>
+                <ul class="list-decimal list-inside space-y-2 text-purple-100/90">
+                  @for (q of p.discussion; track $index) {
+                    <li>{{ q }}</li>
+                  }
+                </ul>
+              </section>
+            }
+
+            <div class="flex gap-3 justify-center">
+              <button (click)="retryQuiz()" class="btn-secondary">🔁 Retry</button>
+              <button (click)="goBackToList()" class="btn-primary">Another passage →</button>
+            </div>
+          </section>
+        }
+      }
+    }
+  }
+</div>

@@ -28,15 +28,31 @@
                 📊 {{ translate.t('header.menu.dashboard') }}
               </a>
             }
-            @if (isBetaTester()) {
-              <a routerLink="/flashcards" routerLinkActive="active" class="dropdown-item">
-                🃏 {{ translate.t('header.menu.flashcards') }}
-                <span class="beta-tag">{{ translate.t('common.beta') }}</span>
-              </a>
-            }
+            <a routerLink="/flashcards" routerLinkActive="active" class="dropdown-item">
+              🃏 {{ translate.t('header.menu.flashcards') }}
+              <span class="beta-tag">{{ translate.t('common.beta') }}</span>
+            </a>
             <a routerLink="/exercises/custom" routerLinkActive="active" class="dropdown-item">
               📝 {{ translate.t('header.menu.custom_exercises') }}
             </a>
+            <a routerLink="/grammar-lessons" routerLinkActive="active" class="dropdown-item">
+              📘 {{ translate.t('header.menu.grammar_lessons') }}
+              <span class="beta-tag">{{ translate.t('common.beta') }}</span>
+            </a>
+            @if (isBetaTester()) {
+              <a routerLink="/reading" routerLinkActive="active" class="dropdown-item">
+                📖 {{ translate.t('header.menu.reading') }}
+                <span class="beta-tag">{{ translate.t('common.beta') }}</span>
+              </a>
+              <a routerLink="/writing" routerLinkActive="active" class="dropdown-item">
+                ✍️ {{ translate.t('header.menu.writing') }}
+                <span class="beta-tag">{{ translate.t('common.beta') }}</span>
+              </a>
+              <a routerLink="/listening" routerLinkActive="active" class="dropdown-item">
+                🎧 {{ translate.t('header.menu.listening') }}
+                <span class="beta-tag">{{ translate.t('common.beta') }}</span>
+              </a>
+            }
             <a routerLink="/guide" routerLinkActive="active" class="dropdown-item">
               📚 {{ translate.t('header.menu.guide') }}
             </a>

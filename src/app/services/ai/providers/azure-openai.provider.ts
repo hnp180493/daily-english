@@ -2,8 +2,11 @@ import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { BaseAIProvider, AIRequest, AIMessage } from '../base-ai-provider';
 import { AIResponse, AIStreamChunk, ExerciseContext } from '../../../models/ai.model';
+import { PronunciationContext, PronunciationFeedback } from '../../../models/pronunciation.model';
 import { PromptService } from '../prompt.service';
 import { SettingsService } from '../../settings.service';
+import { ConfigService } from '../../config.service';
+import { AudioConverterService } from '../../pronunciation/audio-converter.service';
 
 @Injectable({
   providedIn: 'root'
@@ -11,6 +14,8 @@ import { SettingsService } from '../../settings.service';
 export class AzureOpenAIProvider extends BaseAIProvider {
   private promptService = inject(PromptService);
   private settingsService = inject(SettingsService);
+  private configService = inject(ConfigService);
+  private audioConverter = inject(AudioConverterService);
 
   get name(): string {
     return 'azure';
@@ -218,5 +223,82 @@ export class AzureOpenAIProvider extends BaseAIProvider {
       console.error('[AzureOpenAI] Failed to parse AI response:', error);
       return { accuracyScore: 50, feedback: [], overallComment: '' };
     }
+  }
+
+  override supportsAudioInput(): boolean {
+    const deployment = (this.configService.getConfig()?.azure?.deploymentName || '').toLowerCase();
+    // Azure deployment name is user-defined; user must name a GPT-4o audio deployment with "audio" in the name to opt in.
+    return deployment.includes('audio');
+  }
+
+  override analyzePronunciation(
+    audioBlob: Blob,
+    context: PronunciationContext,
+    config: any
+  ): Observable<PronunciationFeedback> {
+    return new Observable((observer) => {
+      const apiKey = config?.azure?.apiKey;
+      const endpoint = config?.azure?.endpoint;
+      const deployment = config?.azure?.deploymentName;
+      if (!apiKey || !endpoint || !deployment) {
+        observer.error(new Error('Azure OpenAI chưa được cấu hình đầy đủ.'));
+        return;
+      }
+      if (!deployment.toLowerCase().includes('audio')) {
+        observer.error(
+          new Error(
+            `Deployment "${deployment}" không phải audio deployment. Tạo deployment cho gpt-4o-audio-preview trên Azure và đặt tên có "audio".`
+          )
+        );
+        return;
+      }
+
+      const prompt = this.promptService.buildPronunciationPrompt(context);
+      const url = `${endpoint}/openai/deployments/${deployment}/chat/completions?api-version=2024-10-01-preview`;
+
+      this.audioConverter
+        .toWav(audioBlob)
+        .then(({ blob }) => this.audioConverter.blobToBase64(blob))
+        .then((base64) =>
+          fetch(url, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'api-key': apiKey,
+            },
+            body: JSON.stringify({
+              modalities: ['text'],
+              messages: [
+                {
+                  role: 'user',
+                  content: [
+                    { type: 'text', text: prompt },
+                    { type: 'input_audio', input_audio: { data: base64, format: 'wav' } },
+                  ],
+                },
+              ],
+              temperature: 0.3,
+            }),
+          })
+        )
+        .then(async (response) => {
+          const data = await response.json();
+          if (data.error) throw new Error(data.error.message || JSON.stringify(data.error));
+          if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+          return data;
+        })
+        .then((data) => {
+          const content = data.choices?.[0]?.message?.content || '';
+          if (!content) throw new Error('Azure OpenAI trả về phản hồi rỗng cho audio.');
+          const parsed = this.parsePronunciationResponse(content);
+          const filtered = this.filterPronunciationFeedback(parsed, context.expectedText);
+          observer.next(filtered);
+          observer.complete();
+        })
+        .catch((error) => {
+          console.error('[AzureOpenAI] Pronunciation analysis error:', error);
+          observer.error(error);
+        });
+    });
   }
 }

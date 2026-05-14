@@ -83,6 +83,85 @@
     }
 
     @if (hasCards()) {
+      <!-- Smart Decks -->
+      <section class="smart-decks-section">
+        <h3 class="filters-title">🎯 Smart Decks</h3>
+        <div class="smart-decks-grid">
+          @for (deck of smartDecks(); track deck.id) {
+            <button
+              type="button"
+              class="smart-deck-card"
+              [class.empty]="(deck.cardCount ?? 0) === 0"
+              [disabled]="(deck.cardCount ?? 0) === 0"
+              (click)="studySmartDeck(deck)"
+              [title]="deck.description"
+            >
+              <span class="deck-icon">{{ deck.icon }}</span>
+              <span class="deck-label">{{ deck.label }}</span>
+              <span class="deck-count">{{ deck.cardCount }} cards</span>
+            </button>
+          }
+        </div>
+      </section>
+
+      <!-- Custom Decks -->
+      <section class="custom-decks-section">
+        <div class="section-header">
+          <h3 class="filters-title">📁 Custom Decks ({{ customDecks().length }})</h3>
+          <button type="button" class="link-btn" (click)="toggleCreateDeck()">
+            {{ showCreateDeck() ? '✕ Cancel' : '+ New deck' }}
+          </button>
+        </div>
+
+        @if (showCreateDeck()) {
+          <div class="create-deck-form">
+            <input
+              type="text"
+              placeholder="Deck name (e.g. Travel vocab)"
+              [ngModel]="newDeckName()"
+              (ngModelChange)="newDeckName.set($event)"
+              class="form-input"
+            />
+            <input
+              type="text"
+              placeholder="Short description (optional)"
+              [ngModel]="newDeckDescription()"
+              (ngModelChange)="newDeckDescription.set($event)"
+              class="form-input"
+            />
+            <p class="form-hint">{{ selectedCardIds().size }} cards selected. Click cards below to add/remove.</p>
+            <div class="form-actions">
+              <button type="button" class="action-btn primary" [disabled]="!newDeckName().trim() || selectedCardIds().size === 0" (click)="submitCreateDeck()">
+                Save deck
+              </button>
+              <button type="button" class="action-btn secondary" (click)="cancelCreateDeck()">Cancel</button>
+            </div>
+          </div>
+        }
+
+        @if (customDecks().length > 0) {
+          <div class="custom-decks-list">
+            @for (deck of customDecks(); track deck.id) {
+              <div class="custom-deck-item">
+                <div class="deck-info">
+                  <strong class="deck-name">{{ deck.name }}</strong>
+                  <span class="deck-meta">{{ deck.cardIds.length }} cards</span>
+                  @if (deck.description) {
+                    <p class="deck-desc">{{ deck.description }}</p>
+                  }
+                </div>
+                <div class="deck-actions">
+                  <button type="button" class="action-btn primary small" [disabled]="deck.cardIds.length === 0" (click)="studyCustomDeck(deck)">
+                    ▶ Study
+                  </button>
+                  <button type="button" class="action-btn secondary small" (click)="deleteCustomDeck(deck)">🗑</button>
+                </div>
+              </div>
+            }
+          </div>
+        }
+      </section>
+
       <!-- Filters -->
       <section class="filters-section">
         <h3 class="filters-title">Filters</h3>
@@ -124,45 +203,129 @@
       <!-- Action Buttons -->
       <section class="actions-section">
         @if (hasDueCards()) {
-          <button type="button" class="action-btn primary" (click)="startReview()">
+          <button type="button" class="action-btn primary" (click)="studySmartDeck(smartDecks()[0])">
             <span class="btn-icon">▶</span>
-            Review Due Cards ({{ dueCards().length }})
+            Study due cards ({{ dueCards().length }})
+          </button>
+          <button type="button" class="action-btn secondary" (click)="startReview()">
+            Classic flip mode
           </button>
         } @else {
           <div class="no-due-message">
             <span class="message-icon">✓</span>
-            <span>No cards due for review!</span>
+            <span>No cards due! 🎉</span>
           </div>
           <button type="button" class="action-btn secondary" (click)="reviewAllCards()">
-            Review All Cards Anyway
+            Cram all (flip mode)
           </button>
         }
       </section>
 
       <!-- Card List -->
       <section class="cards-list-section">
-        <h3 class="list-title">Your Cards ({{ filteredCards().length }})</h3>
+        <div class="section-header">
+          <h3 class="list-title">
+            Your Cards ({{ filteredCards().length }})
+            @if (showCreateDeck()) {
+              <span class="select-hint">— click cards to add them to the new deck</span>
+            }
+          </h3>
+          <button type="button" class="link-btn" (click)="toggleCreateCard()">
+            {{ showCreateCard() ? '✕ Cancel' : '+ Create card' }}
+          </button>
+        </div>
+
+        @if (showCreateCard()) {
+          <div class="create-card-form">
+            <input
+              type="text"
+              placeholder="Front (English word)"
+              [ngModel]="newCardFront()"
+              (ngModelChange)="newCardFront.set($event)"
+              class="form-input"
+            />
+            <input
+              type="text"
+              placeholder="Back (Vietnamese meaning)"
+              [ngModel]="newCardBack()"
+              (ngModelChange)="newCardBack.set($event)"
+              class="form-input"
+            />
+            <input
+              type="text"
+              placeholder="Example (optional)"
+              [ngModel]="newCardExample()"
+              (ngModelChange)="newCardExample.set($event)"
+              class="form-input"
+            />
+            <input
+              type="text"
+              placeholder="Category (optional)"
+              [ngModel]="newCardCategory()"
+              (ngModelChange)="newCardCategory.set($event)"
+              class="form-input"
+            />
+            <div class="form-actions">
+              <button type="button" class="action-btn primary" [disabled]="!newCardFront().trim() || !newCardBack().trim()" (click)="submitCreateCard()">
+                Add card
+              </button>
+              <button type="button" class="action-btn secondary" (click)="toggleCreateCard()">Cancel</button>
+            </div>
+          </div>
+        }
+
+        @if (leechCount() > 0) {
+          <div class="leech-banner">
+            🐌 You have <strong>{{ leechCount() }} leech cards</strong> (failed ≥ 4 times). Try the "Leech" smart deck to review them, or suspend them.
+          </div>
+        }
+
         <div class="cards-list">
           @for (card of filteredCards(); track card.id) {
-            <div class="card-item">
+            <div
+              class="card-item"
+              [class.selectable]="isMultiSelectMode()"
+              [class.selected]="isMultiSelectMode() && isCardSelected(card.id)"
+              [class.suspended]="card.suspended"
+              (click)="isMultiSelectMode() ? toggleCardSelection(card.id) : null"
+            >
               <div class="card-content">
                 <div class="card-front">{{ card.front }}</div>
                 <div class="card-back">{{ card.back }}</div>
                 @if (card.example) {
                   <div class="card-example">{{ card.example }}</div>
                 }
+                @if (card.lapses && card.lapses > 0) {
+                  <div class="card-lapses">Failed {{ card.lapses }} time(s)</div>
+                }
               </div>
               <div class="card-meta">
                 <span class="mastery-badge" [class]="getMasteryClass(getCardMastery(card))">
                   {{ getMasteryLabel(getCardMastery(card)) }}
                 </span>
-                <button
-                  type="button"
-                  class="delete-btn"
-                  (click)="deleteCard(card)"
-                  aria-label="Delete flashcard">
-                  🗑️
-                </button>
+                @if (!isMultiSelectMode()) {
+                  <button
+                    type="button"
+                    class="meta-btn"
+                    (click)="toggleSuspend(card, $event)"
+                    [title]="card.suspended ? 'Unsuspend' : 'Suspend card'">
+                    {{ card.suspended ? '▶' : '⏸' }}
+                  </button>
+                  <button
+                    type="button"
+                    class="meta-btn"
+                    (click)="resetCard(card, $event)"
+                    title="Reset to new">
+                    🔄
+                  </button>
+                  <button
+                    type="button"
+                    class="delete-btn"
+                    (click)="deleteCard(card); $event.stopPropagation()"
+                    aria-label="Delete flashcard">
+                    🗑️
+                  </button>
+                }
               </div>
             </div>
           } @empty {
@@ -176,10 +339,79 @@
       <!-- Empty State -->
       <section class="empty-state">
         <div class="empty-icon">📚</div>
-        <h2 class="empty-title">No Flashcards Yet</h2>
+        <h2 class="empty-title">No flashcards yet</h2>
         <p class="empty-text">
-          Complete exercises and add vocabulary to your flashcard deck to start reviewing.
+          Three ways to get cards:
         </p>
+
+        <div class="empty-options">
+          <div class="empty-option">
+            <span class="opt-num">①</span>
+            <div class="opt-body">
+              <strong>Create a card manually</strong>
+              <p>Enter word + meaning + example yourself. Best when you want to study a specific list.</p>
+              <button type="button" class="action-btn primary" (click)="toggleCreateCard()">
+                + Create your first card
+              </button>
+            </div>
+          </div>
+
+          <div class="empty-option">
+            <span class="opt-num">②</span>
+            <div class="opt-body">
+              <strong>Complete translation exercises (≥ 75%)</strong>
+              <p>Each exercise scored 75%+ auto-generates 5–8 vocabulary cards from the passage.</p>
+              <a routerLink="/exercises" class="action-btn secondary">📝 Browse exercises</a>
+            </div>
+          </div>
+
+          <div class="empty-option">
+            <span class="opt-num">③</span>
+            <div class="opt-body">
+              <strong>Import from a JSON file</strong>
+              <p>Already have cards from another device? Use the Import button in the top right.</p>
+            </div>
+          </div>
+        </div>
+
+        @if (showCreateCard()) {
+          <div class="create-card-form" style="margin-top: 1.5rem; text-align: left;">
+            <input
+              type="text"
+              placeholder="Front (English word)"
+              [ngModel]="newCardFront()"
+              (ngModelChange)="newCardFront.set($event)"
+              class="form-input"
+            />
+            <input
+              type="text"
+              placeholder="Back (Vietnamese meaning)"
+              [ngModel]="newCardBack()"
+              (ngModelChange)="newCardBack.set($event)"
+              class="form-input"
+            />
+            <input
+              type="text"
+              placeholder="Example (optional — needed for Cloze mode)"
+              [ngModel]="newCardExample()"
+              (ngModelChange)="newCardExample.set($event)"
+              class="form-input"
+            />
+            <input
+              type="text"
+              placeholder="Category (optional — e.g. travel, business)"
+              [ngModel]="newCardCategory()"
+              (ngModelChange)="newCardCategory.set($event)"
+              class="form-input"
+            />
+            <div class="form-actions">
+              <button type="button" class="action-btn primary" [disabled]="!newCardFront().trim() || !newCardBack().trim()" (click)="submitCreateCard()">
+                Save card
+              </button>
+              <button type="button" class="action-btn secondary" (click)="toggleCreateCard()">Cancel</button>
+            </div>
+          </div>
+        }
       </section>
     }
   } @else {

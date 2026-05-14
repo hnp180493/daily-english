@@ -2,8 +2,11 @@ import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { BaseAIProvider, AIRequest, AIMessage } from '../base-ai-provider';
 import { AIResponse, AIStreamChunk, ExerciseContext } from '../../../models/ai.model';
+import { PronunciationContext, PronunciationFeedback } from '../../../models/pronunciation.model';
 import { PromptService } from '../prompt.service';
 import { SettingsService } from '../../settings.service';
+import { ConfigService } from '../../config.service';
+import { AudioConverterService } from '../../pronunciation/audio-converter.service';
 
 @Injectable({
   providedIn: 'root'
@@ -11,6 +14,8 @@ import { SettingsService } from '../../settings.service';
 export class OpenAIProvider extends BaseAIProvider {
   private promptService = inject(PromptService);
   private settingsService = inject(SettingsService);
+  private configService = inject(ConfigService);
+  private audioConverter = inject(AudioConverterService);
 
   get name(): string {
     return 'openai';
@@ -228,5 +233,81 @@ export class OpenAIProvider extends BaseAIProvider {
       console.error('[OpenAI] Failed to parse AI response:', error);
       return { accuracyScore: 50, feedback: [], overallComment: '' };
     }
+  }
+
+  override supportsAudioInput(): boolean {
+    const modelName = (this.configService.getConfig()?.openai?.modelName || '').toLowerCase();
+    // Heuristic: model must explicitly mention 'audio'. e.g. 'gpt-4o-audio-preview'.
+    return modelName.includes('audio');
+  }
+
+  override analyzePronunciation(
+    audioBlob: Blob,
+    context: PronunciationContext,
+    config: any
+  ): Observable<PronunciationFeedback> {
+    return new Observable((observer) => {
+      const apiKey = config?.openai?.apiKey;
+      const modelName = config?.openai?.modelName || 'gpt-4o-audio-preview';
+      if (!apiKey) {
+        observer.error(new Error('OpenAI API key chưa được cấu hình.'));
+        return;
+      }
+      if (!modelName.toLowerCase().includes('audio')) {
+        observer.error(
+          new Error(
+            `Model "${modelName}" không hỗ trợ audio. Vào Profile → chọn model "gpt-4o-audio-preview" hoặc Gemini 2.5.`
+          )
+        );
+        return;
+      }
+
+      const prompt = this.promptService.buildPronunciationPrompt(context);
+
+      this.audioConverter
+        .toWav(audioBlob)
+        .then(({ blob }) => this.audioConverter.blobToBase64(blob))
+        .then((base64) =>
+          fetch('https://api.openai.com/v1/chat/completions', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${apiKey}`,
+            },
+            body: JSON.stringify({
+              model: modelName,
+              modalities: ['text'],
+              messages: [
+                {
+                  role: 'user',
+                  content: [
+                    { type: 'text', text: prompt },
+                    { type: 'input_audio', input_audio: { data: base64, format: 'wav' } },
+                  ],
+                },
+              ],
+              temperature: 0.3,
+            }),
+          })
+        )
+        .then(async (response) => {
+          const data = await response.json();
+          if (data.error) throw new Error(data.error.message || JSON.stringify(data.error));
+          if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+          return data;
+        })
+        .then((data) => {
+          const content = data.choices?.[0]?.message?.content || '';
+          if (!content) throw new Error('OpenAI trả về phản hồi rỗng cho audio.');
+          const parsed = this.parsePronunciationResponse(content);
+          const filtered = this.filterPronunciationFeedback(parsed, context.expectedText);
+          observer.next(filtered);
+          observer.complete();
+        })
+        .catch((error) => {
+          console.error('[OpenAI] Pronunciation analysis error:', error);
+          observer.error(error);
+        });
+    });
   }
 }

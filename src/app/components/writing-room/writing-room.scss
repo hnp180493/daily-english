@@ -1,0 +1,40 @@
+.writing-room {
+  min-height: 100vh;
+
+  .essay-textarea {
+    font-family: 'Georgia', 'Times New Roman', serif;
+  }
+
+  .btn-primary {
+    background: linear-gradient(135deg, #7c3aed, #6d28d9);
+    color: #fff;
+    padding: 0.55rem 1.2rem;
+    border-radius: 0.5rem;
+    font-weight: 500;
+    transition: transform 0.15s, box-shadow 0.15s;
+    box-shadow: 0 4px 14px rgba(124, 58, 237, 0.25);
+
+    &:hover:not(:disabled) {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px rgba(124, 58, 237, 0.4);
+    }
+  }
+
+  .btn-secondary {
+    background: rgba(30, 41, 59, 0.6);
+    color: #cbd5e1;
+    padding: 0.55rem 1.2rem;
+    border-radius: 0.5rem;
+    font-weight: 500;
+    border: 1px solid rgba(71, 85, 105, 0.4);
+    transition: background 0.15s;
+
+    &:hover:not(:disabled) {
+      background: rgba(51, 65, 85, 0.7);
+    }
+  }
+
+  .overall-band {
+    transition: all 0.3s;
+  }
+}

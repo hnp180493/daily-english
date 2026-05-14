@@ -1,0 +1,105 @@
+<div class="grammar-lessons-page max-w-6xl mx-auto p-4 md:p-6 text-slate-100">
+  <button (click)="goBack()" class="text-sm text-slate-500 hover:text-slate-300 mb-4">← Back</button>
+
+  <header class="mb-6">
+    <div class="flex items-center gap-3 mb-2 flex-wrap">
+      <h1 class="text-3xl font-bold text-slate-100">📘 Grammar Lessons</h1>
+      <span class="text-[10px] px-2 py-1 rounded-full bg-purple-500/20 text-purple-300 border border-purple-500/30 font-semibold tracking-wider">BETA</span>
+      @if (totalCount() > 0) {
+        <span class="ml-auto progress-pill" [class.complete]="learnedCount() === totalCount()">
+          ✓ {{ learnedCount() }} / {{ totalCount() }} learned
+        </span>
+      }
+    </div>
+    <p class="text-slate-400">
+      Grammar lessons for Vietnamese learners with bilingual examples, common mistakes, and applied practice. Lessons are also surfaced from your
+      <a class="text-purple-400 hover:text-purple-300" routerLink="/error-patterns">Error Patterns</a>.
+    </p>
+  </header>
+
+  <div class="filters mb-3 flex flex-wrap gap-3 items-center">
+    <div class="flex gap-2 flex-wrap">
+      <button
+        type="button"
+        (click)="setLevelFilter('all')"
+        [class.active-filter]="levelFilter() === 'all'"
+        class="filter-chip">All</button>
+      <button
+        type="button"
+        (click)="setLevelFilter('beginner')"
+        [class.active-filter]="levelFilter() === 'beginner'"
+        class="filter-chip">Beginner</button>
+      <button
+        type="button"
+        (click)="setLevelFilter('intermediate')"
+        [class.active-filter]="levelFilter() === 'intermediate'"
+        class="filter-chip">Intermediate</button>
+      <button
+        type="button"
+        (click)="setLevelFilter('advanced')"
+        [class.active-filter]="levelFilter() === 'advanced'"
+        class="filter-chip">Advanced</button>
+    </div>
+    <input
+      type="search"
+      placeholder="🔍 Search lessons (tense, article, preposition...)"
+      [value]="searchQuery()"
+      (input)="onSearchInput($event)"
+      class="flex-1 min-w-[200px] px-3 py-2 bg-slate-900/60 border border-slate-700/60 rounded-md text-sm text-slate-100 placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-purple-500/40"
+    />
+  </div>
+
+  <div class="filters mb-6 flex flex-wrap gap-2">
+    <button
+      type="button"
+      (click)="setProgressFilter('all')"
+      [class.active-filter]="progressFilter() === 'all'"
+      class="filter-chip">All lessons</button>
+    <button
+      type="button"
+      (click)="setProgressFilter('unlearned')"
+      [class.active-filter]="progressFilter() === 'unlearned'"
+      class="filter-chip">Not learned yet</button>
+    <button
+      type="button"
+      (click)="setProgressFilter('learned')"
+      [class.active-filter]="progressFilter() === 'learned'"
+      class="filter-chip">✓ Learned</button>
+  </div>
+
+  @if (isLoading()) {
+    <p class="text-center text-slate-500 py-12">Loading lessons...</p>
+  } @else if (filteredLessons().length === 0) {
+    <div class="text-center py-12">
+      <p class="text-slate-400 mb-2">No lessons match your filter.</p>
+      <button (click)="setLevelFilter('all'); searchQuery.set('')" class="text-purple-400 hover:text-purple-300 text-sm">
+        Clear filters
+      </button>
+    </div>
+  } @else {
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      @for (lesson of filteredLessons(); track lesson.id) {
+        <article
+          (click)="openLesson(lesson)"
+          class="lesson-card bg-slate-900/60 border border-slate-700/60 rounded-xl p-5 cursor-pointer hover:border-purple-500/40 hover:bg-slate-900/80 transition backdrop-blur-sm relative"
+          [class.lesson-learned]="isLearned(lesson.id)"
+        >
+          @if (isLearned(lesson.id)) {
+            <span class="learned-tick" title="Marked as learned">✓</span>
+          }
+          <div class="flex items-start justify-between mb-3">
+            <span class="text-3xl">{{ categoryIcon(lesson.category) }}</span>
+            <span class="px-2 py-1 rounded-full text-xs font-medium" [ngClass]="levelClass(lesson.level)">
+              {{ levelLabel(lesson.level) }}
+            </span>
+          </div>
+          <h3 class="font-semibold text-slate-100 mb-2 leading-snug">{{ lesson.title }}</h3>
+          <p class="text-sm text-slate-400 line-clamp-3">{{ lesson.description }}</p>
+          @if (lesson.estimatedMinutes) {
+            <p class="text-xs text-slate-500 mt-3">⏱ ~{{ lesson.estimatedMinutes }} min read</p>
+          }
+        </article>
+      }
+    </div>
+  }
+</div>

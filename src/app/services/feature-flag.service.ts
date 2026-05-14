@@ -26,17 +26,17 @@ export class FeatureFlagService {
   });
 
   /**
-   * Check if Memory Boost feature is enabled for current user.
+   * Memory Boost is public (open to all users) — the BETA label in UI stays as a quality marker.
    */
   isMemoryBoostEnabled = computed(() => {
-    return this.isBetaTester();
+    return true;
   });
 
   /**
-   * Check if Flashcard Deck page is enabled for current user.
+   * Flashcards are public (open to all users) — the BETA label in UI is quality, not access.
    */
   isFlashcardDeckEnabled = computed(() => {
-    return this.isBetaTester();
+    return true;
   });
 
   /**
@@ -46,4 +46,10 @@ export class FeatureFlagService {
   isPronunciationPracticeEnabled = computed(() => {
     return true;
   });
+
+  /** Phase 2 features. Grammar opened to all 2026-05-14 (BETA label kept as quality marker). */
+  isGrammarLessonsEnabled = computed(() => true);
+  isReadingEnabled = computed(() => this.isBetaTester());
+  isWritingEnabled = computed(() => this.isBetaTester());
+  isListeningEnabled = computed(() => this.isBetaTester());
 }

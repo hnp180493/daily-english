@@ -46,6 +46,10 @@ export class AiProviderConfig implements OnInit {
       modelName: 'nvidia/nemotron-3-nano-30b-a3b:free',
       siteUrl: '',
       siteName: ''
+    },
+    anthropic: {
+      apiKey: '',
+      modelName: 'claude-sonnet-4-6'
     }
   });
 
@@ -53,21 +57,24 @@ export class AiProviderConfig implements OnInit {
     azure: false,
     gemini: false,
     openai: false,
-    openrouter: false
+    openrouter: false,
+    anthropic: false
   });
 
-  expandedProvider = signal<'azure' | 'gemini' | 'openai' | 'openrouter' | null>(null);
+  expandedProvider = signal<'azure' | 'gemini' | 'openai' | 'openrouter' | 'anthropic' | null>(null);
   
   useCustomModel = signal({
     gemini: false,
     openai: false,
-    openrouter: false
+    openrouter: false,
+    anthropic: false
   });
 
   private readonly CUSTOM_MODEL_KEYS = {
     gemini: 'gemini_useCustomModel',
     openai: 'openai_useCustomModel',
-    openrouter: 'openrouter_useCustomModel'
+    openrouter: 'openrouter_useCustomModel',
+    anthropic: 'anthropic_useCustomModel'
   };
 
   ngOnInit(): void {
@@ -79,7 +86,7 @@ export class AiProviderConfig implements OnInit {
     const saved = this.configService.getConfig();
     console.log('Loading config from service:', saved);
     if (saved) {
-      // Ensure openrouter config exists with defaults if not present
+      // Ensure optional sub-configs exist with defaults if not present
       const configWithDefaults = {
         ...saved,
         openrouter: saved.openrouter || {
@@ -87,6 +94,10 @@ export class AiProviderConfig implements OnInit {
           modelName: 'nvidia/nemotron-3-nano-30b-a3b:free',
           siteUrl: '',
           siteName: ''
+        },
+        anthropic: saved.anthropic || {
+          apiKey: '',
+          modelName: 'claude-sonnet-4-6'
         }
       };
       console.log('Setting config with defaults:', configWithDefaults);
@@ -107,7 +118,7 @@ export class AiProviderConfig implements OnInit {
     }
   }
 
-  private saveCustomModelPreference(provider: 'gemini' | 'openai' | 'openrouter'): void {
+  private saveCustomModelPreference(provider: 'gemini' | 'openai' | 'openrouter' | 'anthropic'): void {
     try {
       const key = this.CUSTOM_MODEL_KEYS[provider];
       localStorage.setItem(key, String(this.useCustomModel()[provider]));
@@ -126,14 +137,14 @@ export class AiProviderConfig implements OnInit {
     }
   }
 
-  toggleApiKeyVisibility(provider: 'azure' | 'gemini' | 'openai' | 'openrouter'): void {
+  toggleApiKeyVisibility(provider: 'azure' | 'gemini' | 'openai' | 'openrouter' | 'anthropic'): void {
     this.showApiKeys.update(keys => ({
       ...keys,
       [provider]: !keys[provider]
     }));
   }
 
-  toggleProvider(provider: 'azure' | 'gemini' | 'openai' | 'openrouter'): void {
+  toggleProvider(provider: 'azure' | 'gemini' | 'openai' | 'openrouter' | 'anthropic'): void {
     if (this.expandedProvider() === provider) {
       this.expandedProvider.set(null);
     } else {
@@ -141,7 +152,7 @@ export class AiProviderConfig implements OnInit {
     }
   }
 
-  selectProvider(provider: 'azure' | 'gemini' | 'openai' | 'openrouter'): void {
+  selectProvider(provider: 'azure' | 'gemini' | 'openai' | 'openrouter' | 'anthropic'): void {
     this.config.update(c => ({ ...c, provider }));
     this.expandedProvider.set(provider);
   }
@@ -190,7 +201,15 @@ export class AiProviderConfig implements OnInit {
     this.config.update(c => ({ ...c, openrouter: { ...c.openrouter!, siteName } }));
   }
 
-  toggleCustomModelInput(provider: 'gemini' | 'openai' | 'openrouter'): void {
+  updateAnthropicApiKey(apiKey: string): void {
+    this.config.update(c => ({ ...c, anthropic: { ...c.anthropic!, apiKey } }));
+  }
+
+  updateAnthropicModel(modelName: string): void {
+    this.config.update(c => ({ ...c, anthropic: { ...c.anthropic!, modelName } }));
+  }
+
+  toggleCustomModelInput(provider: 'gemini' | 'openai' | 'openrouter' | 'anthropic'): void {
     this.useCustomModel.update(models => ({
       ...models,
       [provider]: !models[provider]
@@ -210,9 +229,10 @@ export class AiProviderConfig implements OnInit {
       this.useCustomModel.set({
         gemini: false,
         openai: false,
-        openrouter: false
+        openrouter: false,
+        anthropic: false
       });
-      
+
       this.config.set({
         provider: 'gemini',
         azure: {
@@ -233,6 +253,10 @@ export class AiProviderConfig implements OnInit {
           modelName: 'nvidia/nemotron-3-nano-30b-a3b:free',
           siteUrl: '',
           siteName: ''
+        },
+        anthropic: {
+          apiKey: '',
+          modelName: 'claude-sonnet-4-6'
         }
       });
       this.expandedProvider.set(null);

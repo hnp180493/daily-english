@@ -345,6 +345,111 @@
       }
     </div>
 
+    <!-- Anthropic Claude Card -->
+    <div
+      class="provider-card"
+      [class.selected]="config().provider === 'anthropic'"
+      [class.expanded]="expandedProvider() === 'anthropic'"
+    >
+      <div class="card-header" (click)="toggleProvider('anthropic')">
+        <div class="card-title">
+          <span class="provider-icon">
+            <img src="assets/icons/claude-logo.svg" alt="Anthropic Claude" width="24" height="24" />
+          </span>
+          <div>
+            <h3>Anthropic Claude</h3>
+            <p class="provider-desc">Claude Opus / Sonnet / Haiku — strong reasoning, no audio input.</p>
+          </div>
+        </div>
+        <div class="card-actions">
+          @if (config().provider === 'anthropic') {
+          <span class="active-badge">{{ translate.t('ai_config.active') }}</span>
+          }
+          <button
+            type="button"
+            class="expand-btn"
+            [class.expanded]="expandedProvider() === 'anthropic'"
+          >
+            {{ expandedProvider() === 'anthropic' ? '▼' : '▶' }}
+          </button>
+        </div>
+      </div>
+
+      @if (expandedProvider() === 'anthropic') {
+      <div class="card-content">
+        <div class="form-group">
+          <label for="anthropic-key">API Key</label>
+          <div class="input-with-toggle">
+            <input
+              id="anthropic-key"
+              [type]="showApiKeys().anthropic ? 'text' : 'password'"
+              [ngModel]="config().anthropic?.apiKey"
+              (ngModelChange)="updateAnthropicApiKey($event)"
+              placeholder="sk-ant-..."
+            />
+            <button
+              type="button"
+              class="toggle-visibility"
+              (click)="toggleApiKeyVisibility('anthropic')"
+              aria-label="Toggle API key visibility"
+            >
+              {{ showApiKeys().anthropic ? '👁️' : '👁️‍🗨️' }}
+            </button>
+          </div>
+          <small>
+            Get your API key from
+            <a href="https://console.anthropic.com/settings/keys" target="_blank" rel="noopener">Anthropic Console</a>.
+            Your key is stored only in this browser and sent directly to api.anthropic.com.
+          </small>
+        </div>
+
+        <div class="form-group">
+          <div class="label-with-toggle">
+            <label for="anthropic-model">Model</label>
+            <button
+              type="button"
+              class="toggle-input-mode"
+              (click)="toggleCustomModelInput('anthropic')"
+            >
+              {{ useCustomModel().anthropic ? '📋 Use Preset' : '✏️ Custom Model' }}
+            </button>
+          </div>
+
+          @if (useCustomModel().anthropic) {
+          <input
+            id="anthropic-model-custom"
+            type="text"
+            [ngModel]="config().anthropic?.modelName"
+            (ngModelChange)="updateAnthropicModel($event)"
+            placeholder="e.g., claude-opus-4-7"
+          />
+          <small class="model-info">
+            💡 Use any model ID from the
+            <a href="https://docs.anthropic.com/en/docs/about-claude/models" target="_blank">Anthropic docs</a>.
+          </small>
+          } @else {
+          <select
+            id="anthropic-model"
+            [ngModel]="config().anthropic?.modelName"
+            (ngModelChange)="updateAnthropicModel($event)"
+          >
+            <optgroup label="Latest (recommended)">
+              <option value="claude-opus-4-7">Claude Opus 4.7 (strongest)</option>
+              <option value="claude-sonnet-4-6">Claude Sonnet 4.6 (balanced) ⭐</option>
+              <option value="claude-haiku-4-5-20251001">Claude Haiku 4.5 (fastest)</option>
+            </optgroup>
+          </select>
+          <small class="model-info">
+            💡 Claude doesn't accept audio input — pronunciation practice will use Web Speech fallback or Gemini if available.
+          </small>
+          }
+        </div>
+
+        <button class="btn btn-select" (click)="selectProvider('anthropic')">Use Claude</button>
+      </div>
+      }
+    </div>
+
     <!-- Azure OpenAI Card - Only visible for specific user -->
     @if (showAzureProvider()) {
     <div

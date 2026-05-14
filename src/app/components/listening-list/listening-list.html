@@ -1,0 +1,52 @@
+<div class="listening-list-page max-w-6xl mx-auto p-4 md:p-6 text-slate-100">
+  <button (click)="goBack()" class="text-sm text-slate-500 hover:text-slate-300 mb-4">← Back</button>
+
+  <header class="mb-6">
+    <div class="flex items-center gap-3 mb-2 flex-wrap">
+      <h1 class="text-3xl font-bold text-slate-100">🎧 Listening</h1>
+      <span class="text-[10px] px-2 py-1 rounded-full bg-purple-500/20 text-purple-300 border border-purple-500/30 font-semibold tracking-wider">BETA</span>
+    </div>
+    <p class="text-slate-400">
+      Tracks are read by your browser's TTS — no audio files needed. Listen sentence by sentence, hide/reveal the transcript, then take a comprehension quiz.
+    </p>
+  </header>
+
+  <div class="filters mb-6 flex flex-wrap gap-2">
+    <button (click)="setLevelFilter('all')" [class.active-filter]="levelFilter() === 'all'" class="filter-chip">All</button>
+    <button (click)="setLevelFilter('beginner')" [class.active-filter]="levelFilter() === 'beginner'" class="filter-chip">Beginner</button>
+    <button (click)="setLevelFilter('intermediate')" [class.active-filter]="levelFilter() === 'intermediate'" class="filter-chip">Intermediate</button>
+    <button (click)="setLevelFilter('advanced')" [class.active-filter]="levelFilter() === 'advanced'" class="filter-chip">Advanced</button>
+  </div>
+
+  @if (isLoading()) {
+    <p class="text-center text-slate-500 py-12">Loading tracks...</p>
+  } @else if (filtered().length === 0) {
+    <p class="text-center text-slate-400 py-12">No tracks match your filter.</p>
+  } @else {
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      @for (t of filtered(); track t.id) {
+        <article
+          (click)="openTrack(t)"
+          class="track-card bg-slate-900/60 border border-slate-700/60 rounded-xl p-5 cursor-pointer hover:border-purple-500/40 hover:bg-slate-900/80 transition backdrop-blur-sm"
+        >
+          <div class="flex items-start justify-between mb-3 flex-wrap gap-2">
+            <span class="text-3xl">{{ styleIcon(t.style) }}</span>
+            <span class="px-2 py-1 rounded-full text-xs font-medium" [ngClass]="levelClass(t.level)">
+              {{ levelLabel(t.level) }}
+            </span>
+          </div>
+          <h3 class="font-semibold text-slate-100 mb-2 leading-snug">{{ t.title }}</h3>
+          <p class="text-sm text-slate-400 mb-3">{{ t.description }}</p>
+          <div class="flex items-center gap-4 text-xs text-slate-500">
+            <span>⏱ ~{{ t.estimatedMinutes }} min</span>
+            <span>📝 {{ t.segments.length }} sentences</span>
+            <span>❓ {{ t.quiz.length }} questions</span>
+          </div>
+          @if (bestScore(t.id) !== null) {
+            <p class="text-xs text-green-300 font-medium mt-2">⭐ Best: {{ bestScore(t.id) }}%</p>
+          }
+        </article>
+      }
+    </div>
+  }
+</div>

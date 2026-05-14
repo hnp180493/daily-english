@@ -4,9 +4,11 @@ import { catchError, tap } from 'rxjs/operators';
 import { AIProvider, AIResponse, AIStreamChunk, ExerciseContext } from '../../models/ai.model';
 import { Exercise } from '../../models/exercise.model';
 import { PronunciationContext, PronunciationFeedback } from '../../models/pronunciation.model';
+import { WritingFeedback, WritingPrompt } from '../../models/writing.model';
 import { AIProviderFactory } from './ai-provider.factory';
 import { ConfigService } from '../config.service';
 import { AnalyticsService } from '../analytics.service';
+import { PromptService } from './prompt.service';
 import { environment } from '../../../environments/environment';
 
 /**
@@ -23,6 +25,7 @@ export class AIUnifiedService implements AIProvider {
   private factory = inject(AIProviderFactory);
   private configService = inject(ConfigService);
   private analyticsService = inject(AnalyticsService);
+  private promptService = inject(PromptService);
 
   analyzeText(
     userInput: string,
@@ -130,6 +133,33 @@ export class AIUnifiedService implements AIProvider {
 
   supportsAudioInput(): boolean {
     return this.getActiveProvider().supportsAudioInput();
+  }
+
+  analyzeWriting(
+    prompt: WritingPrompt,
+    essay: string
+  ): Observable<WritingFeedback> {
+    const provider = this.getActiveProvider();
+    const config = this.getConfig();
+    const providerType = (config as any)?.provider || environment.aiProvider;
+    const startTime = Date.now();
+    const wordCount = essay.trim().split(/\s+/).filter(Boolean).length;
+    const builtPrompt = this.promptService.buildWritingPrompt(prompt, essay, wordCount);
+
+    this.analyticsService.trackAiRequest(providerType, 'default', 'analyze_writing');
+
+    return provider.analyzeWriting(builtPrompt, prompt.id, wordCount, config).pipe(
+      tap(() => {
+        const responseTime = Date.now() - startTime;
+        this.analyticsService.trackAiResponse(providerType, responseTime, 0);
+      }),
+      catchError((error) => {
+        console.error('AI Writing Error:', error);
+        this.analyticsService.trackAiError(providerType, error?.message || 'unknown_error');
+        const message = error?.message || 'Không chấm được bài viết. Vui lòng thử lại.';
+        return throwError(() => new Error(message));
+      })
+    );
   }
 
   analyzePronunciation(

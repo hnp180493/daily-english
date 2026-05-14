@@ -43,6 +43,20 @@
       }
     },
     {
+      "name": "phase2-content",
+      "urls": [
+        "/data/grammar-lessons/**",
+        "/data/reading/**",
+        "/data/writing/**",
+        "/data/listening/**"
+      ],
+      "cacheConfig": {
+        "maxSize": 50,
+        "maxAge": "30d",
+        "strategy": "performance"
+      }
+    },
+    {
       "name": "vietnamese-seo-config",
       "urls": [
         "/vietnamese-seo-config.json"
