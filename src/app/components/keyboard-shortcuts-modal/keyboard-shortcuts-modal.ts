@@ -44,14 +44,6 @@ export class KeyboardShortcutsModalComponent {
       ],
     },
     {
-      titleKey: 'reader.title',
-      rows: [
-        { keys: ['S'], labelKey: 'reader.save' },
-        { keys: ['K'], labelKey: 'reader.mark_known' },
-        { keys: ['Esc'], labelKey: 'shortcuts.close_modal' },
-      ],
-    },
-    {
       titleKey: 'shortcuts.group.translation',
       rows: [
         { keys: ['Enter'], labelKey: 'shortcuts.submit_next' },

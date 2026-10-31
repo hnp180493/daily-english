@@ -8,7 +8,6 @@
     
     <nav class="nav-links">
       <a routerLink="/today" routerLinkActive="active" class="nav-link nav-link-today">☀️ {{ translate.t('header.menu.today') }}</a>
-      <a routerLink="/reader" routerLinkActive="active" class="nav-link nav-link-main">📖 {{ translate.t('header.menu.reader') }}</a>
       <a routerLink="/review-queue" routerLinkActive="active" class="nav-link review-link" [title]="translate.t('header.tooltip.review')">
         {{ translate.t('header.nav.review') }}
         @if (dueReviewCount() > 0) {

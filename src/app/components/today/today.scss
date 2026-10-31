@@ -204,7 +204,7 @@ kbd {
     color: #fff;
   }
 
-  &.today .dot {
+  &.is-today .dot {
     border-color: var(--t-primary);
   }
 }
@@ -531,9 +531,6 @@ kbd {
   }
 }
 
-.reader-link {
-  color: var(--t-primary);
-}
 
 .done-actions {
   flex-wrap: wrap;

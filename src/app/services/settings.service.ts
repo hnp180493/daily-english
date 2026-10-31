@@ -18,11 +18,18 @@ const DEFAULT_SETTINGS: AppSettings = {
   translateFeedbackToVietnamese: false,
   fontSize: 'medium',
   fontFamily: 'default',
-  uiLanguage: 'en',
+  uiLanguage: 'vi',
   highContrast: false
 };
 
 const STORAGE_KEY = 'app_settings';
+
+/**
+ * English UI is still "coming soon" (disabled in Settings, header toggle hidden),
+ * so nobody can pick it on purpose — a stored 'en' only comes from the old default.
+ * Flip to true when the English picker is re-enabled.
+ */
+const ENGLISH_UI_ENABLED = false;
 
 @Injectable({
   providedIn: 'root'
@@ -110,7 +117,9 @@ export class SettingsService {
       const stored = localStorage.getItem(STORAGE_KEY);
       if (stored) {
         const parsed = JSON.parse(stored);
-        return { ...DEFAULT_SETTINGS, ...parsed };
+        const settings: AppSettings = { ...DEFAULT_SETTINGS, ...parsed };
+        if (!ENGLISH_UI_ENABLED) settings.uiLanguage = 'vi';
+        return settings;
       }
     } catch (error) {
       console.error('Failed to load settings:', error);
