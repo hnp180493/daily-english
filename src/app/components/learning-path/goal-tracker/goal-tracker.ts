@@ -1,12 +1,19 @@
-import { Component, OnInit, signal, computed, inject, ChangeDetectionStrategy } from '@angular/core';
+import { Component, OnInit, signal, computed, inject, ChangeDetectionStrategy, DestroyRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { firstValueFrom } from 'rxjs';
 import { DatabaseService } from '../../../services/database/database.service';
 import { ProgressService } from '../../../services/progress.service';
+import { CurriculumService } from '../../../services/curriculum.service';
 import { NotificationService } from '../../../services/notification.service';
 import { TranslationService } from '../../../services/translation.service';
 import { WeeklyGoal } from '../../../models/weekly-goal.model';
 import { ExerciseHistoryRecord } from '../../../models/exercise-history.model';
 import { getWeekStartLocalDate } from '../../../utils/date.utils';
+
+/** Must match the CHECK constraint in supabase-migrations/09-create-weekly-goals.sql. */
+export const WEEKLY_GOAL_MIN = 3;
+export const WEEKLY_GOAL_MAX = 50;
 
 @Component({
   selector: 'app-goal-tracker',
@@ -19,11 +26,15 @@ import { getWeekStartLocalDate } from '../../../utils/date.utils';
 export class GoalTracker implements OnInit {
   private databaseService = inject(DatabaseService);
   private progressService = inject(ProgressService);
+  private curriculum = inject(CurriculumService);
+  private destroyRef = inject(DestroyRef);
   private notificationService = inject(NotificationService);
   protected translate = inject(TranslationService);
 
   currentGoal = signal<WeeklyGoal | null>(null);
   targetExercises = signal(10);
+  readonly minTarget = WEEKLY_GOAL_MIN;
+  readonly maxTarget = WEEKLY_GOAL_MAX;
   isLoading = signal(true);
   achievementRate = signal<number | null>(null);
 
@@ -94,7 +105,7 @@ export class GoalTracker implements OnInit {
     
     // Subscribe to progress updates to auto-update goal progress
     console.log('[GoalTracker] Setting up progress subscription');
-    this.progressService.getUserProgress().subscribe(async (progress) => {
+    this.progressService.getUserProgress().pipe(takeUntilDestroyed(this.destroyRef)).subscribe(async (progress) => {
       console.log('[GoalTracker] Progress update received, total exercises:', Object.keys(progress.exerciseHistory || {}).length);
       console.log('[GoalTracker] Current goal in subscription:', this.currentGoal());
       await this.updateProgress();
@@ -106,7 +117,7 @@ export class GoalTracker implements OnInit {
     try {
       const weekStart = this.getWeekStartDate();
       console.log('[GoalTracker] Loading goal for week starting:', weekStart);
-      const goal = await this.databaseService.loadWeeklyGoalByDateAuto(weekStart).toPromise();
+      const goal = await firstValueFrom(this.databaseService.loadWeeklyGoalByDateAuto(weekStart));
       console.log('[GoalTracker] Goal loaded from database:', goal);
       
       if (goal) {
@@ -137,7 +148,7 @@ export class GoalTracker implements OnInit {
 
   async setGoal(): Promise<void> {
     const target = this.targetExercises();
-    if (target < 1 || target > 99) return;
+    if (target < WEEKLY_GOAL_MIN || target > WEEKLY_GOAL_MAX) return;
 
     this.isLoading.set(true);
     try {
@@ -151,7 +162,8 @@ export class GoalTracker implements OnInit {
         bonusPointsEarned: 0
       };
 
-      await this.databaseService.saveWeeklyGoalAuto(goal).toPromise();
+      await firstValueFrom(this.databaseService.saveWeeklyGoalAuto(goal), { defaultValue: undefined });
+      this.curriculum.clearWeeklyGoalCache();
       this.currentGoal.set(goal);
     } catch (error) {
       console.error('Failed to set weekly goal:', error);
@@ -161,70 +173,21 @@ export class GoalTracker implements OnInit {
   }
 
   async updateProgress(): Promise<void> {
-    const goal = this.currentGoal();
-    if (!goal) {
+    if (!this.currentGoal()) {
       console.log('[GoalTracker] No goal set, skipping update');
       return;
     }
-
-    const progress = await this.progressService.getUserProgress().toPromise();
-    const history = progress?.exerciseHistory || {};
-    const weekStart = new Date(goal.weekStartDate);
-    weekStart.setHours(0, 0, 0, 0);
-    const weekEnd = new Date(weekStart);
-    weekEnd.setDate(weekEnd.getDate() + 7);
-    weekEnd.setHours(23, 59, 59, 999);
-
-    console.log('[GoalTracker] Updating progress...');
-    console.log('[GoalTracker] Week range:', weekStart.toISOString(), 'to', weekEnd.toISOString());
-    console.log('[GoalTracker] Total exercises in history:', Object.keys(history).length);
-
-    const allAttempts = Object.values(history);
-    console.log('[GoalTracker] All attempts:', allAttempts.map((h: any) => ({
-      id: h.exerciseId,
-      timestamp: h.timestamp,
-      score: h.accuracyScore,
-      date: new Date(h.timestamp).toISOString()
-    })));
-
-    // Only count exercises with score >= 60 that were completed this week
-    const completedThisWeek = allAttempts.filter((h: any) => {
-      const date = new Date(h.timestamp);
-      const inRange = date >= weekStart && date < weekEnd;
-      const passingScore = h.accuracyScore >= 60;
-      console.log('[GoalTracker] Exercise', h.exerciseId, 'at', date.toISOString(), 
-                  'score:', h.accuracyScore, 'in range?', inRange, 'passing?', passingScore);
-      return inRange && passingScore;
-    }).length;
-
-    console.log('[GoalTracker] Completed this week (score >= 60):', completedThisWeek);
-    console.log('[GoalTracker] Previous count:', goal.completedExercises);
-
-    goal.completedExercises = completedThisWeek;
-    
-    if (completedThisWeek >= goal.targetExercises && !goal.isAchieved) {
-      goal.isAchieved = true;
-      
-      // Calculate bonus points based on exercises completed
-      // Max 1000 points for 30+ exercises
-      // Proportional for less than 30, rounded to nearest 50
-      const bonusPoints = this.calculateBonusPoints(completedThisWeek);
-      goal.bonusPointsEarned = bonusPoints;
-      
-      console.log('[GoalTracker] Goal achieved! Adding bonus points:', bonusPoints);
-      this.progressService.addBonusPoints(bonusPoints);
-    }
-
-    await this.databaseService.saveWeeklyGoalAuto(goal).toPromise();
-    this.currentGoal.set({ ...goal });
-    console.log('[GoalTracker] Goal updated and saved');
+    // Counting, saving and awarding the bonus all live in CurriculumService so
+    // the bonus is paid by exactly one code path.
+    const goal = await this.curriculum.recalculateWeeklyGoal();
+    if (goal) this.currentGoal.set({ ...goal });
   }
 
   onTargetChange(event: Event): void {
     const input = event.target as HTMLInputElement;
     const value = parseInt(input.value, 10);
     if (!isNaN(value)) {
-      this.targetExercises.set(Math.max(0, Math.min(99, value)));
+      this.targetExercises.set(Math.max(0, Math.min(WEEKLY_GOAL_MAX, value)));
     }
   }
 

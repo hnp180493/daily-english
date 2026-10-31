@@ -23,6 +23,7 @@ export class AudioRecorderService {
   private autoStopHandle: number | null = null;
   private resolveStop: ((rec: AudioRecording) => void) | null = null;
   private rejectStop: ((err: Error) => void) | null = null;
+  private session = 0;
 
   isSupported(): boolean {
     return (
@@ -45,14 +46,23 @@ export class AudioRecorderService {
 
     this.errorMessage.set(null);
     this.state.set('requesting');
+    const session = ++this.session;
 
+    let stream: MediaStream;
     try {
-      this.mediaStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      stream = await navigator.mediaDevices.getUserMedia({ audio: true });
     } catch (err) {
+      if (session !== this.session) return;
       this.state.set('error');
       this.errorMessage.set('Bạn cần cấp quyền micro để dùng tính năng này.');
       throw err;
     }
+    if (session !== this.session) {
+      // cancel()/reset() happened while the permission prompt was open
+      stream.getTracks().forEach(track => track.stop());
+      return;
+    }
+    this.mediaStream = stream;
 
     const mimeType = MediaRecorder.isTypeSupported(PRONUNCIATION_DEFAULTS.AUDIO_MIME_PREFERRED)
       ? PRONUNCIATION_DEFAULTS.AUDIO_MIME_PREFERRED
@@ -128,14 +138,24 @@ export class AudioRecorderService {
   }
 
   cancel(): void {
-    if (this.mediaRecorder && this.state() === 'recording') {
-      try {
-        this.mediaRecorder.stop();
-      } catch {
-        // ignore
+    // Invalidate a start() still waiting on getUserMedia
+    this.session++;
+    if (this.mediaRecorder) {
+      // Detach handlers first so a late onstop can't resolve/flip state after cancel
+      this.mediaRecorder.onstop = null;
+      this.mediaRecorder.ondataavailable = null;
+      this.mediaRecorder.onerror = null;
+      if (this.mediaRecorder.state !== 'inactive') {
+        try {
+          this.mediaRecorder.stop();
+        } catch {
+          // ignore
+        }
       }
     }
+    // Releases mic tracks and clears the tick/auto-stop timers
     this.cleanupStream();
+    this.chunks = [];
     this.state.set('idle');
     this.elapsedMs.set(0);
     this.errorMessage.set(null);
@@ -143,10 +163,9 @@ export class AudioRecorderService {
     this.rejectStop = null;
   }
 
+  /** Back to idle — always stops any active recording and releases the mic. */
   reset(): void {
-    this.state.set('idle');
-    this.elapsedMs.set(0);
-    this.errorMessage.set(null);
+    this.cancel();
   }
 
   private clearTimers(): void {

@@ -1,5 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { BaseAIProvider, AIRequest, AIMessage } from '../base-ai-provider';
 import { AIResponse, AIStreamChunk, ExerciseContext } from '../../../models/ai.model';
 import { PronunciationContext, PronunciationFeedback } from '../../../models/pronunciation.model';
@@ -36,6 +37,7 @@ export class OpenAIProvider extends BaseAIProvider {
 
   generateText(request: AIRequest, config: any): Observable<string> {
     return new Observable(observer => {
+      const controller = new AbortController();
       const headers = {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${config.openai.apiKey}`
@@ -55,7 +57,8 @@ export class OpenAIProvider extends BaseAIProvider {
       fetch('https://api.openai.com/v1/chat/completions', {
         method: 'POST',
         headers,
-        body: JSON.stringify(body)
+        body: JSON.stringify(body),
+        signal: controller.signal
       })
         .then(async response => {
           const data = await response.json();
@@ -78,9 +81,13 @@ export class OpenAIProvider extends BaseAIProvider {
           observer.complete();
         })
         .catch(error => {
+          if (this.isAbortError(error, controller.signal)) return;
           console.error('[OpenAI] Error:', error);
           observer.error(error);
         });
+
+      // Unsubscribing cancels the request
+      return () => controller.abort();
     });
   }
 
@@ -90,23 +97,17 @@ export class OpenAIProvider extends BaseAIProvider {
     context: ExerciseContext,
     config: any
   ): Observable<AIResponse> {
-    return new Observable(observer => {
-      const translateToVietnamese = this.settingsService.getSettings().translateFeedbackToVietnamese;
-      const prompt = this.promptService.buildAnalysisPrompt(userInput, sourceText, context, context.fullContext, context.translatedContext, translateToVietnamese);
-      const messages: AIMessage[] = [
-        { role: 'system', content: this.promptService.buildSystemPrompt() },
-        { role: 'user', content: prompt }
-      ];
+    const translateToVietnamese = this.settingsService.getSettings().translateFeedbackToVietnamese;
+    const prompt = this.promptService.buildAnalysisPrompt(userInput, sourceText, context, context.fullContext, context.translatedContext, translateToVietnamese);
+    const messages: AIMessage[] = [
+      { role: 'system', content: this.promptService.buildSystemPrompt() },
+      { role: 'user', content: prompt }
+    ];
 
-      this.generateText({ messages, temperature: 0.7, maxTokens: 1000 }, config).subscribe({
-        next: (content) => {
-          const response = this.parseResponse(content);
-          observer.next(response);
-          observer.complete();
-        },
-        error: (error) => observer.error(error)
-      });
-    });
+    // map() turns a parse failure into an error notification (no fake score)
+    return this.generateText({ messages, temperature: 0.7, maxTokens: 1000 }, config).pipe(
+      map(content => this.parseResponse(content))
+    );
   }
 
   override analyzeTextStream(
@@ -116,6 +117,7 @@ export class OpenAIProvider extends BaseAIProvider {
     config: any
   ): Observable<AIStreamChunk> {
     return new Observable(observer => {
+      const controller = new AbortController();
       const state = this.createStreamingState();
       const translateToVietnamese = this.settingsService.getSettings().translateFeedbackToVietnamese;
       const prompt = this.promptService.buildAnalysisPrompt(userInput, sourceText, context, context.fullContext, context.translatedContext, translateToVietnamese);
@@ -139,7 +141,8 @@ export class OpenAIProvider extends BaseAIProvider {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${config.openai.apiKey}`
         },
-        body
+        body,
+        signal: controller.signal
       }).then(async response => {
         if (!response.ok) {
           let errorMessage = `HTTP error! status: ${response.status}`;
@@ -156,48 +159,59 @@ export class OpenAIProvider extends BaseAIProvider {
         }
 
         const reader = response.body?.getReader();
+        if (!reader) throw new Error('No response body reader available');
         const decoder = new TextDecoder();
         let buffer = '';
+        // A network chunk can end in the middle of an SSE line: keep the partial line for the next read
+        let pendingLine = '';
+
+        const handleLine = (line: string) => {
+          if (!line.startsWith('data: ')) return;
+          const data = line.slice(6).trim();
+          if (!data || data === '[DONE]') return;
+
+          let parsed: any;
+          try {
+            parsed = JSON.parse(data);
+          } catch (e) {
+            return; // Not JSON — ignore
+          }
+          if (parsed.error) {
+            throw new Error(parsed.error.message || JSON.stringify(parsed.error));
+          }
+          const content = parsed.choices?.[0]?.delta?.content || '';
+          if (content) {
+            buffer += content;
+            this.emitPartialResponse(buffer, observer, state);
+          }
+        };
 
         while (true) {
-          const { done, value } = await reader!.read();
-          
+          const { done, value } = await reader.read();
+
           if (done) {
-            if (buffer) {
-              const parsed = this.parseResponse(buffer);
-              observer.next({ type: 'complete', data: parsed });
-            }
-            observer.complete();
+            pendingLine += decoder.decode();
+            if (pendingLine) handleLine(pendingLine);
+            this.finishAnalysisStream(buffer, observer, 'OpenAI');
             break;
           }
 
-          const chunk = decoder.decode(value, { stream: true });
-          const lines = chunk.split('\n');
+          pendingLine += decoder.decode(value, { stream: true });
+          const lines = pendingLine.split('\n');
+          pendingLine = lines.pop() || '';
 
           for (const line of lines) {
-            if (line.startsWith('data: ')) {
-              const data = line.slice(6);
-              
-              if (data === '[DONE]') continue;
-
-              try {
-                const parsed = JSON.parse(data);
-                const content = parsed.choices?.[0]?.delta?.content || '';
-                
-                if (content) {
-                  buffer += content;
-                  this.emitPartialResponse(buffer, observer, state);
-                }
-              } catch (e) {
-                // Ignore JSON parse errors for incomplete chunks
-              }
-            }
+            handleLine(line);
           }
         }
       }).catch(error => {
+        if (this.isAbortError(error, controller.signal)) return;
         console.error('OpenAI streaming error:', error);
         observer.error(error);
       });
+
+      // Unsubscribing cancels the request and the stream read
+      return () => controller.abort();
     });
   }
 
@@ -208,31 +222,21 @@ export class OpenAIProvider extends BaseAIProvider {
     context: ExerciseContext,
     config: any
   ): Observable<string> {
-    return new Observable(observer => {
-      const translateToVietnamese = this.settingsService.getSettings().translateFeedbackToVietnamese;
-      const prompt = this.promptService.buildHintPrompt(sourceText, userInput, previousHints, context, context.fullContext, translateToVietnamese);
-      const messages: AIMessage[] = [
-        { role: 'system', content: 'You are a helpful English language teacher providing hints to students. Give ONE specific, actionable hint.' },
-        { role: 'user', content: prompt }
-      ];
+    const translateToVietnamese = this.settingsService.getSettings().translateFeedbackToVietnamese;
+    const prompt = this.promptService.buildHintPrompt(sourceText, userInput, previousHints, context, context.fullContext, translateToVietnamese);
+    const messages: AIMessage[] = [
+      { role: 'system', content: 'You are a helpful English language teacher providing hints to students. Give ONE specific, actionable hint.' },
+      { role: 'user', content: prompt }
+    ];
 
-      this.generateText({ messages, temperature: 0.7 }, config).subscribe({
-        next: (content) => {
-          observer.next(content.trim());
-          observer.complete();
-        },
-        error: (error) => observer.error(error)
-      });
-    });
+    return this.generateText({ messages, temperature: 0.7 }, config).pipe(
+      map(content => content.trim())
+    );
   }
 
+  /** Throws on unparseable output — callers show an error instead of saving a made-up score. */
   private parseResponse(content: string): AIResponse {
-    try {
-      return this.parseResponseContent(content);
-    } catch (error) {
-      console.error('[OpenAI] Failed to parse AI response:', error);
-      return { accuracyScore: 50, feedback: [], overallComment: '' };
-    }
+    return this.parseAnalysisResponse(content, 'OpenAI');
   }
 
   override supportsAudioInput(): boolean {
@@ -246,7 +250,8 @@ export class OpenAIProvider extends BaseAIProvider {
     context: PronunciationContext,
     config: any
   ): Observable<PronunciationFeedback> {
-    return new Observable((observer) => {
+    return new Observable<PronunciationFeedback>((observer) => {
+      const controller = new AbortController();
       const apiKey = config?.openai?.apiKey;
       const modelName = config?.openai?.modelName || 'gpt-4o-audio-preview';
       if (!apiKey) {
@@ -288,6 +293,7 @@ export class OpenAIProvider extends BaseAIProvider {
               ],
               temperature: 0.3,
             }),
+            signal: controller.signal,
           })
         )
         .then(async (response) => {
@@ -305,9 +311,12 @@ export class OpenAIProvider extends BaseAIProvider {
           observer.complete();
         })
         .catch((error) => {
+          if (this.isAbortError(error, controller.signal)) return;
           console.error('[OpenAI] Pronunciation analysis error:', error);
           observer.error(error);
         });
+
+      return () => controller.abort();
     });
   }
 }

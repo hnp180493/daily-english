@@ -10,9 +10,10 @@ export class CustomRouteReuseStrategy implements RouteReuseStrategy {
   private handlers: Map<string, DetachedRouteHandle> = new Map();
   
   // Routes that should be cached
-  // Note: dashboard is excluded to ensure fresh data on navigation
+  // Note: dashboard is excluded to ensure fresh data on navigation.
+  // Home (path '') is intentionally not cached: it reloads learning-path data on auth changes in ngOnInit.
+  // Profile is cached; it follows query params as a stream (?tab=settings) instead of reading a snapshot.
   private readonly cacheableRoutes = [
-    'home',
     'exercises',
     'profile',
     'favorites'
@@ -46,8 +47,17 @@ export class CustomRouteReuseStrategy implements RouteReuseStrategy {
   }
 
   shouldReuseRoute(future: ActivatedRouteSnapshot, curr: ActivatedRouteSnapshot): boolean {
-    // Reuse route if the route config is the same
-    return future.routeConfig === curr.routeConfig;
+    // Same route config AND same path params. Detail pages (exercise/:slug, reader/:id, ...)
+    // read their params from the snapshot once, so /exercise/a → /exercise/b must create a
+    // fresh component instead of silently keeping exercise A. Query params (?tab=) still reuse.
+    if (future.routeConfig !== curr.routeConfig) return false;
+    const a = future.params;
+    const b = curr.params;
+    const keys = new Set([...Object.keys(a), ...Object.keys(b)]);
+    for (const key of keys) {
+      if (a[key] !== b[key]) return false;
+    }
+    return true;
   }
 
   // Clear cache when needed (e.g., on logout)

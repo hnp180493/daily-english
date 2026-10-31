@@ -41,14 +41,19 @@ export class ReadingService {
     if (!this.cache$) {
       this.cache$ = this.http.get<PassagesFile>('data/reading/passages.json').pipe(
         map((file) => file.passages || []),
-        catchError((err) => {
-          console.error('[ReadingService] Failed to load passages:', err);
-          return of([] as ReadingPassage[]);
-        }),
         shareReplay(1)
       );
     }
-    return this.cache$;
+    // Fallback lives outside the cached stream: a failed load is not cached, so the
+    // next call retries instead of serving [] for the rest of the visit.
+    const cache$ = this.cache$;
+    return cache$.pipe(
+      catchError((err) => {
+        console.error('[ReadingService] Failed to load passages:', err);
+        if (this.cache$ === cache$) this.cache$ = null;
+        return of([] as ReadingPassage[]);
+      })
+    );
   }
 
   async loadAll(): Promise<ReadingPassage[]> {

@@ -1,4 +1,6 @@
-import { Component, ChangeDetectionStrategy, inject, signal, computed, OnInit } from '@angular/core';
+import { Component, ChangeDetectionStrategy, inject, signal, computed, OnInit, DestroyRef } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { filter, take } from 'rxjs/operators';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
@@ -21,6 +23,7 @@ export class ExerciseCreator implements OnInit {
   private toastService = inject(ToastService);
   private router = inject(Router);
   private route = inject(ActivatedRoute);
+  private destroyRef = inject(DestroyRef);
 
   // State signals
   exerciseId = signal<string | null>(null);
@@ -55,7 +58,7 @@ export class ExerciseCreator implements OnInit {
 
   ngOnInit(): void {
     // Check if we're in edit mode
-    this.route.params.subscribe(params => {
+    this.route.params.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(params => {
       const id = params['id'];
       if (id) {
         this.exerciseId.set(id);
@@ -65,7 +68,12 @@ export class ExerciseCreator implements OnInit {
   }
 
   private loadExercise(id: string): void {
-    this.customExerciseService.getCustomExerciseById(id).subscribe(exercise => {
+    // Load once: later emissions of the exercises stream must not overwrite in-progress edits
+    this.customExerciseService.getCustomExerciseById(id).pipe(
+      filter(exercise => !!exercise),
+      take(1),
+      takeUntilDestroyed(this.destroyRef)
+    ).subscribe(exercise => {
       if (exercise) {
         this.title.set(exercise.title);
         this.sourceText.set(exercise.sourceText);

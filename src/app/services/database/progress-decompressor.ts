@@ -3,7 +3,7 @@
  * Converts short keys back to full format for backward compatibility
  */
 
-import { ExerciseAttempt, SentenceAttempt, FeedbackItem } from '../../models/exercise.model';
+import { ExerciseAttempt, SentenceAttempt, FeedbackItem, UserProgress } from '../../models/exercise.model';
 import { DictationPracticeAttempt } from '../../models/dictation.model';
 import { PronunciationAttempt } from '../../models/pronunciation.model';
 
@@ -46,9 +46,15 @@ export class ProgressDecompressor {
     Object.keys(compressedHistory).forEach((exerciseId) => {
       const exercise = compressedHistory[exerciseId];
 
-      // Decompress translation attempt (tr)
-      if (exercise.tr) {
+      if (!exercise || typeof exercise !== 'object') return;
+
+      // Decompress translation attempt (tr). An old bug re-compressed already-compressed entries
+      // into empty {sa: []} shells (no attempt number, no timestamp); skip those phantoms.
+      if (exercise.tr && (exercise.tr.a !== undefined || exercise.tr.t !== undefined)) {
         decompressed[exerciseId] = this.decompressTranslationAttempt(exerciseId, exercise.tr);
+      } else if (exercise.dh === undefined && exercise.di === undefined && exercise.attemptNumber !== undefined) {
+        // Uncompressed entry mixed in with compressed ones: keep it instead of dropping it
+        decompressed[exerciseId] = { ...exercise, exerciseId, timestamp: new Date(exercise.timestamp) };
       }
     });
 
@@ -65,6 +71,7 @@ export class ProgressDecompressor {
 
     Object.keys(compressedHistory).forEach((exerciseId) => {
       const exercise = compressedHistory[exerciseId];
+      if (!exercise || typeof exercise !== 'object') return;
 
       // Decompress dictation attempt (dh - new format is just a number)
       if (exercise.dh !== undefined) {
@@ -193,11 +200,36 @@ export class ProgressDecompressor {
   static isCompressed(exerciseHistory: any): boolean {
     if (!exerciseHistory || typeof exerciseHistory !== 'object') return false;
 
-    const firstKey = Object.keys(exerciseHistory)[0];
-    if (!firstKey) return false;
+    // Any entry counts: JSONB doesn't keep key order, and dictation-only entries carry just 'dh'
+    return Object.values(exerciseHistory).some(
+      (e: any) => e && typeof e === 'object' && (e.tr !== undefined || e.dh !== undefined || e.di !== undefined)
+    );
+  }
 
-    const firstExercise = exerciseHistory[firstKey];
-    // Check if it has 'tr' or 'di' keys (compressed format)
-    return firstExercise && (firstExercise.tr !== undefined || firstExercise.di !== undefined);
+  /**
+   * Decompress a stored user_progress row back into UserProgress.
+   * The compressor folds dictation into exerciseHistory[id].dh, so both histories come from there.
+   */
+  static decompress(data: any): UserProgress {
+    const progress = { ...data };
+    const storedDictation = progress.dictationHistory;
+
+    if (this.isCompressed(progress.exerciseHistory)) {
+      const history = progress.exerciseHistory;
+      progress.exerciseHistory = this.decompressExerciseHistory(history);
+      progress.dictationHistory = {
+        ...(this.isCompressed(storedDictation) ? this.decompressDictationHistory(storedDictation) : storedDictation),
+        ...this.decompressDictationHistory(history)
+      };
+    } else if (this.isCompressed(storedDictation)) {
+      progress.dictationHistory = this.decompressDictationHistory(storedDictation);
+    }
+
+    if (progress.pa) {
+      progress.pronunciationAttempts = this.decompressPronunciationAttempts(progress.pa);
+      delete progress.pa;
+    }
+
+    return progress as UserProgress;
   }
 }

@@ -1,5 +1,7 @@
-import { Component, ChangeDetectionStrategy, inject, computed, effect, signal, OnInit } from '@angular/core';
-import { RouterLink, RouterLinkActive, Router } from '@angular/router';
+import { Component, ChangeDetectionStrategy, inject, computed, effect, signal, OnInit, HostListener, ElementRef, viewChild, WritableSignal } from '@angular/core';
+import { RouterLink, RouterLinkActive, Router, NavigationEnd } from '@angular/router';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { filter } from 'rxjs/operators';
 import { CommonModule } from '@angular/common';
 import { AuthStatus } from '../auth-status/auth-status';
 import { FavoriteService } from '../../services/favorite.service';
@@ -66,6 +68,9 @@ export class HeaderComponent implements OnInit {
   // Dropdown menu state
   showLearningMenu = signal(false);
   private menuCloseTimeout: any = null;
+  private menuOpenedByHover = false;
+  private learningMenuRef = viewChild<ElementRef<HTMLElement>>('learningMenu');
+  private learningMenuTriggerRef = viewChild<ElementRef<HTMLButtonElement>>('learningMenuTrigger');
   
   // Review queue badge
   reviewQueue = this.reviewService.getReviewQueueSignal();
@@ -97,11 +102,13 @@ export class HeaderComponent implements OnInit {
   
   // Animated points display
   private animatedPoints = signal(0);
-  private isAnimatingPoints = false;
-  
+  // Signals (not plain fields) so the effects re-run when an animation ends and re-sync
+  // with whatever the latest value is by then.
+  private isAnimatingPoints = signal(false);
+
   // Animated achievement count
   private animatedAchievementCount = signal(0);
-  private isAnimatingAchievements = false;
+  private isAnimatingAchievements = signal(false);
   
   totalPoints = computed(() => {
     const progress = this.progressSignal();
@@ -122,50 +129,47 @@ export class HeaderComponent implements OnInit {
   flyingPoints = computed(() => this.pointsAnimationService.getFlyingPoints()());
   
   constructor() {
-    // Initialize animated points on first load
-    effect(() => {
-      const actualPoints = this.totalPoints();
-      const currentAnimated = this.animatedPoints();
-      
-      // First load: set immediately without animation
-      if (currentAnimated === 0 && actualPoints > 0) {
-        this.animatedPoints.set(actualPoints);
-        return;
-      }
-      
-      // If points increased and not currently animating, start animation
-      if (actualPoints > currentAnimated && !this.isAnimatingPoints) {
-        // Use requestAnimationFrame to avoid blocking navigation
-        requestAnimationFrame(() => {
-          this.animateCount(currentAnimated, actualPoints, this.animatedPoints, () => {
-            this.isAnimatingPoints = false;
-          });
-        });
-        this.isAnimatingPoints = true;
-      }
-    });
-    
-    // Initialize animated achievement count
-    effect(() => {
-      const actualCount = this.achievementCount();
-      const currentAnimated = this.animatedAchievementCount();
-      
-      // First load: set immediately without animation
-      if (currentAnimated === 0 && actualCount > 0) {
-        this.animatedAchievementCount.set(actualCount);
-        return;
-      }
-      
-      // If count increased and not currently animating, start animation
-      if (actualCount > currentAnimated && !this.isAnimatingAchievements) {
-        // Use requestAnimationFrame to avoid blocking navigation
-        requestAnimationFrame(() => {
-          this.animateCount(currentAnimated, actualCount, this.animatedAchievementCount, () => {
-            this.isAnimatingAchievements = false;
-          });
-        });
-        this.isAnimatingAchievements = true;
-      }
+    // Animated points: count up on increase, set directly on first load / decrease
+    effect(() => this.syncAnimatedValue(this.totalPoints(), this.animatedPoints, this.isAnimatingPoints));
+
+    // Animated achievement count
+    effect(() =>
+      this.syncAnimatedValue(this.achievementCount(), this.animatedAchievementCount, this.isAnimatingAchievements)
+    );
+
+    // Close the "More" menu after any navigation (item picked, back button, programmatic)
+    this.router.events
+      .pipe(
+        filter((event) => event instanceof NavigationEnd),
+        takeUntilDestroyed()
+      )
+      .subscribe(() => this.closeLearningMenu());
+  }
+
+  /**
+   * Bring `display` towards `actual`. While an animation runs we do nothing; because
+   * `isAnimating` is a signal, the effect re-runs when it ends and picks up any change
+   * (increase or decrease) that happened in the meantime.
+   */
+  private syncAnimatedValue(
+    actual: number,
+    display: WritableSignal<number>,
+    isAnimating: WritableSignal<boolean>
+  ): void {
+    if (isAnimating()) return;
+    const current = display();
+    if (actual === current) return;
+
+    // First load or a decrease: set immediately without animation
+    if (current === 0 || actual < current) {
+      display.set(actual);
+      return;
+    }
+
+    isAnimating.set(true);
+    // Use requestAnimationFrame to avoid blocking navigation
+    requestAnimationFrame(() => {
+      this.animateCount(current, actual, display, () => isAnimating.set(false));
     });
   }
 
@@ -199,21 +203,70 @@ export class HeaderComponent implements OnInit {
     return sections.some((s) => path.startsWith(s));
   }
   
-  onMenuMouseEnter(): void {
-    // Clear any pending close timeout
+  /** Click / tap / Enter / Space on the trigger toggles the menu. */
+  onMenuTriggerClick(): void {
+    this.clearMenuCloseTimeout();
+    if (this.menuOpenedByHover) {
+      // Mouse hovered it open, then clicked: keep it open instead of closing it immediately
+      this.menuOpenedByHover = false;
+      this.showLearningMenu.set(true);
+      return;
+    }
+    this.showLearningMenu.update((open) => !open);
+  }
+
+  /** Hover-to-open is for real mouse pointers only; touch taps go through the click toggle. */
+  onMenuPointerEnter(event: PointerEvent): void {
+    if (event.pointerType !== 'mouse') return;
+    this.clearMenuCloseTimeout();
+    if (!this.showLearningMenu()) {
+      this.menuOpenedByHover = true;
+      this.showLearningMenu.set(true);
+    }
+  }
+
+  onMenuPointerLeave(event: PointerEvent): void {
+    if (event.pointerType !== 'mouse') return;
+    this.clearMenuCloseTimeout();
+    // Add delay before closing menu
+    this.menuCloseTimeout = setTimeout(() => {
+      this.closeLearningMenu();
+    }, 200); // 200ms delay
+  }
+
+  onMenuItemClick(event: MouseEvent): void {
+    if ((event.target as HTMLElement | null)?.closest('a')) {
+      this.closeLearningMenu();
+    }
+  }
+
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: MouseEvent): void {
+    if (!this.showLearningMenu()) return;
+    const menu = this.learningMenuRef()?.nativeElement;
+    if (menu && !menu.contains(event.target as Node)) {
+      this.closeLearningMenu();
+    }
+  }
+
+  @HostListener('document:keydown.escape')
+  onEscape(): void {
+    if (!this.showLearningMenu()) return;
+    this.closeLearningMenu();
+    this.learningMenuTriggerRef()?.nativeElement.focus();
+  }
+
+  private closeLearningMenu(): void {
+    this.clearMenuCloseTimeout();
+    this.menuOpenedByHover = false;
+    this.showLearningMenu.set(false);
+  }
+
+  private clearMenuCloseTimeout(): void {
     if (this.menuCloseTimeout) {
       clearTimeout(this.menuCloseTimeout);
       this.menuCloseTimeout = null;
     }
-    this.showLearningMenu.set(true);
-  }
-  
-  onMenuMouseLeave(): void {
-    // Add delay before closing menu
-    this.menuCloseTimeout = setTimeout(() => {
-      this.showLearningMenu.set(false);
-      this.menuCloseTimeout = null;
-    }, 200); // 200ms delay
   }
   
   private animateCount(

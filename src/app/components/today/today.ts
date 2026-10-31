@@ -151,16 +151,19 @@ export class TodayComponent implements OnInit, OnDestroy {
 
   // ---- shadow ----
   listen(text: string, slow = false): void {
+    // Per-utterance rate: setRate() persists, and an interrupted utterance never restored it
     const { rate } = this.tts.getSettings();
-    if (slow) this.tts.setRate(Math.max(0.6, rate * 0.75));
-    this.tts.speak(text, () => slow && this.tts.setRate(rate));
+    this.tts.speak(text, undefined, undefined, slow ? { rate: Math.max(0.6, rate * 0.75) } : undefined);
   }
 
   async toggleRecording(): Promise<void> {
     const s = this.step();
     if (s?.kind !== 'shadow') return;
     if (this.speech.state() === 'listening') {
-      const result = await this.speech.stop();
+      // A failure surfaces via the errorMessage signal shown in the template.
+      const result = await this.speech.stop().catch(() => null);
+      // The learner may have skipped ahead while recognition was finishing.
+      if (!result || this.step() !== s) return;
       const feedback = this.analyzer.analyze(result.transcript, { level: this.level(), expectedText: s.sentence }, result.confidence);
       this.shadowTranscript.set(result.transcript);
       this.shadowScore.set(feedback.overallScore);

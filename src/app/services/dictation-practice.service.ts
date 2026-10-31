@@ -85,7 +85,7 @@ export class DictationPracticeService {
   private splitIntoSentences(text: string): string[] {
     // Split on sentence boundaries (., !, ?) followed by space or end of string
     // Keep the punctuation with the sentence
-    const sentenceRegex = /[^.!?]+[.!?]+/g;
+    const sentenceRegex = /[^.!?]+(?:[.!?]+|$)/g;
     const sentences = text.match(sentenceRegex);
     
     if (!sentences || sentences.length === 0) {
@@ -129,7 +129,9 @@ export class DictationPracticeService {
    * Normalize text for comparison (trim, lowercase, remove punctuation, expand contractions)
    */
   private normalizeText(text: string): string {
-    let normalized = text.trim().toLowerCase();
+    let normalized = text.trim().toLowerCase()
+      .replace(/[\u2018\u2019\u02BC]/g, "'")
+      .replace(/[\u201C\u201D]/g, '"');
     
     // Expand contractions to full forms
     normalized = this.expandContractions(normalized);
@@ -416,9 +418,6 @@ export class DictationPracticeService {
    * Save in-progress dictation session to localStorage
    */
   saveInProgressSession(exerciseId: string, sentences: DictationSentence[], currentIndex: number): void {
-    const userId = this.authService.getUserId();
-    if (!userId) return;
-
     const sessionData = {
       exerciseId,
       sentences,
@@ -426,18 +425,14 @@ export class DictationPracticeService {
       timestamp: new Date().toISOString()
     };
 
-    localStorage.setItem(`dictation_session_${userId}_${exerciseId}`, JSON.stringify(sessionData));
+    localStorage.setItem(this.inProgressKey(exerciseId), JSON.stringify(sessionData));
   }
 
   /**
    * Load in-progress dictation session from localStorage
    */
   loadInProgressSession(exerciseId: string): { sentences: DictationSentence[]; currentIndex: number } | null {
-    const userId = this.authService.getUserId();
-    if (!userId) return null;
-
-    const key = `dictation_session_${userId}_${exerciseId}`;
-    const data = localStorage.getItem(key);
+    const data = localStorage.getItem(this.inProgressKey(exerciseId));
 
     if (!data) return null;
 
@@ -469,10 +464,12 @@ export class DictationPracticeService {
    * Clear in-progress dictation session from localStorage
    */
   clearInProgressSession(exerciseId: string): void {
-    const userId = this.authService.getUserId();
-    if (!userId) return;
+    localStorage.removeItem(this.inProgressKey(exerciseId));
+  }
 
-    const key = `dictation_session_${userId}_${exerciseId}`;
-    localStorage.removeItem(key);
+  /** Per-user key; guests get a 'guest' key so their in-progress sessions are saved too. */
+  private inProgressKey(exerciseId: string): string {
+    const userId = this.authService.getUserId() || 'guest';
+    return `dictation_session_${userId}_${exerciseId}`;
   }
 }

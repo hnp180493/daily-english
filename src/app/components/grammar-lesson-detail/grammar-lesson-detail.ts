@@ -204,12 +204,33 @@ export class GrammarLessonDetailComponent implements OnDestroy {
     });
   }
 
+  /** Contractions expanded so "I'm" == "I am" == "I’m". Ambiguous 'd is left alone. */
+  private static readonly CONTRACTIONS: [RegExp, string][] = [
+    [/\bwon't\b/g, 'will not'],
+    [/\bcan't\b/g, 'cannot'],
+    [/\bshan't\b/g, 'shall not'],
+    [/\b(\w+)n't\b/g, '$1 not'],
+    [/\b(\w+)'re\b/g, '$1 are'],
+    [/\b(\w+)'ve\b/g, '$1 have'],
+    [/\b(\w+)'ll\b/g, '$1 will'],
+    [/\bi'm\b/g, 'i am'],
+    [/\blet's\b/g, 'let us'],
+    [/\b(it|he|she|that|what|there|here|who|where|how)'s\b/g, '$1 is'],
+    [/\bcan not\b/g, 'cannot'],
+  ];
+
   private normalize(text: string): string {
-    return text
+    let normalized = text
       .toLowerCase()
-      .replace(/[.,!?;:]/g, '')
+      .replace(/[‘’ʼ]/g, "'")
+      .replace(/[“”]/g, '"')
+      .replace(/[.,!?;:"]/g, '')
       .replace(/\s+/g, ' ')
       .trim();
+    for (const [pattern, replacement] of GrammarLessonDetailComponent.CONTRACTIONS) {
+      normalized = normalized.replace(pattern, replacement);
+    }
+    return normalized;
   }
 
   goBack(): void {

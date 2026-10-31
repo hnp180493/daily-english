@@ -22,6 +22,7 @@ export class WritingRoomComponent implements OnInit, OnDestroy {
   private toast = inject(ToastService);
   private destroy$ = new Subject<void>();
   private autoSaveTimer: any = null;
+  private pendingSave: (() => void) | null = null;
   private startedAt: Date | null = null;
 
   isLoading = signal(true);
@@ -69,7 +70,8 @@ export class WritingRoomComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    if (this.autoSaveTimer) clearTimeout(this.autoSaveTimer);
+    // Flush (not drop) the pending autosave so the last edits survive leaving the page
+    this.flushAutoSave();
     this.destroy$.next();
     this.destroy$.complete();
   }
@@ -78,8 +80,21 @@ export class WritingRoomComponent implements OnInit, OnDestroy {
     this.essayText.set(value);
     const p = this.prompt();
     if (!p) return;
+    this.cancelAutoSave();
+    this.pendingSave = () => this.service.saveDraft(p.id, value);
+    this.autoSaveTimer = setTimeout(() => this.flushAutoSave(), 500);
+  }
+
+  private flushAutoSave(): void {
+    const save = this.pendingSave;
+    this.cancelAutoSave();
+    save?.();
+  }
+
+  private cancelAutoSave(): void {
     if (this.autoSaveTimer) clearTimeout(this.autoSaveTimer);
-    this.autoSaveTimer = setTimeout(() => this.service.saveDraft(p.id, value), 500);
+    this.autoSaveTimer = null;
+    this.pendingSave = null;
   }
 
   toggleHints(): void {
@@ -132,6 +147,7 @@ export class WritingRoomComponent implements OnInit, OnDestroy {
     const p = this.prompt();
     if (!p) return;
     if (!confirm('Clear your entire essay and start over?')) return;
+    this.cancelAutoSave(); // a pending save would bring the cleared essay back
     this.essayText.set('');
     this.service.clearDraft(p.id);
     this.feedback.set(null);

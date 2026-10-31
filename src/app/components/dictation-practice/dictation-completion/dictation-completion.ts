@@ -38,6 +38,7 @@ export class DictationCompletion implements OnInit {
   }
 
   private awardCompletionPoints(): void {
+    if (!this.completionPoints) return; // already awarded this visit, or not a real attempt
     const sourceElement = document.querySelector('.points-earned-card') as HTMLElement
       || document.querySelector('.completion-stats') as HTMLElement
       || document.querySelector('.dictation-practice-container') as HTMLElement;

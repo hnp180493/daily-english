@@ -43,11 +43,6 @@
           </div>
           <div class="text-3xl font-bold">+{{ getBonusPoints() }}</div>
           <div class="text-sm opacity-90">{{ translate.t('learning_path.daily_challenge.bonus_points') }}</div>
-          @if (streakMultiplier() > 1) {
-            <div class="text-xs mt-1 font-bold text-yellow-300">
-              {{ streakMultiplier() }}x Multiplier!
-            </div>
-          }
         </div>
       </div>
 

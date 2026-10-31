@@ -102,6 +102,10 @@ export class DictationPracticeComponent implements OnInit, OnDestroy {
     return sentenceList.length > 0 && sentenceList.every(s => s.isCompleted);
   });
   
+  private autoAdvanceTimer?: ReturnType<typeof setTimeout>;
+  private completionPointsAwarded = false;
+  completionPointsToAward = signal(0);
+
   canGoNext = computed(() => {
     const currentSent = this.currentSentence();
     const hasNext = this.currentSentenceIndex() < this.sentences().length - 1;
@@ -129,7 +133,6 @@ export class DictationPracticeComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     // Reset playback speed to 1.0 when entering dictation practice
     this.playbackSpeed.set(1.0);
-    (this.ttsService as any).rate = 1.0;
     
     const exerciseId = this.route.snapshot.paramMap.get('id');
     const mode = this.route.snapshot.queryParamMap.get('mode'); // 'original' or 'user'
@@ -249,11 +252,14 @@ export class DictationPracticeComponent implements OnInit, OnDestroy {
         
         // Verify saved session matches current text
         if (savedSession) {
-          const savedText = savedSession.sentences.map(s => s.original).join('. ') + '.';
-          const currentText = textToUse.trim();
-          
+          // Compare sentence by sentence: joining with '. ' doubled the punctuation ("A.. B..")
+          // so a saved session never matched and progress was always wiped.
+          const fresh = this.dictationService.initializeDictationSession(exerciseId, textToUse);
+          const sameText = fresh.length === savedSession.sentences.length &&
+            fresh.every((s, i) => s.original === savedSession.sentences[i].original);
+
           // If text doesn't match, clear old session and start fresh
-          if (savedText.trim() !== currentText) {
+          if (!sameText) {
             console.log('[DictationPractice] Text mismatch, clearing old session');
             this.dictationService.clearInProgressSession(exerciseId);
             const sentenceList = this.dictationService.initializeDictationSession(exerciseId, textToUse);
@@ -291,11 +297,12 @@ export class DictationPracticeComponent implements OnInit, OnDestroy {
           
           // Verify saved session matches current text
           if (savedSession) {
-            const savedText = savedSession.sentences.map(s => s.original).join('. ') + '.';
-            const currentText = text.trim();
-            
+            const fresh = this.dictationService.initializeDictationSession(exerciseId, text);
+            const sameText = fresh.length === savedSession.sentences.length &&
+              fresh.every((s, i) => s.original === savedSession.sentences[i].original);
+
             // If text doesn't match, clear old session and start fresh
-            if (savedText.trim() !== currentText) {
+            if (!sameText) {
               console.log('[DictationPractice] Text mismatch, clearing old session');
               this.dictationService.clearInProgressSession(exerciseId);
               const sentenceList = this.dictationService.initializeDictationSession(exerciseId, text);
@@ -349,8 +356,10 @@ export class DictationPracticeComponent implements OnInit, OnDestroy {
     this.dictationAudioControlsRef?.onPlay();
   }
   
-  nextSentence(): void {
-    if (!this.canGoNext()) return;
+  /** `force` is used by Skip: a skipped sentence never has the passing score canGoNext() requires. */
+  nextSentence(force = false): void {
+    const hasNext = this.currentSentenceIndex() < this.sentences().length - 1;
+    if (force ? !hasNext : !this.canGoNext()) return;
     
     this.currentSentenceIndex.update(i => i + 1);
     this.userInput.set('');
@@ -459,10 +468,14 @@ export class DictationPracticeComponent implements OnInit, OnDestroy {
     // Auto advance to next sentence if perfect score and setting is enabled
     const settings = this.settings();
     if (settings.autoNextOnPerfect && accuracy >= this.PASSING_SCORE) {
-      setTimeout(() => {
+      clearTimeout(this.autoAdvanceTimer);
+      const fromIndex = this.currentSentenceIndex();
+      this.autoAdvanceTimer = setTimeout(() => {
+        // The learner may have moved on with Enter meanwhile: only act on the same sentence
+        if (this.isComplete() || this.currentSentenceIndex() !== fromIndex) return;
         if (this.canGoNext()) {
           this.nextSentence();
-        } else {
+        } else if (this.allSentencesComplete()) {
           this.completeSession();
         }
       }, 600); // Brief delay to show feedback
@@ -491,9 +504,10 @@ export class DictationPracticeComponent implements OnInit, OnDestroy {
     };
     
     this.sentences.set(updatedSentences);
-    
-    if (this.canGoNext()) {
-      this.nextSentence();
+
+    // canGoNext() needs a passing score, which a skipped sentence never has
+    if (currentIndex < updatedSentences.length - 1) {
+      this.nextSentence(true);
     } else {
       this.completeSession();
     }
@@ -501,7 +515,11 @@ export class DictationPracticeComponent implements OnInit, OnDestroy {
   
   completeSession(): void {
     const ex = this.exercise();
-    if (!ex) return;
+    if (!ex || this.isComplete()) return;
+    clearTimeout(this.autoAdvanceTimer);
+    const earned = !this.completionPointsAwarded && this.overallAccuracy() >= 50;
+    this.completionPointsToAward.set(earned ? this.DICTATION_COMPLETION_POINTS : 0);
+    if (earned) this.completionPointsAwarded = true;
     
     const sentenceList = this.sentences();
     const timeSpent = Math.floor((Date.now() - this.sessionStartTime()) / 1000);
@@ -581,6 +599,7 @@ export class DictationPracticeComponent implements OnInit, OnDestroy {
   
   @HostListener('document:keydown', ['$event'])
   handleKeyboardShortcut(event: KeyboardEvent): void {
+    if (this.isComplete()) return;
     const settings = this.settings();
     const key = this.getKeyString(event);
     
@@ -597,8 +616,9 @@ export class DictationPracticeComponent implements OnInit, OnDestroy {
     
     // When typing in textarea, only allow shortcuts with modifier keys (Ctrl, Alt, etc.)
     if (event.target instanceof HTMLTextAreaElement) {
-      // Block single-key shortcuts (like backtick) when typing
-      if (!event.ctrlKey && !event.altKey && !event.metaKey) {
+      // Block single-key shortcuts when typing — except keys that never occur in
+      // dictation text (backtick, F-keys, Escape), so the default play/pause key works
+      if (!event.ctrlKey && !event.altKey && !event.metaKey && !this.isTextareaSafeKey(key)) {
         return;
       }
     }
@@ -622,6 +642,10 @@ export class DictationPracticeComponent implements OnInit, OnDestroy {
     }
   }
   
+  private isTextareaSafeKey(key: string): boolean {
+    return key === 'backtick' || key === 'escape' || /^f\d{1,2}$/.test(key);
+  }
+
   private getKeyString(event: KeyboardEvent): string {
     const parts: string[] = [];
     

@@ -26,36 +26,19 @@
           "/*.(eot|svg|cur|jpg|png|webp|gif|otf|ttf|woff|woff2|ani)"
         ]
       }
+    },
+    {
+      "name": "content-data",
+      "installMode": "lazy",
+      "updateMode": "prefetch",
+      "resources": {
+        "files": [
+          "/data/**"
+        ]
+      }
     }
   ],
   "dataGroups": [
-    {
-      "name": "exercises-data",
-      "urls": [
-        "/data/exercises/**",
-        "/data/all-exercises.json",
-        "/data/learning-paths/**"
-      ],
-      "cacheConfig": {
-        "maxSize": 200,
-        "maxAge": "30d",
-        "strategy": "performance"
-      }
-    },
-    {
-      "name": "phase2-content",
-      "urls": [
-        "/data/grammar-lessons/**",
-        "/data/reading/**",
-        "/data/writing/**",
-        "/data/listening/**"
-      ],
-      "cacheConfig": {
-        "maxSize": 50,
-        "maxAge": "30d",
-        "strategy": "performance"
-      }
-    },
     {
       "name": "vietnamese-seo-config",
       "urls": [

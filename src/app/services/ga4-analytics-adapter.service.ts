@@ -182,8 +182,9 @@ export class Ga4AnalyticsAdapter implements IAnalyticsProvider {
       // Configure gtag
       gtag('js', new Date());
 
-      // Build config object
-      const gtagConfig: any = {};
+      // Build config object. The app sends page_view itself on every NavigationEnd (including the
+      // first), so the automatic one from 'config' would count the landing page twice.
+      const gtagConfig: any = { send_page_view: false };
 
       if (config.anonymizeIp) {
         gtagConfig.anonymize_ip = true;

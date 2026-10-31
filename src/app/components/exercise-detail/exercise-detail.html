@@ -1,10 +1,3 @@
-@if (showApiKeyPrompt()) {
-  <app-api-key-prompt
-    (close)="onCloseApiKeyPrompt()"
-    (goToSettings)="onGoToSettings()">
-  </app-api-key-prompt>
-}
-
 @if (isLoadingExercise()) {
   <app-loading-spinner [fullscreen]="true" [message]="'Đang tải bài tập...'" />
 } @else if (isSessionBlocked()) {

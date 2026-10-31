@@ -60,14 +60,19 @@ export class WritingService {
     if (!this.cache$) {
       this.cache$ = this.http.get<PromptsFile>('data/writing/prompts.json').pipe(
         map((file) => file.prompts || []),
-        catchError((err) => {
-          console.error('[WritingService] Failed to load prompts:', err);
-          return of([] as WritingPrompt[]);
-        }),
         shareReplay(1)
       );
     }
-    return this.cache$;
+    // Fallback lives outside the cached stream: a failed load is not cached, so the
+    // next call retries instead of serving [] for the rest of the visit.
+    const cache$ = this.cache$;
+    return cache$.pipe(
+      catchError((err) => {
+        console.error('[WritingService] Failed to load prompts:', err);
+        if (this.cache$ === cache$) this.cache$ = null;
+        return of([] as WritingPrompt[]);
+      })
+    );
   }
 
   async loadAll(): Promise<WritingPrompt[]> {

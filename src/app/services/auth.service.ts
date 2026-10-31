@@ -15,6 +15,9 @@ import type { User as SupabaseUser } from '@supabase/supabase-js';
 // Maximum database size allowed in MB
 const MAX_DATABASE_SIZE_MB = 410;
 
+// Set when the user confirms login over guest data; guest data is cleared after SIGNED_IN
+const PENDING_GUEST_CLEAR_KEY = 'pending_guest_clear';
+
 // App User interface matching Firebase User structure
 interface User {
   uid: string;
@@ -40,7 +43,9 @@ export class AuthService {
   private initPromise: Promise<void>;
   private profileSavedForSession = new Set<string>(); // Track saved profiles by session
   private sessionStartTime: number | null = null;
-  private pendingFlashcardMerge = false; // Track if we need to merge flashcards after login
+  // User this page booted with (undefined until initial auth resolves); a later change reloads the page
+  private pageUserId: string | null | undefined = undefined;
+  private signingOut = false;
 
   constructor() {
     this.initPromise = this.initializeAuth();
@@ -60,7 +65,21 @@ export class AuthService {
       if (event === 'SIGNED_IN' || event === 'SIGNED_OUT' || event === 'TOKEN_REFRESHED') {
         console.log('[Auth] 🔔 Auth state:', event);
       }
-      
+
+      const newUserId = session?.user?.id ?? null;
+      if (this.pageUserId !== undefined && newUserId !== this.pageUserId) {
+        if (!this.signingOut) {
+          // Supabase broadcasts sign-in/out to every tab. Services here still hold the previous
+          // user's data, and switching getUserId() would upsert it into the new account (or
+          // guest storage), so start over instead. State is left untouched until the reload.
+          console.log('[Auth] User changed in another tab, reloading');
+          window.location.reload();
+          return;
+        }
+        // Our own signOut(): callers reload/navigate themselves
+        this.pageUserId = newUserId;
+      }
+
       this.updateUserState(session?.user || null);
       
       // Only save profile on INITIAL_SESSION (first load) or actual SIGNED_IN from OAuth
@@ -96,7 +115,10 @@ export class AuthService {
     if (session?.user) {
       this.updateUserState(session.user);
     }
-    
+
+    // The user services boot with (includes landing back from the OAuth redirect)
+    this.pageUserId = this.currentUser()?.uid ?? null;
+
     // Mark as initialized
     this.authInitialized.set(true);
   }
@@ -131,10 +153,10 @@ export class AuthService {
           account_type: 'authenticated'
         });
 
-        // Merge flashcards if pending
-        if (this.pendingFlashcardMerge) {
-          this.mergeGuestFlashcards();
-          this.pendingFlashcardMerge = false;
+        // Guest data is only discarded once the login actually succeeded (see showLoginWarning)
+        if (localStorage.getItem(PENDING_GUEST_CLEAR_KEY) === 'true') {
+          this.clearGuestDataExceptFlashcards();
+          localStorage.removeItem(PENDING_GUEST_CLEAR_KEY);
         }
       }
     } else {
@@ -287,6 +309,7 @@ export class AuthService {
    * Checks all keys starting with 'guest_'
    */
   private hasGuestProgress(): boolean {
+    if (this.hasGuestFlashcards()) return true;
     try {
       for (let i = 0; i < localStorage.length; i++) {
         const key = localStorage.key(i);
@@ -329,11 +352,9 @@ export class AuthService {
       const confirmSub = modalRef.instance.confirm.subscribe(() => {
         this.modalService.close();
         
-        // Set flag to merge flashcards after login (Requirements: 6.4)
-        this.pendingFlashcardMerge = this.hasGuestFlashcards();
-        
-        // Clear other guest data before login (but keep flashcards for merge)
-        this.clearGuestDataExceptFlashcards();
+        // Clear other guest data (keeping flashcards for merge) only after SIGNED_IN, so
+        // cancelling on Google's page doesn't lose it. Persisted: OAuth leaves the page.
+        localStorage.setItem(PENDING_GUEST_CLEAR_KEY, 'true');
         
         // Track guest to auth conversion
         this.analyticsService.trackGuestToAuthConversion();
@@ -374,13 +395,10 @@ export class AuthService {
    * Check if user has guest flashcards in localStorage
    */
   private hasGuestFlashcards(): boolean {
+    // FlashcardService keeps guest cards under 'flashcards_guest' (not 'flashcards')
     try {
-      const data = localStorage.getItem('flashcards');
-      if (data) {
-        const flashcards = JSON.parse(data);
-        return Array.isArray(flashcards) && flashcards.length > 0;
-      }
-      return false;
+      const flashcards = JSON.parse(localStorage.getItem('flashcards_guest') || '[]');
+      return Array.isArray(flashcards) && flashcards.length > 0;
     } catch {
       return false;
     }
@@ -408,7 +426,8 @@ export class AuthService {
   /**
    * Merge guest flashcards with cloud flashcards after login
    * Requirements: 6.4 - Merge local flashcards with cloud data on login
-   * Note: Sets a flag in localStorage that FlashcardService will check on init
+   * Note: Sets a flag in localStorage that FlashcardService will check on init.
+   * Called before the OAuth redirect, since in-memory state does not survive it.
    */
   private mergeGuestFlashcards(): void {
     try {
@@ -438,6 +457,7 @@ export class AuthService {
    * Proceed with Google OAuth login
    */
   private proceedWithGoogleLogin(): Observable<void> {
+    this.mergeGuestFlashcards();
     return from(
       this.supabase.auth.signInWithOAuth({
         provider: 'google',
@@ -494,9 +514,12 @@ export class AuthService {
   }
 
   signOut(): Observable<void> {
+    this.signingOut = true;
     return from(
       this.supabase.auth.signOut().then(({ error }) => {
         if (error) throw error;
+      }).finally(() => {
+        this.signingOut = false;
       })
     );
   }

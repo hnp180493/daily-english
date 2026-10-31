@@ -1,5 +1,5 @@
 import { Injectable, inject } from '@angular/core';
-import { Observable, from, throwError } from 'rxjs';
+import { Observable, defer, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { supabaseClient } from '../supabase.client';
 import { UserProgress } from '../../models/exercise.model';
@@ -36,7 +36,7 @@ export class SupabaseDatabase implements IDatabase {
 
   // User Profile Operations
   saveUserProfile(userId: string, profile: UserProfile): Observable<void> {
-    return from(
+    return defer(() =>
       this.supabase
         .from('users')
         .upsert({
@@ -55,7 +55,7 @@ export class SupabaseDatabase implements IDatabase {
   }
 
   loadUserProfile(userId: string): Observable<UserProfile | null> {
-    return from(
+    return defer(() =>
       this.supabase
         .from('users')
         .select('*')
@@ -82,7 +82,7 @@ export class SupabaseDatabase implements IDatabase {
     // Compress progress data before saving
     const compressed = ProgressCompressor.compress(progress);
     
-    return from(
+    return defer(() =>
       this.supabase
         .from('user_progress')
         .upsert({
@@ -97,7 +97,7 @@ export class SupabaseDatabase implements IDatabase {
   }
 
   loadProgress(userId: string): Observable<UserProgress | null> {
-    return from(
+    return defer(() =>
       this.supabase
         .from('user_progress')
         .select('data')
@@ -106,26 +106,8 @@ export class SupabaseDatabase implements IDatabase {
         .then(({ data, error }) => {
           if (error) throw error;
           if (!data?.data) return null;
-          
-          const progress = data.data as any;
-          
-          // Decompress exerciseHistory if in compressed format
-          if (progress.exerciseHistory && ProgressDecompressor.isCompressed(progress.exerciseHistory)) {
-            progress.exerciseHistory = ProgressDecompressor.decompressExerciseHistory(progress.exerciseHistory);
-          }
-          
-          // Decompress dictationHistory if in compressed format
-          if (progress.dictationHistory && ProgressDecompressor.isCompressed(progress.dictationHistory)) {
-            progress.dictationHistory = ProgressDecompressor.decompressDictationHistory(progress.dictationHistory);
-          }
 
-          // Decompress pronunciation attempts if present
-          if (progress.pa) {
-            progress.pronunciationAttempts = ProgressDecompressor.decompressPronunciationAttempts(progress.pa);
-            delete progress.pa;
-          }
-
-          return progress as UserProgress;
+          return ProgressDecompressor.decompress(data.data);
         })
     ).pipe(catchError(this.handleError));
   }
@@ -146,25 +128,7 @@ export class SupabaseDatabase implements IDatabase {
         },
         (payload) => {
           if (payload.new && 'data' in payload.new) {
-            const progress = payload.new['data'] as any;
-            
-            // Decompress exerciseHistory if in compressed format
-            if (progress.exerciseHistory && ProgressDecompressor.isCompressed(progress.exerciseHistory)) {
-              progress.exerciseHistory = ProgressDecompressor.decompressExerciseHistory(progress.exerciseHistory);
-            }
-            
-            // Decompress dictationHistory if in compressed format
-            if (progress.dictationHistory && ProgressDecompressor.isCompressed(progress.dictationHistory)) {
-              progress.dictationHistory = ProgressDecompressor.decompressDictationHistory(progress.dictationHistory);
-            }
-
-            // Decompress pronunciation attempts if present
-            if (progress.pa) {
-              progress.pronunciationAttempts = ProgressDecompressor.decompressPronunciationAttempts(progress.pa);
-              delete progress.pa;
-            }
-
-            callback(progress as UserProgress);
+            callback(ProgressDecompressor.decompress(payload.new['data']));
           } else {
             callback(null);
           }
@@ -179,7 +143,7 @@ export class SupabaseDatabase implements IDatabase {
 
   // Favorites Operations
   saveFavorites(userId: string, favorites: FavoriteData[]): Observable<void> {
-    return from(
+    return defer(() =>
       this.supabase
         .from('user_favorites')
         .upsert({
@@ -198,7 +162,7 @@ export class SupabaseDatabase implements IDatabase {
   }
 
   loadFavorites(userId: string): Observable<FavoriteData[] | null> {
-    return from(
+    return defer(() =>
       this.supabase
         .from('user_favorites')
         .select('favorites')
@@ -272,7 +236,7 @@ export class SupabaseDatabase implements IDatabase {
   // Achievement Operations
   saveAchievements(userId: string, data: UserAchievementData): Observable<void> {
     const compressed = AchievementCompressor.compress(data);
-    return from(
+    return defer(() =>
       this.supabase
         .from('user_achievements')
         .upsert({
@@ -288,7 +252,7 @@ export class SupabaseDatabase implements IDatabase {
 
   loadAchievements(userId: string): Observable<UserAchievementData | null> {
     console.log('[SupabaseDatabase] Loading achievements for user:', userId);
-    return from(
+    return defer(() =>
       this.supabase
         .from('user_achievements')
         .select('data')
@@ -347,7 +311,7 @@ export class SupabaseDatabase implements IDatabase {
     const uniqueThemes = [...new Set(rewards.themes)];
     const uniqueFrames = [...new Set(rewards.avatarFrames)];
     
-    return from(
+    return defer(() =>
       this.supabase
         .from('user_rewards')
         .upsert({
@@ -364,7 +328,7 @@ export class SupabaseDatabase implements IDatabase {
   }
 
   loadRewards(userId: string): Observable<UserRewards | null> {
-    return from(
+    return defer(() =>
       this.supabase
         .from('user_rewards')
         .select('*')
@@ -388,7 +352,7 @@ export class SupabaseDatabase implements IDatabase {
     // Compress review data before saving
     const compressedData = ReviewCompressor.compress(reviewData);
 
-    return from(
+    return defer(() =>
       this.supabase
         .from('user_reviews')
         .upsert(
@@ -409,7 +373,7 @@ export class SupabaseDatabase implements IDatabase {
   }
 
   loadReviewData(userId: string, exerciseId: string): Observable<ReviewDataWithMetadata | null> {
-    return from(
+    return defer(() =>
       this.supabase
         .from('user_reviews')
         .select('exercise_id, user_id, data, created_at, updated_at')
@@ -448,7 +412,7 @@ export class SupabaseDatabase implements IDatabase {
   }
 
   loadAllReviewData(userId: string): Observable<ReviewDataWithMetadata[]> {
-    return from(
+    return defer(() =>
       this.supabase
         .from('user_reviews')
         .select('exercise_id, user_id, data, created_at, updated_at')
@@ -493,7 +457,7 @@ export class SupabaseDatabase implements IDatabase {
     easinessFactor: number
   ): Observable<void> {
     // Load existing review data, update it, and save back
-    return from(
+    return defer(() =>
       this.supabase
         .from('user_reviews')
         .select('data')
@@ -525,7 +489,7 @@ export class SupabaseDatabase implements IDatabase {
   }
 
   deleteReviewData(userId: string, exerciseId: string): Observable<void> {
-    return from(
+    return defer(() =>
       this.supabase
         .from('user_reviews')
         .delete()
@@ -575,7 +539,7 @@ export class SupabaseDatabase implements IDatabase {
 
   // Learning Path Operations
   saveLearningPathProgress(userId: string, progress: UserPathProgress): Observable<void> {
-    return from(
+    return defer(() =>
       this.supabase
         .from('learning_path_progress')
         .upsert({
@@ -597,7 +561,7 @@ export class SupabaseDatabase implements IDatabase {
   }
 
   loadLearningPathProgress(userId: string): Observable<UserPathProgress | null> {
-    return from(
+    return defer(() =>
       this.supabase
         .from('learning_path_progress')
         .select('*')
@@ -648,7 +612,7 @@ export class SupabaseDatabase implements IDatabase {
 
   // User Operations
   checkUserExists(userId: string): Observable<boolean> {
-    return from(
+    return defer(() =>
       this.supabase
         .from('users')
         .select('id')
@@ -662,7 +626,7 @@ export class SupabaseDatabase implements IDatabase {
   }
 
   getDatabaseSizeMB(): Observable<number> {
-    return from(
+    return defer(() =>
       this.supabase
         .rpc('get_database_size_mb')
         .then(({ data, error }) => {

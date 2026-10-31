@@ -385,14 +385,14 @@
     <div class="flex justify-between mt-8 text-sm">
       <button
         (click)="previousSentence()"
-        [disabled]="currentIndex() === 0"
+        [disabled]="currentIndex() === 0 || isAnalyzing()"
         class="text-slate-400 hover:text-slate-200 disabled:opacity-30 disabled:cursor-not-allowed transition"
         type="button">
         {{ translate.t('pronunciation_practice.prev_sentence_nav') }}
       </button>
       <button
         (click)="nextSentence()"
-        [disabled]="isLastSentence()"
+        [disabled]="isLastSentence() || isAnalyzing()"
         class="text-slate-400 hover:text-slate-200 disabled:opacity-30 disabled:cursor-not-allowed transition"
         type="button">
         {{ translate.t('pronunciation_practice.next_sentence_nav') }}

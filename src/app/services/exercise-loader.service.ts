@@ -1,6 +1,7 @@
 import { Injectable, inject, signal } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { filter, take } from 'rxjs/operators';
+import { of } from 'rxjs';
+import { filter, take, timeout } from 'rxjs/operators';
 import { Exercise } from '../models/exercise.model';
 import { ExerciseService } from './exercise.service';
 import { ExerciseStateService } from './exercise-state.service';
@@ -35,6 +36,7 @@ export class ExerciseLoaderService {
     const quickReview = route.snapshot.queryParamMap.get('quickReview');
 
     console.log('[ExerciseLoader] Loading exercise:', { slug, mode, quickReview });
+    this.isLoadingExercise.set(true);
 
     // Check if it's a custom exercise by:
     // 1. Starts with 'custom-' prefix, OR
@@ -48,34 +50,42 @@ export class ExerciseLoaderService {
       ? this.exerciseService.getExerciseByIdUnified(slug)
       : this.exerciseService.getExerciseBySlug(slug);
 
-    exercise$.pipe(
-      filter(exercise => {
-        console.log('[ExerciseLoader] Exercise received:', exercise);
-        return !!exercise;
-      }),
-      take(1)
+    // Built-in exercises: the first emission is final (undefined = unknown slug → redirect).
+    // Custom exercises start from an empty list while localStorage reloads for the signed-in user,
+    // so wait for a match; the timeout redirects instead of spinning forever.
+    const found$ = isCustom
+      ? exercise$.pipe(filter(exercise => !!exercise), take(1))
+      : exercise$.pipe(take(1));
+
+    found$.pipe(
+      timeout({ first: 10000, with: () => of(undefined) })
     ).subscribe({
       next: exercise => {
         console.log('[ExerciseLoader] Exercise loaded successfully:', exercise?.title);
         if (exercise) {
           let loadMode: 'normal' | 'review' | 'quick-review' = 'normal';
-          
+
           if (mode === 'review') {
             loadMode = 'review';
           } else if (quickReview === 'true') {
             loadMode = 'quick-review';
             this.quickReviewService.initializeFromUrl(exercise.id);
           }
-          
+          if (loadMode !== 'quick-review') {
+            this.quickReviewService.reset();
+          }
+
           console.log('[ExerciseLoader] Calling onLoaded with mode:', loadMode);
           onLoaded({ exercise, isCustom, mode: loadMode });
         } else {
           console.log('[ExerciseLoader] No exercise found, redirecting to /exercises');
+          this.isLoadingExercise.set(false);
           this.router.navigate(['/exercises']);
         }
       },
       error: error => {
         console.error('[ExerciseLoader] Error loading exercise:', error);
+        this.isLoadingExercise.set(false);
         this.router.navigate(['/exercises']);
       }
     });

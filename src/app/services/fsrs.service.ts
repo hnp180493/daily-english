@@ -87,7 +87,7 @@ export class FsrsService {
   private scheduleNew(card: Flashcard, rating: ReviewRating, now: Date): Flashcard {
     if (rating === 1) {
       // Failed first attempt — drop into learning step 0.
-      return this.toLearning(card, now, 0, /*lapses*/ 0, /*stability*/ 0.3, /*difficulty*/ 8);
+      return this.toLearning(card, now, 0, /*lapses*/ 0, /*stability*/ 0.3, /*difficulty*/ 8, rating);
     }
     const stability = FSRS_CONSTANTS.INITIAL_STABILITY[rating];
     const difficulty = FSRS_CONSTANTS.INITIAL_DIFFICULTY[rating];
@@ -99,7 +99,7 @@ export class FsrsService {
     }
 
     // Hard / Good first attempt → enter learning.
-    return this.toLearning(card, now, /*step*/ 1, /*lapses*/ 0, stability, difficulty);
+    return this.toLearning(card, now, /*step*/ 1, /*lapses*/ 0, stability, difficulty, rating);
   }
 
   private scheduleLearning(
@@ -113,10 +113,15 @@ export class FsrsService {
     const currentStep = card.learningStep ?? 0;
     const stability = card.stability ?? FSRS_CONSTANTS.INITIAL_STABILITY[3];
     const difficulty = this.adjustDifficulty(card.difficulty ?? 5, rating);
+    // Relearning keeps its own state and (shorter list of) steps.
+    const toStep = (step: number, s: number) =>
+      state === 'relearning'
+        ? this.toRelearning(card, now, step, lapses, s, difficulty, rating)
+        : this.toLearning(card, now, step, lapses, s, difficulty, rating);
 
     if (rating === 1) {
       // Restart from step 0.
-      return this.toLearning(card, now, 0, lapses, Math.max(0.3, stability * 0.5), difficulty);
+      return toStep(0, Math.max(0.3, stability * 0.5));
     }
 
     if (rating === 4) {
@@ -128,7 +133,7 @@ export class FsrsService {
     // Hard / Good → advance step if any remaining, else graduate.
     const nextStep = currentStep + 1;
     if (nextStep < steps.length) {
-      return this.toLearning(card, now, nextStep, lapses, stability, difficulty);
+      return toStep(nextStep, stability);
     }
     // Graduate to review. Hard is a penalty, same as stabilityFactorByRating.
     const factor = rating === 2 ? 1 / FSRS_CONSTANTS.HARD_FACTOR : 1.0;
@@ -145,7 +150,7 @@ export class FsrsService {
     if (rating === 1) {
       // Lapse → relearning state.
       const newStability = Math.max(0.3, prevStability * 0.4);
-      return this.toRelearning(card, now, 0, lapses + 1, newStability, difficulty);
+      return this.toRelearning(card, now, 0, lapses + 1, newStability, difficulty, rating);
     }
 
     // Hard / Good / Easy → new stability uses FSRS-style growth.
@@ -167,7 +172,8 @@ export class FsrsService {
     step: number,
     lapses: number,
     stability: number,
-    difficulty: number
+    difficulty: number,
+    rating: ReviewRating
   ): Flashcard {
     const stepMinutes = FSRS_CONSTANTS.LEARNING_STEPS_MIN[step] ?? 10;
     const nextReviewDate = new Date(now.getTime() + stepMinutes * 60 * 1000);
@@ -180,7 +186,7 @@ export class FsrsService {
       learningStep: step,
       reviewCount: (card.reviewCount ?? 0) + 1,
       lastReviewDate: now,
-      lastRating: 1,
+      lastRating: rating,
       elapsedDays: 0,
       scheduledDays: stepMinutes / (60 * 24),
       easeFactor: card.easeFactor ?? 2.5, // Preserve legacy field
@@ -195,7 +201,8 @@ export class FsrsService {
     step: number,
     lapses: number,
     stability: number,
-    difficulty: number
+    difficulty: number,
+    rating: ReviewRating
   ): Flashcard {
     const stepMinutes = FSRS_CONSTANTS.RELEARNING_STEPS_MIN[step] ?? 10;
     const nextReviewDate = new Date(now.getTime() + stepMinutes * 60 * 1000);
@@ -208,7 +215,7 @@ export class FsrsService {
       learningStep: step,
       reviewCount: (card.reviewCount ?? 0) + 1,
       lastReviewDate: now,
-      lastRating: 1,
+      lastRating: rating,
       elapsedDays: 0,
       scheduledDays: stepMinutes / (60 * 24),
       easeFactor: card.easeFactor ?? 2.5,
@@ -251,6 +258,7 @@ export class FsrsService {
   // -----------------------------
 
   private clampInterval(days: number): number {
+    if (!Number.isFinite(days)) return FSRS_CONSTANTS.MIN_INTERVAL;
     return Math.max(FSRS_CONSTANTS.MIN_INTERVAL, Math.min(FSRS_CONSTANTS.MAX_INTERVAL, Math.round(days)));
   }
 
@@ -298,11 +306,12 @@ export class FsrsService {
     return Math.min(10, Math.max(1, prev + delta));
   }
 
-  private daysBetween(start: Date | string, end: Date): number {
+  private daysBetween(start: Date | string | undefined, end: Date): number {
+    if (!start) return 0;
     const s = typeof start === 'string' ? new Date(start) : start;
-    if (!s) return 0;
     const ms = end.getTime() - s.getTime();
-    return Math.max(0, ms / (1000 * 60 * 60 * 24));
+    // Corrupt/missing dates from storage would otherwise poison stability with NaN.
+    return Number.isFinite(ms) ? Math.max(0, ms / (1000 * 60 * 60 * 24)) : 0;
   }
 
   private legacyEaseToFsrsDifficulty(ease: number): number {

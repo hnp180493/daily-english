@@ -1,10 +1,9 @@
 import { Injectable, inject, signal } from '@angular/core';
-import { Observable, Subscriber } from 'rxjs';
+import { EMPTY, Observable, Subscriber } from 'rxjs';
 import { AIService } from './ai/ai.service';
 import { ExerciseStateService } from './exercise-state.service';
 import { ExerciseValidationService } from './exercise-validation.service';
 import { ExercisePersistenceService } from './exercise-persistence.service';
-import { ReviewService } from './review.service';
 import { ExerciseQuickReviewService } from './exercise-quick-review.service';
 import { Exercise, FeedbackItem } from '../models/exercise.model';
 import { gradeOffline } from './offline-grader';
@@ -23,7 +22,6 @@ export class ExerciseSubmissionService {
   private stateService = inject(ExerciseStateService);
   private validationService = inject(ExerciseValidationService);
   private persistenceService = inject(ExercisePersistenceService);
-  private reviewService = inject(ReviewService);
   private quickReviewService = inject(ExerciseQuickReviewService);
 
   isSubmitting = signal(false);
@@ -35,6 +33,7 @@ export class ExerciseSubmissionService {
   gradedOffline = signal(false);
 
   submitTranslation(exercise: Exercise, exerciseId: string): Observable<any> {
+    if (this.isSubmitting()) return EMPTY;
     const currentIdx = this.stateService.currentSentenceIndex();
     const sents = this.stateService.sentences();
     let input = this.stateService.userInput().trim();
@@ -68,7 +67,8 @@ export class ExerciseSubmissionService {
 
     return new Observable(observer => {
       this.userInputAfterSubmit.set(input);
-      this.aiService.analyzeTranslationStream(input, tempExercise).subscribe({
+      let finished = false;
+      const sub = this.aiService.analyzeTranslationStream(input, tempExercise).subscribe({
         next: (chunk) => {
           if (chunk.type === 'score' && chunk.data?.accuracyScore !== undefined) {
             this.accuracyScore.set(chunk.data.accuracyScore);
@@ -89,6 +89,7 @@ export class ExerciseSubmissionService {
               this.accuracyScore.set(response.accuracyScore);
             }
 
+            finished = true;
             this.finishSubmission(observer, exerciseId, currentIdx, input, response.feedback);
           }
         },
@@ -96,8 +97,16 @@ export class ExerciseSubmissionService {
           this.isSubmitting.set(false);
           this.isStreaming.set(false);
           observer.error(error);
+        },
+        complete: () => {
+          // A stream that ends without a 'complete' chunk would otherwise leave the UI grading forever.
+          if (finished) return;
+          this.isSubmitting.set(false);
+          this.isStreaming.set(false);
+          observer.error(new Error('The AI response ended before grading finished. Please try again.'));
         }
       });
+      return () => sub.unsubscribe();
     });
   }
 
@@ -106,6 +115,7 @@ export class ExerciseSubmissionService {
    * provider is configured. Same state transitions as the AI path.
    */
   submitOffline(exerciseId: string, reference: string): Observable<any> {
+    if (this.isSubmitting()) return EMPTY;
     const currentIdx = this.stateService.currentSentenceIndex();
     const sents = this.stateService.sentences();
     let input = this.stateService.userInput().trim();
@@ -131,7 +141,7 @@ export class ExerciseSubmissionService {
     });
   }
 
-  /** Shared tail of AI and offline submissions: record the sentence, schedule review, advance, save. */
+  /** Shared tail of AI and offline submissions: record the sentence, advance, save. */
   private finishSubmission(
     observer: Subscriber<any>,
     exerciseId: string,
@@ -160,19 +170,8 @@ export class ExerciseSubmissionService {
     // Always mark sentence as completed with suggestion
     this.stateService.markSentenceCompleted(currentIdx, input, score, suggestion);
 
-    // Check if all sentences are now completed
-    const sentences = this.stateService.sentences();
-    const allCompleted = sentences.every(s => s.isCompleted);
+    // Review scheduling happens once, in ExerciseCompletionService, with the penalized score.
     const isQuickReview = this.quickReviewService.quickReviewMode();
-    
-    // Don't save to DB in quick review mode - it's just practice
-    if (allCompleted && !isQuickReview) {
-      // Calculate average score from all completed sentences
-      const avgScore = sentences.reduce((sum, s) => sum + (s.accuracyScore || 0), 0) / sentences.length;
-      
-      console.log(`[Submission] All sentences completed! Scheduling next review for ${exerciseId} with avg score ${avgScore.toFixed(2)}%`);
-      this.reviewService.scheduleNextReview(exerciseId, avgScore);
-    }
 
     // Handle auto-advance for score 100
     if (score === 100) {
@@ -207,8 +206,9 @@ export class ExerciseSubmissionService {
       }
     }
     
-    // Save progress for normal mode with score >= 90
-    if (score >= 90 && !isQuickReview) {
+    // Save progress for normal mode with score >= 90. Not after the last sentence auto-advanced:
+    // completion already cleared progress and a saved finished state must not be resumable.
+    if (score >= 90 && !isQuickReview && !this.stateService.isExerciseComplete()) {
       this.persistenceService.saveProgress(exerciseId, this.stateService.getState());
     }
 

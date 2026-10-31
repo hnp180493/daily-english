@@ -17,6 +17,12 @@ export class RewardService {
 
   private unlockedRewards = signal<UserRewards>(this.getDefaultRewards());
   private isInitialized = false;
+  private loadState: 'loading' | 'ready' | 'error' = 'loading';
+  private hasUnsavedChanges = false;
+  private loadRetries = 0;
+  private readonly MAX_LOAD_RETRIES = 3;
+  private saveInFlight = false;
+  private saveQueued = false;
 
   private currentUserId: string | null = null;
 
@@ -35,7 +41,8 @@ export class RewardService {
       this.currentUserId = userId;
       this.initializeRewards();
     } else {
-      this.unlockedRewards.set(this.getDefaultRewards());
+      // Guest rewards aren't persisted (saveRewardsAuto is a no-op without a user)
+      this.applyLoadedRewards(this.getDefaultRewards());
     }
     this.isInitialized = true;
   }
@@ -59,10 +66,56 @@ export class RewardService {
     });
 
     // Save to Firestore
+    this.persist('rewards');
+  }
+
+  /**
+   * Save the current rewards. Skipped until the stored rewards are loaded (the placeholder
+   * defaults would overwrite them; changes are merged on load), and serialized so a retried
+   * older save can't land after a newer one.
+   */
+  private persist(context: string): void {
+    if (this.loadState !== 'ready') {
+      this.hasUnsavedChanges = true;
+      return;
+    }
+    if (this.saveInFlight) {
+      this.saveQueued = true;
+      return;
+    }
+    this.saveInFlight = true;
     this.databaseService.saveRewardsAuto(this.unlockedRewards()).subscribe({
-      next: () => console.log('[RewardService] Rewards saved to Firestore'),
-      error: (error: Error) => console.error('[RewardService] Failed to save rewards:', error)
+      next: () => console.log(`[RewardService] Saved (${context})`),
+      error: (error: Error) => console.error(`[RewardService] Failed to save (${context}):`, error)
+    }).add(() => {
+      this.saveInFlight = false;
+      if (this.saveQueued) {
+        this.saveQueued = false;
+        this.persist(context);
+      }
     });
+  }
+
+  /** Install loaded rewards, folding in anything granted before the load finished. */
+  private applyLoadedRewards(loaded: UserRewards, saveEarlyChanges = true): UserRewards {
+    const hadEarlyChanges = this.hasUnsavedChanges;
+    let rewards = loaded;
+    if (hadEarlyChanges) {
+      // Early state started from getDefaultRewards(), so its hints are a delta
+      const early = this.unlockedRewards();
+      rewards = {
+        themes: [...new Set([...loaded.themes, ...early.themes])],
+        hints: loaded.hints + early.hints,
+        avatarFrames: [...new Set([...loaded.avatarFrames, ...early.avatarFrames])]
+      };
+    }
+    this.hasUnsavedChanges = false;
+    this.loadState = 'ready';
+    this.unlockedRewards.set(rewards);
+    if (hadEarlyChanges && saveEarlyChanges) {
+      this.persist('early changes');
+    }
+    return rewards;
   }
 
   private grantCredits(amount: number): void {
@@ -81,9 +134,7 @@ export class RewardService {
     }));
     
     // Save to Firestore
-    this.databaseService.saveRewardsAuto(this.unlockedRewards()).subscribe({
-      error: (error: Error) => console.error('[RewardService] Failed to save theme unlock:', error)
-    });
+    this.persist('theme unlock');
   }
 
   unlockHints(count: number): void {
@@ -93,9 +144,7 @@ export class RewardService {
     }));
     
     // Save to Firestore
-    this.databaseService.saveRewardsAuto(this.unlockedRewards()).subscribe({
-      error: (error: Error) => console.error('[RewardService] Failed to save hints unlock:', error)
-    });
+    this.persist('hints unlock');
   }
 
   unlockAvatarFrame(frameId: string): void {
@@ -105,9 +154,7 @@ export class RewardService {
     }));
     
     // Save to Firestore
-    this.databaseService.saveRewardsAuto(this.unlockedRewards()).subscribe({
-      error: (error: Error) => console.error('[RewardService] Failed to save avatar frame unlock:', error)
-    });
+    this.persist('avatar frame unlock');
   }
 
   getUnlockedThemes(): string[] {
@@ -135,7 +182,7 @@ export class RewardService {
       next: cloudRewards => {
         if (cloudRewards) {
           // Data exists in Firestore, use it directly
-          this.unlockedRewards.set(cloudRewards);
+          this.applyLoadedRewards(cloudRewards);
           console.log('[RewardService] Rewards loaded from Firestore');
           return;
         }
@@ -144,8 +191,8 @@ export class RewardService {
         const localData = this.checkLocalStorageData(userId);
         if (localData) {
           console.log('[RewardService] Migrating localStorage data to Firestore');
-          this.unlockedRewards.set(localData); // Set immediately
-          this.databaseService.saveRewardsAuto(localData).subscribe({
+          const merged = this.applyLoadedRewards(localData, false); // Set immediately
+          this.databaseService.saveRewardsAuto(merged).subscribe({
             next: () => {
               this.clearLocalStorageData(userId);
               console.log('[RewardService] Migration completed successfully');
@@ -156,13 +203,18 @@ export class RewardService {
           });
         } else {
           // No data anywhere
-          this.unlockedRewards.set(this.getDefaultRewards());
+          this.applyLoadedRewards(this.getDefaultRewards());
           console.log('[RewardService] No rewards found, using defaults');
         }
       },
       error: (error: Error) => {
+        // Keep saving disabled; defaults must never be upserted over the real row
         console.error('[RewardService] Failed to load rewards:', error);
-        this.unlockedRewards.set(this.getDefaultRewards());
+        this.loadState = 'error';
+        if (this.loadRetries < this.MAX_LOAD_RETRIES) {
+          this.loadRetries++;
+          setTimeout(() => this.loadAndMigrateData(), 2000 * this.loadRetries);
+        }
       }
     });
   }

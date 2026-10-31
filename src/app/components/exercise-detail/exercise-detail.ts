@@ -1,4 +1,5 @@
-import { Component, ChangeDetectionStrategy, OnInit, OnDestroy, viewChild, inject, signal, computed, effect } from '@angular/core';
+import { Component, ChangeDetectionStrategy, OnInit, OnDestroy, viewChild, inject, signal, computed, effect, DestroyRef } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -35,6 +36,7 @@ import { MemoryBoostComponent } from '../memory-boost/memory-boost';
 import { QUIZ_CONSTANTS } from '../../models/memory-retention.model';
 import { offlineHint, referenceSentence, splitEnglishSentences } from '../../services/offline-grader';
 import { TranslationService } from '../../services/translation.service';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-exercise-detail',
@@ -75,6 +77,9 @@ export class ExerciseDetailComponent implements OnInit, OnDestroy {
   private metricsService = inject(ExerciseMetricsService);
   private sessionLockService = inject(ExerciseSessionLockService);
   private featureFlagService = inject(FeatureFlagService);
+  private authService = inject(AuthService);
+  private destroyRef = inject(DestroyRef);
+  private destroyed = false;
   protected translate = inject(TranslationService);
 
   private progressSignal = this.progressService.getProgressSignal();
@@ -249,11 +254,18 @@ export class ExerciseDetailComponent implements OnInit, OnDestroy {
     ]);
   }
 
-  ngOnInit(): void {
+  async ngOnInit(): Promise<void> {
     // Scroll to top when entering exercise detail
     window.scrollTo({ top: 0, behavior: 'smooth' });
-    
+
+    // State services are app-wide singletons: drop the previous exercise's hints, input and modes.
+    this.stateService.reset();
     this.submissionService.reset();
+    this.quickReviewService.reset();
+
+    // Saved progress is keyed by user id; on a hard reload auth may not be ready yet (→ guest key).
+    await this.authService.waitForAuth().catch(() => undefined);
+    if (this.destroyed) return;
     this.loadExercise();
   }
 
@@ -291,21 +303,21 @@ export class ExerciseDetailComponent implements OnInit, OnDestroy {
   private loadProgress(exerciseId: string): boolean {
     const state = this.persistenceService.loadProgress(exerciseId);
     if (state) {
-      // Find the first incomplete sentence OR sentence with score < 90
-      const firstIncomplete = state.sentences.findIndex(s =>
-        !s.isCompleted || (s.accuracyScore !== undefined && s.accuracyScore < 90)
-      );
+      // Resume on the saved sentence: it may be passed but not yet "Next"-ed (even the last one,
+      // so Next completes the exercise) or failed with retry/skip pending. Sentences skipped after
+      // 3 failures stay completed and are not revisited.
+      const saved = state.currentIndex;
+      const resumeAt = Number.isInteger(saved) && saved >= 0 && saved < state.sentences.length
+        ? saved
+        : state.sentences.findIndex(s => !s.isCompleted);
 
-      // If there's an incomplete or failed sentence, set currentIndex to it
-      if (firstIncomplete !== -1) {
-        state.currentIndex = firstIncomplete;
-        // console.log('[ExerciseDetail] Resuming at first incomplete/failed sentence:', firstIncomplete);
+      if (resumeAt !== -1) {
+        state.currentIndex = resumeAt;
         this.stateService.setState(state);
         return true;
       } else {
-        // All sentences completed with passing scores - clear progress and don't load
-        // This prevents "cheating" by redoing the exercise after passing
-        console.log('[ExerciseDetail] All sentences passed, clearing progress');
+        // A finished state (already completed and recorded) - clear it so it can't be re-scored
+        console.log('[ExerciseDetail] Saved progress is already finished, clearing it');
         this.persistenceService.clearProgress(exerciseId);
         return false;
       }
@@ -315,7 +327,8 @@ export class ExerciseDetailComponent implements OnInit, OnDestroy {
 
   private saveProgress(): void {
     const ex = this.exercise();
-    if (!ex) return;
+    // A blocked duplicate tab must never overwrite the active tab's progress.
+    if (!ex || this.isSessionBlocked()) return;
     this.persistenceService.saveProgress(ex.id, this.stateService.getState());
     // Notify other tabs about progress sync (anti-cheat)
     this.sessionLockService.notifyProgressSync(ex.id);
@@ -354,7 +367,7 @@ export class ExerciseDetailComponent implements OnInit, OnDestroy {
 
   onSubmit(): void {
     const ex = this.exercise();
-    if (!ex || !this.userInput().trim()) return;
+    if (!ex || !this.userInput().trim() || this.isSubmitting()) return;
 
     // No AI provider: grade against the exercise's own reference sentence instead of blocking.
     let submission$;
@@ -369,10 +382,13 @@ export class ExerciseDetailComponent implements OnInit, OnDestroy {
       submission$ = this.submissionService.submitOffline(ex.id, reference);
     }
 
-    submission$.subscribe({
+    // Stop grading side effects (state updates, auto-advance, navigation) once the page is left.
+    submission$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (result) => {
-        // Track submission
-        this.analyticsService.trackExerciseSubmit(ex.id, result.accuracyScore >= 75);
+        // Track submission (once, on the final result)
+        if (result.complete) {
+          this.analyticsService.trackExerciseSubmit(ex.id, result.score >= 75);
+        }
         // Auto-play TTS if enabled, translation is complete, and score >= 90
         if (
           result.complete &&
@@ -405,6 +421,9 @@ export class ExerciseDetailComponent implements OnInit, OnDestroy {
   }
 
   onTextareaEnter(event: KeyboardEvent): void {
+    // Enter that confirms an IME composition (Vietnamese input) is not a submit
+    if (event.isComposing) return;
+
     // Allow Enter when can proceed to next (even if textarea is readonly)
     if (this.canProceedToNext()) {
       event.preventDefault();
@@ -420,28 +439,33 @@ export class ExerciseDetailComponent implements OnInit, OnDestroy {
   }
 
   onKeyDown(event: KeyboardEvent): void {
+    if (this.isSessionBlocked()) return;
     this.keyboardService.handleKeyDown(event);
   }
 
   ngOnDestroy(): void {
+    this.destroyed = true;
     this.keyboardService.clearShortcuts();
-    
-    // Release session lock
-    this.sessionLockService.releaseCurrentLock();
-    
-    // Clear any pending save (but don't save in Quick Review mode)
+
+    // Clear any pending save (but don't save in Quick Review mode).
+    // Runs before releasing the lock: saveProgress skips saving while this tab is blocked.
     if (this.saveProgressTimeout) {
       clearTimeout(this.saveProgressTimeout);
       if (!this.quickReviewMode()) {
         this.saveProgress(); // Save immediately on destroy
       }
     }
-    
+
+    // Release session lock
+    this.sessionLockService.releaseCurrentLock();
+
     const ex = this.exercise();
     if (ex && !this.isExerciseComplete() && !this.isReviewMode() && this.exerciseStartTime) {
       const timeSpent = Math.floor((new Date().getTime() - this.exerciseStartTime.getTime()) / 1000);
       this.analyticsService.trackExerciseAbandoned(ex.id, timeSpent, this.progressPercentage());
     }
+
+    this.quickReviewService.reset();
   }
 
   onInputChange(): void {
@@ -507,10 +531,12 @@ export class ExerciseDetailComponent implements OnInit, OnDestroy {
       this.userInput(),
       this.previousHints(),
       tempExercise
-    ).subscribe({
+    ).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (hint) => {
-        this.stateService.addHint(hint);
         this.isLoadingHint.set(false);
+        // The learner moved on (e.g. auto-advance) while the hint loaded: it belongs to another sentence.
+        if (this.currentSentenceIndex() !== currentIdx) return;
+        this.stateService.addHint(hint);
         
         // Track hint usage
         this.analyticsService.trackHintUsed(ex.id, 'ai_hint');
@@ -536,6 +562,12 @@ export class ExerciseDetailComponent implements OnInit, OnDestroy {
   }
 
   onQuit(): void {
+    // Blocked duplicate tab: just leave; saving here would overwrite the active tab's progress.
+    if (this.isSessionBlocked()) {
+      this.router.navigate(['/exercises']);
+      return;
+    }
+
     // If in quick review mode, exit to review mode instead of going back
     if (this.quickReviewMode()) {
       this.exitQuickReview();
@@ -571,8 +603,14 @@ export class ExerciseDetailComponent implements OnInit, OnDestroy {
     const ex = this.exercise();
     const idx = this.currentSentenceIndex();
     const answer = this.userInputAfterSubmit();
-    if (!ex || !answer) return;
+    const current = this.sentences()[idx];
+    if (!ex || !answer || !current) return;
+    const failedAttemptCounted = current.isCompleted && (current.accuracyScore ?? 0) < 90;
     this.stateService.markSentenceCompleted(idx, answer, 90, this.currentReference() ?? undefined);
+    // The answer is accepted as correct, so the failed offline attempt must not keep its penalty.
+    if (failedAttemptCounted) {
+      this.stateService.undoIncorrectAttempt(idx);
+    }
     this.submissionService.feedback.set(null);
     this.onNextSentence();
   }
@@ -615,6 +653,17 @@ export class ExerciseDetailComponent implements OnInit, OnDestroy {
     this.stateService.reset();
     this.submissionService.reset();
     this.stateService.initializeSentences(ex.sourceText);
+    this.exerciseStartTime = new Date();
+    this.sessionLockService.acquireLock(ex.id);
+
+    // Drop mode=review so a reload resumes this attempt instead of showing the review
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { mode: null },
+      queryParamsHandling: 'merge',
+      replaceUrl: true
+    });
+
     this.focusInput();
   }
 
@@ -732,11 +781,12 @@ export class ExerciseDetailComponent implements OnInit, OnDestroy {
       ex,
       this.isCustomExercise(),
       this.exercisePoints(),
-      this.hintsShown(),
+      this.stateService.totalHintsUsed(),
       this.exerciseStartTime,
       true
     );
 
+    this.sessionLockService.releaseCurrentLock();
     this.isReviewMode.set(true);
     this.completionService.navigateToReviewMode(this.route);
   }

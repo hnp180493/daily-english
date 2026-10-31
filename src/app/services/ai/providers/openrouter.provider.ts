@@ -1,5 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { BaseAIProvider, AIRequest, AIMessage } from '../base-ai-provider';
 import { AIResponse, AIStreamChunk, ExerciseContext } from '../../../models/ai.model';
 import { PronunciationContext, PronunciationFeedback } from '../../../models/pronunciation.model';
@@ -27,8 +28,9 @@ export class OpenRouterProvider extends BaseAIProvider {
 
   generateText(request: AIRequest, config: any): Observable<string> {
     return new Observable(observer => {
+      const controller = new AbortController();
       const url = 'https://openrouter.ai/api/v1/chat/completions';
-      
+
       const body = {
         model: config.openrouter.modelName,
         messages: request.messages,
@@ -52,7 +54,8 @@ export class OpenRouterProvider extends BaseAIProvider {
       fetch(url, {
         method: 'POST',
         headers,
-        body: JSON.stringify(body)
+        body: JSON.stringify(body),
+        signal: controller.signal
       })
         .then(async response => {
           if (!response.ok) {
@@ -68,18 +71,18 @@ export class OpenRouterProvider extends BaseAIProvider {
                 errorData = {};
               }
             }
-            
+
             // Extract detailed error message
-            const errorMsg = errorData.error?.message 
-              || errorData.message 
-              || errorData.error 
+            const errorMsg = errorData.error?.message
+              || errorData.message
+              || errorData.error
               || `HTTP ${response.status}: ${response.statusText}`;
-            
+
             const error: any = new Error(errorMsg);
             error.status = response.status;
             error.statusText = response.statusText;
             error.details = errorData;
-            
+
             console.error('[OpenRouter] API Error Response:', errorData);
             throw error;
           }
@@ -91,10 +94,14 @@ export class OpenRouterProvider extends BaseAIProvider {
           observer.complete();
         })
         .catch(error => {
+          if (this.isAbortError(error, controller.signal)) return;
           const errorMessage = this.handleError(error, config);
           console.error('[OpenRouter] Error:', error);
           observer.error(new Error(errorMessage));
         });
+
+      // Unsubscribing cancels the request
+      return () => controller.abort();
     });
   }
 
@@ -104,31 +111,25 @@ export class OpenRouterProvider extends BaseAIProvider {
     context: ExerciseContext,
     config: any
   ): Observable<AIResponse> {
-    return new Observable(observer => {
-      const translateToVietnamese = this.settingsService.getSettings().translateFeedbackToVietnamese;
-      const prompt = this.promptService.buildAnalysisPrompt(
-        userInput,
-        sourceText,
-        context,
-        context.fullContext,
-        context.translatedContext,
-        translateToVietnamese
-      );
-      
-      const messages: AIMessage[] = [
-        { role: 'system', content: this.promptService.buildSystemPrompt() },
-        { role: 'user', content: prompt }
-      ];
+    const translateToVietnamese = this.settingsService.getSettings().translateFeedbackToVietnamese;
+    const prompt = this.promptService.buildAnalysisPrompt(
+      userInput,
+      sourceText,
+      context,
+      context.fullContext,
+      context.translatedContext,
+      translateToVietnamese
+    );
 
-      this.generateText({ messages, temperature: 0.7, maxTokens: 1000 }, config).subscribe({
-        next: (content) => {
-          const response = this.parseResponse(content);
-          observer.next(response);
-          observer.complete();
-        },
-        error: (error) => observer.error(error)
-      });
-    });
+    const messages: AIMessage[] = [
+      { role: 'system', content: this.promptService.buildSystemPrompt() },
+      { role: 'user', content: prompt }
+    ];
+
+    // map() turns a parse failure into an error notification (no fake score)
+    return this.generateText({ messages, temperature: 0.7, maxTokens: 1000 }, config).pipe(
+      map(content => this.parseResponse(content))
+    );
   }
 
   override analyzeTextStream(
@@ -173,12 +174,14 @@ export class OpenRouterProvider extends BaseAIProvider {
       }
 
       const state = this.createStreamingState();
+      const controller = new AbortController();
       let buffer = '';
 
       fetch(url, {
         method: 'POST',
         headers,
-        body: JSON.stringify(body)
+        body: JSON.stringify(body),
+        signal: controller.signal
       })
         .then(async response => {
           if (!response.ok) {
@@ -227,10 +230,8 @@ export class OpenRouterProvider extends BaseAIProvider {
                 const { done, value } = await reader.read();
                 
                 if (done) {
-                  // Emit complete chunk with full parsed response
-                  const fullResponse = this.parseResponse(buffer);
-                  observer.next({ type: 'complete', data: fullResponse });
-                  observer.complete();
+                  // Always end the stream: complete chunk, or an error for empty/unparseable output
+                  this.finishAnalysisStream(buffer, observer, 'OpenRouter');
                   break;
                 }
 
@@ -269,6 +270,7 @@ export class OpenRouterProvider extends BaseAIProvider {
                 }
               }
             } catch (error) {
+              if (this.isAbortError(error, controller.signal)) return;
               const errorMessage = this.handleError(error, config);
               console.error('[OpenRouter] Streaming error:', error);
               observer.error(new Error(errorMessage));
@@ -278,10 +280,14 @@ export class OpenRouterProvider extends BaseAIProvider {
           processStream();
         })
         .catch(error => {
+          if (this.isAbortError(error, controller.signal)) return;
           const errorMessage = this.handleError(error, config);
           console.error('[OpenRouter] Error:', error);
           observer.error(new Error(errorMessage));
         });
+
+      // Unsubscribing cancels the request and the stream read
+      return () => controller.abort();
     });
   }
 
@@ -292,43 +298,32 @@ export class OpenRouterProvider extends BaseAIProvider {
     context: ExerciseContext,
     config: any
   ): Observable<string> {
-    return new Observable(observer => {
-      const translateToVietnamese = this.settingsService.getSettings().translateFeedbackToVietnamese;
-      const prompt = this.promptService.buildHintPrompt(
-        sourceText,
-        userInput,
-        previousHints,
-        context,
-        context.fullContext,
-        translateToVietnamese
-      );
-      
-      const messages: AIMessage[] = [
-        { 
-          role: 'system', 
-          content: 'You are a helpful English language teacher providing hints to students. Give ONE specific, actionable hint.' 
-        },
-        { role: 'user', content: prompt }
-      ];
+    const translateToVietnamese = this.settingsService.getSettings().translateFeedbackToVietnamese;
+    const prompt = this.promptService.buildHintPrompt(
+      sourceText,
+      userInput,
+      previousHints,
+      context,
+      context.fullContext,
+      translateToVietnamese
+    );
 
-      this.generateText({ messages, temperature: 0.7, maxTokens: 150 }, config).subscribe({
-        next: (content) => {
-          observer.next(content.trim());
-          observer.complete();
-        },
-        error: (error) => observer.error(error)
-      });
-    });
+    const messages: AIMessage[] = [
+      {
+        role: 'system',
+        content: 'You are a helpful English language teacher providing hints to students. Give ONE specific, actionable hint.'
+      },
+      { role: 'user', content: prompt }
+    ];
+
+    return this.generateText({ messages, temperature: 0.7, maxTokens: 150 }, config).pipe(
+      map(content => content.trim())
+    );
   }
 
+  /** Throws on unparseable output — callers show an error instead of saving a made-up score. */
   private parseResponse(content: string): AIResponse {
-    try {
-      return this.parseResponseContent(content);
-    } catch (error) {
-      console.error('[OpenRouter] Failed to parse AI response:', error);
-      console.error('[OpenRouter] Content was:', content);
-      return { accuracyScore: 50, feedback: [], overallComment: '' };
-    }
+    return this.parseAnalysisResponse(content, 'OpenRouter');
   }
 
   override supportsAudioInput(): boolean {
@@ -342,7 +337,8 @@ export class OpenRouterProvider extends BaseAIProvider {
     context: PronunciationContext,
     config: any
   ): Observable<PronunciationFeedback> {
-    return new Observable((observer) => {
+    return new Observable<PronunciationFeedback>((observer) => {
+      const controller = new AbortController();
       const apiKey = config?.openrouter?.apiKey;
       const modelName = config?.openrouter?.modelName || '';
       if (!apiKey || !modelName) {
@@ -389,6 +385,7 @@ export class OpenRouterProvider extends BaseAIProvider {
               ],
               temperature: 0.3,
             }),
+            signal: controller.signal,
           });
         })
         .then(async (response) => {
@@ -406,9 +403,12 @@ export class OpenRouterProvider extends BaseAIProvider {
           observer.complete();
         })
         .catch((error) => {
+          if (this.isAbortError(error, controller.signal)) return;
           console.error('[OpenRouter] Pronunciation analysis error:', error);
           observer.error(error);
         });
+
+      return () => controller.abort();
     });
   }
 

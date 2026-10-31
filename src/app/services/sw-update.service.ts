@@ -26,10 +26,13 @@ export class SwUpdateService {
       .pipe(filter((evt): evt is VersionReadyEvent => evt.type === 'VERSION_READY'))
       .subscribe(() => {
         this.updateAvailable.set(true);
-        this.toast.info(
-          'Có bản cập nhật mới. Tải lại để áp dụng.',
-          10000
-        );
+        // duration 0 = stays until the user acts or dismisses it
+        this.toast.show('Có bản cập nhật mới. Tải lại để áp dụng.', 'info', 0, {
+          label: 'Tải lại',
+          callback: () => {
+            void this.applyUpdate();
+          },
+        });
       });
 
     // Poll for updates every 30 minutes (only when tab is in foreground)

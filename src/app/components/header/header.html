@@ -17,18 +17,24 @@
         }
       </a>
       <!-- Everything else lives under "More" so the main nav stays a 3-choice decision -->
-      <div class="nav-dropdown">
-        <button class="nav-link dropdown-trigger"
+      <div class="nav-dropdown" #learningMenu>
+        <button type="button"
+                class="nav-link dropdown-trigger"
+                #learningMenuTrigger
                 [class.active]="isLearningMenuActive()"
-                (mouseenter)="onMenuMouseEnter()"
-                (mouseleave)="onMenuMouseLeave()">
+                aria-haspopup="true"
+                [attr.aria-expanded]="showLearningMenu()"
+                (click)="onMenuTriggerClick()"
+                (pointerenter)="onMenuPointerEnter($event)"
+                (pointerleave)="onMenuPointerLeave($event)">
           {{ translate.t('header.nav.more') }}
           <span class="dropdown-arrow">▼</span>
         </button>
         @if (showLearningMenu()) {
           <div class="dropdown-menu"
-               (mouseenter)="onMenuMouseEnter()"
-               (mouseleave)="onMenuMouseLeave()">
+               (click)="onMenuItemClick($event)"
+               (pointerenter)="onMenuPointerEnter($event)"
+               (pointerleave)="onMenuPointerLeave($event)">
             <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" class="dropdown-item">
               ✍️ {{ translate.t('header.menu.sentence_writing') }}
             </a>

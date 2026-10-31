@@ -42,14 +42,19 @@ export class ListeningService {
     if (!this.cache$) {
       this.cache$ = this.http.get<TracksFile>('data/listening/tracks.json').pipe(
         map((file) => file.tracks || []),
-        catchError((err) => {
-          console.error('[ListeningService] Failed to load tracks:', err);
-          return of([] as ListeningTrack[]);
-        }),
         shareReplay(1)
       );
     }
-    return this.cache$;
+    // Fallback lives outside the cached stream: a failed load is not cached, so the
+    // next call retries instead of serving [] for the rest of the visit.
+    const cache$ = this.cache$;
+    return cache$.pipe(
+      catchError((err) => {
+        console.error('[ListeningService] Failed to load tracks:', err);
+        if (this.cache$ === cache$) this.cache$ = null;
+        return of([] as ListeningTrack[]);
+      })
+    );
   }
 
   async loadAll(): Promise<ListeningTrack[]> {

@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy, inject, signal, computed, effect } from '@angular/core';
+import { Component, ChangeDetectionStrategy, inject, signal, computed, effect, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule, ActivatedRoute } from '@angular/router';
@@ -65,15 +65,14 @@ export class CustomExerciseLibrary {
         this.selectedTags.set(tags);
       }
     });
+  }
 
-    // Close import/export menu when clicking outside
-    if (typeof document !== 'undefined') {
-      document.addEventListener('click', (event) => {
-        const target = event.target as HTMLElement;
-        if (!target.closest('.relative')) {
-          this.showImportExportMenu.set(false);
-        }
-      });
+  // Close import/export menu when clicking outside (HostListener is removed with the component)
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: MouseEvent): void {
+    const target = event.target as HTMLElement | null;
+    if (!target?.closest('.relative')) {
+      this.showImportExportMenu.set(false);
     }
   }
 

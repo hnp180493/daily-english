@@ -3,6 +3,7 @@ import { AIResponse, AIStreamChunk, ExerciseContext } from '../../models/ai.mode
 import { FeedbackItem } from '../../models/exercise.model';
 import { PronunciationContext, PronunciationFeedback } from '../../models/pronunciation.model';
 import { WritingFeedback, WritingRubricScores } from '../../models/writing.model';
+import { parseJsonObject, stripCodeFences } from './json-extract';
 
 export interface AIProviderConfig {
   [key: string]: any;
@@ -85,7 +86,8 @@ export abstract class BaseAIProvider {
         { role: 'system', content: 'You are an experienced English writing teacher. Return ONLY valid JSON, no markdown fences.' },
         { role: 'user', content: builtPrompt },
       ];
-      this.generateText({ messages, temperature: 0.3, maxTokens: 2400 }, config).subscribe({
+      // Return the inner subscription so unsubscribing cancels the underlying request
+      return this.generateText({ messages, temperature: 0.3, maxTokens: 2400 }, config).subscribe({
         next: (content) => {
           try {
             const feedback = this.parseWritingResponse(content, promptId, wordCount);
@@ -110,29 +112,31 @@ export abstract class BaseAIProvider {
     );
   }
 
-  protected parseWritingResponse(content: string, promptId: string, wordCount: number): WritingFeedback {
-    let cleanText = content.trim();
-    cleanText = cleanText.replace(/^```json\s*/i, '').replace(/^```\s*/, '');
-    cleanText = cleanText.replace(/\s*```\s*$/, '');
-
-    const objStart = cleanText.indexOf('{');
-    if (objStart < 0) {
-      throw new Error('Writing response is not valid JSON');
-    }
-    const candidate = cleanText.slice(objStart);
-
-    let parsed: any;
+  /**
+   * Tolerant parse (fences anywhere, surrounding prose, trailing commas), then — for
+   * responses cut off by the token limit — close the open brackets and try once more.
+   */
+  private parseJsonWithRepair(content: string, label: string): any {
     try {
-      parsed = JSON.parse(candidate);
+      return parseJsonObject(content);
     } catch (firstErr) {
-      const repaired = this.repairTruncatedJson(candidate);
+      const cleanText = stripCodeFences(content || '');
+      const objStart = cleanText.indexOf('{');
+      if (objStart < 0) {
+        throw new Error(`${label} response is not valid JSON`);
+      }
       try {
-        parsed = JSON.parse(repaired);
-        console.warn('[BaseAIProvider] Recovered truncated writing JSON via repair.');
-      } catch (secondErr) {
-        throw firstErr instanceof Error ? firstErr : new Error('Writing response JSON parse failed');
+        const parsed = JSON.parse(this.repairTruncatedJson(cleanText.slice(objStart)));
+        console.warn(`[BaseAIProvider] Recovered truncated ${label.toLowerCase()} JSON via repair.`);
+        return parsed;
+      } catch {
+        throw firstErr instanceof Error ? firstErr : new Error(`${label} response JSON parse failed`);
       }
     }
+  }
+
+  protected parseWritingResponse(content: string, promptId: string, wordCount: number): WritingFeedback {
+    const parsed = this.parseJsonWithRepair(content, 'Writing');
 
     const rawScores = parsed.scores || {};
     const scores: WritingRubricScores = {
@@ -173,29 +177,8 @@ export abstract class BaseAIProvider {
   }
 
   protected parsePronunciationResponse(content: string): PronunciationFeedback {
-    let cleanText = content.trim();
-    cleanText = cleanText.replace(/^```json\s*/i, '').replace(/^```\s*/, '');
-    cleanText = cleanText.replace(/\s*```\s*$/, '');
-
-    const objStart = cleanText.indexOf('{');
-    if (objStart < 0) {
-      throw new Error('Pronunciation response is not valid JSON');
-    }
-    const candidate = cleanText.slice(objStart);
-
-    let parsed: any;
-    try {
-      parsed = JSON.parse(candidate);
-    } catch (firstErr) {
-      // Try to repair a truncated response (common with MAX_TOKENS).
-      const repaired = this.repairTruncatedJson(candidate);
-      try {
-        parsed = JSON.parse(repaired);
-        console.warn('[BaseAIProvider] Recovered truncated pronunciation JSON via repair.');
-      } catch (secondErr) {
-        throw firstErr instanceof Error ? firstErr : new Error('Pronunciation response JSON parse failed');
-      }
-    }
+    // Repair step handles truncated responses (common with MAX_TOKENS).
+    const parsed = this.parseJsonWithRepair(content, 'Pronunciation');
 
     return {
       overallScore: typeof parsed.overallScore === 'number' ? parsed.overallScore : 0,
@@ -537,13 +520,11 @@ export abstract class BaseAIProvider {
 
   /**
    * Parse response content supporting both JSONL and legacy JSON formats.
-   * Returns a default response if content is empty or invalid.
+   * Throws if content is empty or invalid — never invent a score.
    */
   protected parseResponseContent(content: string): AIResponse {
-    // Strip LLM special tokens first
-    let cleanText = this.stripLlmTokens(content);
-    cleanText = cleanText.replace(/^```json\s*/i, '').replace(/^```\s*/, '');
-    cleanText = cleanText.replace(/\s*```\s*$/, '');
+    // Strip LLM special tokens first, then markdown fences wherever they are
+    const cleanText = stripCodeFences(this.stripLlmTokens(content || ''));
 
     // Check for empty/invalid response from weak models
     if (!cleanText || cleanText.length < 10) {
@@ -563,7 +544,9 @@ export abstract class BaseAIProvider {
 
         for (const line of lines) {
           try {
-            const obj = JSON.parse(line.trim());
+            // Same unquoted-type fix as the streaming parser: {"type": spelling, ...}
+            const fixedLine = line.trim().replace(/"type"\s*:\s*([a-zA-Z]+)(\s*[,}])/g, '"type": "$1"$2');
+            const obj = JSON.parse(fixedLine);
             if ('accuracyScore' in obj && !('type' in obj)) {
               score = obj.accuracyScore;
             } else if (obj.type) {
@@ -578,23 +561,71 @@ export abstract class BaseAIProvider {
       }
     }
 
-    // Fallback to legacy nested JSON format
-    const jsonMatch = cleanText.match(/\{[\s\S]*\}/);
-    if (jsonMatch) {
-      try {
-        const parsed = JSON.parse(jsonMatch[0]);
+    // Fallback to legacy nested JSON format (tolerant: prose around it, trailing commas)
+    let parsed: any = null;
+    try {
+      parsed = parseJsonObject(cleanText);
+    } catch {
+      // handled below
+    }
+    if (parsed) {
+      const score = Number(parsed.accuracyScore);
+      if (Number.isFinite(score)) {
         return {
-          accuracyScore: parsed.accuracyScore || 0,
-          feedback: parsed.feedback || [],
+          accuracyScore: score,
+          feedback: Array.isArray(parsed.feedback) ? parsed.feedback : [],
           overallComment: parsed.overallComment || ''
         };
-      } catch {
-        // JSON parse failed
       }
     }
 
     throw new Error(
       'Invalid response format. The model did not return valid JSON. Try a different model or check your API configuration.'
     );
+  }
+
+  /**
+   * Parse an analysis response or throw. Callers turn the throw into observer.error so
+   * the UI shows an error instead of saving a made-up score.
+   */
+  protected parseAnalysisResponse(content: string, label: string): AIResponse {
+    try {
+      return this.parseResponseContent(content);
+    } catch (error) {
+      console.error(`[${label}] Failed to parse AI response:`, error);
+      throw error instanceof Error ? error : new Error('Không đọc được phản hồi từ AI. Vui lòng thử lại.');
+    }
+  }
+
+  /**
+   * Final step of every analysis stream: always ends the stream — either a 'complete'
+   * chunk followed by complete(), or an error (empty answer, unparseable answer).
+   */
+  protected finishAnalysisStream(
+    text: string,
+    observer: Subscriber<AIStreamChunk>,
+    label: string,
+    emptyReason?: string
+  ): void {
+    if (!text.trim()) {
+      observer.error(
+        new Error(emptyReason || 'AI không trả về nội dung. Vui lòng thử lại hoặc đổi model khác.')
+      );
+      return;
+    }
+    let parsed: AIResponse;
+    try {
+      parsed = this.parseAnalysisResponse(text, label);
+    } catch (error) {
+      observer.error(error);
+      return;
+    }
+    observer.next({ type: 'complete', data: parsed });
+    observer.complete();
+  }
+
+  /** True when a fetch/read failed because the subscriber unsubscribed (AbortController). */
+  protected isAbortError(error: unknown, signal?: AbortSignal): boolean {
+    return !!signal?.aborted || (error instanceof DOMException && error.name === 'AbortError');
   }
 }

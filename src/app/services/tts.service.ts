@@ -12,6 +12,8 @@ export interface TTSVoice {
 export class TTSService {
   private synth = window.speechSynthesis;
   private currentUtterance: SpeechSynthesisUtterance | null = null;
+  /** Fires when the current utterance fails or is cut off before onEnd. */
+  private currentOnInterrupt: (() => void) | null = null;
   
   isPlaying = signal(false);
   isPaused = signal(false);
@@ -224,53 +226,77 @@ export class TTSService {
     return { rate: this.rate, pitch: this.pitch, volume: this.volume };
   }
 
-  speak(text: string, onEnd?: () => void, onBoundary?: (charIndex: number) => void): void {
+  /**
+   * Speak text. `options.rate` applies to this utterance only and is NOT
+   * persisted (use setRate() to change the user's saved rate).
+   * `options.onError` fires instead of onEnd when the utterance fails or is
+   * cut off (stop() or another speak()), so callers can reset their UI state.
+   */
+  speak(
+    text: string,
+    onEnd?: () => void,
+    onBoundary?: (charIndex: number) => void,
+    options?: { rate?: number; onError?: () => void }
+  ): void {
     if (!text.trim()) return;
 
     // Cancel any ongoing speech
     this.stop();
 
-    this.currentUtterance = new SpeechSynthesisUtterance(text);
-    
-    if (this.selectedVoice) {
-      this.currentUtterance.voice = this.selectedVoice;
-    }
-    
-    // Configure speech parameters for more natural female voice
-    this.currentUtterance.rate = this.rate;
-    this.currentUtterance.pitch = this.pitch;
-    this.currentUtterance.volume = this.volume;
-    this.currentUtterance.lang = 'en-US';
+    const u = new SpeechSynthesisUtterance(text);
+    this.currentUtterance = u;
+    this.currentOnInterrupt = options?.onError ?? null;
 
-    this.currentUtterance.onstart = () => {
+    if (this.selectedVoice) {
+      u.voice = this.selectedVoice;
+    }
+
+    // Configure speech parameters for more natural female voice
+    u.rate = options?.rate != null ? Math.max(0.5, Math.min(2.0, options.rate)) : this.rate;
+    u.pitch = this.pitch;
+    u.volume = this.volume;
+    u.lang = 'en-US';
+
+    u.onstart = () => {
+      if (this.currentUtterance !== u) return;
       this.isPlaying.set(true);
       this.isPaused.set(false);
     };
 
-    this.currentUtterance.onend = () => {
+    u.onend = () => {
+      // Stale utterance (cancelled / replaced) — don't touch state or fire callbacks
+      if (this.currentUtterance !== u) return;
+      this.currentUtterance = null;
+      this.currentOnInterrupt = null;
       this.isPlaying.set(false);
       this.isPaused.set(false);
       this.currentSentenceIndex.set(null);
       if (onEnd) onEnd();
     };
 
-    this.currentUtterance.onerror = (event) => {
+    u.onerror = (event) => {
+      if (this.currentUtterance !== u) return;
       // stop()/a new speak() cancels the current utterance — expected, not an error
       if (event.error !== 'interrupted' && event.error !== 'canceled') {
         console.error('Speech synthesis error:', event);
       }
+      const onInterrupt = this.currentOnInterrupt;
+      this.currentUtterance = null;
+      this.currentOnInterrupt = null;
       this.isPlaying.set(false);
       this.isPaused.set(false);
       this.currentSentenceIndex.set(null);
+      onInterrupt?.();
     };
 
     if (onBoundary) {
-      this.currentUtterance.onboundary = (event) => {
+      u.onboundary = (event) => {
+        if (this.currentUtterance !== u) return;
         onBoundary(event.charIndex);
       };
     }
 
-    this.synth.speak(this.currentUtterance);
+    this.synth.speak(u);
   }
 
   speakSentences(sentences: string[], startIndex: number = 0): void {
@@ -307,11 +333,16 @@ export class TTSService {
   }
 
   stop(): void {
+    // Chrome keeps the synth paused across cancel(), silencing the next speak()
+    if (this.synth.paused) this.synth.resume();
     this.synth.cancel();
     this.isPlaying.set(false);
     this.isPaused.set(false);
     this.currentSentenceIndex.set(null);
     this.currentUtterance = null;
+    const onInterrupt = this.currentOnInterrupt;
+    this.currentOnInterrupt = null;
+    onInterrupt?.();
   }
 
   toggle(): void {

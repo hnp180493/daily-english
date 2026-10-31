@@ -84,7 +84,6 @@ export class AiProviderConfig implements OnInit {
 
   loadConfig(): void {
     const saved = this.configService.getConfig();
-    console.log('Loading config from service:', saved);
     if (saved) {
       // Ensure optional sub-configs exist with defaults if not present
       const configWithDefaults = {
@@ -100,7 +99,6 @@ export class AiProviderConfig implements OnInit {
           modelName: 'claude-sonnet-4-6'
         }
       };
-      console.log('Setting config with defaults:', configWithDefaults);
       this.config.set(configWithDefaults);
     }
   }

@@ -9,8 +9,22 @@ import {
   GUEST_FAVORITES_KEY,
   GUEST_ACHIEVEMENTS_KEY,
   GUEST_WEEKLY_GOALS_KEY,
-  GUEST_DAILY_CHALLENGES_KEY
+  GUEST_DAILY_CHALLENGES_KEY,
+  AI_CONFIG_KEY
 } from '../constants/storage-keys';
+
+const SECRET_KEYS: readonly string[] = [AI_CONFIG_KEY, 'aiConfig', 'azure-speech-credentials-v1'];
+
+// Learner data stored outside the guest_* / app prefixes
+const EXTRA_EXPORT_KEYS: readonly string[] = [
+  'flashcards_guest',
+  'reading-progress-v1',
+  'writing-drafts-v1',
+  'writing-attempts-v1',
+  'listening-progress-v1',
+  'grammar-lessons-learned-v1',
+  'streak-freeze-v1'
+];
 
 export interface ExportData {
   version: string;
@@ -120,14 +134,21 @@ export class ExportImportService {
    * Determine if a localStorage key should be exported
    */
   private shouldExportKey(key: string): boolean {
+    // Never put secrets (AI / speech API keys) into a plain-text export file
+    if (SECRET_KEYS.includes(key)) {
+      return false;
+    }
+
     // Skip browser/framework internal keys
     if (SKIP_KEY_PREFIXES.some(prefix => key.startsWith(prefix))) {
       return false;
     }
 
     // Export app-specific keys
-    return APP_KEY_PREFIXES.some(prefix => key.startsWith(prefix)) || 
-           GUEST_STORAGE_KEYS.includes(key);
+    return APP_KEY_PREFIXES.some(prefix => key.startsWith(prefix)) ||
+           GUEST_STORAGE_KEYS.includes(key) ||
+           EXTRA_EXPORT_KEYS.includes(key) ||
+           key.startsWith('reader-');
   }
 
   /**
@@ -285,10 +306,22 @@ export class ExportImportService {
     try {
       const current = JSON.parse(existing);
       
-      const mergedUnlocked = Array.from(new Set([
-        ...(current.unlockedAchievements || []),
-        ...(importedData.unlockedAchievements || [])
-      ]));
+      // A Set of objects never dedupes; merge by id and keep a claim from either side
+      // so imported rewards can't be claimed a second time
+      const byId = new Map<string, any>();
+      [...(current.unlockedAchievements || []), ...(importedData.unlockedAchievements || [])].forEach((ua: any) => {
+        const prev = byId.get(ua.achievementId);
+        if (!prev) {
+          byId.set(ua.achievementId, ua);
+          return;
+        }
+        byId.set(ua.achievementId, {
+          ...prev,
+          unlockedAt: new Date(ua.unlockedAt) < new Date(prev.unlockedAt) ? ua.unlockedAt : prev.unlockedAt,
+          rewardsClaimed: !!(prev.rewardsClaimed || ua.rewardsClaimed)
+        });
+      });
+      const mergedUnlocked = Array.from(byId.values());
 
       const merged = {
         ...current,

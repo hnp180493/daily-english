@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, OnDestroy, computed, effect, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnDestroy, computed, effect, inject, signal, untracked } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subject, takeUntil } from 'rxjs';
@@ -59,6 +59,8 @@ export class FlashcardStudyComponent implements OnDestroy {
   prefs = signal<FlashcardStudyPrefs>({ ...FLASHCARD_STUDY_DEFAULTS });
   showPrefs = signal(false);
 
+  private sessionParams = signal<{ deckId: string | null; custom: boolean } | null>(null);
+
   // Computed values
   totalCards = computed(() => this.queue().length);
   currentCard = computed(() => this.queue()[this.currentIndex()] || null);
@@ -96,7 +98,15 @@ export class FlashcardStudyComponent implements OnDestroy {
     this.route.queryParamMap.pipe(takeUntil(this.destroy$)).subscribe((params) => {
       const deckId = params.get('deck');
       const custom = params.get('custom') === '1';
-      this.initSession(deckId, custom);
+      this.sessionParams.set({ deckId, custom });
+    });
+
+    // On a direct load the service may not have read cards from storage yet
+    // (it waits for auth), so build the session only once they're loaded.
+    effect(() => {
+      const params = this.sessionParams();
+      if (!params || !this.flashcards.loaded()) return;
+      untracked(() => this.initSession(params.deckId, params.custom));
     });
 
     // Auto-speak when prompt changes and pref enabled

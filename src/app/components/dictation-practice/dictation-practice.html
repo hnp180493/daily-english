@@ -48,7 +48,7 @@
         [currentSentenceIndex]="currentSentenceIndex()"
         [totalSentences]="sentences().length"
         [attemptCount]="attemptCount()"
-        [completionPoints]="DICTATION_COMPLETION_POINTS"
+        [completionPoints]="completionPointsToAward()"
         (settingsClick)="openSettings()"
         (goBack)="goBack()"
       ></app-dictation-header>

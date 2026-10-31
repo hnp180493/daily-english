@@ -7,8 +7,11 @@ import { FeedbackItem } from '../models/exercise.model';
  * existing feedback panel renders it unchanged.
  */
 
-/** Same splitter ExerciseStateService uses for the Vietnamese source. */
-const SENTENCE_RE = /[^.!?]+[.!?]+(?=['"]?\s|$)/g;
+/**
+ * Same splitter ExerciseStateService uses for the Vietnamese source. A '.' between digits
+ * ("500.000 đồng") is a thousands separator, not a sentence end.
+ */
+const SENTENCE_RE = /(?:\d\.(?=\d)|[^.!?])+[.!?]+(?=['"]?\s|$)/g;
 
 const CONTRACTIONS: Record<string, string> = {
   "i'm": 'i am', "you're": 'you are', "we're": 'we are', "they're": 'they are',

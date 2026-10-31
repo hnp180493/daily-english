@@ -1,4 +1,4 @@
-import { Injectable, Injector, inject, signal, computed, effect } from '@angular/core';
+import { DestroyRef, Injectable, Injector, inject, signal, computed, effect } from '@angular/core';
 import { Observable, of, from } from 'rxjs';
 import { map, tap, catchError, switchMap } from 'rxjs/operators';
 import {
@@ -35,12 +35,16 @@ export class FlashcardService {
   // Private signal for flashcard state
   private flashcardsSignal = signal<Flashcard[]>([]);
   private isInitialized = signal(false);
+  /** Clock for dueFlashcards; computed() can't observe new Date() on its own. */
+  private now = signal(Date.now());
 
   // Storage key for localStorage - includes user ID for separation
   private readonly STORAGE_KEY_PREFIX = 'flashcards';
 
   // Expose as readonly signal
   readonly allFlashcards = this.flashcardsSignal.asReadonly();
+  /** True once cards for the current user have been read from storage. */
+  readonly loaded = this.isInitialized.asReadonly();
 
   /**
    * Computed signal for cards due for review.
@@ -48,7 +52,7 @@ export class FlashcardService {
    * Requirements: 5.2 - Sort by urgency (nextReviewDate ascending)
    */
   readonly dueFlashcards = computed(() => {
-    const now = new Date();
+    const now = new Date(this.now());
     return this.flashcardsSignal()
       .filter(card => !card.suspended)
       .filter(card => new Date(card.nextReviewDate) <= now)
@@ -79,6 +83,7 @@ export class FlashcardService {
   constructor() {
     // Initialize and watch for auth changes
     this.initializeService();
+    this.startClock();
     // Reads/writes the per-user localStorage key directly so a sync that lands
     // before loadFlashcards() switches keys never mixes in guest cards.
     this.sync.register<Flashcard[]>({
@@ -90,6 +95,21 @@ export class FlashcardService {
         if (this.getStorageKey() === key) this.loadFlashcards();
       },
       merge: (local, remote) => mergeCards(remote ?? [], local ?? []),
+      perUser: true,
+    });
+  }
+
+  private startClock(): void {
+    if (typeof window === 'undefined' || typeof document === 'undefined') return;
+    const tick = () => this.now.set(Date.now());
+    const interval = setInterval(tick, 60_000);
+    const onVisible = () => {
+      if (document.visibilityState === 'visible') tick();
+    };
+    document.addEventListener('visibilitychange', onVisible);
+    inject(DestroyRef).onDestroy(() => {
+      clearInterval(interval);
+      document.removeEventListener('visibilitychange', onVisible);
     });
   }
 

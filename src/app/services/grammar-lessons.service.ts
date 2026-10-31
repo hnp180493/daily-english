@@ -43,14 +43,19 @@ export class GrammarLessonsService {
     if (!this.cache$) {
       this.cache$ = this.http.get<LessonsFile>('data/grammar-lessons/lessons.json').pipe(
         map((file) => file.lessons || []),
-        catchError((err) => {
-          console.error('[GrammarLessonsService] Failed to load lessons:', err);
-          return of([] as GrammarLesson[]);
-        }),
         shareReplay(1)
       );
     }
-    return this.cache$;
+    // Fallback lives outside the cached stream: a failed load is not cached, so the
+    // next call retries instead of serving [] for the rest of the visit.
+    const cache$ = this.cache$;
+    return cache$.pipe(
+      catchError((err) => {
+        console.error('[GrammarLessonsService] Failed to load lessons:', err);
+        if (this.cache$ === cache$) this.cache$ = null;
+        return of([] as GrammarLesson[]);
+      })
+    );
   }
 
   async loadAll(): Promise<GrammarLesson[]> {

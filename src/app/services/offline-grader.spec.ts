@@ -1,4 +1,4 @@
-import { gradeOffline, offlineHint, referenceSentence, tokens } from './offline-grader';
+import { gradeOffline, offlineHint, referenceSentence, splitEnglishSentences, tokens } from './offline-grader';
 
 describe('offline-grader', () => {
   describe('referenceSentence', () => {
@@ -10,6 +10,12 @@ describe('offline-grader', () => {
       const text = "My teacher's name is Ms. Mai. She is kind. Dear Mr. Nguyen, I am writing.";
       expect(referenceSentence(text, 0, 3)).toBe("My teacher's name is Ms. Mai.");
       expect(referenceSentence(text, 2, 3)).toBe('Dear Mr. Nguyen, I am writing.');
+    });
+
+    it('does not split on a dot between digits ("500.000 đồng")', () => {
+      const text = 'Tổng cộng là 500.000 đồng. It costs 1.5 dollars. Done.';
+      expect(splitEnglishSentences(text)).toEqual(['Tổng cộng là 500.000 đồng.', 'It costs 1.5 dollars.', 'Done.']);
+      expect(splitEnglishSentences('I was born in 1990. Then I moved.')).toEqual(['I was born in 1990.', 'Then I moved.']);
     });
 
     it('returns null when sentence counts do not match', () => {

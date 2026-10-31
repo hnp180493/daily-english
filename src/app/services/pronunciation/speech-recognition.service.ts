@@ -1,4 +1,5 @@
 import { Injectable, signal } from '@angular/core';
+import { Subject } from 'rxjs';
 
 export type SpeechRecognitionState = 'idle' | 'requesting' | 'listening' | 'stopped' | 'error';
 
@@ -7,6 +8,14 @@ export interface SpeechRecognitionResult {
   transcript: string;
   /** Confidence 0-1 from the Web Speech API. */
   confidence: number;
+}
+
+/** Emitted from onend — every time a recognition session finishes (not on cancel()). */
+export interface SpeechRecognitionEnd extends SpeechRecognitionResult {
+  /** Error message if the session ended with an error (e.g. no-speech). */
+  error: string | null;
+  /** True when a stop() caller was awaiting this end (it already got the result). */
+  stopRequested: boolean;
 }
 
 /**
@@ -22,12 +31,19 @@ export class SpeechRecognitionService {
   readonly state = signal<SpeechRecognitionState>('idle');
   readonly errorMessage = signal<string | null>(null);
   readonly interimTranscript = signal<string>('');
+  /**
+   * Fires when recognition ends. With continuous=false Chrome ends on its own after
+   * the first final result, so listeners must handle ends nobody stop()-ed.
+   */
+  readonly ended = new Subject<SpeechRecognitionEnd>();
 
   private recognition: any | null = null;
   private resolveStop: ((res: SpeechRecognitionResult) => void) | null = null;
   private rejectStop: ((err: Error) => void) | null = null;
   private finalTranscript = '';
   private finalConfidence = 0;
+  private stopRequested = false;
+  private endError: string | null = null;
 
   isSupported(): boolean {
     if (typeof window === 'undefined') return false;
@@ -50,6 +66,8 @@ export class SpeechRecognitionService {
     this.interimTranscript.set('');
     this.finalTranscript = '';
     this.finalConfidence = 0;
+    this.stopRequested = false;
+    this.endError = null;
 
     const SR: any = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
     this.recognition = new SR();
@@ -81,6 +99,7 @@ export class SpeechRecognitionService {
       this.state.set('error');
       const msg = this.errorFromCode(event.error);
       this.errorMessage.set(msg);
+      this.endError = msg;
       if (this.rejectStop) {
         this.rejectStop(new Error(msg));
         this.resolveStop = null;
@@ -100,6 +119,12 @@ export class SpeechRecognitionService {
         this.resolveStop = null;
         this.rejectStop = null;
       }
+      this.ended.next({
+        transcript: this.finalTranscript.trim(),
+        confidence: this.finalConfidence,
+        error: this.endError,
+        stopRequested: this.stopRequested,
+      });
     };
 
     try {
@@ -115,6 +140,7 @@ export class SpeechRecognitionService {
     if (!this.recognition || this.state() !== 'listening') {
       return Promise.resolve({ transcript: this.finalTranscript.trim(), confidence: this.finalConfidence });
     }
+    this.stopRequested = true;
     return new Promise<SpeechRecognitionResult>((resolve, reject) => {
       this.resolveStop = resolve;
       this.rejectStop = reject;
@@ -128,11 +154,17 @@ export class SpeechRecognitionService {
 
   cancel(): void {
     if (!this.recognition) return;
+    const rec = this.recognition;
+    // Detach handlers so the abort's late onerror/onend can't touch the next session
+    rec.onstart = rec.onresult = rec.onerror = rec.onend = null;
+    this.recognition = null;
     try {
-      this.recognition.abort();
+      rec.abort();
     } catch {
       /* noop */
     }
+    this.resolveStop = null;
+    this.rejectStop = null;
     this.state.set('idle');
     this.interimTranscript.set('');
     this.finalTranscript = '';
@@ -140,6 +172,10 @@ export class SpeechRecognitionService {
   }
 
   reset(): void {
+    // Abort an active recognition so it doesn't keep the mic / fire into the next sentence
+    if (this.state() === 'listening' || this.state() === 'requesting') {
+      this.cancel();
+    }
     this.state.set('idle');
     this.errorMessage.set(null);
     this.interimTranscript.set('');

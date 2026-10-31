@@ -6,6 +6,7 @@ import { FavoriteService } from '../../services/favorite.service';
 import { ProgressService } from '../../services/progress.service';
 import { ExerciseService } from '../../services/exercise.service';
 import { TranslationService } from '../../services/translation.service';
+import { ExercisePersistenceService } from '../../services/exercise-persistence.service';
 
 /** Exercise category value → translation key segment (category.<key>.name). */
 export const CATEGORY_KEYS: Record<string, string> = {
@@ -31,6 +32,7 @@ export class ExerciseCardComponent {
   private favoriteService = inject(FavoriteService);
   private progressService = inject(ProgressService);
   private exerciseService = inject(ExerciseService);
+  private persistenceService = inject(ExercisePersistenceService);
   private router = inject(Router);
   protected translate = inject(TranslationService);
   
@@ -95,13 +97,14 @@ export class ExerciseCardComponent {
   onStart(): void {
     const slug = this.exerciseSlug();
     const status = this.status();
-    
+    // A re-practice in progress (saved state) resumes in normal mode instead of the review.
+    const hasSavedProgress = !!this.persistenceService.loadProgress(this.exercise().id);
+
     // If exercise has been attempted (has bestScore), navigate to review mode
-    if (status.bestScore !== undefined) {
+    if (status.bestScore !== undefined && !hasSavedProgress) {
       this.router.navigate(['/exercise', slug], { queryParams: { mode: 'review' } });
     } else {
-      // New exercise - normal start
-      this.startExercise.emit(this.exercise().id);
+      // Normal start/resume (navigates here only; the parent's startExercise handler would navigate again)
       this.router.navigate(['/exercise', slug]);
     }
   }

@@ -1,6 +1,6 @@
 import { Injectable, inject, signal } from '@angular/core';
 import { Observable, of, combineLatest, forkJoin } from 'rxjs';
-import { map, switchMap, tap, catchError } from 'rxjs/operators';
+import { map, switchMap, tap, catchError, take } from 'rxjs/operators';
 import {
   ReviewData,
   ReviewDataWithMetadata,
@@ -97,6 +97,10 @@ export class ReviewService {
       this.progressService.getUserProgress()
     ])
       .pipe(
+        // Build once: later progress emissions would rebuild the queue from this
+        // first (stale) review snapshot and make rescheduled exercises due again.
+        // scheduleNextReview keeps the queue current from then on.
+        take(1),
         switchMap(([existingReviewData, progress]) => {
           // Update cache immediately
           if (existingReviewData && existingReviewData.length > 0) {
@@ -280,9 +284,9 @@ export class ReviewService {
           this.databaseService.saveReviewDataAuto(exerciseId, updatedReview).subscribe({
             next: () => {
               console.log('[ReviewService] Review scheduled for', exerciseId);
-              // Invalidate cache and refresh the queue
               this.invalidateCache();
-              this.getReviewQueue().subscribe();
+              this.applyToQueue(exerciseId, updatedReview);
+              this.refreshQueue();
               // Clear scheduling flag
               this.schedulingInProgress.delete(exerciseId);
             },
@@ -313,9 +317,8 @@ export class ReviewService {
           this.databaseService.saveReviewDataAuto(exerciseId, newReview).subscribe({
             next: () => {
               console.log('[ReviewService] Initial review created for', exerciseId);
-              // Invalidate cache and refresh the queue
               this.invalidateCache();
-              this.getReviewQueue().subscribe();
+              this.refreshQueue();
               // Clear scheduling flag
               this.schedulingInProgress.delete(exerciseId);
             },
@@ -333,6 +336,48 @@ export class ReviewService {
         this.schedulingInProgress.delete(exerciseId);
       }
     });
+  }
+
+  /** Update an item already in the queue right away, before the reload lands. */
+  private applyToQueue(exerciseId: string, review: ReviewData): void {
+    this.reviewQueueSignal.update(queue =>
+      queue
+        .map(item => {
+          if (item.exerciseId !== exerciseId) return item;
+          const reviewData = { ...item.reviewData, ...review };
+          return {
+            ...item,
+            reviewData,
+            nextReviewDate: reviewData.nextReviewDate,
+            lastScore: reviewData.lastScore,
+            urgency: this.calculateUrgency(reviewData),
+          };
+        })
+        .sort((a, b) => this.compareUrgency(a.urgency, b.urgency))
+    );
+  }
+
+  /**
+   * Reload review data and rebuild the queue. getReviewQueue() can't be used
+   * here: it returns the current (pre-save) queue whenever it's non-empty.
+   */
+  private refreshQueue(): void {
+    this.databaseService
+      .loadAllReviewDataAuto()
+      .pipe(
+        take(1),
+        switchMap(list => {
+          this.updateCache(list ?? []);
+          return this.buildReviewQueue(list ?? []);
+        }),
+        catchError(error => {
+          console.error('[ReviewService] Failed to refresh review queue:', error);
+          return of(null);
+        })
+      )
+      .subscribe(queue => {
+        if (queue) this.reviewQueueSignal.set(queue);
+      });
   }
 
   /**

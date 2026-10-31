@@ -18,10 +18,15 @@ export class ExerciseKeyboardService {
   }
 
   handleKeyDown(event: KeyboardEvent): boolean {
+    // Leave browser shortcuts (Ctrl+R), IME composition (Vietnamese input) and native controls alone.
+    if (event.ctrlKey || event.metaKey || event.altKey || event.isComposing) return false;
+
     const target = event.target as HTMLElement;
-    const isInTextarea = target.tagName === 'TEXTAREA';
-    const isInInput = target.tagName === 'INPUT';
-    
+    const tag = target?.tagName;
+    if (tag === 'TEXTAREA' || tag === 'INPUT' || tag === 'BUTTON' || tag === 'SELECT' || target?.isContentEditable) {
+      return false;
+    }
+
     const shortcuts = this.shortcuts();
     for (const shortcut of shortcuts) {
       if (this.matchesKey(event, shortcut.key)) {
@@ -31,24 +36,6 @@ export class ExerciseKeyboardService {
           continue;
         }
 
-        // Special handling for 'r' key - allow in textarea when readonly
-        if (shortcut.key === 'r' && isInTextarea) {
-          const textarea = target as HTMLTextAreaElement;
-          // Only trigger if textarea is readonly (can proceed to next)
-          if (textarea.readOnly) {
-            event.preventDefault();
-            shortcut.action();
-            return true;
-          }
-          // If not readonly, let user type 'r' normally
-          continue;
-        }
-        
-        // For other keys, ignore if in input/textarea
-        if (isInTextarea || isInInput) {
-          continue;
-        }
-        
         // Execute shortcut
         event.preventDefault();
         shortcut.action();

@@ -122,6 +122,9 @@ export class WebSpeechAnalyzerService {
   private tokenize(text: string): string[] {
     return text
       .toLowerCase()
+      // Curly → straight quotes first (exercise text often has “don’t”) so they get stripped
+      .replace(/[‘’ʼ]/g, "'")
+      .replace(/[“”]/g, '"')
       .replace(/[.,!?;:"'()]/g, '')
       .split(/\s+/)
       .filter(Boolean);

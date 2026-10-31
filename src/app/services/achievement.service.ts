@@ -56,6 +56,8 @@ export class AchievementService {
   private readonly MIN_SAVE_INTERVAL_MS = 2000; // Minimum 2 seconds between saves
   private claimInProgress = new Set<string>(); // Track claims in progress
   private loadInProgress = false; // Prevent duplicate loads
+  private loadRetries = 0;
+  private readonly MAX_LOAD_RETRIES = 3;
 
   constructor() {
     this.initializeAchievements();
@@ -72,20 +74,20 @@ export class AchievementService {
     
     console.log('[AchievementService] Auth stable. User:', user?.email, 'ID:', currentUserId);
     
+    // isInitialized is set only once the stored data is in memory: evaluating against defaults
+    // would re-unlock everything with rewardsClaimed:false and make rewards claimable twice
     if (user) {
       // Load from database for authenticated user
-      this.isInitialized = true;
       this.loadData();
     } else {
       // Guest user - initialize with default data
-      this.isInitialized = true;
       this.loadForGuestUser();
     }
 
     // Subscribe to progress changes for achievement evaluation
     setTimeout(() => {
       this.progressService.getUserProgress().subscribe((progress) => {
-        if (this.isInitialized) {
+        if (this.isInitialized && this.progressService.isLoaded()) {
           this.evaluateAchievements(progress);
         }
       });
@@ -114,6 +116,7 @@ export class AchievementService {
           console.log('[AchievementService] No saved data, using default');
           this.userAchievementData.set(this.storeService.getDefaultUserData());
         }
+        this.isInitialized = true;
         this.syncAchievementStates();
         this.performInitialEvaluation();
         this.loadInProgress = false;
@@ -121,6 +124,7 @@ export class AchievementService {
       error: (error: Error) => {
         console.error('[AchievementService] Failed to load guest data:', error);
         this.userAchievementData.set(this.storeService.getDefaultUserData());
+        this.isInitialized = true;
         this.syncAchievementStates();
         this.performInitialEvaluation();
         this.loadInProgress = false;
@@ -160,8 +164,13 @@ export class AchievementService {
         }
       },
       error: (error: Error) => {
+        // Stay uninitialized (no evaluation, no saves) so defaults never overwrite the cloud row
         console.error('[AchievementService] Failed to load achievements:', error);
-        this.setDefaultData();
+        this.loadInProgress = false;
+        if (this.loadRetries < this.MAX_LOAD_RETRIES) {
+          this.loadRetries++;
+          setTimeout(() => this.loadData(), 2000 * this.loadRetries);
+        }
       }
     });
   }
@@ -194,6 +203,7 @@ export class AchievementService {
       this.userAchievementData.set(data);
     }
 
+    this.isInitialized = true;
     this.syncAchievementStates();
     this.performInitialEvaluation();
     this.loadInProgress = false;
@@ -217,6 +227,7 @@ export class AchievementService {
 
         console.log('[AchievementService] Migrating localStorage data to database');
         this.userAchievementData.set(localData);
+        this.isInitialized = true;
         this.syncAchievementStates();
         this.performInitialEvaluation();
 
@@ -245,6 +256,7 @@ export class AchievementService {
     const defaultData = this.storeService.getDefaultUserData();
     defaultData.userId = this.authService.getUserId() || '';
     this.userAchievementData.set(defaultData);
+    this.isInitialized = true;
     this.syncAchievementStates();
     this.performInitialEvaluation();
     this.loadInProgress = false;

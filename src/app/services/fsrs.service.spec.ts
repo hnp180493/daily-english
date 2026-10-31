@@ -116,6 +116,34 @@ describe('FsrsService', () => {
     });
   });
 
+  describe('relearning cards', () => {
+    it('Again stays in relearning with relearning steps', () => {
+      const card = makeCard({ state: 'relearning', learningStep: 0, stability: 4, reviewCount: 6, lapses: 1 });
+      const next = fsrs.schedule(card, 1, NOW);
+      expect(next.state).toBe('relearning');
+      expect(next.nextReviewDate.getTime() - NOW.getTime()).toBe(FSRS_CONSTANTS.RELEARNING_STEPS_MIN[0] * 60 * 1000);
+    });
+
+    it('Good graduates back to review and records the rating', () => {
+      const card = makeCard({ state: 'relearning', learningStep: 0, stability: 4, reviewCount: 6, lapses: 1 });
+      const next = fsrs.schedule(card, 3, NOW);
+      expect(next.state).toBe('review');
+      expect(next.lastRating).toBe(3);
+    });
+  });
+
+  it('records the actual rating while in learning', () => {
+    expect(fsrs.schedule(makeCard(), 3, NOW).lastRating).toBe(3);
+    expect(fsrs.schedule(makeCard(), 2, NOW).lastRating).toBe(2);
+  });
+
+  it('survives an invalid createdAt with no lastReviewDate', () => {
+    const card = reviewCard({ createdAt: new Date('garbage'), lastReviewDate: undefined });
+    const next = fsrs.schedule(card, 3, NOW);
+    expect(Number.isFinite(next.stability!)).toBeTrue();
+    expect(Number.isNaN(next.nextReviewDate.getTime())).toBeFalse();
+  });
+
   it('does not mutate the input card', () => {
     const card = reviewCard();
     const snapshot = JSON.stringify(card);

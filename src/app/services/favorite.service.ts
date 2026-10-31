@@ -27,6 +27,15 @@ export class FavoriteService {
   private currentUserId: string | null = null;
   private isInitialized = false;
 
+  // No saves until stored favorites are loaded: the placeholder [] would overwrite them.
+  // Favorites added meanwhile are merged into the loaded list.
+  private loadState: 'loading' | 'ready' | 'error' = 'loading';
+  private hasUnsavedChanges = false;
+  private loadRetries = 0;
+  private readonly MAX_LOAD_RETRIES = 3;
+  private saveInFlight = false;
+  private saveQueued = false;
+
   constructor() {
     // Wait for auth to be stable before initializing
     this.initAfterAuth();
@@ -84,23 +93,65 @@ export class FavoriteService {
   }
   
   private saveFavorites(favorites: FavoriteExercise[]): void {
+    if (this.loadState !== 'ready') {
+      this.hasUnsavedChanges = true;
+      return;
+    }
+
     const userId = this.authService.getUserId();
-    
+
     // Guest user - save to localStorage
     if (!userId) {
       this.saveToLocalStorage(favorites);
       return;
     }
-    
+
+    // One save at a time, always the latest list, so a retried older save can't land last
+    if (this.saveInFlight) {
+      this.saveQueued = true;
+      return;
+    }
+    this.saveInFlight = true;
+
     // Authenticated user - save to Firestore
     this.databaseService.saveFavoritesAuto(favorites).subscribe({
       next: () => console.log('[FavoriteService] Favorites saved to Firestore'),
       error: (error: Error) => {
         console.error('[FavoriteService] Failed to save favorites:', error);
-        // Revert on error - reload from database
+        // Revert on error - reload from database (replace, don't merge)
+        this.saveQueued = false;
+        this.loadState = 'loading';
+        this.hasUnsavedChanges = false;
         this.loadAndMigrateData();
       }
+    }).add(() => {
+      this.saveInFlight = false;
+      if (this.saveQueued) {
+        this.saveQueued = false;
+        this.saveFavorites(this.favorites());
+      }
     });
+  }
+
+  /**
+   * Install loaded favorites, keeping any added before the load finished.
+   * @param saveEarlyChanges persist the merge now (callers that save themselves pass false)
+   */
+  private applyLoadedFavorites(loaded: FavoriteExercise[], saveEarlyChanges = true): FavoriteExercise[] {
+    const hadEarlyChanges = this.hasUnsavedChanges;
+    let favorites = loaded;
+    if (hadEarlyChanges) {
+      // Before loading the list started empty, so it only holds additions
+      const known = new Set(loaded.map(f => f.exerciseId));
+      favorites = [...loaded, ...this.favorites().filter(f => !known.has(f.exerciseId))];
+    }
+    this.hasUnsavedChanges = false;
+    this.loadState = 'ready';
+    this.favorites.set(favorites);
+    if (hadEarlyChanges && saveEarlyChanges) {
+      this.saveFavorites(favorites);
+    }
+    return favorites;
   }
   
   private saveToLocalStorage(favorites: FavoriteExercise[]): void {
@@ -139,15 +190,15 @@ export class FavoriteService {
           ...f,
           addedAt: new Date(f.addedAt)
         }));
-        this.favorites.set(favorites);
+        this.applyLoadedFavorites(favorites);
         console.log(`[FavoriteService] Loaded ${favorites.length} favorites from localStorage`);
       } catch (error) {
         console.error('[FavoriteService] Failed to parse localStorage data:', error);
-        this.favorites.set([]);
+        this.applyLoadedFavorites([]);
       }
     } else {
       console.log('[FavoriteService] No favorites found in localStorage');
-      this.favorites.set([]);
+      this.applyLoadedFavorites([]);
     }
   }
 
@@ -160,7 +211,7 @@ export class FavoriteService {
       next: cloudFavorites => {
         if (cloudFavorites && cloudFavorites.length > 0) {
           // Data exists in Firestore, use it directly
-          this.favorites.set(cloudFavorites);
+          this.applyLoadedFavorites(cloudFavorites);
           console.log('[FavoriteService] Favorites loaded from Firestore');
           return;
         }
@@ -169,8 +220,8 @@ export class FavoriteService {
         const localData = this.checkLocalStorageData(userId);
         if (localData && localData.length > 0) {
           console.log('[FavoriteService] Migrating localStorage data to Firestore');
-          this.favorites.set(localData); // Set immediately
-          this.databaseService.saveFavoritesAuto(localData).subscribe({
+          const merged = this.applyLoadedFavorites(localData, false); // Set immediately
+          this.databaseService.saveFavoritesAuto(merged).subscribe({
             next: () => {
               this.clearLocalStorageData(userId);
               console.log('[FavoriteService] Migration completed successfully');
@@ -181,13 +232,18 @@ export class FavoriteService {
           });
         } else {
           // No data anywhere
-          this.favorites.set([]);
+          this.applyLoadedFavorites([]);
           console.log('[FavoriteService] No favorites found');
         }
       },
       error: (error: Error) => {
+        // Keep saving disabled; an empty list must never be upserted over the real one
         console.error('[FavoriteService] Failed to load favorites:', error);
-        this.favorites.set([]);
+        this.loadState = 'error';
+        if (this.loadRetries < this.MAX_LOAD_RETRIES) {
+          this.loadRetries++;
+          setTimeout(() => this.loadAndMigrateData(), 2000 * this.loadRetries);
+        }
       }
     });
   }

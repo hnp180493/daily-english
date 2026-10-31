@@ -37,6 +37,8 @@ export class DictationAudioControls implements OnDestroy {
   
   private autoReplayTimer: any = null;
   private autoReplayCount = 0;
+  /** Speed picked here — applied per utterance, never persisted to the user's TTS rate. */
+  private speedOverride: number | undefined;
 
   ngOnDestroy(): void {
     this.stopAudio();
@@ -54,18 +56,24 @@ export class DictationAudioControls implements OnDestroy {
       this.autoReplayCount = 0;
       this.playWithAutoReplay(this.currentSentence.original, autoReplayTimes, settings.secondsBetweenReplays);
     } else {
+      this.ttsService.speak(
+        this.currentSentence.original,
+        () => {
+          this.isPlaying.set(false);
+          this.playingChange.emit(false);
+        },
+        undefined,
+        { rate: this.speedOverride, onError: () => this.onPlaybackInterrupted() }
+      );
+      // Set after speak(): its internal stop() interrupts any previous utterance
       this.isPlaying.set(true);
       this.isPaused.set(false);
       this.playingChange.emit(true);
-      
-      this.ttsService.speak(this.currentSentence.original, () => {
-        this.isPlaying.set(false);
-        this.playingChange.emit(false);
-      });
     }
   }
 
   onPause(): void {
+    this.clearAutoReplay();
     this.ttsService.pause();
     this.isPaused.set(true);
     this.isPlaying.set(false);
@@ -94,29 +102,44 @@ export class DictationAudioControls implements OnDestroy {
 
   onSpeedChange(speed: number): void {
     this.playbackSpeed.set(speed);
-    const settings = this.ttsService.getSettings();
-    (this.ttsService as any).rate = speed;
+    this.speedOverride = speed;
     this.speedChange.emit(speed);
   }
 
   private playWithAutoReplay(text: string, totalTimes: number, delaySeconds: number): void {
+    this.ttsService.speak(
+      text,
+      () => {
+        this.autoReplayCount++;
+
+        if (this.autoReplayCount < totalTimes) {
+          this.autoReplayTimer = setTimeout(() => {
+            this.playWithAutoReplay(text, totalTimes, delaySeconds);
+          }, delaySeconds * 1000);
+        } else {
+          this.isPlaying.set(false);
+          this.autoReplayCount = 0;
+          this.playingChange.emit(false);
+        }
+      },
+      undefined,
+      { rate: this.speedOverride, onError: () => this.onPlaybackInterrupted() }
+    );
+    // Set after speak(): its internal stop() interrupts any previous utterance
     this.isPlaying.set(true);
     this.isPaused.set(false);
     this.playingChange.emit(true);
-    
-    this.ttsService.speak(text, () => {
-      this.autoReplayCount++;
-      
-      if (this.autoReplayCount < totalTimes) {
-        this.autoReplayTimer = setTimeout(() => {
-          this.playWithAutoReplay(text, totalTimes, delaySeconds);
-        }, delaySeconds * 1000);
-      } else {
-        this.isPlaying.set(false);
-        this.autoReplayCount = 0;
-        this.playingChange.emit(false);
-      }
-    });
+  }
+
+  /** Our utterance failed or was cut off (stop(), or another component spoke). */
+  private onPlaybackInterrupted(): void {
+    this.clearAutoReplay();
+    if (this.isPlaying() || this.isPaused()) {
+      this.isPlaying.set(false);
+      this.isPaused.set(false);
+      this.playingChange.emit(false);
+      this.pausedChange.emit(false);
+    }
   }
 
   private clearAutoReplay(): void {

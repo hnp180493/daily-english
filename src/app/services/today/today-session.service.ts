@@ -1,4 +1,4 @@
-import { Injectable, computed, inject, signal } from '@angular/core';
+import { DestroyRef, Injectable, computed, inject, signal } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
 import { DifficultyLevel, Exercise } from '../../models/exercise.model';
 import { ExerciseService } from '../exercise.service';
@@ -92,6 +92,8 @@ export class TodaySessionService {
   readonly freeze = inject(StreakFreezeService);
 
   private state = signal<PersistedState>(this.load());
+  /** Local date, re-read every minute / on tab focus so computeds notice midnight. */
+  private today = signal(localDateString());
 
   readonly session = computed(() => this.state().session);
   readonly index = computed(() => this.state().index);
@@ -101,10 +103,26 @@ export class TodaySessionService {
   readonly totalSteps = computed(() => this.session()?.steps.length ?? 0);
   readonly isActive = computed(() => {
     const s = this.session();
-    return !!s && s.date === localDateString() && this.index() < s.steps.length;
+    // A session already under way may finish after midnight; only unstarted
+    // sessions from an earlier day are dropped.
+    return !!s && (s.date === this.today() || this.index() > 0) && this.index() < s.steps.length;
   });
-  readonly doneToday = computed(() => this.state().completedDates.includes(localDateString()));
+  readonly doneToday = computed(() => this.state().completedDates.includes(this.today()));
   readonly completedDates = computed(() => this.state().completedDates);
+
+  constructor() {
+    if (typeof window === 'undefined' || typeof document === 'undefined') return;
+    const tick = () => this.today.set(localDateString());
+    const interval = setInterval(tick, 60_000);
+    const onVisible = () => {
+      if (document.visibilityState === 'visible') tick();
+    };
+    document.addEventListener('visibilitychange', onVisible);
+    inject(DestroyRef).onDestroy(() => {
+      clearInterval(interval);
+      document.removeEventListener('visibilitychange', onVisible);
+    });
+  }
 
   /** Level the learner picked, else the level they practise most, else beginner. */
   async resolveLevel(): Promise<DifficultyLevel> {
@@ -370,14 +388,19 @@ export class TodaySessionService {
   }
 }
 
+/** Reader sentences aren't tied to an exercise; a fixed id lets addFlashcards dedupe them across days. */
+const READER_CARD_SOURCE = 'reader';
+
 function toCard(step: TodayStep, session: TodaySession) {
   const base = { exerciseId: session.exerciseId, category: 'today' };
   if (step.kind === 'cloze') {
     const full = step.sentence.replace('_____', step.answer);
-    return { ...base, front: full, back: step.vi ?? step.answer, example: step.answer };
+    const exerciseId = step.fromReader ? READER_CARD_SOURCE : session.exerciseId;
+    return { ...base, exerciseId, front: full, back: step.vi ?? step.answer, example: step.answer };
   }
   if (step.kind === 'translate') {
-    return { ...base, front: step.en, back: step.vi };
+    // Review sentences come from an older exercise, not today's.
+    return { ...base, exerciseId: step.fromReview ?? session.exerciseId, front: step.en, back: step.vi };
   }
   return { ...base, front: '', back: '' };
 }

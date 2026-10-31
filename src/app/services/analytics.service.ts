@@ -25,14 +25,26 @@ export class AnalyticsService {
   private debugMode = false;
 
   /**
+   * Page views fired before any provider registered (providers register only after their
+   * script loads, which is after the first NavigationEnd). Replayed once to each provider
+   * that registers later so the landing page_view is not lost.
+   */
+  private pendingPageViews: Array<{ path: string; title: string }> = [];
+  private static readonly MAX_PENDING_PAGE_VIEWS = 20;
+
+  /**
    * Register an analytics provider
    */
   registerProvider(provider: IAnalyticsProvider): void {
     if (!this.providers.includes(provider)) {
       this.providers.push(provider);
-      
+
       if (this.debugMode) {
         console.log('[Analytics] Provider registered:', provider.constructor.name);
+      }
+
+      if (this.pendingPageViews.length > 0 && this.privacyService.isAnalyticsEnabled() && provider.isEnabled()) {
+        this.pendingPageViews.forEach(({ path, title }) => provider.trackPageView(path, title));
       }
     }
   }
@@ -70,7 +82,15 @@ export class AnalyticsService {
     if (this.debugMode) {
       console.log('[Analytics] trackPageView:', { path, title });
     }
-    
+
+    // No provider yet: buffer so it can be replayed on registration (exactly once per provider)
+    if (this.providers.length === 0) {
+      if (this.pendingPageViews.length < AnalyticsService.MAX_PENDING_PAGE_VIEWS) {
+        this.pendingPageViews.push({ path, title });
+      }
+      return;
+    }
+
     this.providers.forEach(provider => {
       if (provider.isEnabled()) {
         provider.trackPageView(path, title);

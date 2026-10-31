@@ -12,6 +12,8 @@ import { DatabaseService } from './database/database.service';
 import { AuthService } from './auth.service';
 import { ExerciseService } from './exercise.service';
 import { ProgressService } from './progress.service';
+import { DailyChallenge } from '../models/daily-challenge.model';
+import { WeeklyGoal } from '../models/weekly-goal.model';
 import { getWeekStartLocalDate, getTodayLocalDate } from '../utils/date.utils';
 
 @Injectable({
@@ -140,7 +142,7 @@ export class CurriculumService {
       if (!exerciseHistory || !exerciseHistory.exerciseHistory) {
         // Mark migration as completed even if no history
         progress.migrationCompleted = true;
-        await this.db.saveLearningPathProgressAuto(progress);
+        await this.saveProgress(progress);
         return;
       }
 
@@ -198,7 +200,7 @@ export class CurriculumService {
 
       // Save updated progress
       console.log('[CurriculumService] Saving migrated progress');
-      await this.db.saveLearningPathProgressAuto(progress);
+      await this.saveProgress(progress);
       this.pathProgress.set(progress);
     } catch (error) {
       console.error('[CurriculumService] Error migrating exercise history:', error);
@@ -249,13 +251,18 @@ export class CurriculumService {
       pathCompletions: [],
     };
 
-    await this.db.saveLearningPathProgressAuto(progress);
+    await this.saveProgress(progress);
     this.pathProgress.set(progress);
     this.currentPath.set(path);
     this.currentModule.set(firstModule);
     
     // Clear cache to force reload
     this.clearCache();
+  }
+
+  /** Save path progress. `await observable` would neither subscribe (cold) nor surface errors. */
+  private saveProgress(progress: UserPathProgress): Promise<void> {
+    return firstValueFrom(this.db.saveLearningPathProgressAuto(progress), { defaultValue: undefined });
   }
 
   // Clear cache to force reload
@@ -311,7 +318,7 @@ export class CurriculumService {
       },
     };
 
-    await this.db.saveLearningPathProgressAuto(updatedProgress);
+    await this.saveProgress(updatedProgress);
     this.pathProgress.set(updatedProgress);
     this.currentModule.set(nextModule);
   }
@@ -380,7 +387,7 @@ export class CurriculumService {
       },
     };
 
-    await this.db.saveLearningPathProgressAuto(updatedProgress);
+    await this.saveProgress(updatedProgress);
     this.pathProgress.set(updatedProgress);
   }
 
@@ -463,7 +470,7 @@ export class CurriculumService {
       completedModules: [...progress.completedModules, moduleId],
     };
 
-    await this.db.saveLearningPathProgressAuto(updatedProgress);
+    await this.saveProgress(updatedProgress);
     this.pathProgress.set(updatedProgress);
     
     try {
@@ -510,7 +517,7 @@ export class CurriculumService {
       pathCompletions: [...progress.pathCompletions, completion],
     };
 
-    await this.db.saveLearningPathProgressAuto(updatedProgress);
+    await this.saveProgress(updatedProgress);
     this.pathProgress.set(updatedProgress);
     return completion;
   }
@@ -567,19 +574,20 @@ export class CurriculumService {
       totalPoints: 0,
     };
 
-    // Add exercise if not already completed
+    // Add exercise (and its points) only the first time, so retries don't inflate totalPoints.
     if (!moduleProgress.completedExercises.includes(exerciseId)) {
       moduleProgress.completedExercises.push(exerciseId);
+      moduleProgress.totalPoints = (moduleProgress.totalPoints ?? 0) + points;
     }
 
-    // Add points
-    moduleProgress.totalPoints += points;
-
-    // Recalculate average score
-    const scores = moduleProgress.completedExercises.map(() => score); // Simplified
-    moduleProgress.averageScore = Math.round(
-      scores.reduce((sum, s) => sum + s, 0) / scores.length
-    );
+    // Average of the latest score of each completed exercise.
+    const history = this.progressService.getProgressSignal()().exerciseHistory ?? {};
+    const scores = moduleProgress.completedExercises
+      .map((id) => (id === exerciseId ? score : history[id]?.accuracyScore))
+      .filter((s): s is number => typeof s === 'number');
+    moduleProgress.averageScore = scores.length
+      ? Math.round(scores.reduce((sum, s) => sum + s, 0) / scores.length)
+      : 0;
 
     // Update completion percentage
     moduleProgress.completionPercentage = Math.round(
@@ -597,7 +605,7 @@ export class CurriculumService {
     console.log('[CurriculumService] Updated progress:', updatedProgress);
     console.log('[CurriculumService] Module progress for', module.id, ':', moduleProgress);
     
-    await this.db.saveLearningPathProgressAuto(updatedProgress);
+    await this.saveProgress(updatedProgress);
     this.pathProgress.set(updatedProgress);
     
     console.log('[CurriculumService] Progress saved and signal updated');
@@ -623,7 +631,7 @@ export class CurriculumService {
       return false;
     }
 
-    const bonusPoints = challenge.bonusPoints || 100;
+    const bonusPoints = this.getDailyChallengeBonus(challenge);
 
     // Mark as completed
     const updatedChallenge = {
@@ -634,8 +642,14 @@ export class CurriculumService {
       bonusPoints,
     };
 
-    await firstValueFrom(this.db.saveDailyChallengeAuto(updatedChallenge)).catch(() => {});
-    
+    try {
+      await firstValueFrom(this.db.saveDailyChallengeAuto(updatedChallenge), { defaultValue: undefined });
+    } catch (error) {
+      // Not saved as completed, so paying now would pay again on the next attempt.
+      console.warn('[CurriculumService] Failed to save daily challenge, bonus not awarded:', error);
+      return false;
+    }
+
     // Add bonus points to user progress
     this.progressService.addBonusPoints(bonusPoints);
     console.log('[CurriculumService] Daily challenge completed! Added', bonusPoints, 'bonus points');
@@ -643,11 +657,29 @@ export class CurriculumService {
     return true;
   }
 
-  incrementWeeklyGoalProgress(score: number = 0): Observable<void> {
-    return from(this.recalculateWeeklyGoalProgressAsync());
+  /** Bonus the daily challenge both shows and awards (no streak multiplier). */
+  getDailyChallengeBonus(challenge: Pick<DailyChallenge, 'bonusPoints'>): number {
+    return challenge.bonusPoints || 50;
   }
 
-  private async recalculateWeeklyGoalProgressAsync(): Promise<void> {
+  incrementWeeklyGoalProgress(score: number = 0): Observable<void> {
+    return from(this.recalculateWeeklyGoal().then(() => undefined));
+  }
+
+  private weeklyGoalQueue: Promise<unknown> = Promise.resolve();
+
+  /**
+   * Recount this week's goal and award its bonus. This is the only place the
+   * weekly bonus is paid; runs are serialized so concurrent callers (exercise
+   * completion, WeeklyGoalService, goal tracker) can't both see "not achieved yet".
+   */
+  recalculateWeeklyGoal(): Promise<WeeklyGoal | null> {
+    const run = this.weeklyGoalQueue.then(() => this.recalculateWeeklyGoalProgressAsync());
+    this.weeklyGoalQueue = run.catch(() => undefined);
+    return run;
+  }
+
+  private async recalculateWeeklyGoalProgressAsync(): Promise<WeeklyGoal | null> {
     const weekStartDate = getWeekStartLocalDate();
 
     // Use Auto method which handles both guest and authenticated users
@@ -656,7 +688,7 @@ export class CurriculumService {
     if (!goal) {
       // Don't create goal automatically - user should set it in goal-tracker
       console.log('[CurriculumService] No weekly goal set for this week, skipping update');
-      return;
+      return null;
     }
 
     // Get progress from ProgressService which handles both guest and authenticated users
@@ -668,11 +700,10 @@ export class CurriculumService {
       exerciseCount: Object.keys(history).length
     });
     
-    const weekStart = new Date(weekStartDate);
-    weekStart.setHours(0, 0, 0, 0);
+    // Monday 00:00 local up to (excluding) next Monday 00:00.
+    const weekStart = parseLocalDate(weekStartDate);
     const weekEnd = new Date(weekStart);
     weekEnd.setDate(weekEnd.getDate() + 7);
-    weekEnd.setHours(23, 59, 59, 999);
 
     // Count exercises with score >= 60 completed this week
     const completedThisWeek = Object.values(history).filter((h: any) => {
@@ -680,30 +711,43 @@ export class CurriculumService {
       return date >= weekStart && date < weekEnd && h.accuracyScore >= 60;
     }).length;
 
-    // Check if goal just achieved (wasn't achieved before, but is now)
-    const wasNotAchieved = !goal.isAchieved;
-    const isNowAchieved = completedThisWeek >= goal.targetExercises;
-    const justAchieved = wasNotAchieved && isNowAchieved;
+    // exerciseHistory keeps only the latest attempt per exercise, so the count can
+    // drop after a worse retry; once achieved (or paid) a goal stays achieved.
+    const alreadyPaid = (goal.bonusPointsEarned ?? 0) > 0;
+    const isAchieved = goal.isAchieved || completedThisWeek >= goal.targetExercises;
+    const justAchieved = isAchieved && !goal.isAchieved && !alreadyPaid;
+    const bonusPoints = justAchieved ? this.calculateBonusPoints(completedThisWeek) : goal.bonusPointsEarned ?? 0;
 
-    // Calculate bonus points
-    const bonusPoints = isNowAchieved ? this.calculateBonusPoints(completedThisWeek) : 0;
-    
-    // Update goal
-    const updatedGoal = {
+    const updatedGoal: WeeklyGoal = {
       ...goal,
       completedExercises: completedThisWeek,
-      isAchieved: isNowAchieved,
+      isAchieved,
       bonusPointsEarned: bonusPoints,
     };
 
-    console.log('[CurriculumService] Recalculated weekly goal:', updatedGoal);
-    await firstValueFrom(this.db.saveWeeklyGoalAuto(updatedGoal)).catch(() => {});
+    if (
+      updatedGoal.completedExercises === goal.completedExercises &&
+      updatedGoal.isAchieved === goal.isAchieved &&
+      updatedGoal.bonusPointsEarned === goal.bonusPointsEarned
+    ) {
+      return goal;
+    }
 
-    // Add bonus points if goal just achieved
+    console.log('[CurriculumService] Recalculated weekly goal:', updatedGoal);
+    try {
+      await firstValueFrom(this.db.saveWeeklyGoalAuto(updatedGoal), { defaultValue: undefined });
+    } catch (error) {
+      // Unsaved, so the next run still sees "not achieved"; paying now would pay twice.
+      console.warn('[CurriculumService] Failed to save weekly goal:', error);
+      return goal;
+    }
+    this.clearWeeklyGoalCache();
+
     if (justAchieved) {
       this.progressService.addBonusPoints(bonusPoints);
       console.log('[CurriculumService] Weekly goal achieved! Added', bonusPoints, 'bonus points');
     }
+    return updatedGoal;
   }
 
   // Cache for weekly goal to prevent duplicate requests
@@ -760,4 +804,10 @@ export class CurriculumService {
     // Ensure minimum of 50 points
     return Math.max(50, roundedPoints);
   }
+}
+
+/** 'YYYY-MM-DD' as local midnight (new Date('YYYY-MM-DD') parses as UTC). */
+function parseLocalDate(date: string): Date {
+  const [y, m, d] = date.slice(0, 10).split('-').map(Number);
+  return new Date(y, (m || 1) - 1, d || 1);
 }

@@ -4,6 +4,7 @@ import { map, catchError, switchMap } from 'rxjs/operators';
 import { ConfigService } from '../config.service';
 import { AIProviderFactory } from './ai-provider.factory';
 import { AIRequest } from './base-ai-provider';
+import { parseJsonObject, stripCodeFences } from './json-extract';
 import {
   ExerciseGenerationRequest,
   ExerciseGenerationResponse,
@@ -140,15 +141,8 @@ Return ONLY the Vietnamese translation, no explanations or additional text.`;
 
   private parseEnglishGenerationResponse(response: string): Omit<ExerciseGenerationResponse, 'sourceText'> {
     try {
-      // Clean markdown code blocks if present
-      let cleanText = response.trim();
-      if (cleanText.startsWith('```json')) {
-        cleanText = cleanText.replace(/^```json\n/, '').replace(/\n```$/, '');
-      } else if (cleanText.startsWith('```')) {
-        cleanText = cleanText.replace(/^```\n/, '').replace(/\n```$/, '');
-      }
-
-      const parsed = JSON.parse(cleanText);
+      // Tolerant extraction: code fences anywhere, prose around the JSON, trailing commas
+      const parsed = parseJsonObject(response);
 
       // Validate required fields
       if (!parsed.title || !parsed.englishText || !parsed.suggestedSentences) {
@@ -174,13 +168,9 @@ Return ONLY the Vietnamese translation, no explanations or additional text.`;
 
   private parseVietnameseTranslation(response: string): string {
     // Clean any markdown or extra formatting
-    let cleanText = response.trim();
-    
-    // Remove markdown code blocks if present
-    if (cleanText.startsWith('```')) {
-      cleanText = cleanText.replace(/^```[a-z]*\n/, '').replace(/\n```$/, '');
-    }
-    
+    // Remove markdown code fences wherever they are
+    let cleanText = stripCodeFences(response);
+
     // Remove quotes if the entire text is wrapped in quotes
     if ((cleanText.startsWith('"') && cleanText.endsWith('"')) ||
         (cleanText.startsWith("'") && cleanText.endsWith("'"))) {

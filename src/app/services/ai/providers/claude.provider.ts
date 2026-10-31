@@ -1,5 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { BaseAIProvider, AIRequest, AIMessage } from '../base-ai-provider';
 import { AIResponse, AIStreamChunk, ExerciseContext } from '../../../models/ai.model';
 import { PromptService } from '../prompt.service';
@@ -18,6 +19,7 @@ import { SettingsService } from '../../settings.service';
  *   - `max_tokens` is REQUIRED.
  *   - Response shape: `content: [{type: 'text', text: '...'}, ...]`.
  *   - Streaming uses Anthropic's own event types (`content_block_delta`).
+ *   - Newer models (Opus 4.7+, Sonnet/Haiku 5+) reject non-default `temperature` with HTTP 400.
  *
  * Audio: Claude does not accept audio input via the chat API; `supportsAudioInput`
  * stays `false` (default), so pronunciation falls back to Tier 1 Web Speech.
@@ -40,20 +42,23 @@ export class ClaudeProvider extends BaseAIProvider {
 
   generateText(request: AIRequest, config: any): Observable<string> {
     return new Observable((observer) => {
+      const controller = new AbortController();
       const { systemContent, userMessages } = this.splitSystemAndMessages(request.messages);
+      const model = config.anthropic.modelName || 'claude-sonnet-4-6';
 
       const body: Record<string, unknown> = {
-        model: config.anthropic.modelName || 'claude-sonnet-4-6',
+        model,
         max_tokens: request.maxTokens ?? 1024,
-        temperature: request.temperature ?? 0.7,
         messages: userMessages,
       };
+      if (this.supportsTemperature(model)) body['temperature'] = request.temperature ?? 0.7;
       if (systemContent) body['system'] = systemContent;
 
       fetch(this.API_URL, {
         method: 'POST',
         headers: this.buildHeaders(config),
         body: JSON.stringify(body),
+        signal: controller.signal,
       })
         .then(async (response) => {
           const data = await response.json();
@@ -72,9 +77,13 @@ export class ClaudeProvider extends BaseAIProvider {
           observer.complete();
         })
         .catch((error) => {
+          if (this.isAbortError(error, controller.signal)) return;
           console.error('[Claude] Error:', error);
           observer.error(error);
         });
+
+      // Unsubscribing cancels the request
+      return () => controller.abort();
     });
   }
 
@@ -84,29 +93,24 @@ export class ClaudeProvider extends BaseAIProvider {
     context: ExerciseContext,
     config: any
   ): Observable<AIResponse> {
-    return new Observable((observer) => {
-      const translateToVietnamese = this.settingsService.getSettings().translateFeedbackToVietnamese;
-      const prompt = this.promptService.buildAnalysisPrompt(
-        userInput,
-        sourceText,
-        context,
-        context.fullContext,
-        context.translatedContext,
-        translateToVietnamese
-      );
-      const messages: AIMessage[] = [
-        { role: 'system', content: this.promptService.buildSystemPrompt() },
-        { role: 'user', content: prompt },
-      ];
+    const translateToVietnamese = this.settingsService.getSettings().translateFeedbackToVietnamese;
+    const prompt = this.promptService.buildAnalysisPrompt(
+      userInput,
+      sourceText,
+      context,
+      context.fullContext,
+      context.translatedContext,
+      translateToVietnamese
+    );
+    const messages: AIMessage[] = [
+      { role: 'system', content: this.promptService.buildSystemPrompt() },
+      { role: 'user', content: prompt },
+    ];
 
-      this.generateText({ messages, temperature: 0.7, maxTokens: 1200 }, config).subscribe({
-        next: (content) => {
-          observer.next(this.parseResponse(content));
-          observer.complete();
-        },
-        error: (error) => observer.error(error),
-      });
-    });
+    // map() turns a parse failure into an error notification (no fake score)
+    return this.generateText({ messages, temperature: 0.7, maxTokens: 1200 }, config).pipe(
+      map((content) => this.parseResponse(content))
+    );
   }
 
   override analyzeTextStream(
@@ -116,6 +120,7 @@ export class ClaudeProvider extends BaseAIProvider {
     config: any
   ): Observable<AIStreamChunk> {
     return new Observable((observer) => {
+      const controller = new AbortController();
       const state = this.createStreamingState();
       const translateToVietnamese = this.settingsService.getSettings().translateFeedbackToVietnamese;
       const prompt = this.promptService.buildAnalysisPrompt(
@@ -126,20 +131,23 @@ export class ClaudeProvider extends BaseAIProvider {
         context.translatedContext,
         translateToVietnamese
       );
+      const model = config.anthropic.modelName || 'claude-sonnet-4-6';
 
-      const body = JSON.stringify({
-        model: config.anthropic.modelName || 'claude-sonnet-4-6',
+      const requestBody: Record<string, unknown> = {
+        model,
         max_tokens: 1200,
-        temperature: 0.7,
         stream: true,
         system: this.promptService.buildSystemPrompt(),
         messages: [{ role: 'user', content: prompt }],
-      });
+      };
+      if (this.supportsTemperature(model)) requestBody['temperature'] = 0.7;
+      const body = JSON.stringify(requestBody);
 
       fetch(this.API_URL, {
         method: 'POST',
         headers: this.buildHeaders(config),
         body,
+        signal: controller.signal,
       })
         .then(async (response) => {
           if (!response.ok) {
@@ -160,47 +168,68 @@ export class ClaudeProvider extends BaseAIProvider {
           const decoder = new TextDecoder();
           let buffer = '';
           let textBuffer = '';
+          let stopReason: string | undefined;
+
+          const handleEvent = (evt: string) => {
+            const dataLine = evt.split('\n').find((l) => l.startsWith('data: '));
+            if (!dataLine) return;
+            const data = dataLine.slice(6).trim();
+            if (!data || data === '[DONE]') return;
+            let parsed: any;
+            try {
+              parsed = JSON.parse(data);
+            } catch {
+              return; // Incomplete/invalid event — skip
+            }
+            // `event: error` (e.g. overloaded_error) arrives mid-stream with HTTP 200: fail the stream
+            if (parsed.type === 'error') {
+              throw new Error(parsed.error?.message || 'Claude trả về lỗi trong lúc trả lời. Vui lòng thử lại.');
+            }
+            if (parsed.type === 'message_delta' && parsed.delta?.stop_reason) {
+              stopReason = parsed.delta.stop_reason;
+            }
+            // Text arrives in content_block_delta events.
+            if (parsed.type === 'content_block_delta' && parsed.delta?.type === 'text_delta') {
+              const chunk = parsed.delta.text || '';
+              if (chunk) {
+                textBuffer += chunk;
+                this.emitPartialResponse(textBuffer, observer, state);
+              }
+            }
+          };
 
           while (true) {
             const { done, value } = await reader.read();
             if (done) {
-              if (textBuffer) {
-                observer.next({ type: 'complete', data: this.parseResponse(textBuffer) });
-              }
-              observer.complete();
+              buffer += decoder.decode();
+              if (buffer.trim()) handleEvent(buffer);
+              this.finishAnalysisStream(
+                textBuffer,
+                observer,
+                'Claude',
+                stopReason === 'refusal' ? 'Claude từ chối trả lời yêu cầu này. Hãy thử lại với nội dung khác.' : undefined
+              );
               break;
             }
 
-            buffer += decoder.decode(value, { stream: true });
+            buffer += decoder.decode(value, { stream: true }).replace(/\r\n/g, '\n');
             // Anthropic sends SSE: each event is `event: <type>\ndata: <json>\n\n`
             const events = buffer.split('\n\n');
             buffer = events.pop() || ''; // last fragment may be incomplete
 
             for (const evt of events) {
-              const dataLine = evt.split('\n').find((l) => l.startsWith('data: '));
-              if (!dataLine) continue;
-              const data = dataLine.slice(6).trim();
-              if (!data || data === '[DONE]') continue;
-              try {
-                const parsed = JSON.parse(data);
-                // We only care about content_block_delta events that carry text.
-                if (parsed.type === 'content_block_delta' && parsed.delta?.type === 'text_delta') {
-                  const chunk = parsed.delta.text || '';
-                  if (chunk) {
-                    textBuffer += chunk;
-                    this.emitPartialResponse(textBuffer, observer, state);
-                  }
-                }
-              } catch {
-                // Incomplete chunk — skip
-              }
+              handleEvent(evt);
             }
           }
         })
         .catch((error) => {
+          if (this.isAbortError(error, controller.signal)) return;
           console.error('[Claude] Streaming error:', error);
           observer.error(error);
         });
+
+      // Unsubscribing cancels the request and the stream read
+      return () => controller.abort();
     });
   }
 
@@ -211,34 +240,45 @@ export class ClaudeProvider extends BaseAIProvider {
     context: ExerciseContext,
     config: any
   ): Observable<string> {
-    return new Observable((observer) => {
-      const translateToVietnamese = this.settingsService.getSettings().translateFeedbackToVietnamese;
-      const prompt = this.promptService.buildHintPrompt(
-        sourceText,
-        userInput,
-        previousHints,
-        context,
-        context.fullContext,
-        translateToVietnamese
-      );
-      const messages: AIMessage[] = [
-        { role: 'system', content: 'You are a helpful English language teacher providing hints to students. Give ONE specific, actionable hint.' },
-        { role: 'user', content: prompt },
-      ];
+    const translateToVietnamese = this.settingsService.getSettings().translateFeedbackToVietnamese;
+    const prompt = this.promptService.buildHintPrompt(
+      sourceText,
+      userInput,
+      previousHints,
+      context,
+      context.fullContext,
+      translateToVietnamese
+    );
+    const messages: AIMessage[] = [
+      { role: 'system', content: 'You are a helpful English language teacher providing hints to students. Give ONE specific, actionable hint.' },
+      { role: 'user', content: prompt },
+    ];
 
-      this.generateText({ messages, temperature: 0.7, maxTokens: 200 }, config).subscribe({
-        next: (content) => {
-          observer.next(content.trim());
-          observer.complete();
-        },
-        error: (error) => observer.error(error),
-      });
-    });
+    return this.generateText({ messages, temperature: 0.7, maxTokens: 200 }, config).pipe(
+      map((content) => content.trim())
+    );
   }
 
   // -----------------------------
   // Helpers
   // -----------------------------
+
+  /**
+   * Claude Opus 4.7+, Sonnet/Haiku 5+ and Fable/Mythos reject non-default sampling
+   * params (HTTP 400). Older models (e.g. claude-sonnet-4-6, claude-3-5-sonnet-*) accept them.
+   */
+  private supportsTemperature(model: string): boolean {
+    const name = (model || '').toLowerCase();
+    if (/fable|mythos/.test(name)) return false;
+    const match = name.match(/claude-(opus|sonnet|haiku)-(\d+)(?:-(\d{1,2}))?(?!\d)/);
+    if (!match) return true; // legacy naming like claude-3-5-sonnet-20241022
+    const major = parseInt(match[2], 10);
+    const minor = match[3] ? parseInt(match[3], 10) : 0;
+    if (match[1] === 'opus') {
+      return major < 4 || (major === 4 && minor < 7);
+    }
+    return major < 5;
+  }
 
   private buildHeaders(config: any): Record<string, string> {
     return {
@@ -276,12 +316,8 @@ export class ClaudeProvider extends BaseAIProvider {
       .join('');
   }
 
+  /** Throws on unparseable output — callers show an error instead of saving a made-up score. */
   private parseResponse(content: string): AIResponse {
-    try {
-      return this.parseResponseContent(content);
-    } catch (error) {
-      console.error('[Claude] Failed to parse AI response:', error);
-      return { accuracyScore: 50, feedback: [], overallComment: '' };
-    }
+    return this.parseAnalysisResponse(content, 'Claude');
   }
 }

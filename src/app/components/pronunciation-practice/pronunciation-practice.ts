@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
+  DestroyRef,
   OnDestroy,
   OnInit,
   computed,
@@ -9,6 +10,7 @@ import {
   inject,
   signal
 } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Exercise } from '../../models/exercise.model';
 import {
@@ -47,6 +49,7 @@ export class PronunciationPracticeComponent implements OnInit, OnDestroy {
   readonly tts = inject(TTSService);
   protected translate = inject(TranslationService);
   private toast = inject(ToastService);
+  private destroyRef = inject(DestroyRef);
 
   // Azure Speech (Tier 3) state
   showAzureConfig = signal(false);
@@ -96,6 +99,13 @@ export class PronunciationPracticeComponent implements OnInit, OnDestroy {
         this.revokeAudioOnDestroy = url;
       }
     });
+
+    // Chrome (continuous=false) ends recognition on its own after the first final
+    // result — nobody is awaiting stop() then, so analyze/surface errors from here.
+    this.speechRecognition.ended.pipe(takeUntilDestroyed()).subscribe((end) => {
+      if (end.stopRequested) return; // toggleWebSpeech() handles the stop() result
+      void this.handleWebSpeechResult(end.transcript, end.confidence, end.error);
+    });
   }
 
   ngOnInit(): void {
@@ -139,10 +149,10 @@ export class PronunciationPracticeComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    if (this.recorder.state() === 'recording') {
-      this.recorder.cancel();
-    }
-    if (this.speechRecognition.state() === 'listening') {
+    // Always cancel: releases the mic and timers whatever state the recorder is in
+    this.recorder.cancel();
+    const srState = this.speechRecognition.state();
+    if (srState === 'listening' || srState === 'requesting') {
       this.speechRecognition.cancel();
     }
     if (this.revokeAudioOnDestroy) {
@@ -157,12 +167,7 @@ export class PronunciationPracticeComponent implements OnInit, OnDestroy {
     if (this.speechRecognition.state() === 'listening') {
       try {
         const result = await this.speechRecognition.stop();
-        this.lastTranscript.set(result.transcript);
-        if (!result.transcript) {
-          this.errorMessage.set('Không nghe được. Hãy thử lại to và rõ hơn.');
-          return;
-        }
-        await this.submitTranscriptForAnalysis(result.transcript, result.confidence);
+        await this.handleWebSpeechResult(result.transcript, result.confidence, null);
       } catch (err) {
         this.errorMessage.set((err as Error).message || 'Lỗi nhận diện giọng nói.');
       }
@@ -182,18 +187,36 @@ export class PronunciationPracticeComponent implements OnInit, OnDestroy {
     }
   }
 
+  private async handleWebSpeechResult(
+    transcript: string,
+    confidence: number,
+    error: string | null
+  ): Promise<void> {
+    this.lastTranscript.set(transcript);
+    if (!transcript) {
+      this.errorMessage.set(error || 'Không nghe được. Hãy thử lại to và rõ hơn.');
+      return;
+    }
+    await this.submitTranscriptForAnalysis(transcript, confidence);
+  }
+
   private async submitTranscriptForAnalysis(transcript: string, confidence: number): Promise<void> {
     const exercise = this.exercise();
     if (!exercise) return;
     this.isAnalyzing.set(true);
-    const context = this.practiceService.buildContext(exercise, this.currentSentence());
-    this.practiceService.analyzeTranscript(transcript, context, confidence).subscribe({
+    // Capture the sentence now — the result must not land on a different one
+    const sentenceIndex = this.currentIndex();
+    const expectedText = this.currentSentence();
+    const context = this.practiceService.buildContext(exercise, expectedText);
+    this.practiceService.analyzeTranscript(transcript, context, confidence).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (result) => {
-        this.feedback.set(result);
+        if (this.currentIndex() === sentenceIndex) {
+          this.feedback.set(result);
+        }
         const attempt: PronunciationAttempt = {
           exerciseId: exercise.id,
-          sentenceIndex: this.currentIndex(),
-          expectedText: this.currentSentence(),
+          sentenceIndex,
+          expectedText,
           feedback: result,
           durationMs: 0,
           timestamp: new Date(),
@@ -250,17 +273,23 @@ export class PronunciationPracticeComponent implements OnInit, OnDestroy {
     this.isAnalyzing.set(true);
     this.errorMessage.set(null);
 
-    const context = this.practiceService.buildContext(exercise, this.currentSentence());
+    // Capture the sentence now — the result must not land on a different one
+    const sentenceIndex = this.currentIndex();
+    const expectedText = this.currentSentence();
+    const durationMs = this.durationMs();
+    const context = this.practiceService.buildContext(exercise, expectedText);
 
-    this.practiceService.analyze(blob, context).subscribe({
+    this.practiceService.analyze(blob, context).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (result) => {
-        this.feedback.set(result);
+        if (this.currentIndex() === sentenceIndex) {
+          this.feedback.set(result);
+        }
         const attempt: PronunciationAttempt = {
           exerciseId: exercise.id,
-          sentenceIndex: this.currentIndex(),
-          expectedText: this.currentSentence(),
+          sentenceIndex,
+          expectedText,
           feedback: result,
-          durationMs: this.durationMs(),
+          durationMs,
           timestamp: new Date()
         };
         this.history.update(arr => [...arr, attempt]);
@@ -282,7 +311,7 @@ export class PronunciationPracticeComponent implements OnInit, OnDestroy {
   }
 
   nextSentence(): void {
-    if (this.isLastSentence()) return;
+    if (this.isLastSentence() || this.isAnalyzing()) return;
     this.currentIndex.update(i => i + 1);
     this.resetRecording();
     this.lastTranscript.set('');
@@ -292,7 +321,7 @@ export class PronunciationPracticeComponent implements OnInit, OnDestroy {
   }
 
   previousSentence(): void {
-    if (this.currentIndex() === 0) return;
+    if (this.currentIndex() === 0 || this.isAnalyzing()) return;
     this.currentIndex.update(i => i - 1);
     this.resetRecording();
     this.lastTranscript.set('');
@@ -381,13 +410,17 @@ export class PronunciationPracticeComponent implements OnInit, OnDestroy {
     }
     this.isEnrichingPhonemes.set(true);
     const context = this.practiceService.buildContext(exercise, this.currentSentence());
-    this.azureSpeech.enrichWithPhonemes(blob, context, currentFeedback).subscribe({
+    this.azureSpeech.enrichWithPhonemes(blob, context, currentFeedback).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (enriched) => {
-        this.feedback.set(enriched);
-        const lastAttempt = this.history()[this.history().length - 1];
-        if (lastAttempt) {
-          const updated = { ...lastAttempt, feedback: enriched };
-          this.history.update((arr) => [...arr.slice(0, -1), updated]);
+        // Only replace what's on screen if the user is still looking at that feedback
+        if (this.feedback() === currentFeedback) {
+          this.feedback.set(enriched);
+        }
+        // Update the attempt this feedback came from (not blindly the last one)
+        const attemptIdx = this.history().findIndex((a) => a.feedback === currentFeedback);
+        if (attemptIdx >= 0) {
+          const updated = { ...this.history()[attemptIdx], feedback: enriched };
+          this.history.update((arr) => arr.map((a, i) => (i === attemptIdx ? updated : a)));
           this.practiceService.saveAttempt(updated);
         }
         this.isEnrichingPhonemes.set(false);

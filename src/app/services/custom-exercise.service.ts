@@ -109,8 +109,9 @@ export class CustomExerciseService {
         const currentExercises = this.exercises$.value;
         const updatedExercises = [...currentExercises, newExercise];
 
-        this.exercises$.next(updatedExercises);
+        // Persist first: if the save throws, the in-memory list is left untouched
         this.saveToLocalStorage(updatedExercises);
+        this.exercises$.next(updatedExercises);
 
         observer.next(newExercise);
         observer.complete();
@@ -146,8 +147,9 @@ export class CustomExerciseService {
         const updatedExercises = [...currentExercises];
         updatedExercises[index] = updatedExercise;
 
-        this.exercises$.next(updatedExercises);
+        // Persist first: if the save throws, the in-memory list is left untouched
         this.saveToLocalStorage(updatedExercises);
+        this.exercises$.next(updatedExercises);
 
         observer.next(updatedExercise);
         observer.complete();
@@ -167,8 +169,9 @@ export class CustomExerciseService {
           throw new Error(`Exercise with id ${id} not found`);
         }
 
-        this.exercises$.next(updatedExercises);
+        // Persist first: if the save throws, the in-memory list is left untouched
         this.saveToLocalStorage(updatedExercises);
+        this.exercises$.next(updatedExercises);
 
         observer.next();
         observer.complete();
@@ -305,8 +308,8 @@ export class CustomExerciseService {
     try {
       const userId = this.authService.getUserId();
       if (!userId) {
-        console.warn('[CustomExerciseService] No user ID, skipping save');
-        return;
+        // Throw so callers don't report an unsaved change as saved
+        throw new Error('Bạn cần đăng nhập để lưu bài tập.');
       }
 
       const storageKey = this.getStorageKey(userId);
@@ -355,7 +358,8 @@ export class CustomExerciseService {
 
         const currentExercises = this.exercises$.value;
         const existingIds = new Set(currentExercises.map(ex => ex.id));
-        
+        const currentUserId = this.authService.getUserId();
+
         let imported = 0;
         let skipped = 0;
         const errors: string[] = [];
@@ -366,9 +370,12 @@ export class CustomExerciseService {
             // Convert date strings back to Date objects
             const exercise: CustomExercise = {
               ...ex,
+              id: ex.id || this.generateExerciseId(),
               createdAt: new Date(ex.createdAt),
               updatedAt: new Date(ex.updatedAt),
-              isCustom: true
+              isCustom: true,
+              // Imported items belong to the importing user, not the exporter
+              userId: currentUserId ?? ex.userId
             };
 
             // Validate the exercise
@@ -386,6 +393,7 @@ export class CustomExerciseService {
             }
 
             newExercises.push(exercise);
+            existingIds.add(exercise.id); // also dedupe within the same import file
             imported++;
           } catch (error) {
             errors.push(`Exercise ${index + 1}: ${error instanceof Error ? error.message : 'Unknown error'}`);
@@ -395,8 +403,8 @@ export class CustomExerciseService {
 
         if (newExercises.length > 0) {
           const updatedExercises = [...currentExercises, ...newExercises];
-          this.exercises$.next(updatedExercises);
           this.saveToLocalStorage(updatedExercises);
+          this.exercises$.next(updatedExercises);
         }
 
         observer.next({ imported, skipped, errors });

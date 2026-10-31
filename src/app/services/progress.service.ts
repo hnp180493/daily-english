@@ -13,10 +13,10 @@ import { DatabaseService } from './database/database.service';
 import { UnsubscribeFunction } from './database/database.interface';
 import { AuthService } from './auth.service';
 import { StorageAdapterFactory } from './storage/storage-adapter-factory.service';
-import { LocalStorageProvider } from './storage/local-storage-provider.service';
 import { GuestAnalyticsService } from './guest-analytics.service';
 import { AnalyticsService } from './analytics.service';
 import { StreakFreezeService } from './streak-freeze.service';
+import { clearAllGuestData } from '../constants/storage-keys';
 
 @Injectable({
   providedIn: 'root'
@@ -25,7 +25,6 @@ export class ProgressService {
   private databaseService = inject(DatabaseService);
   private authService = inject(AuthService);
   private storageFactory = inject(StorageAdapterFactory);
-  private localStorageProvider = inject(LocalStorageProvider);
   private guestAnalytics = inject(GuestAnalyticsService);
   private analyticsService = inject(AnalyticsService);
   private streakFreeze = inject(StreakFreezeService);
@@ -38,6 +37,15 @@ export class ProgressService {
   private isInitialized = false;
 
   private currentUserId: string | null = null;
+
+  // Nothing is saved until the stored progress is in memory: before that progress$ holds defaults,
+  // and upserting them would wipe the cloud row. Changes made meanwhile are merged on load.
+  private loadState: 'loading' | 'ready' | 'error' = 'loading';
+  private hasUnsavedChanges = false;
+  private loadRetries = 0;
+  private readonly MAX_LOAD_RETRIES = 5;
+  private saveInFlight = false;
+  private saveQueued = false;
 
   constructor() {
     // Wait for auth to be stable before initializing
@@ -74,15 +82,12 @@ export class ProgressService {
         let data = progress || this.getDefaultProgress();
         // Migrate data if needed
         data = this.migrateProgressData(data);
-        this.progress$.next(data);
-        this.progressSignal.set(data);
+        this.applyLoadedProgress(data);
         console.log('[ProgressService] Progress loaded');
       },
       error: (error: Error) => {
         console.error('[ProgressService] Failed to load progress:', error);
-        const defaultProgress = this.getDefaultProgress();
-        this.progress$.next(defaultProgress);
-        this.progressSignal.set(defaultProgress);
+        this.applyLoadedProgress(this.getDefaultProgress());
       }
     });
   }
@@ -93,18 +98,9 @@ export class ProgressService {
   private handleLogin(): void {
     console.log('[ProgressService] User logged in, clearing guest data');
 
-    // Clear localStorage when user logs in
-    this.localStorageProvider.clearAll().subscribe({
-      next: () => {
-        console.log('[ProgressService] Guest data cleared on login');
-        // Load and migrate in single request
-        this.loadAndMigrateData();
-      },
-      error: () => {
-        // Continue with login anyway
-        this.loadAndMigrateData();
-      }
-    });
+    // Only guest_* keys: memory_retention_data / quiz_results are also used while signed in
+    clearAllGuestData();
+    this.loadAndMigrateData();
   }
 
   /**
@@ -123,8 +119,7 @@ export class ProgressService {
         if (cloudProgress) {
           // Data exists, use it directly
           const data = this.migrateProgressData(cloudProgress);
-          this.progress$.next(data);
-          this.progressSignal.set(data);
+          this.applyLoadedProgress(data);
           console.log('[ProgressService] Progress loaded from Supabase');
           return;
         }
@@ -133,10 +128,8 @@ export class ProgressService {
         const localData = this.checkLocalStorageData(userId);
         if (localData) {
           console.log('[ProgressService] Migrating localStorage data to Supabase');
-          const migratedData = this.migrateProgressData(localData);
-          this.progress$.next(migratedData);
-          this.progressSignal.set(migratedData);
-          this.databaseService.saveProgressAuto(migratedData).subscribe({
+          this.applyLoadedProgress(this.migrateProgressData(localData), false);
+          this.databaseService.saveProgressAuto(this.progress$.value).subscribe({
             next: () => {
               this.clearLocalStorageData(userId);
               console.log('[ProgressService] Migration completed');
@@ -147,17 +140,94 @@ export class ProgressService {
           });
         } else {
           // No data anywhere
-          const defaultProgress = this.getDefaultProgress();
-          this.progress$.next(defaultProgress);
-          this.progressSignal.set(defaultProgress);
+          this.applyLoadedProgress(this.getDefaultProgress());
           console.log('[ProgressService] No progress found, using defaults');
         }
       },
       error: (error: Error) => {
+        // Keep saving disabled; retry rather than letting defaults overwrite the cloud row
         console.error('[ProgressService] Failed to load progress:', error);
-        const defaultProgress = this.getDefaultProgress();
-        this.progress$.next(defaultProgress);
-        this.progressSignal.set(defaultProgress);
+        this.loadState = 'error';
+        if (this.loadRetries < this.MAX_LOAD_RETRIES) {
+          this.loadRetries++;
+          setTimeout(() => this.loadAndMigrateData(), Math.min(2000 * 2 ** (this.loadRetries - 1), 30000));
+        } else {
+          window.addEventListener('online', () => this.loadAndMigrateData(), { once: true });
+        }
+      }
+    });
+  }
+
+  /** Whether stored progress has been loaded (until then progress$ holds placeholder defaults). */
+  isLoaded(): boolean {
+    return this.loadState === 'ready';
+  }
+
+  /**
+   * Install freshly loaded progress, folding in anything recorded before it arrived.
+   * @param saveEarlyChanges persist the merge now (callers that save themselves pass false)
+   */
+  private applyLoadedProgress(loaded: UserProgress, saveEarlyChanges = true): void {
+    const hadEarlyChanges = this.hasUnsavedChanges;
+    const data = hadEarlyChanges ? this.mergeEarlyChanges(loaded, this.progress$.value) : loaded;
+    this.hasUnsavedChanges = false;
+    this.loadState = 'ready';
+    this.progress$.next(data);
+    this.progressSignal.set(data);
+    if (hadEarlyChanges && saveEarlyChanges) {
+      this.persist('early changes');
+    }
+  }
+
+  /**
+   * `early` started from getDefaultProgress(), so its counters are deltas on top of `loaded`.
+   */
+  private mergeEarlyChanges(loaded: UserProgress, early: UserProgress): UserProgress {
+    const merged: UserProgress = {
+      ...loaded,
+      exerciseHistory: { ...loaded.exerciseHistory, ...early.exerciseHistory },
+      dictationHistory: { ...loaded.dictationHistory, ...early.dictationHistory },
+      pronunciationAttempts: [
+        ...(loaded.pronunciationAttempts ?? []),
+        ...(early.pronunciationAttempts ?? [])
+      ].slice(-PRONUNCIATION_HISTORY_LIMIT),
+      totalPoints: loaded.totalPoints + early.totalPoints,
+      achievements: [...new Set([...loaded.achievements, ...early.achievements])]
+    };
+    if (early.lastStreakDate) {
+      // Today's activity happened; recount the streak against the real history
+      const streak = this.updateStreak(loaded);
+      merged.lastActivityDate = early.lastActivityDate;
+      merged.currentStreak = streak.currentStreak;
+      merged.lastStreakDate = streak.lastStreakDate;
+      merged.longestStreak = streak.longestStreak || loaded.longestStreak || 0;
+    }
+    return merged;
+  }
+
+  /**
+   * Save the current progress. Saves are serialized so a retried older save can't land after
+   * (and overwrite) a newer one; only the latest state is written.
+   */
+  private persist(context: string): void {
+    if (this.loadState !== 'ready') {
+      this.hasUnsavedChanges = true;
+      console.warn(`[ProgressService] Progress not loaded yet, deferring save (${context})`);
+      return;
+    }
+    if (this.saveInFlight) {
+      this.saveQueued = true;
+      return;
+    }
+    this.saveInFlight = true;
+    this.storageFactory.getAdapter().saveProgress(this.progress$.value).subscribe({
+      next: () => console.log(`[ProgressService] Saved (${context})`),
+      error: (error) => console.error(`[ProgressService] Failed to save (${context}):`, error)
+    }).add(() => {
+      this.saveInFlight = false;
+      if (this.saveQueued) {
+        this.saveQueued = false;
+        this.persist(context);
       }
     });
   }
@@ -357,12 +427,8 @@ export class ProgressService {
 
     console.log('=== END RECORDING ATTEMPT ===');
 
-    // Save using appropriate adapter
-    const adapter = this.storageFactory.getAdapter();
-    adapter.saveProgress(updated).subscribe({
-      next: () => console.log('[ProgressService] Progress saved'),
-      error: (error) => console.error('[ProgressService] Failed to save progress:', error)
-    });
+    // Saves progress$.value, which includes any achievements checkAchievements just added
+    this.persist('attempt');
   }
 
   private calculateLevel(points: number): number {
@@ -484,6 +550,7 @@ export class ProgressService {
     
     // Streak broken - reset to 1
     console.log('→ Streak broken (missed days), resetting to 1');
+    this.streakFreeze.resetAward();
     this.analyticsService.trackStreakMilestone(1, 'daily');
     return { 
       currentStreak: 1, 
@@ -504,6 +571,12 @@ export class ProgressService {
     const day = String(date.getDate()).padStart(2, '0');
     
     return `${year}-${month}-${day}`;
+  }
+
+  /** 'YYYY-MM-DD' as local midnight (new Date('YYYY-MM-DD') parses as UTC). */
+  private parseLocalDate(dateString: string): Date {
+    const [year, month, day] = dateString.split('-').map(Number);
+    return new Date(year, month - 1, day);
   }
 
   private subtractDays(date: Date, days: number): Date {
@@ -542,13 +615,13 @@ export class ProgressService {
 
     // Count consecutive days
     let streak = 1;
-    let currentDate = new Date(lastActivityDate);
+    let currentDate = this.parseLocalDate(lastActivityDate);
     
     for (let i = 1; i < uniqueDates.length; i++) {
       const expectedDate = this.getDateString(this.subtractDays(currentDate, 1));
       if (uniqueDates[i] === expectedDate) {
         streak++;
-        currentDate = new Date(uniqueDates[i]);
+        currentDate = this.parseLocalDate(uniqueDates[i]);
       } else {
         break;
       }
@@ -591,11 +664,7 @@ export class ProgressService {
     this.progress$.next(updated);
     this.progressSignal.set(updated);
 
-    const adapter = this.storageFactory.getAdapter();
-    adapter.saveProgress(updated).subscribe({
-      next: () => console.log('[ProgressService] Pronunciation attempt saved'),
-      error: (error) => console.error('[ProgressService] Failed to save pronunciation attempt:', error)
-    });
+    this.persist('pronunciation attempt');
   }
 
   getPronunciationAttempts(): PronunciationAttempt[] {
@@ -639,12 +708,8 @@ export class ProgressService {
 
     console.log('=== END RECORDING DICTATION ATTEMPT ===');
 
-    // Save using appropriate adapter
-    const adapter = this.storageFactory.getAdapter();
-    adapter.saveProgress(updated).subscribe({
-      next: () => console.log('[ProgressService] Dictation progress saved'),
-      error: (error) => console.error('[ProgressService] Failed to save dictation progress:', error)
-    });
+    // Saves progress$.value, which includes any achievements checkAchievements just added
+    this.persist('dictation attempt');
   }
 
   private checkAchievements(progress: UserProgress): void {
@@ -698,14 +763,9 @@ export class ProgressService {
         ...progress,
         achievements: [...progress.achievements, ...newAchievements]
       };
+      // Not saved here: the caller saves once with the final object
       this.progress$.next(updated);
       this.progressSignal.set(updated);
-      
-      // Save using appropriate adapter
-      const adapter = this.storageFactory.getAdapter();
-      adapter.saveProgress(updated).subscribe({
-        error: (error) => console.error('[ProgressService] Failed to save achievements:', error)
-      });
     }
   }
 
@@ -737,12 +797,7 @@ export class ProgressService {
 
     console.log('=== END ADDING BONUS POINTS ===');
 
-    // Save using appropriate adapter
-    const adapter = this.storageFactory.getAdapter();
-    adapter.saveProgress(updated).subscribe({
-      next: () => console.log('[ProgressService] Bonus points saved'),
-      error: (error) => console.error('[ProgressService] Failed to save bonus points:', error)
-    });
+    this.persist('bonus points');
   }
 
   /**
@@ -771,9 +826,7 @@ export class ProgressService {
     this.progress$.next(updated);
     this.progressSignal.set(updated);
 
-    this.storageFactory.getAdapter().saveProgress(updated).subscribe({
-      error: (error) => console.error('[ProgressService] Failed to save daily session:', error)
-    });
+    this.persist('daily session');
     return updated.currentStreak;
   }
 }

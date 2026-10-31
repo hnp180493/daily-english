@@ -26,6 +26,7 @@ export class ListeningPlayerComponent implements OnDestroy {
   private flashcards = inject(FlashcardService);
   private toast = inject(ToastService);
   private destroy$ = new Subject<void>();
+  private autoPlayTimer: ReturnType<typeof setTimeout> | null = null;
 
   isLoading = signal(true);
   track = signal<ListeningTrack | null>(null);
@@ -88,6 +89,7 @@ export class ListeningPlayerComponent implements OnDestroy {
   }
 
   ngOnDestroy(): void {
+    this.clearAutoPlayTimer();
     this.tts.stop();
     this.destroy$.next();
     this.destroy$.complete();
@@ -103,6 +105,7 @@ export class ListeningPlayerComponent implements OnDestroy {
   }
 
   setMode(mode: Mode): void {
+    this.clearAutoPlayTimer();
     if (mode !== 'listen' && mode !== 'transcript') {
       this.stop();
     }
@@ -115,7 +118,6 @@ export class ListeningPlayerComponent implements OnDestroy {
 
   toggleSlow(): void {
     this.isSlow.update((v) => !v);
-    this.tts.setRate(this.isSlow() ? LISTENING_CONSTANTS.SLOW_RATE : LISTENING_CONSTANTS.NORMAL_RATE);
   }
 
   toggleAutoPlay(): void {
@@ -134,28 +136,42 @@ export class ListeningPlayerComponent implements OnDestroy {
     const seg = t.segments[idx];
     if (!seg) return;
 
-    this.tts.setRate(this.isSlow() ? LISTENING_CONSTANTS.SLOW_RATE : LISTENING_CONSTANTS.NORMAL_RATE);
+    this.clearAutoPlayTimer();
+    // Per-utterance rate — don't overwrite the user's saved TTS rate
+    const rate = this.isSlow() ? LISTENING_CONSTANTS.SLOW_RATE : LISTENING_CONSTANTS.NORMAL_RATE;
+    this.tts.speak(
+      seg.text,
+      () => {
+        this.isPlaying.set(false);
+        if (this.isAutoPlay() && idx < t.segments.length - 1) {
+          this.autoPlayTimer = setTimeout(() => {
+            this.autoPlayTimer = null;
+            this.currentSegment.set(idx + 1);
+            this.playCurrent();
+          }, seg.pauseAfterMs ?? LISTENING_CONSTANTS.DEFAULT_PAUSE_MS);
+        }
+      },
+      undefined,
+      { rate, onError: () => this.isPlaying.set(false) }
+    );
+    // After speak(): its internal stop() fires the previous utterance's onError
     this.isPlaying.set(true);
-    this.tts.speak(seg.text, () => {
-      this.isPlaying.set(false);
-      if (this.isAutoPlay() && idx < t.segments.length - 1) {
-        setTimeout(() => {
-          this.currentSegment.set(idx + 1);
-          this.playCurrent();
-        }, seg.pauseAfterMs ?? LISTENING_CONSTANTS.DEFAULT_PAUSE_MS);
-      }
-    });
   }
 
   replayCurrent(): void {
+    this.clearAutoPlayTimer();
     this.tts.stop();
-    setTimeout(() => this.playCurrent(), 100);
+    this.autoPlayTimer = setTimeout(() => {
+      this.autoPlayTimer = null;
+      this.playCurrent();
+    }, 100);
   }
 
   next(): void {
     const t = this.track();
     if (!t) return;
     if (this.currentSegment() < t.segments.length - 1) {
+      this.clearAutoPlayTimer();
       this.tts.stop();
       this.currentSegment.update((i) => i + 1);
       this.playCurrent();
@@ -164,6 +180,7 @@ export class ListeningPlayerComponent implements OnDestroy {
 
   prev(): void {
     if (this.currentSegment() > 0) {
+      this.clearAutoPlayTimer();
       this.tts.stop();
       this.currentSegment.update((i) => i - 1);
       this.playCurrent();
@@ -171,14 +188,23 @@ export class ListeningPlayerComponent implements OnDestroy {
   }
 
   jumpTo(index: number): void {
+    this.clearAutoPlayTimer();
     this.tts.stop();
     this.currentSegment.set(index);
     this.playCurrent();
   }
 
   stop(): void {
+    this.clearAutoPlayTimer();
     this.tts.stop();
     this.isPlaying.set(false);
+  }
+
+  private clearAutoPlayTimer(): void {
+    if (this.autoPlayTimer) {
+      clearTimeout(this.autoPlayTimer);
+      this.autoPlayTimer = null;
+    }
   }
 
   startQuiz(): void {

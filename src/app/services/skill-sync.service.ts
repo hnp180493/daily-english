@@ -18,6 +18,11 @@ export interface SkillSyncHandler<T = unknown> {
    * edits while the cloud also changed). Default: the newer side wins.
    */
   merge?(local: T, remote: T): T;
+  /**
+   * True when read/write are already scoped by uid (own storage key per user),
+   * so local data can never belong to another account.
+   */
+  perUser?: boolean;
 }
 
 interface SyncMeta {
@@ -29,6 +34,8 @@ interface SyncMeta {
 }
 
 const META_PREFIX = 'skill-sync-meta-v1';
+/** Global (not per-uid) map: data key -> uid whose data currently sits in localStorage. */
+const OWNER_KEY = 'skill-sync-owner-v1';
 const FLUSH_DELAY_MS = 2000;
 const TABLE = 'user_skill_data';
 
@@ -45,7 +52,10 @@ export class SkillSyncService {
   private auth = inject(AuthService);
   private handlers = new Map<string, SkillSyncHandler<any>>();
   private uid: string | null = null;
+  /** Keys whose first pull for `uid` has completed; only these may be flushed. */
   private pulled = new Set<string>();
+  /** `${uid}:${key}` pulls currently in flight. */
+  private pulling = new Set<string>();
   private flushTimer: ReturnType<typeof setTimeout> | null = null;
   private disabled = false;
 
@@ -63,6 +73,10 @@ export class SkillSyncService {
 
     if (typeof window !== 'undefined') {
       window.addEventListener('pagehide', () => void this.flush());
+      window.addEventListener('online', () => {
+        this.retryPulls();
+        void this.flush();
+      });
     }
   }
 
@@ -74,27 +88,62 @@ export class SkillSyncService {
   /** Call after every local write of a registered key. */
   markChanged(key: string): void {
     const uid = this.uid;
-    if (!uid || !this.handlers.has(key)) return;
+    const handler = this.handlers.get(key);
+    if (!uid || !handler) return;
     this.updateMeta(uid, key, { dirty: true, changedAt: Date.now() });
+    // Before the pull completes, local data may still belong to another account.
+    if (this.pulled.has(key)) this.setOwner(key, uid);
+    else void this.pull(uid, handler);
     this.scheduleFlush();
   }
 
+  private retryPulls(): void {
+    const uid = this.uid;
+    if (!uid) return;
+    for (const handler of this.handlers.values()) {
+      if (!this.pulled.has(handler.key)) void this.pull(uid, handler);
+    }
+  }
+
   private async pull(uid: string, handler: SkillSyncHandler<any>): Promise<void> {
-    if (this.disabled) return;
+    const flight = `${uid}:${handler.key}`;
+    if (this.disabled || this.pulled.has(handler.key) || this.pulling.has(flight)) return;
+    this.pulling.add(flight);
+
+    let result: { data: { data: unknown; updated_at: string } | null; error: any };
+    try {
+      result = await supabaseClient
+        .from(TABLE)
+        .select('data, updated_at')
+        .eq('user_id', uid)
+        .eq('data_key', handler.key)
+        .maybeSingle();
+    } catch (e) {
+      result = { data: null, error: e ?? {} };
+    } finally {
+      this.pulling.delete(flight);
+    }
+    const { data, error } = result;
+
+    // Not marked pulled on error, so the next markChanged / online event retries.
+    if (error) return this.handleError('pull', error);
+    if (this.uid !== uid || this.pulled.has(handler.key)) return;
     this.pulled.add(handler.key);
 
-    const { data, error } = await supabaseClient
-      .from(TABLE)
-      .select('data, updated_at')
-      .eq('user_id', uid)
-      .eq('data_key', handler.key)
-      .maybeSingle();
-
-    if (error) return this.handleError('pull', error);
-    if (this.uid !== uid) return;
+    const local = handler.read(uid);
+    const owner = this.getOwner(handler.key);
+    if (!handler.perUser && owner && owner !== uid) {
+      // Local data belongs to another account that used this device: never push
+      // it into this one, just adopt this account's cloud value.
+      const remoteAt = data ? new Date(data.updated_at).getTime() : undefined;
+      handler.write(uid, data ? data.data : emptyLike(local));
+      this.updateMeta(uid, handler.key, { syncedAt: remoteAt, dirty: false, changedAt: undefined });
+      this.setOwner(handler.key, uid);
+      return;
+    }
+    this.setOwner(handler.key, uid);
 
     const meta = this.getMeta(uid, handler.key);
-    const local = handler.read(uid);
     const localDirty = meta.dirty ?? (meta.syncedAt === undefined && !isEmpty(local));
 
     if (!data) {
@@ -151,7 +200,8 @@ export class SkillSyncService {
     const stamps = new Map<string, number>();
     for (const handler of this.handlers.values()) {
       const meta = this.getMeta(uid, handler.key);
-      if (!meta.dirty) continue;
+      // Pushing before the first pull would overwrite newer remote data.
+      if (!meta.dirty || !this.pulled.has(handler.key)) continue;
       const at = meta.changedAt ?? Date.now();
       stamps.set(handler.key, at);
       rows.push({
@@ -169,6 +219,7 @@ export class SkillSyncService {
     if (error) return this.handleError('push', error);
 
     for (const [key, at] of stamps) {
+      if (this.uid === uid) this.setOwner(key, uid);
       // A newer local edit may have landed while the request was in flight.
       const meta = this.getMeta(uid, key);
       const stillDirty = (meta.changedAt ?? 0) > at;
@@ -184,6 +235,29 @@ export class SkillSyncService {
       return;
     }
     console.warn(`[SkillSync] ${op} failed:`, error.message ?? error);
+  }
+
+  private getOwner(key: string): string | undefined {
+    return this.readOwners()[key];
+  }
+
+  private setOwner(key: string, uid: string): void {
+    const owners = this.readOwners();
+    if (owners[key] === uid) return;
+    owners[key] = uid;
+    try {
+      localStorage.setItem(OWNER_KEY, JSON.stringify(owners));
+    } catch {
+      // Best effort, like updateMeta.
+    }
+  }
+
+  private readOwners(): Record<string, string> {
+    try {
+      return JSON.parse(localStorage.getItem(OWNER_KEY) || '{}');
+    } catch {
+      return {};
+    }
   }
 
   private getMeta(uid: string, key: string): SyncMeta {
@@ -214,6 +288,12 @@ function isEmpty(value: unknown): boolean {
   if (Array.isArray(value)) return value.length === 0;
   if (typeof value === 'object') return Object.keys(value as object).length === 0;
   return false;
+}
+
+function emptyLike(value: unknown): unknown {
+  if (Array.isArray(value)) return [];
+  if (value && typeof value === 'object') return {};
+  return null;
 }
 
 /** Merge two id-keyed records, keeping the entry picked by `prefer` on conflict. */

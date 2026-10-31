@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Observable, from, throwError } from 'rxjs';
+import { Observable, defer, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { supabaseTrackingClient } from '../supabase.client';
 import { ExerciseHistoryRecord } from '../../models/exercise-history.model';
@@ -21,7 +21,7 @@ export class SupabaseTrackingService {
 
   // Exercise History Operations
   insertExerciseHistory(record: ExerciseHistoryRecord): Observable<void> {
-    return from(
+    return defer(() =>
       this.supabase
         .from('user_exercise_history')
         .insert({
@@ -41,7 +41,7 @@ export class SupabaseTrackingService {
   }
 
   loadRecentHistory(userId: string, limit: number): Observable<ExerciseHistoryRecord[]> {
-    return from(
+    return defer(() =>
       this.supabase
         .from('user_exercise_history')
         .select('*')
@@ -57,7 +57,7 @@ export class SupabaseTrackingService {
   }
 
   loadExerciseHistory(userId: string, exerciseId: string): Observable<ExerciseHistoryRecord[]> {
-    return from(
+    return defer(() =>
       this.supabase
         .from('user_exercise_history')
         .select('*')
@@ -77,7 +77,7 @@ export class SupabaseTrackingService {
     startDate: Date,
     endDate: Date
   ): Observable<ExerciseHistoryRecord[]> {
-    return from(
+    return defer(() =>
       this.supabase
         .from('user_exercise_history')
         .select('*')
@@ -95,7 +95,7 @@ export class SupabaseTrackingService {
 
   // Daily Challenge Operations
   saveDailyChallenge(userId: string, challenge: DailyChallenge): Observable<void> {
-    return from(
+    return defer(() =>
       this.supabase
         .from('daily_challenges')
         .upsert({
@@ -116,7 +116,7 @@ export class SupabaseTrackingService {
   }
 
   loadDailyChallenge(userId: string, challengeId: string): Observable<DailyChallenge | null> {
-    return from(
+    return defer(() =>
       this.supabase
         .from('daily_challenges')
         .select('*')
@@ -132,7 +132,7 @@ export class SupabaseTrackingService {
   }
 
   loadDailyChallengeByDate(userId: string, date: string): Observable<DailyChallenge | null> {
-    return from(
+    return defer(() =>
       this.supabase
         .from('daily_challenges')
         .select('*')
@@ -149,7 +149,7 @@ export class SupabaseTrackingService {
 
   // Weekly Goal Operations
   saveWeeklyGoal(userId: string, goal: WeeklyGoal): Observable<void> {
-    return from(
+    return defer(() =>
       this.supabase
         .from('weekly_goals')
         .upsert(
@@ -171,7 +171,7 @@ export class SupabaseTrackingService {
   }
 
   loadWeeklyGoal(userId: string, goalId: string): Observable<WeeklyGoal | null> {
-    return from(
+    return defer(() =>
       this.supabase
         .from('weekly_goals')
         .select('*')
@@ -187,7 +187,7 @@ export class SupabaseTrackingService {
   }
 
   loadWeeklyGoalByDate(userId: string, weekStartDate: string): Observable<WeeklyGoal | null> {
-    return from(
+    return defer(() =>
       this.supabase
         .from('weekly_goals')
         .select('*')

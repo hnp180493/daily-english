@@ -23,14 +23,8 @@ export class SupabaseStorageProvider implements StorageAdapter {
 
   saveProgress(progress: UserProgress): Observable<void> {
     console.log('[SupabaseStorage] Saving progress');
+    // No retry here: saveProgressAuto already retries, and stacking both multiplied attempts
     return this.databaseService.saveProgressAuto(progress).pipe(
-      retry({
-        count: this.MAX_RETRIES,
-        delay: (error, retryCount) => {
-          console.log(`[SupabaseStorage] Retry attempt ${retryCount} after error:`, error);
-          return timer(this.RETRY_DELAY * retryCount);
-        }
-      }),
       catchError(error => {
         console.error('[SupabaseStorage] Failed to save progress after retries:', error);
         this.toastService.error(

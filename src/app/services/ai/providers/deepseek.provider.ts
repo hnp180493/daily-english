@@ -51,10 +51,13 @@ export class DeepSeekProvider extends BaseAIProvider {
         max_tokens: request.maxTokens ?? 800
       };
 
+      const controller = new AbortController();
+
       fetch(`${endpoint}/chat/completions`, {
         method: 'POST',
         headers,
-        body: JSON.stringify(body)
+        body: JSON.stringify(body),
+        signal: controller.signal
       })
         .then(async response => {
           const data = await response.json();
@@ -77,9 +80,13 @@ export class DeepSeekProvider extends BaseAIProvider {
           observer.complete();
         })
         .catch(error => {
+          if (this.isAbortError(error, controller.signal)) return;
           console.error('[DeepSeek] Error:', error);
           observer.error(error);
         });
+
+      // Unsubscribing cancels the request
+      return () => controller.abort();
     });
   }
 }

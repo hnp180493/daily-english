@@ -103,10 +103,10 @@ export class DictationInput {
     let charPosition = 0;
     
     for (let i = 0; i < originalWords.length; i++) {
-      const originalWord = originalWords[i].replace(/[.,!?;:"""''()[\]{}—–-]/g, '');
-      
+      const originalWord = this.stripPunctuation(originalWords[i]);
+
       if (userIndex < userWords.length) {
-        const userWord = userWords[userIndex].replace(/[.,!?;:"""''()[\]{}—–-]/g, '');
+        const userWord = this.stripPunctuation(userWords[userIndex]);
         
         if (originalWord === userWord) {
           charPosition += userWords[userIndex].length + 1;
@@ -120,5 +120,13 @@ export class DictationInput {
         return;
       }
     }
+  }
+
+  /** Curly → straight quotes (same as DictationPracticeService.normalizeText), then strip punctuation. */
+  private stripPunctuation(word: string): string {
+    return word
+      .replace(/[‘’ʼ]/g, "'")
+      .replace(/[“”]/g, '"')
+      .replace(/[.,!?;:"""''()[\]{}—–-]/g, '');
   }
 }

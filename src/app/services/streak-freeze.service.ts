@@ -56,6 +56,13 @@ export class StreakFreezeService {
     return true;
   }
 
+  /** Call when the streak breaks, so the new streak's milestones can award again. */
+  resetAward(): void {
+    if (this.lastAwardedAt === 0) return;
+    this.lastAwardedAt = 0;
+    this.save();
+  }
+
   private apply(value: Partial<FreezeState> | null | undefined): void {
     const count = Number(value?.count);
     this.count.set(Number.isFinite(count) ? Math.max(0, Math.min(STREAK_FREEZE.MAX, count)) : STREAK_FREEZE.INITIAL);

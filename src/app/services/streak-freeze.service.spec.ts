@@ -38,6 +38,16 @@ describe('StreakFreezeService', () => {
     expect(svc.count()).toBe(STREAK_FREEZE.MAX);
   });
 
+  it('awards again at the same milestone after resetAward() (new streak)', () => {
+    const svc = create();
+    svc.consume();
+    expect(svc.onStreakReached(7)).toBeTrue();
+    svc.consume();
+    expect(svc.onStreakReached(7)).toBeFalse();
+    svc.resetAward();
+    expect(svc.onStreakReached(7)).toBeTrue();
+  });
+
   it('persists across instances', () => {
     create().consume();
     TestBed.resetTestingModule();

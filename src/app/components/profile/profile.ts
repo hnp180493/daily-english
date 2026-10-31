@@ -1,4 +1,5 @@
-import { Component, ChangeDetectionStrategy, inject, signal, OnInit, computed } from '@angular/core';
+import { Component, ChangeDetectionStrategy, inject, signal, OnInit, computed, DestroyRef } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { Router, ActivatedRoute } from '@angular/router';
 import { Location } from '@angular/common';
@@ -26,6 +27,7 @@ export class ProfileComponent implements OnInit {
   private location = inject(Location);
   private authService = inject(AuthService);
   private modalService = inject(ModalService);
+  private destroyRef = inject(DestroyRef);
   protected translate = inject(TranslationService);
 
   currentUser = this.authService.currentUser;
@@ -38,10 +40,14 @@ export class ProfileComponent implements OnInit {
   activeTab = signal<TabType>('achievements');
 
   ngOnInit(): void {
-    const tab = this.route.snapshot.queryParamMap.get('tab');
-    if (tab === 'settings') {
-      this.activeTab.set('settings');
-    }
+    // Profile is cached by the route-reuse strategy, so ngOnInit runs only once.
+    // Follow the query param stream so links like /profile?tab=settings work on every visit.
+    this.route.queryParamMap.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((params) => {
+      const tab = params.get('tab');
+      if (tab === 'settings' || tab === 'achievements') {
+        this.activeTab.set(tab);
+      }
+    });
   }
 
   goBack(): void {
@@ -87,6 +93,13 @@ export class ProfileComponent implements OnInit {
 
   setActiveTab(tab: TabType): void {
     this.activeTab.set(tab);
+    // Keep the URL in sync so a later /profile?tab=... link is seen as a change on the cached route.
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { tab },
+      queryParamsHandling: 'merge',
+      replaceUrl: true,
+    });
   }
 
   openExportImportModal(): void {

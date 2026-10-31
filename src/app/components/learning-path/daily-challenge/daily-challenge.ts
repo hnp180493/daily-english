@@ -34,7 +34,6 @@ export class DailyChallenge implements OnInit, OnDestroy {
   private timerInterval?: number;
 
   currentStreak = signal(0);
-  streakMultiplier = computed(() => this.streakService.getStreakMultiplier());
   isCompleted = computed(() => this.challenge()?.isCompleted ?? false);
 
   async ngOnInit(): Promise<void> {
@@ -182,9 +181,8 @@ export class DailyChallenge implements OnInit, OnDestroy {
     const challenge = this.challenge();
     if (!challenge) return 0;
     
-    const baseBonus = challenge.bonusPoints || 50;
-    const multiplier = this.streakMultiplier();
-    return Math.floor(baseBonus * (typeof multiplier === 'number' ? multiplier : 1));
+    // Same amount CurriculumService awards on completion.
+    return this.curriculumService.getDailyChallengeBonus(challenge);
   }
 
   onStartChallenge(): void {

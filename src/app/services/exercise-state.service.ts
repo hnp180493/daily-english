@@ -20,6 +20,7 @@ export interface ExerciseState {
   previousHints: string[];
   currentHint: string;
   currentInput: string;
+  totalHintsUsed?: number;
 }
 
 @Injectable({
@@ -30,6 +31,8 @@ export class ExerciseStateService {
   sentences = signal<SentenceProgress[]>([]);
   currentSentenceIndex = signal(0);
   hintsShown = signal(0);
+  /** Hints used across the whole exercise (hintsShown resets per sentence). */
+  totalHintsUsed = signal(0);
   currentHint = signal('');
   previousHints = signal<string[]>([]);
   userInput = signal('');
@@ -98,8 +101,9 @@ export class ExerciseStateService {
     console.log('[ExerciseState] initializeSentences called with text length:', sourceText?.length);
     
     // Improved regex to handle quotes and complex punctuation
-    // This splits on sentence-ending punctuation followed by space or end of string
-    const sentenceRegex = /[^.!?]+[.!?]+(?=['"]?\s|$)/g;
+    // This splits on sentence-ending punctuation followed by space or end of string.
+    // A '.' between digits is a Vietnamese thousands separator ("500.000 đồng"), not a sentence end.
+    const sentenceRegex = /(?:\d\.(?=\d)|[^.!?])+[.!?]+(?=['"]?\s|$)/g;
     const matches = sourceText.match(sentenceRegex) || [];
     
     console.log('[ExerciseState] Regex matched sentences:', matches.length);
@@ -216,12 +220,29 @@ export class ExerciseStateService {
     this.currentHint.set(hint);
     this.previousHints.update(hints => [...hints, hint]);
     this.hintsShown.update(h => h + 1);
+    this.totalHintsUsed.update(h => h + 1);
+  }
+
+  /** Undo the incorrect-attempt penalty of the last submission (learner accepted their own answer). */
+  undoIncorrectAttempt(index: number): void {
+    this.sentences.update(sentences => {
+      const updated = [...sentences];
+      if (index >= 0 && index < updated.length) {
+        updated[index] = {
+          ...updated[index],
+          incorrectAttempts: Math.max(0, (updated[index].incorrectAttempts || 0) - 1),
+          consecutiveFailures: 0
+        };
+      }
+      return updated;
+    });
   }
 
   reset(): void {
     this.sentences.set([]);
     this.currentSentenceIndex.set(0);
     this.hintsShown.set(0);
+    this.totalHintsUsed.set(0);
     this.currentHint.set('');
     this.previousHints.set([]);
     this.userInput.set('');
@@ -234,7 +255,8 @@ export class ExerciseStateService {
       hintsShown: this.hintsShown(),
       previousHints: this.previousHints(),
       currentHint: this.currentHint(),
-      currentInput: this.userInput()
+      currentInput: this.userInput(),
+      totalHintsUsed: this.totalHintsUsed()
     };
   }
 
@@ -248,6 +270,7 @@ export class ExerciseStateService {
     this.sentences.set(sentences);
     this.currentSentenceIndex.set(state.currentIndex);
     this.hintsShown.set(state.hintsShown || 0);
+    this.totalHintsUsed.set(state.totalHintsUsed ?? state.hintsShown ?? 0);
     this.previousHints.set(state.previousHints || []);
     this.currentHint.set(state.currentHint || '');
     this.userInput.set(state.currentInput || '');
