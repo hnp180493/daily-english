@@ -1,6 +1,23 @@
-import { Component, ChangeDetectionStrategy, input, signal } from '@angular/core';
+import { Component, ChangeDetectionStrategy, input, signal, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { WeakAreaData } from '../../../models/enhanced-analytics.model';
+import { TranslationService } from '../../../services/translation.service';
+import { tOr } from '../dashboard-i18n';
+
+/**
+ * EnhancedAnalyticsService emits the English pattern name as the identifier
+ * (see detectPatterns / getRecommendation there). Map it to a translation key segment.
+ */
+const PATTERN_KEYS: Record<string, string> = {
+  'Passive voice': 'passive',
+  'Past perfect tense': 'past_perfect',
+  'Conditional sentences': 'conditional',
+  'Present perfect tense': 'present_perfect',
+  'Relative clauses': 'relative_clause',
+  'Modal verbs': 'modal',
+  'Gerunds and infinitives': 'gerund',
+  'Articles': 'article'
+};
 
 /**
  * Weak Areas Analysis Component
@@ -15,6 +32,21 @@ import { WeakAreaData } from '../../../models/enhanced-analytics.model';
 })
 export class WeakAreasAnalysisComponent {
   data = input.required<WeakAreaData[]>();
+  /** Exercises in range: tells "not enough data" apart from "no weak areas found". */
+  exerciseCount = input(0);
+  protected translate = inject(TranslationService);
+
+  /** Localized grammar pattern name; unknown patterns are shown as-is. */
+  getPatternName(pattern: string): string {
+    const key = PATTERN_KEYS[pattern];
+    return key ? tOr(this.translate, `dashboard.weak.pattern.${key}`, pattern) : pattern;
+  }
+
+  /** Localized recommendation for the pattern; falls back to the service text. */
+  getRecommendation(area: WeakAreaData): string {
+    const key = PATTERN_KEYS[area.pattern] ?? 'default';
+    return tOr(this.translate, `dashboard.weak.rec.${key}`, area.recommendation);
+  }
   
   // Track expanded weak area
   expandedIndex = signal<number | null>(null);

@@ -1,5 +1,5 @@
 <div class="recent-history-widget">
-  <h3 class="widget-title">Recent Exercise History</h3>
+  <h3 class="widget-title">{{ translate.t('dashboard.history.title') }}</h3>
 
   @if (isLoading()) {
     <div class="loading-state">
@@ -7,12 +7,12 @@
     </div>
   } @else if (isEmpty()) {
     <div class="empty-state">
-      <p class="empty-message">No exercise history yet</p>
-      <p class="empty-hint">Complete some exercises to see your history here!</p>
+      <p class="empty-message">{{ translate.t('dashboard.history.empty') }}</p>
+      <p class="empty-hint">{{ translate.t('dashboard.history.empty_hint') }}</p>
     </div>
   } @else {
     <div class="history-list">
-      @for (record of history(); track record.id) {
+      @for (record of history(); track $index) {
         <div class="history-item" (click)="viewExercise(record.exerciseId)">
           <div class="history-header">
             <span class="exercise-title">{{ getExerciseTitle(record.exerciseId) }}</span>
@@ -20,17 +20,19 @@
           </div>
           <div class="history-details">
             <div class="detail-item">
-              <span class="detail-label">Score:</span>
+              <span class="detail-label">{{ translate.t('dashboard.label.score') }}:</span>
               <span class="detail-value score" [class.high-score]="record.finalScore >= 90" [class.medium-score]="record.finalScore >= 75 && record.finalScore < 90" [class.low-score]="record.finalScore < 75">
                 {{ record.finalScore }}%
               </span>
             </div>
+            @if (record.timeSpentSeconds > 0) {
+              <div class="detail-item">
+                <span class="detail-label">{{ translate.t('dashboard.label.time') }}:</span>
+                <span class="detail-value">{{ formatTimeSpent(record.timeSpentSeconds) }}</span>
+              </div>
+            }
             <div class="detail-item">
-              <span class="detail-label">Time:</span>
-              <span class="detail-value">{{ formatTimeSpent(record.timeSpentSeconds) }}</span>
-            </div>
-            <div class="detail-item">
-              <span class="detail-label">Hints:</span>
+              <span class="detail-label">{{ translate.t('dashboard.label.hints') }}:</span>
               <span class="detail-value">{{ record.hintsUsed }}</span>
             </div>
           </div>

@@ -1,6 +1,8 @@
-import { Component, ChangeDetectionStrategy, input, computed } from '@angular/core';
+import { Component, ChangeDetectionStrategy, input, computed, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TimeOfDayData } from '../../../models/enhanced-analytics.model';
+import { TranslationService } from '../../../services/translation.service';
+import { tOr } from '../dashboard-i18n';
 
 /**
  * Time-of-Day Analysis Component
@@ -15,6 +17,17 @@ import { TimeOfDayData } from '../../../models/enhanced-analytics.model';
 })
 export class TimeOfDayAnalysisComponent {
   data = input.required<TimeOfDayData>();
+  protected translate = inject(TranslationService);
+
+  /** Period name localized from the stable `name` id; falls back to the service text. */
+  getPeriodName(period: { name: string; displayName: string }): string {
+    return tOr(this.translate, `dashboard.${period.name}`, period.displayName);
+  }
+
+  /** Period clock range localized from the stable `name` id; falls back to the service text. */
+  getPeriodRange(period: { name: string; timeRange: string }): string {
+    return tOr(this.translate, `dashboard.tod.range.${period.name}`, period.timeRange);
+  }
 
   /**
    * Check if there's insufficient data

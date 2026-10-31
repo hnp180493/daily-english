@@ -396,6 +396,8 @@ export class LocalStorageProvider implements StorageAdapter {
     return {
       exerciseHistory: this.validateObject(progress.exerciseHistory),
       dictationHistory: this.validateObject(progress.dictationHistory),
+      // Was missing: guests lost their whole pronunciation history on every reload
+      pronunciationAttempts: this.validateArray(progress.pronunciationAttempts),
       totalPoints: this.validateNumber(progress.totalPoints),
       lastActivityDate: this.validateDate(progress.lastActivityDate),
       currentStreak: this.validateNumber(progress.currentStreak),

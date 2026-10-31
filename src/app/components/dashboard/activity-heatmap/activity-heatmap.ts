@@ -4,6 +4,8 @@ import { Router } from '@angular/router';
 import { EnhancedHeatmapData } from '../../../models/enhanced-analytics.model';
 import { ProgressService } from '../../../services/progress.service';
 import { ExerciseService } from '../../../services/exercise.service';
+import { TranslationService } from '../../../services/translation.service';
+import { dateFnsLocale, dateLocale, tCount, tf, unitMin, unitSec } from '../dashboard-i18n';
 import { format } from 'date-fns';
 import { firstValueFrom } from 'rxjs';
 
@@ -40,6 +42,13 @@ interface MonthLabel {
   colSpan: number;
 }
 
+/** 'YYYY-MM-DD' as a LOCAL date (new Date(str) parses it as UTC midnight → previous day west of UTC). */
+function parseLocalDate(value: string | Date): Date {
+  if (value instanceof Date) return value;
+  const [y, m, d] = value.split('-').map(Number);
+  return new Date(y, (m || 1) - 1, d || 1);
+}
+
 @Component({
   selector: 'app-activity-heatmap',
   imports: [CommonModule],
@@ -51,6 +60,7 @@ export class ActivityHeatmapComponent {
   private router = inject(Router);
   private progressService = inject(ProgressService);
   private exerciseService = inject(ExerciseService);
+  protected translate = inject(TranslationService);
 
   heatmapData = input.required<EnhancedHeatmapData>();
   isLoading = signal(false);
@@ -59,7 +69,15 @@ export class ActivityHeatmapComponent {
   // Cache for exercise names
   private exerciseNameCache = new Map<string, string>();
 
-  readonly dayLabels = ['', 'Mon', '', 'Wed', '', 'Fri', ''];
+  readonly dayLabels = computed(() => [
+    '',
+    this.translate.t('dashboard.heatmap.mon'),
+    '',
+    this.translate.t('dashboard.heatmap.wed'),
+    '',
+    this.translate.t('dashboard.heatmap.fri'),
+    ''
+  ]);
 
   // Get streak from ProgressService (same source as header)
   currentStreak = computed(() => {
@@ -79,6 +97,7 @@ export class ActivityHeatmapComponent {
     const data = this.heatmapData();
     if (!data?.weeks?.length) return [];
 
+    const locale = dateFnsLocale(this.translate);
     const months: MonthLabel[] = [];
     let currentMonth = '';
     let colStart = 0;
@@ -86,8 +105,8 @@ export class ActivityHeatmapComponent {
 
     data.weeks.forEach((week, weekIndex) => {
       if (week.days.length > 0) {
-        const firstDay = new Date(week.days[0].date);
-        const monthName = format(firstDay, 'MMM');
+        const firstDay = parseLocalDate(week.days[0].date);
+        const monthName = format(firstDay, 'MMM', { locale });
 
         if (monthName !== currentMonth) {
           if (currentMonth && colSpan > 0) {
@@ -121,20 +140,20 @@ export class ActivityHeatmapComponent {
   });
 
   getTooltip(day: HeatmapDay): string {
-    const date = new Date(day.date);
-    const formattedDate = format(date, 'MMM d, yyyy');
+    const date = parseLocalDate(day.date);
+    const vi = this.translate.language() === 'vi';
+    const formattedDate = format(date, vi ? 'dd/MM/yyyy' : 'MMM d, yyyy', { locale: dateFnsLocale(this.translate) });
     if (day.exerciseCount === 0) {
-      return `No exercises on ${formattedDate}`;
+      return tf(this.translate, 'dashboard.heatmap.tooltip_none', { date: formattedDate });
     }
-    const exerciseText = day.exerciseCount === 1 ? 'exercise' : 'exercises';
-    return `${day.exerciseCount} ${exerciseText} on ${formattedDate}`;
+    return tCount(this.translate, 'dashboard.heatmap.tooltip', day.exerciseCount, { date: formattedDate });
   }
 
   async showDayDetails(day: HeatmapDay): Promise<void> {
     if (day.exerciseCount === 0) return;
 
     this.isLoading.set(true);
-    const date = new Date(day.date);
+    const date = parseLocalDate(day.date);
 
     // Load exercise names
     const exerciseIds = [...new Set(day.exercises.map(e => e.id))];
@@ -161,7 +180,7 @@ export class ActivityHeatmapComponent {
 
     this.selectedDay.set({
       date: day.date,
-      formattedDate: format(date, 'EEEE, MMMM d, yyyy'),
+      formattedDate: format(date, this.translate.language() === 'vi' ? 'EEEE, dd/MM/yyyy' : 'EEEE, MMMM d, yyyy', { locale: dateFnsLocale(this.translate) }),
       exerciseCount: day.exerciseCount,
       exercises: exercisesWithNames,
       averageScore: day.averageScore,
@@ -176,9 +195,14 @@ export class ActivityHeatmapComponent {
     const minutes = Math.floor(seconds / 60);
     const remainingSeconds = seconds % 60;
     if (minutes === 0) {
-      return `${remainingSeconds}s`;
+      return unitSec(this.translate, remainingSeconds);
     }
-    return `${minutes}m ${remainingSeconds}s`;
+    return `${unitMin(this.translate, minutes)} ${unitSec(this.translate, remainingSeconds)}`;
+  }
+
+  /** Clock time of an attempt in the UI language (replaces the en-only `date:'shortTime'` pipe). */
+  formatClock(timestamp: Date | string): string {
+    return new Date(timestamp).toLocaleTimeString(dateLocale(this.translate), { hour: 'numeric', minute: '2-digit' });
   }
 
   closeDetails(): void {

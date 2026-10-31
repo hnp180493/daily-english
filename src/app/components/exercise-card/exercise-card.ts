@@ -8,7 +8,7 @@ import { ExerciseService } from '../../services/exercise.service';
 import { TranslationService } from '../../services/translation.service';
 
 /** Exercise category value → translation key segment (category.<key>.name). */
-const CATEGORY_KEYS: Record<string, string> = {
+export const CATEGORY_KEYS: Record<string, string> = {
   'daily-life': 'daily_life',
   'travel-transportation': 'travel',
   'education-work': 'education_work',

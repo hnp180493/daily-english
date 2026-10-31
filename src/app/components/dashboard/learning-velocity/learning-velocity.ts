@@ -1,6 +1,8 @@
-import { Component, ChangeDetectionStrategy, input, computed } from '@angular/core';
+import { Component, ChangeDetectionStrategy, input, computed, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { LearningVelocityData } from '../../../models/enhanced-analytics.model';
+import { TranslationService } from '../../../services/translation.service';
+import { tCount } from '../dashboard-i18n';
 
 /**
  * Learning Velocity Component
@@ -15,6 +17,12 @@ import { LearningVelocityData } from '../../../models/enhanced-analytics.model';
 })
 export class LearningVelocityComponent {
   data = input.required<LearningVelocityData>();
+  protected translate = inject(TranslationService);
+
+  /** '{n} exercise(s)' in the UI language */
+  exercisesLabel(count: number): string {
+    return tCount(this.translate, 'dashboard.n_exercises', count);
+  }
 
   /**
    * Computed property for velocity status
@@ -32,12 +40,12 @@ export class LearningVelocityComponent {
   encouragementMessage = computed(() => {
     const status = this.velocityStatus();
     if (status === 'below') {
-      return 'Keep going! Consistency is key to improvement.';
+      return this.translate.t('dashboard.velocity.below');
     }
     if (status === 'above') {
-      return 'Great momentum! You\'re exceeding your average pace.';
+      return this.translate.t('dashboard.velocity.above');
     }
-    return 'You\'re maintaining a steady learning pace.';
+    return this.translate.t('dashboard.velocity.at');
   });
 
   /**

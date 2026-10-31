@@ -10,7 +10,14 @@ export type TodayStep =
   | { kind: 'review'; cardId: string }
   | { kind: 'cloze'; sentence: string; answer: string; options: string[]; vi?: string; fromReader?: boolean }
   | { kind: 'shadow'; sentence: string; vi?: string; fromReader?: boolean }
-  | { kind: 'translate'; vi: string; en: string };
+  | { kind: 'translate'; vi: string; en: string; fromReview?: string };
+
+/** A sentence the learner got wrong before, from an exercise that is due for review. */
+export interface ReviewSentence {
+  exerciseId: string;
+  vi: string;
+  en: string;
+}
 
 /** A sentence from a text the learner read in the Reader. */
 export interface ReaderSentence {
@@ -41,6 +48,8 @@ export interface BuildSessionInput {
   readerSentences?: ReaderSentence[];
   /** Words the learner marked as "learning" in the Reader — preferred as cloze answers. */
   learningWords?: Set<string>;
+  /** Previously-wrong sentences from exercises due for review (shown right after flashcards). */
+  reviewSentences?: ReviewSentence[];
 }
 
 export const TODAY_LIMITS = {
@@ -51,6 +60,8 @@ export const TODAY_LIMITS = {
   /** Of the cloze/shadow steps, how many may come from the learner's Reader texts. */
   READER_CLOZE: 2,
   READER_SHADOW: 1,
+  /** Sentences the learner got wrong before, pulled from the review queue. */
+  REVIEW_SENTENCES: 3,
 } as const;
 
 const STOPWORDS = new Set([
@@ -194,6 +205,13 @@ export function buildSession(input: BuildSessionInput): TodaySession | null {
   const steps: TodayStep[] = input.dueCardIds
     .slice(0, TODAY_LIMITS.REVIEW)
     .map((cardId) => ({ kind: 'review' as const, cardId }));
+
+  // Old mistakes come back first, so the review backlog shrinks a little every day.
+  steps.push(
+    ...(input.reviewSentences ?? [])
+      .slice(0, TODAY_LIMITS.REVIEW_SENTENCES)
+      .map((r) => ({ kind: 'translate' as const, vi: r.vi, en: r.en, fromReview: r.exerciseId }))
+  );
 
   // Translation first so it can claim a reasonably long aligned sentence.
   const translateSteps: TodayStep[] = [];

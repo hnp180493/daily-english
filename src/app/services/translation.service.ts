@@ -436,60 +436,7 @@ export class TranslationService {
       'custom_lib.delete_confirm_desc': 'Bạn có chắc muốn xóa bài tập này? Hành động này không thể hoàn tác.',
 
       // Dashboard
-      'dashboard.title': 'Bảng điều khiển học tập',
-      'dashboard.print_report': 'In báo cáo',
-      'dashboard.tab_overview': 'Tổng quan',
-      'dashboard.tab_performance': 'Hiệu suất',
-      'dashboard.tab_activity': 'Hoạt động',
-      'dashboard.tab_insights': 'Phân tích',
-      'dashboard.quick_overview': 'Tổng quan nhanh',
-      'dashboard.performance_analysis': 'Phân tích hiệu suất',
-      'dashboard.activity_history': 'Lịch sử hoạt động',
-      'dashboard.learning_insights': 'Phân tích học tập',
-      'dashboard.time_7d': '7 ngày',
-      'dashboard.time_30d': '30 ngày',
-      'dashboard.time_90d': '90 ngày',
-      'dashboard.exercises_year': 'bài tập trong năm qua',
-      'dashboard.practice_stats': 'Thống kê luyện tập',
-      'dashboard.practice_stats_desc': 'Tổng quan hiệu suất luyện tập',
-      'dashboard.exercises_completed': 'Bài tập hoàn thành',
-      'dashboard.avg_accuracy': 'Độ chính xác trung bình',
-      'dashboard.total_time': 'Tổng thời gian',
-      'dashboard.avg_time_per_exercise': 'Thời gian trung bình mỗi bài',
-      'dashboard.progress_charts': 'Biểu đồ tiến độ',
-      'dashboard.score_trend': 'Xu hướng điểm',
-      'dashboard.category_distribution': 'Phân bố theo chủ đề',
-      'dashboard.difficulty_breakdown': 'Phân bố theo độ khó',
-      'dashboard.performance_trend': 'Xu hướng hiệu suất',
-      'dashboard.stable': 'Ổn định',
-      'dashboard.actual_performance': 'Hiệu suất thực tế',
-      'dashboard.trend_line': 'Đường xu hướng',
-      'dashboard.overall_average': 'Trung bình tổng',
-      'dashboard.activity_timeline': 'Dòng thời gian luyện tập',
-      'dashboard.no_activity_range': 'Không có hoạt động trong khoảng thời gian này',
-      'dashboard.complete_to_see': 'Hoàn thành bài tập để xem dòng thời gian!',
-      'dashboard.time_of_day': 'Năng suất theo giờ',
-      'dashboard.when_perform_best': 'Khi nào bạn làm tốt nhất',
-      'dashboard.most_productive': 'Hiệu quả nhất',
-      'dashboard.morning': 'Buổi sáng',
-      'dashboard.afternoon': 'Buổi chiều',
-      'dashboard.evening': 'Buổi tối',
-      'dashboard.night': 'Đêm khuya',
-      'dashboard.learning_velocity': 'Tốc độ học',
-      'dashboard.velocity_desc': 'Tần suất và độ ổn định luyện tập',
-      'dashboard.average_per_week': 'Trung bình mỗi tuần',
-      'dashboard.this_week': 'Tuần này',
-      'dashboard.last_4_weeks': '4 tuần gần đây',
-      'dashboard.weak_areas': 'Điểm yếu',
-      'dashboard.weak_areas_desc': 'Các mẫu cần luyện tập thêm',
-      'dashboard.occurrences': 'lần xuất hiện',
-      'dashboard.avg_retries': 'số lần thử lại trung bình',
-      'dashboard.error_patterns': 'Mẫu lỗi',
-      'dashboard.common_mistakes_desc': 'Các lỗi thường gặp cần tập trung',
-      'dashboard.examples': 'VÍ DỤ:',
-      'dashboard.of_all_errors': 'tổng số lỗi',
-      'dashboard.less': 'Ít',
-      'dashboard.more': 'Nhiều',
+      // Dashboard widgets
 
       // Review Queue
       'review_queue.this_week': 'Tuần này',
@@ -635,7 +582,6 @@ export class TranslationService {
       'share.card_footer': 'Học tiếng Anh mỗi ngày tại dailyenglish.qzz.io',
 
       // Dashboard print
-      'dashboard.print_title': 'Báo cáo tiến độ học tập',
 
       // Streak warning
       'streak_warning.title': '🔥 Đừng để mất chuỗi {days} ngày!',
@@ -732,6 +678,9 @@ export class TranslationService {
       'today.ai_failed': 'AI không chấm được lúc này, đang dùng điểm theo độ trùng từ.',
       'today.ai_hint': 'Điểm này chỉ so độ trùng từ. Cấu hình AI trong Hồ sơ để được chấm theo nghĩa và sửa lỗi.',
       'today.from_reader': 'Từ bài bạn đọc',
+      'today.from_review': 'Câu bạn từng dịch sai',
+      'today.plan.old_mistakes': '{n} câu bạn từng dịch sai (từ hàng ôn tập)',
+      'today.review_fixed': 'câu cũ đã sửa được',
       'today.read_something': 'Đọc một bài',
       'today.reader_hint': 'Muốn học từ thứ bạn đang đọc? Mở Reader',
 
@@ -1188,60 +1137,7 @@ export class TranslationService {
       'custom_lib.delete_confirm_desc': 'Are you sure you want to delete this exercise? This action cannot be undone.',
 
       // Dashboard
-      'dashboard.title': 'Your Learning Dashboard',
-      'dashboard.print_report': 'Print Report',
-      'dashboard.tab_overview': 'Overview',
-      'dashboard.tab_performance': 'Performance',
-      'dashboard.tab_activity': 'Activity',
-      'dashboard.tab_insights': 'Insights',
-      'dashboard.quick_overview': 'Quick Overview',
-      'dashboard.performance_analysis': 'Performance Analysis',
-      'dashboard.activity_history': 'Activity History',
-      'dashboard.learning_insights': 'Learning Insights',
-      'dashboard.time_7d': '7 Days',
-      'dashboard.time_30d': '30 Days',
-      'dashboard.time_90d': '90 Days',
-      'dashboard.exercises_year': 'exercises in the last year',
-      'dashboard.practice_stats': 'Practice Statistics',
-      'dashboard.practice_stats_desc': 'Your overall practice performance',
-      'dashboard.exercises_completed': 'Exercises Completed',
-      'dashboard.avg_accuracy': 'Average Accuracy',
-      'dashboard.total_time': 'Total Time Spent',
-      'dashboard.avg_time_per_exercise': 'Avg Time Per Exercise',
-      'dashboard.progress_charts': 'Progress Charts',
-      'dashboard.score_trend': 'Score Trend',
-      'dashboard.category_distribution': 'Category Distribution',
-      'dashboard.difficulty_breakdown': 'Difficulty Breakdown',
-      'dashboard.performance_trend': 'Performance Trend',
-      'dashboard.stable': 'Stable',
-      'dashboard.actual_performance': 'Actual Performance',
-      'dashboard.trend_line': 'Trend Line',
-      'dashboard.overall_average': 'Overall Average',
-      'dashboard.activity_timeline': 'Practice Activity Timeline',
-      'dashboard.no_activity_range': 'No activity in this time range',
-      'dashboard.complete_to_see': 'Complete exercises to see your activity timeline!',
-      'dashboard.time_of_day': 'Time-of-Day Productivity',
-      'dashboard.when_perform_best': 'When you perform best',
-      'dashboard.most_productive': 'Most Productive',
-      'dashboard.morning': 'Morning',
-      'dashboard.afternoon': 'Afternoon',
-      'dashboard.evening': 'Evening',
-      'dashboard.night': 'Night',
-      'dashboard.learning_velocity': 'Learning Velocity',
-      'dashboard.velocity_desc': 'Your practice frequency and consistency',
-      'dashboard.average_per_week': 'Average per week',
-      'dashboard.this_week': 'This week',
-      'dashboard.last_4_weeks': 'Last 4 Weeks',
-      'dashboard.weak_areas': 'Weak Areas',
-      'dashboard.weak_areas_desc': 'Patterns where you need more practice',
-      'dashboard.occurrences': 'occurrences',
-      'dashboard.avg_retries': 'avg retries',
-      'dashboard.error_patterns': 'Error Patterns',
-      'dashboard.common_mistakes_desc': 'Common mistakes to focus on',
-      'dashboard.examples': 'EXAMPLES:',
-      'dashboard.of_all_errors': 'of all errors',
-      'dashboard.less': 'Less',
-      'dashboard.more': 'More',
+      // Dashboard widgets
 
       // Review Queue
       'review_queue.this_week': 'This Week',
@@ -1387,7 +1283,6 @@ export class TranslationService {
       'share.card_footer': 'Learn English every day at dailyenglish.qzz.io',
 
       // Dashboard print
-      'dashboard.print_title': 'Learning progress report',
 
       // Streak warning
       'streak_warning.title': "🔥 Don't lose your {days}-day streak!",
@@ -1484,6 +1379,9 @@ export class TranslationService {
       'today.ai_failed': 'AI could not grade right now, using the word-overlap score.',
       'today.ai_hint': 'This score only measures word overlap. Configure AI in Profile to get meaning-based grading and corrections.',
       'today.from_reader': 'From your reading',
+      'today.from_review': 'You got this wrong before',
+      'today.plan.old_mistakes': '{n} sentences you got wrong before (from your review queue)',
+      'today.review_fixed': 'old mistakes fixed',
       'today.read_something': 'Read something',
       'today.reader_hint': 'Want to learn from what you read? Open the Reader',
 
@@ -1535,6 +1433,16 @@ export class TranslationService {
    * Reading `this.language()` ensures Angular re-evaluates when the user
    * toggles language. Falls back to the key itself if missing.
    */
+  /**
+   * Register extra keys from a lazily loaded feature (e.g. the dashboard) so their
+   * strings don't ship in the initial bundle. Call before the feature renders.
+   */
+  extend(extra: Partial<Record<UILanguage, Dict>>): void {
+    for (const lang of Object.keys(extra) as UILanguage[]) {
+      Object.assign(this.dict[lang], extra[lang]);
+    }
+  }
+
   t(key: string): string {
     const lang = this.language();
     return this.dict[lang]?.[key] ?? this.dict.en?.[key] ?? key;

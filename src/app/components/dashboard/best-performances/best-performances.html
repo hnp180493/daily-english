@@ -1,7 +1,7 @@
 <div class="best-performances">
   <div class="widget-header">
-    <h3 class="widget-title">Best Performances</h3>
-    <p class="widget-subtitle">Your top scoring exercises</p>
+    <h3 class="widget-title">{{ translate.t('dashboard.best.title') }}</h3>
+    <p class="widget-subtitle">{{ translate.t('dashboard.best.subtitle') }}</p>
   </div>
 
   @if (data().length === 0) {
@@ -9,8 +9,8 @@
       <svg class="empty-icon" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
       </svg>
-      <p class="empty-message">No performances yet</p>
-      <p class="empty-hint">Complete exercises to see your best performances!</p>
+      <p class="empty-message">{{ translate.t('dashboard.best.empty') }}</p>
+      <p class="empty-hint">{{ translate.t('dashboard.best.empty_hint') }}</p>
     </div>
   } @else {
     <div class="performances-list">
@@ -22,7 +22,7 @@
           (keydown)="handleKeyDown($event, perf.exerciseId)"
           tabindex="0"
           role="button"
-          [attr.aria-label]="'Exercise ' + perf.exerciseId + ', rank ' + perf.rank + ', score ' + perf.score + '%'">
+          [attr.aria-label]="translate.t('dashboard.best.aria').replace('{id}', perf.exerciseId).replace('{rank}', '' + perf.rank).replace('{score}', '' + perf.score)">
           
           <div class="rank-badge" [class.medal]="perf.rank <= 3">
             @if (perf.rank <= 3) {

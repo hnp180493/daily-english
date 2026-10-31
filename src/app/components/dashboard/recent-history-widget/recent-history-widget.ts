@@ -7,6 +7,8 @@ import { ExerciseService } from '../../../services/exercise.service';
 import { ProgressService } from '../../../services/progress.service';
 import { AuthService } from '../../../services/auth.service';
 import { UserProgressHelper } from '../../../models/exercise.model';
+import { TranslationService } from '../../../services/translation.service';
+import { dateLocale, tCount, unitMin, unitSec } from '../dashboard-i18n';
 
 @Component({
   selector: 'app-recent-history-widget',
@@ -20,6 +22,7 @@ export class RecentHistoryWidgetComponent {
   private progressService = inject(ProgressService);
   private authService = inject(AuthService);
   private router = inject(Router);
+  protected translate = inject(TranslationService);
 
   // Input from parent (Dashboard) - receives data from EnhancedAnalytics recentHistory
   historyInput = input<{ exerciseId: string; completedAt: Date; finalScore: number; timeSpentSeconds: number; hintsUsed: number }[]>([]);
@@ -30,7 +33,8 @@ export class RecentHistoryWidgetComponent {
 
   // Combine authenticated and guest history
   history = computed(() => {
-    if (this.isAuthenticated()) {
+    // Signed in but the parent passed nothing (cloud history loading/failed): show local attempts
+    if (this.isAuthenticated() && this.historyInput().length > 0) {
       // Use input data from parent (already loaded by EnhancedAnalyticsService)
       // Map to ExerciseHistoryRecord format for template compatibility
       const inputData = this.historyInput();
@@ -109,19 +113,21 @@ export class RecentHistoryWidgetComponent {
    */
   formatDate(date: Date): string {
     const now = new Date();
-    const diffMs = now.getTime() - date.getTime();
+    // Clamp: a slightly-ahead device clock produced "-197 mins ago"
+    const diffMs = Math.max(0, now.getTime() - date.getTime());
     const diffMins = Math.floor(diffMs / 60000);
     const diffHours = Math.floor(diffMs / 3600000);
     const diffDays = Math.floor(diffMs / 86400000);
 
     if (diffMins < 60) {
-      return `${diffMins} min${diffMins !== 1 ? 's' : ''} ago`;
+      if (diffMins === 0) return this.translate.t('dashboard.time.just_now');
+      return tCount(this.translate, 'dashboard.time.mins_ago', diffMins);
     } else if (diffHours < 24) {
-      return `${diffHours} hour${diffHours !== 1 ? 's' : ''} ago`;
+      return tCount(this.translate, 'dashboard.time.hours_ago', diffHours);
     } else if (diffDays < 7) {
-      return `${diffDays} day${diffDays !== 1 ? 's' : ''} ago`;
+      return tCount(this.translate, 'dashboard.time.days_ago', diffDays);
     } else {
-      return date.toLocaleDateString();
+      return date.toLocaleDateString(dateLocale(this.translate));
     }
   }
 
@@ -133,11 +139,11 @@ export class RecentHistoryWidgetComponent {
     const remainingSeconds = seconds % 60;
     
     if (minutes === 0) {
-      return `${remainingSeconds}s`;
+      return unitSec(this.translate, remainingSeconds);
     } else if (remainingSeconds === 0) {
-      return `${minutes}m`;
+      return unitMin(this.translate, minutes);
     } else {
-      return `${minutes}m ${remainingSeconds}s`;
+      return `${unitMin(this.translate, minutes)} ${unitSec(this.translate, remainingSeconds)}`;
     }
   }
 

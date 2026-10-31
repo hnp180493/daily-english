@@ -1,19 +1,19 @@
-<div class="dashboard-container" role="main" aria-label="Learning Dashboard">
+<div class="dashboard-container" role="main" [attr.aria-label]="translate.t('dashboard.title')">
   <header class="dashboard-header">
     <h1 id="dashboard-title">{{ translate.t('dashboard.title') }}</h1>
     <p class="print-only">{{ translate.t('dashboard.print_title') }} · {{ printDate }}</p>
-    <div class="dashboard-actions" role="toolbar" aria-label="Dashboard actions">
+    <div class="dashboard-actions" role="toolbar" [attr.aria-label]="translate.t('dashboard.aria.actions')">
       @if (needsMigration() && !migrationComplete()) {
         <button 
           class="btn-primary" 
           (click)="runMigration()" 
           [disabled]="isMigrating()"
           [attr.aria-busy]="isMigrating()"
-          aria-label="Update old data to show analytics">
+          [attr.aria-label]="translate.t('dashboard.migration.aria')">
           @if (isMigrating()) {
-            <span>Updating...</span>
+            <span>{{ translate.t('dashboard.migration.updating') }}</span>
           } @else {
-            <span>🔄 Update Analytics Data</span>
+            <span>{{ translate.t('dashboard.migration.button') }}</span>
           }
         </button>
       }
@@ -26,14 +26,14 @@
       <button 
         class="btn-secondary" 
         (click)="printReport()" 
-        aria-label="Print this dashboard report">
+        [attr.aria-label]="translate.t('dashboard.aria.print')">
         {{ translate.t('dashboard.print_report') }}
       </button>
     </div>
   </header>
 
   <!-- Tab Navigation -->
-  <nav class="dashboard-tabs" role="tablist" aria-label="Dashboard sections">
+  <nav class="dashboard-tabs" role="tablist" [attr.aria-label]="translate.t('dashboard.aria.sections')">
     <button 
       role="tab"
       class="tab-btn" 
@@ -86,7 +86,7 @@
       <div id="tab-overview" role="tabpanel" aria-labelledby="tab-overview" class="tab-content">
         <section aria-labelledby="overview-heading">
           <h2 id="overview-heading" class="section-title">{{ translate.t('dashboard.quick_overview') }}</h2>
-          <div class="overview-grid" role="group" aria-label="Overview widgets">
+          <div class="overview-grid" role="group" [attr.aria-label]="translate.t('dashboard.aria.overview_widgets')">
             @if (enhancedAnalytics(); as enhanced) {
               <div class="heatmap-row">
                 <app-activity-heatmap [heatmapData]="enhanced.activityHeatmap" />
@@ -155,19 +155,19 @@
         } @else if (enhancedError()) {
           <div class="error-state" role="alert" aria-live="assertive">
             <div class="error-icon" aria-hidden="true">⚠️</div>
-            <h3>Failed to Load Analytics</h3>
-            <p>{{ enhancedError() }}</p>
+            <h3>{{ translate.t('dashboard.error.title') }}</h3>
+            <p>{{ translate.t(enhancedError()!) }}</p>
             <button 
               class="btn-primary" 
               (click)="retryEnhancedAnalytics()"
-              aria-label="Retry loading enhanced analytics">
-              Retry
+              [attr.aria-label]="translate.t('dashboard.error.retry_aria')">
+              {{ translate.t('dashboard.error.retry') }}
             </button>
           </div>
         } @else if (enhancedAnalytics(); as enhanced) {
           <section aria-labelledby="performance-heading">
             <h2 id="performance-heading" class="section-title">{{ translate.t('dashboard.performance_analysis') }}</h2>
-            <div class="performance-grid" role="group" aria-label="Performance widgets">
+            <div class="performance-grid" role="group" [attr.aria-label]="translate.t('dashboard.aria.performance_widgets')">
               <div class="trend-row">
                 <app-performance-trend-chart [data]="enhanced.performanceTrends" />
               </div>
@@ -184,7 +184,7 @@
           <!-- Guest mode - show basic performance analysis -->
           <section aria-labelledby="performance-heading">
             <!-- <h2 id="performance-heading" class="section-title">Performance Analysis</h2> -->
-            <div class="performance-grid" role="group" aria-label="Performance widgets">
+            <div class="performance-grid" role="group" [attr.aria-label]="translate.t('dashboard.aria.performance_widgets')">
               <div class="analysis-row">
                 <app-performance-analysis [analytics]="analytics()" />
               </div>
@@ -201,13 +201,13 @@
           <h2 id="activity-heading" class="section-title">{{ translate.t('dashboard.activity_history') }}</h2>
           
           <div class="timeline-section">
-            <div class="timeline-controls" role="group" aria-label="Time range selector">
+            <div class="timeline-controls" role="group" [attr.aria-label]="translate.t('dashboard.aria.time_range')">
               <button 
                 class="time-range-btn" 
                 [class.active]="historyTimeRange() === '7d'"
                 [attr.aria-pressed]="historyTimeRange() === '7d'"
                 (click)="setHistoryTimeRange('7d')"
-                aria-label="Show last 7 days">
+                [attr.aria-label]="translate.t('dashboard.aria.show_last_days').replace('{n}', '7')">
                 {{ translate.t('dashboard.time_7d') }}
               </button>
               <button 
@@ -215,7 +215,7 @@
                 [class.active]="historyTimeRange() === '30d'"
                 [attr.aria-pressed]="historyTimeRange() === '30d'"
                 (click)="setHistoryTimeRange('30d')"
-                aria-label="Show last 30 days">
+                [attr.aria-label]="translate.t('dashboard.aria.show_last_days').replace('{n}', '30')">
                 {{ translate.t('dashboard.time_30d') }}
               </button>
               <button 
@@ -223,7 +223,7 @@
                 [class.active]="historyTimeRange() === '90d'"
                 [attr.aria-pressed]="historyTimeRange() === '90d'"
                 (click)="setHistoryTimeRange('90d')"
-                aria-label="Show last 90 days">
+                [attr.aria-label]="translate.t('dashboard.aria.show_last_days').replace('{n}', '90')">
                 {{ translate.t('dashboard.time_90d') }}
               </button>
             </div>
@@ -231,7 +231,7 @@
           </div>
 
           @if (enhancedAnalytics(); as enhanced) {
-            <div class="activity-grid" role="group" aria-label="Activity widgets">
+            <div class="activity-grid" role="group" [attr.aria-label]="translate.t('dashboard.aria.activity_widgets')">
               <div class="activity-details-row">
                 <app-time-of-day-analysis [data]="enhanced.timeOfDayAnalysis" />
                 <app-learning-velocity [data]="enhanced.learningVelocity" />
@@ -258,24 +258,24 @@
         } @else if (enhancedError()) {
           <div class="error-state" role="alert" aria-live="assertive">
             <div class="error-icon" aria-hidden="true">⚠️</div>
-            <h3>Failed to Load Analytics</h3>
-            <p>{{ enhancedError() }}</p>
+            <h3>{{ translate.t('dashboard.error.title') }}</h3>
+            <p>{{ translate.t(enhancedError()!) }}</p>
             <button 
               class="btn-primary" 
               (click)="retryEnhancedAnalytics()"
-              aria-label="Retry loading enhanced analytics">
-              Retry
+              [attr.aria-label]="translate.t('dashboard.error.retry_aria')">
+              {{ translate.t('dashboard.error.retry') }}
             </button>
           </div>
         } @else if (enhancedAnalytics(); as enhanced) {
           <section aria-labelledby="insights-heading">
             <h2 id="insights-heading" class="section-title">{{ translate.t('dashboard.learning_insights') }}</h2>
-            <div class="insights-grid" role="group" aria-label="Insights widgets">
+            <div class="insights-grid" role="group" [attr.aria-label]="translate.t('dashboard.aria.insights_widgets')">
               <div class="weak-areas-row">
-                <app-weak-areas-analysis [data]="enhanced.weakAreas" />
+                <app-weak-areas-analysis [data]="enhanced.weakAreas" [exerciseCount]="enhanced.practiceStats.totalExercisesCompleted" />
               </div>
               <div class="error-patterns-row">
-                <app-error-patterns-analysis [data]="enhanced.errorPatterns || []" />
+                <app-error-patterns-analysis [data]="enhanced.errorPatterns || []" [exerciseCount]="enhanced.practiceStats.totalExercisesCompleted" />
               </div>
               <div class="insights-details-row">
                 <app-vocabulary-stats [analytics]="analytics()" />
@@ -286,12 +286,12 @@
           <!-- Guest mode - show basic vocabulary stats -->
           <section aria-labelledby="insights-heading">
             <h2 id="insights-heading" class="section-title">{{ translate.t('dashboard.learning_insights') }}</h2>
-            <div class="insights-grid" role="group" aria-label="Insights widgets">
+            <div class="insights-grid" role="group" [attr.aria-label]="translate.t('dashboard.aria.insights_widgets')">
               <div class="insights-details-row">
                 <app-vocabulary-stats [analytics]="analytics()" />
               </div>
               <div class="guest-mode-notice">
-                <p>📊 Sign in to unlock advanced insights including weak areas analysis and error pattern detection.</p>
+                <p>{{ translate.t('dashboard.guest_notice') }}</p>
               </div>
             </div>
           </section>
@@ -301,9 +301,9 @@
   } @else {
     <div class="empty-state" role="status">
       <div class="empty-state-icon" aria-hidden="true">📊</div>
-      <h2>Not Enough Data Yet</h2>
-      <p>Complete at least 1 exercise to see your analytics and progress insights.</p>
-      <a routerLink="/exercises" class="btn-primary" aria-label="Go to exercises page to start practicing">Start Practicing</a>
+      <h2>{{ translate.t('dashboard.empty.title') }}</h2>
+      <p>{{ translate.t('dashboard.empty.desc') }}</p>
+      <a routerLink="/exercises" class="btn-primary" [attr.aria-label]="translate.t('dashboard.empty.start_aria')">{{ translate.t('dashboard.empty.start') }}</a>
     </div>
   }
 </div>

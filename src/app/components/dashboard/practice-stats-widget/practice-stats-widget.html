@@ -1,7 +1,7 @@
 <div class="practice-stats-widget">
   <div class="widget-header">
-    <h3 class="widget-title">Practice Statistics</h3>
-    <p class="widget-subtitle">Your overall practice performance</p>
+    <h3 class="widget-title">{{ translate.t('dashboard.practice_stats') }}</h3>
+    <p class="widget-subtitle">{{ translate.t('dashboard.practice_stats_desc') }}</p>
   </div>
 
   @if (isEmpty()) {
@@ -9,14 +9,14 @@
       <svg class="empty-icon" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
       </svg>
-      <p class="empty-message">No statistics available yet</p>
-      <p class="empty-hint">Complete exercises to see your practice statistics!</p>
+      <p class="empty-message">{{ translate.t('dashboard.stats.empty') }}</p>
+      <p class="empty-hint">{{ translate.t('dashboard.stats.empty_hint') }}</p>
     </div>
   } @else {
     <div class="stats-grid">
       <div class="stat-card stat-card-primary">
         <div class="stat-value">{{ data().totalExercisesCompleted }}</div>
-        <div class="stat-label">Exercises Completed</div>
+        <div class="stat-label">{{ translate.t('dashboard.exercises_completed') }}</div>
       </div>
 
       <div class="stat-card stat-card-secondary">
@@ -28,7 +28,7 @@
             </span>
           }
         </div>
-        <div class="stat-label">Average Accuracy</div>
+        <div class="stat-label">{{ translate.t('dashboard.avg_accuracy') }}</div>
         @if (data().trend) {
           <div class="trend-text" [class]="getTrendColorClass()">
             {{ getTrendText() }}
@@ -36,15 +36,18 @@
         }
       </div>
 
-      <div class="stat-card stat-card-tertiary">
-        <div class="stat-value">{{ formatTotalTime(data().totalTimeSpentMinutes) }}</div>
-        <div class="stat-label">Total Time Spent</div>
-      </div>
+      <!-- Time isn't recorded for guest/local attempts: hide instead of showing a fake "0m" -->
+      @if (data().totalTimeSpentMinutes > 0 || data().averageTimePerExercise > 0) {
+        <div class="stat-card stat-card-tertiary">
+          <div class="stat-value">{{ formatTotalTime(data().totalTimeSpentMinutes) }}</div>
+          <div class="stat-label">{{ translate.t('dashboard.total_time') }}</div>
+        </div>
 
-      <div class="stat-card stat-card-quaternary">
-        <div class="stat-value">{{ formatAverageTime(data().averageTimePerExercise) }}</div>
-        <div class="stat-label">Avg Time Per Exercise</div>
-      </div>
+        <div class="stat-card stat-card-quaternary">
+          <div class="stat-value">{{ formatAverageTime(data().averageTimePerExercise) }}</div>
+          <div class="stat-label">{{ translate.t('dashboard.avg_time_per_exercise') }}</div>
+        </div>
+      }
     </div>
   }
 </div>

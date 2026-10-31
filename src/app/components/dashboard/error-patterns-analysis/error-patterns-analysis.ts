@@ -1,5 +1,7 @@
-import { Component, ChangeDetectionStrategy, input } from '@angular/core';
+import { Component, ChangeDetectionStrategy, input, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { TranslationService } from '../../../services/translation.service';
+import { tOr } from '../dashboard-i18n';
 
 interface ErrorPattern {
   type: string;
@@ -19,6 +21,19 @@ interface ErrorPattern {
 })
 export class ErrorPatternsAnalysisComponent {
   data = input.required<ErrorPattern[]>();
+  /** Exercises in range: an empty list with no data must not say "Excellent work!". */
+  exerciseCount = input(0);
+  protected translate = inject(TranslationService);
+
+  /** Localized description keyed by the stable error `type`; falls back to the service text. */
+  getDescription(error: ErrorPattern): string {
+    return tOr(this.translate, `dashboard.errors.type.${error.type}`, error.description);
+  }
+
+  /** Localized recommendation keyed by the stable error `type`; falls back to the service text. */
+  getRecommendation(error: ErrorPattern): string {
+    return tOr(this.translate, `dashboard.errors.rec.${error.type}`, error.recommendation);
+  }
 
   getErrorIcon(type: string): string {
     const icons: Record<string, string> = {

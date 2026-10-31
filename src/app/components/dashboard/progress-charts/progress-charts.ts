@@ -6,12 +6,17 @@ import {
   ViewChild,
   ElementRef,
   OnDestroy,
-  inject
+  inject,
+  effect,
+  signal,
+  untracked
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { Chart, ChartConfiguration, registerables } from 'chart.js';
 import { AnalyticsData } from '../../../models/analytics.model';
+import { TranslationService } from '../../../services/translation.service';
+import { categoryLabel, dateLocale, levelLabel, tCount } from '../dashboard-i18n';
 
 // Register Chart.js components
 Chart.register(...registerables);
@@ -25,6 +30,7 @@ Chart.register(...registerables);
 })
 export class ProgressChartsComponent implements AfterViewInit, OnDestroy {
   private router = inject(Router);
+  protected translate = inject(TranslationService);
 
   analytics = input.required<AnalyticsData>();
 
@@ -36,22 +42,53 @@ export class ProgressChartsComponent implements AfterViewInit, OnDestroy {
   private categoryChart?: Chart;
   private difficultyChart?: Chart;
 
+  private viewReady = signal(false);
+  private timers: ReturnType<typeof setTimeout>[] = [];
+
+  constructor() {
+    // Redraw whenever the analytics input changes (charts used to be drawn once and never updated)
+    effect(() => {
+      this.analytics();
+      this.translate.language(); // Chart.js labels are baked in at render time: redraw on language switch
+      if (!this.viewReady()) return;
+      untracked(() => this.renderAll());
+    });
+  }
+
   ngAfterViewInit(): void {
-    // Render charts progressively
-    this.renderScoreTrendChart();
-    setTimeout(() => this.renderCategoryChart(), 100);
-    setTimeout(() => this.renderDifficultyChart(), 200);
+    this.viewReady.set(true);
   }
 
   ngOnDestroy(): void {
+    // Pending staggered renders must not create charts on a detached canvas after destroy
+    this.timers.forEach(clearTimeout);
+    this.timers = [];
     this.scoreTrendChart?.destroy();
     this.categoryChart?.destroy();
     this.difficultyChart?.destroy();
   }
 
+  private renderAll(): void {
+    this.timers.forEach(clearTimeout);
+    // Render charts progressively
+    this.renderScoreTrendChart();
+    this.timers = [
+      setTimeout(() => this.renderCategoryChart(), 100),
+      setTimeout(() => this.renderDifficultyChart(), 200),
+    ];
+  }
+
+  /** 'YYYY-MM-DD' as a LOCAL date (new Date(str) parses it as UTC midnight → previous day in UTC-x). */
+  private parseLocalDate(value: string): Date {
+    const [y, m, d] = value.split('-').map(Number);
+    return new Date(y, (m || 1) - 1, d || 1);
+  }
+
   private renderScoreTrendChart(): void {
     const data = this.analytics();
-    if (!data.scoreTrends.dates.length) return;
+    this.scoreTrendChart?.destroy();
+    this.scoreTrendChart = undefined;
+    if (!data.scoreTrends.dates.length || !this.scoreTrendCanvas) return;
 
     const config: ChartConfiguration = {
       type: 'line',
@@ -59,7 +96,7 @@ export class ProgressChartsComponent implements AfterViewInit, OnDestroy {
         labels: data.scoreTrends.dates,
         datasets: [
           {
-            label: 'Accuracy Score',
+            label: this.translate.t('dashboard.charts.accuracy_score'),
             data: data.scoreTrends.scores,
             borderColor: '#4F46E5',
             backgroundColor: 'rgba(79, 70, 229, 0.1)',
@@ -67,7 +104,7 @@ export class ProgressChartsComponent implements AfterViewInit, OnDestroy {
             fill: true
           },
           {
-            label: 'Average',
+            label: this.translate.t('dashboard.charts.average'),
             data: Array(data.scoreTrends.dates.length).fill(data.scoreTrends.averageScore),
             borderColor: '#10B981',
             borderDash: [5, 5],
@@ -83,8 +120,8 @@ export class ProgressChartsComponent implements AfterViewInit, OnDestroy {
           tooltip: {
             callbacks: {
               title: (context) => {
-                const date = new Date(context[0].label);
-                return date.toLocaleDateString('en-US', {
+                const date = this.parseLocalDate(context[0].label);
+                return date.toLocaleDateString(dateLocale(this.translate), {
                   year: 'numeric',
                   month: 'short',
                   day: 'numeric'
@@ -125,15 +162,17 @@ export class ProgressChartsComponent implements AfterViewInit, OnDestroy {
 
   private renderCategoryChart(): void {
     const data = this.analytics();
-    if (!data.categoryDistribution.length) return;
+    this.categoryChart?.destroy();
+    this.categoryChart = undefined;
+    if (!data.categoryDistribution.length || !this.categoryCanvas) return;
 
     const config: ChartConfiguration = {
       type: 'bar',
       data: {
-        labels: data.categoryDistribution.map((c) => c.categoryName),
+        labels: data.categoryDistribution.map((c) => categoryLabel(this.translate, c.category, c.categoryName)),
         datasets: [
           {
-            label: 'Exercises Completed',
+            label: this.translate.t('dashboard.exercises_completed'),
             data: data.categoryDistribution.map((c) => c.count),
             backgroundColor: '#4F46E5'
           }
@@ -156,7 +195,7 @@ export class ProgressChartsComponent implements AfterViewInit, OnDestroy {
           },
           tooltip: {
             callbacks: {
-              label: (context) => `${context.parsed.x} exercises`
+              label: (context) => tCount(this.translate, 'dashboard.n_exercises', context.parsed.x ?? 0)
             }
           }
         },
@@ -180,12 +219,14 @@ export class ProgressChartsComponent implements AfterViewInit, OnDestroy {
 
   private renderDifficultyChart(): void {
     const data = this.analytics();
-    if (!data.difficultyBreakdown.length) return;
+    this.difficultyChart?.destroy();
+    this.difficultyChart = undefined;
+    if (!data.difficultyBreakdown.length || !this.difficultyCanvas) return;
 
     const config: ChartConfiguration = {
       type: 'pie',
       data: {
-        labels: data.difficultyBreakdown.map((d) => d.levelName),
+        labels: data.difficultyBreakdown.map((d) => levelLabel(this.translate, d.level, d.levelName)),
         datasets: [
           {
             data: data.difficultyBreakdown.map((d) => d.count),
@@ -200,7 +241,7 @@ export class ProgressChartsComponent implements AfterViewInit, OnDestroy {
           if (elements.length > 0) {
             const index = elements[0].index;
             const difficulty = data.difficultyBreakdown[index].level;
-            this.router.navigate(['/exercises'], { queryParams: { difficulty } });
+            this.router.navigate(['/exercises'], { queryParams: { level: difficulty } });
           }
         },
         plugins: {

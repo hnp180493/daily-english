@@ -219,11 +219,19 @@ export class InternalAnalyticsService {
       (a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime()
     );
 
-    const dates = sortedAttempts.map((attempt) =>
-      new Date(attempt.timestamp).toISOString().split('T')[0]
-    );
-    const scores = sortedAttempts.map((attempt) => attempt.accuracyScore);
-    const averageScore = scores.reduce((sum, score) => sum + score, 0) / scores.length;
+    const byDay = new Map<string, { total: number; count: number }>();
+    for (const attempt of sortedAttempts) {
+      const d = new Date(attempt.timestamp);
+      const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+      const day = byDay.get(key) ?? { total: 0, count: 0 };
+      day.total += attempt.accuracyScore;
+      day.count += 1;
+      byDay.set(key, day);
+    }
+    const dates = Array.from(byDay.keys());
+    const scores = Array.from(byDay.values()).map((d) => Math.round(d.total / d.count));
+    const averageScore =
+      sortedAttempts.reduce((sum, attempt) => sum + attempt.accuracyScore, 0) / sortedAttempts.length;
 
     return {
       dates,
@@ -403,8 +411,7 @@ export class InternalAnalyticsService {
         attemptCount: attempt.attemptNumber,
         lastAttempt: new Date(attempt.timestamp)
       }))
-      .sort((a, b) => a.score - b.score)
-      .slice(0, 5); // Top 5 lowest scores
+      .sort((a, b) => a.score - b.score); // lowest first; the widget lists the top 5
 
     return needsReview;
   }
@@ -566,7 +573,7 @@ export class InternalAnalyticsService {
       const completionRate = Math.round((data.scores.filter(s => s >= 70).length / data.scores.length) * 100);
       
       // Ready to advance: avg score >= 85% and at least 10 exercises
-      const readyToAdvance = avgScore >= 85 && exerciseCount >= 10;
+      const readyToAdvance = level !== DifficultyLevel.ADVANCED && avgScore >= 85 && exerciseCount >= 10;
       
       // Calculate advancement progress (0-100%)
       const scoreProgress = Math.min((avgScore / 85) * 50, 50);
@@ -793,8 +800,9 @@ export class InternalAnalyticsService {
         });
       }
       
-      // Extract from userInput (old format)
-      if (attempt.userInput) {
+      // Extract from userInput (old format only: for new attempts it is the joined sentence inputs,
+      // counting it again doubled every frequency)
+      if (attempt.userInput && !(attempt.sentenceAttempts && attempt.sentenceAttempts.length)) {
         const inputWords = this.extractWords(attempt.userInput);
         inputWords.forEach((word) => {
           if (!vocabularyMap.has(word)) {
@@ -874,6 +882,8 @@ export class InternalAnalyticsService {
     return commonWords.has(word);
   }
 
+  private maxFrequencyCache = new WeakMap<Map<string, unknown>, number>();
+
   /**
    * Calculate word size for word cloud (12-48px)
    */
@@ -881,7 +891,12 @@ export class InternalAnalyticsService {
     frequency: number,
     vocabularyMap: Map<string, { frequency: number; errors: number; lastSeen: Date }>
   ): number {
-    const maxFrequency = Math.max(...Array.from(vocabularyMap.values()).map((v) => v.frequency));
+    let maxFrequency = this.maxFrequencyCache.get(vocabularyMap);
+    if (maxFrequency === undefined) {
+      maxFrequency = 1;
+      for (const v of vocabularyMap.values()) if (v.frequency > maxFrequency) maxFrequency = v.frequency;
+      this.maxFrequencyCache.set(vocabularyMap, maxFrequency);
+    }
     const minSize = 12;
     const maxSize = 48;
     const ratio = frequency / maxFrequency;

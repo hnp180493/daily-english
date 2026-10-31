@@ -1,6 +1,8 @@
-import { Component, ChangeDetectionStrategy, input, computed } from '@angular/core';
+import { Component, ChangeDetectionStrategy, input, computed, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { PerformanceTrendData } from '../../../models/enhanced-analytics.model';
+import { TranslationService } from '../../../services/translation.service';
+import { dateLocale, tCount } from '../dashboard-i18n';
 
 /**
  * Performance Trend Chart Component
@@ -15,6 +17,7 @@ import { PerformanceTrendData } from '../../../models/enhanced-analytics.model';
 })
 export class PerformanceTrendChartComponent {
   data = input.required<PerformanceTrendData>();
+  protected translate = inject(TranslationService);
 
   /**
    * Check if there's insufficient data
@@ -79,9 +82,15 @@ export class PerformanceTrendChartComponent {
     const firstIndex = 0;
     const lastIndex = d.dailyAverages.length - 1;
 
-    // Calculate trend line points using slope
-    const firstScore = d.dailyAverages[firstIndex].averageScore;
-    const lastScore = firstScore + (d.trendSlope * lastIndex);
+    // Least-squares line: anchor at the regression intercept (mean(y) - slope * mean(x)), not at the
+    // first data point — that made the "trend" sit above/below every later point. Clamp to 0..100.
+    const n = d.dailyAverages.length;
+    const meanX = (n - 1) / 2;
+    const meanY = d.dailyAverages.reduce((sum, day) => sum + day.averageScore, 0) / n;
+    const intercept = meanY - d.trendSlope * meanX;
+    const clamp = (v: number) => Math.max(0, Math.min(100, v));
+    const firstScore = clamp(intercept);
+    const lastScore = clamp(intercept + d.trendSlope * lastIndex);
 
     const x1 = this.getXPosition(firstIndex, d.dailyAverages.length);
     const y1 = this.getYPosition(firstScore);
@@ -129,23 +138,28 @@ export class PerformanceTrendChartComponent {
    */
   getTrendText(): string {
     const d = this.data();
-    if (d.trendDirection === 'improving') return 'Improving';
-    if (d.trendDirection === 'declining') return 'Declining';
-    return 'Stable';
+    if (d.trendDirection === 'improving') return this.translate.t('dashboard.trend.improving');
+    if (d.trendDirection === 'declining') return this.translate.t('dashboard.trend.declining');
+    return this.translate.t('dashboard.stable');
   }
 
   /**
    * Format date for display
    */
   formatDate(dateStr: string): string {
-    const date = new Date(dateStr);
-    return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+    // 'YYYY-MM-DD' parsed as LOCAL date (new Date(str) is UTC midnight → previous day in UTC-x)
+    const [y, m, d] = dateStr.split('-').map(Number);
+    const date = new Date(y, (m || 1) - 1, d || 1);
+    return date.toLocaleDateString(dateLocale(this.translate), { month: 'numeric', day: 'numeric' });
   }
 
   /**
    * Get accessible label for data point
    */
   getDataPointLabel(day: { date: string; averageScore: number; exerciseCount: number }): string {
-    return `${this.formatDate(day.date)}: ${day.averageScore}% average score from ${day.exerciseCount} exercise${day.exerciseCount !== 1 ? 's' : ''}`;
+    return tCount(this.translate, 'dashboard.trend.point', day.exerciseCount, {
+      date: this.formatDate(day.date),
+      score: day.averageScore
+    });
   }
 }

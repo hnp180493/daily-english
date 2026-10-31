@@ -1,14 +1,19 @@
 <div class="error-patterns-analysis">
   <div class="widget-header">
-    <h3 class="widget-title">Error Patterns</h3>
-    <p class="widget-subtitle">Common mistakes to focus on</p>
+    <h3 class="widget-title">{{ translate.t('dashboard.error_patterns') }}</h3>
+    <p class="widget-subtitle">{{ translate.t('dashboard.common_mistakes_desc') }}</p>
   </div>
 
-  @if (data().length === 0) {
+  @if (data().length === 0 && exerciseCount() < 3) {
+    <div class="empty-state">
+      <p class="success-message">{{ translate.t('dashboard.not_enough_data') }}</p>
+      <p class="success-hint">{{ translate.t('dashboard.errors.need_more') }}</p>
+    </div>
+  } @else if (data().length === 0) {
     <div class="empty-state">
       <div class="success-icon">🎉</div>
-      <p class="success-message">Excellent work!</p>
-      <p class="success-hint">No significant error patterns detected. Keep up the great work!</p>
+      <p class="success-message">{{ translate.t('dashboard.errors.excellent') }}</p>
+      <p class="success-hint">{{ translate.t('dashboard.errors.none') }}</p>
     </div>
   } @else {
     <div class="error-list">
@@ -18,11 +23,11 @@
             <div class="error-info">
               <span class="error-icon">{{ getErrorIcon(error.type) }}</span>
               <div class="error-details">
-                <h4 class="error-type">{{ error.description }}</h4>
+                <h4 class="error-type">{{ getDescription(error) }}</h4>
                 <div class="error-stats">
-                  <span class="error-count">{{ error.count }} occurrences</span>
+                  <span class="error-count">{{ error.count }} {{ translate.t('dashboard.occurrences') }}</span>
                   <span class="error-percentage" [class]="getSeverityClass(error.percentage)">
-                    {{ error.percentage }}% of all errors
+                    {{ error.percentage }}% {{ translate.t('dashboard.of_all_errors') }}
                   </span>
                 </div>
               </div>
@@ -33,12 +38,12 @@
             <svg class="recommendation-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
-            <p class="recommendation-text">{{ error.recommendation }}</p>
+            <p class="recommendation-text">{{ getRecommendation(error) }}</p>
           </div>
 
           @if (error.examples && error.examples.length > 0) {
             <div class="error-examples">
-              <h5 class="examples-title">Examples:</h5>
+              <h5 class="examples-title">{{ translate.t('dashboard.examples') }}</h5>
               <ul class="examples-list">
                 @for (example of error.examples; track $index) {
                   <li class="example-item">{{ example }}</li>
@@ -54,7 +59,7 @@
       <svg class="tip-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
       </svg>
-      <p>Focus on your most frequent error types to see the biggest improvement in your scores.</p>
+      <p>{{ translate.t('dashboard.errors.tip') }}</p>
     </div>
   }
 </div>

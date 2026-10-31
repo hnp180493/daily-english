@@ -1,10 +1,12 @@
 <div class="performance-trend-chart">
   <div class="widget-header">
-    <h3 class="widget-title">Performance Trend</h3>
-    <div class="trend-indicator" [class]="getTrendColorClass()">
-      <span class="trend-icon">{{ getTrendIcon() }}</span>
-      <span class="trend-text">{{ getTrendText() }}</span>
-    </div>
+    <h3 class="widget-title">{{ translate.t('dashboard.performance_trend') }}</h3>
+    @if (!hasInsufficientData()) {
+      <div class="trend-indicator" [class]="getTrendColorClass()">
+        <span class="trend-icon">{{ getTrendIcon() }}</span>
+        <span class="trend-text">{{ getTrendText() }}</span>
+      </div>
+    }
   </div>
 
   @if (hasInsufficientData()) {
@@ -12,8 +14,8 @@
       <svg class="info-icon" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
       </svg>
-      <p class="insufficient-message">Insufficient data for trend analysis</p>
-      <p class="insufficient-hint">Complete exercises on at least 3 different days to see your performance trend</p>
+      <p class="insufficient-message">{{ translate.t('dashboard.trend.insufficient') }}</p>
+      <p class="insufficient-hint">{{ translate.t('dashboard.trend.insufficient_hint') }}</p>
     </div>
   } @else {
     <div class="chart-container">
@@ -21,7 +23,7 @@
         [attr.viewBox]="'0 0 ' + chartWidth + ' ' + chartHeight"
         class="chart-svg"
         role="img"
-        [attr.aria-label]="'Performance trend chart showing ' + data().dailyAverages.length + ' days of data'">
+        [attr.aria-label]="translate.t('dashboard.trend.chart_aria').replace('{n}', '' + data().dailyAverages.length)">
         
         <!-- Grid lines -->
         <g class="grid-lines">
@@ -50,7 +52,7 @@
         <!-- X-axis labels -->
         <g class="x-axis-labels">
           @for (day of data().dailyAverages; track day.date; let i = $index) {
-            @if (i === 0 || i === data().dailyAverages.length - 1 || i % labelInterval() === 0) {
+            @if (i === 0 || i === data().dailyAverages.length - 1 || (i % labelInterval() === 0 && data().dailyAverages.length - 1 - i >= labelInterval() / 2)) {
               <text
                 [attr.x]="getXPosition(i, data().dailyAverages.length)"
                 [attr.y]="padding.top + innerHeight() + 20"
@@ -95,14 +97,14 @@
     <div class="chart-legend">
       <div class="legend-item">
         <div class="legend-line performance-legend"></div>
-        <span class="legend-label">Actual Performance</span>
+        <span class="legend-label">{{ translate.t('dashboard.actual_performance') }}</span>
       </div>
       <div class="legend-item">
         <div class="legend-line trend-legend"></div>
-        <span class="legend-label">Trend Line</span>
+        <span class="legend-label">{{ translate.t('dashboard.trend_line') }}</span>
       </div>
       <div class="legend-item">
-        <span class="legend-label">Overall Average: {{ data().overallAverage }}%</span>
+        <span class="legend-label">{{ translate.t('dashboard.overall_average') }}: {{ data().overallAverage }}%</span>
       </div>
     </div>
   }

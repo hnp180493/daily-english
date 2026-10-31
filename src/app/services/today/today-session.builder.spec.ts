@@ -131,6 +131,30 @@ describe('today-session.builder', () => {
       expect(buildSession({ ...base, exercises: [] })).toBeNull();
     });
 
+    describe('with review sentences', () => {
+      const reviewSentences = [
+        { exerciseId: 'ex-7', vi: 'Tôi đã quên chìa khoá.', en: 'I forgot my keys.' },
+        { exerciseId: 'ex-8', vi: 'Trời mưa to.', en: 'It is raining heavily.' },
+        { exerciseId: 'ex-9', vi: 'Cô ấy rất bận.', en: 'She is very busy.' },
+        { exerciseId: 'ex-10', vi: 'Thêm một câu.', en: 'One more sentence.' },
+      ];
+
+      it('puts up to REVIEW_SENTENCES old mistakes right after flashcards', () => {
+        const session = buildSession({ ...base, reviewSentences })!;
+        const kinds = session.steps.map((s) => s.kind);
+        expect(kinds.slice(0, 2)).toEqual(['review', 'review']);
+        const fromReview = session.steps.filter((s) => s.kind === 'translate' && s.fromReview);
+        expect(fromReview.length).toBe(TODAY_LIMITS.REVIEW_SENTENCES);
+        expect(session.steps[2]).toEqual({ kind: 'translate', vi: 'Tôi đã quên chìa khoá.', en: 'I forgot my keys.', fromReview: 'ex-7' });
+      });
+
+      it('still ends with the regular translation step', () => {
+        const last = buildSession({ ...base, reviewSentences })!.steps.at(-1)!;
+        expect(last.kind).toBe('translate');
+        expect((last as any).fromReview).toBeUndefined();
+      });
+    });
+
     describe('with Reader sentences', () => {
       const readerText =
         'Coffee farmers in the Highlands depend on stable prices. Robusta beans tolerate heat better than Arabica. ' +

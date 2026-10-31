@@ -1,6 +1,7 @@
-import { Component, ChangeDetectionStrategy, input } from '@angular/core';
+import { Component, ChangeDetectionStrategy, input, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { AnalyticsData } from '../../../models/analytics.model';
+import { TranslationService } from '../../../services/translation.service';
 
 @Component({
   selector: 'app-vocabulary-stats',
@@ -11,6 +12,7 @@ import { AnalyticsData } from '../../../models/analytics.model';
 })
 export class VocabularyStatsComponent {
   analytics = input.required<AnalyticsData>();
+  protected translate = inject(TranslationService);
 
   showWordDetails(word: { text: string; frequency: number; size: number }): void {
     console.log('Word details:', word);

@@ -1,22 +1,22 @@
 <div class="vocabulary-card">
   <div class="card-header">
-    <h3 class="card-title">📚 Learning Overview</h3>
+    <h3 class="card-title">{{ translate.t('dashboard.vocab.title') }}</h3>
   </div>
 
   <div class="card-content">
     <div class="vocab-counters">
       <div class="counter-item">
-        <div class="counter-label">Total Exercises</div>
+        <div class="counter-label">{{ translate.t('dashboard.vocab.total_exercises') }}</div>
         <div class="counter-value">{{ analytics().totalExercises }}</div>
       </div>
       <div class="counter-item">
-        <div class="counter-label">Need Review</div>
+        <div class="counter-label">{{ translate.t('dashboard.vocab.need_review') }}</div>
         <div class="counter-value">{{ analytics().exercisesNeedingReview.length }}</div>
       </div>
     </div>
 
     <div class="word-cloud-section">
-      <h4 class="subsection-title">Most Frequent Words</h4>
+      <h4 class="subsection-title">{{ translate.t('dashboard.vocab.frequent_words') }}</h4>
       @if (analytics().vocabularyStats.wordCloud.length > 0) {
         <div class="word-cloud-container">
           <div class="word-cloud">
@@ -24,8 +24,8 @@
               <span 
                 class="word-cloud-item"
                 [style.font-size.px]="word.size"
-                [title]="word.frequency + ' occurrences'"
-                [attr.aria-label]="word.text + ', ' + word.frequency + ' occurrences'"
+                [title]="word.frequency + ' ' + translate.t('dashboard.occurrences')"
+                [attr.aria-label]="word.text + ', ' + word.frequency + ' ' + translate.t('dashboard.occurrences')"
                 (click)="showWordDetails(word)"
                 tabindex="0"
                 role="button">
@@ -35,7 +35,7 @@
           </div>
         </div>
       } @else {
-        <p class="empty-message">No vocabulary data available yet</p>
+        <p class="empty-message">{{ translate.t('dashboard.vocab.empty') }}</p>
       }
     </div>
   </div>

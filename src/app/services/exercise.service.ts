@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, Observable, combineLatest } from 'rxjs';
-import { map, switchMap, filter } from 'rxjs/operators';
+import { BehaviorSubject, Observable, combineLatest, of } from 'rxjs';
+import { map, switchMap, filter, take, timeout } from 'rxjs/operators';
 import { Exercise, DifficultyLevel, ExerciseCategory, CustomExercise } from '../models/exercise.model';
 import { CustomExerciseService } from './custom-exercise.service';
 import { generateExerciseSlug, extractIdFromSlug } from '../utils/slug.utils';
@@ -81,8 +81,13 @@ export class ExerciseService {
   }
 
   getExercisesByIds(ids: string[]): Observable<Exercise[]> {
+    // One-shot: callers use firstValueFrom / one-off subscribe inside effects. Without take(1)
+    // every dashboard visit leaked a subscription, and if exercises.json failed to load the
+    // stream never emitted (dashboard skeleton forever) — the timeout falls back to [].
     return this.exercises$.pipe(
       filter(exercises => exercises.length > 0),
+      take(1),
+      timeout({ first: 10000, with: () => of([] as Exercise[]) }),
       map(exercises => exercises.filter(ex => ids.includes(ex.id)))
     );
   }

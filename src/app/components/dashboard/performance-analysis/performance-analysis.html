@@ -1,17 +1,17 @@
 <div class="performance-section">
-  <h2>Performance Analysis</h2>
+  <h2>{{ translate.t('dashboard.performance_analysis') }}</h2>
 
   <!-- Exercises Needing Review -->
   <div class="analysis-card">
     <div class="card-header">
-      <h3>Exercises Needing Review</h3>
+      <h3>{{ translate.t('dashboard.perf.needs_review') }}</h3>
       @if (analytics().exercisesNeedingReview && analytics().exercisesNeedingReview.length > 0) {
         <span class="count-badge">{{ analytics().exercisesNeedingReview.length }}</span>
       }
     </div>
     @if (analytics().exercisesNeedingReview && analytics().exercisesNeedingReview.length > 0) {
       <div class="review-grid">
-        @for (exercise of analytics().exercisesNeedingReview; track exercise.exerciseId) {
+        @for (exercise of analytics().exercisesNeedingReview.slice(0, 5); track exercise.exerciseId) {
           <div class="review-card" [class]="getAccuracyClass(exercise.score)">
             <div class="review-header">
               <div class="exercise-info">
@@ -21,19 +21,19 @@
                     <path d="M4 4a2 2 0 00-2 2v1h16V6a2 2 0 00-2-2H4z"/>
                     <path fill-rule="evenodd" d="M18 9H2v5a2 2 0 002 2h12a2 2 0 002-2V9zM4 13a1 1 0 011-1h1a1 1 0 110 2H5a1 1 0 01-1-1zm5-1a1 1 0 100 2h1a1 1 0 100-2H9z" clip-rule="evenodd"/>
                   </svg>
-                  {{ exercise.attemptCount }} attempt{{ exercise.attemptCount > 1 ? 's' : '' }}
+                  {{ translate.t(exercise.attemptCount > 1 ? 'dashboard.n_attempts' : 'dashboard.n_attempts_one').replace('{n}', '' + exercise.attemptCount) }}
                 </span>
               </div>
               <div class="score-display" [class]="getAccuracyClass(exercise.score)">
                 <span class="score-value">{{ exercise.score }}%</span>
-                <span class="score-label">Score</span>
+                <span class="score-label">{{ translate.t('dashboard.label.score') }}</span>
               </div>
             </div>
             <button class="review-btn" (click)="goToExercise(exercise.exerciseId)">
               <svg class="btn-icon" viewBox="0 0 20 20" fill="currentColor">
                 <path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z"/>
               </svg>
-              Review Now
+              {{ translate.t('dashboard.perf.review_now') }}
             </button>
           </div>
         }
@@ -41,30 +41,30 @@
     } @else {
       <div class="success-state">
         <div class="success-icon">🎉</div>
-        <p class="success-message">Great job! No exercises need immediate review</p>
-        <p class="success-submessage">Keep up the excellent work!</p>
+        <p class="success-message">{{ translate.t('dashboard.perf.no_review') }}</p>
+        <p class="success-submessage">{{ translate.t('dashboard.perf.keep_up') }}</p>
       </div>
     }
   </div>
 
   <!-- Category Accuracy -->
   <div class="analysis-card">
-    <h3>Accuracy by Category</h3>
+    <h3>{{ translate.t('dashboard.perf.accuracy_by_category') }}</h3>
     @if (analytics().categoryAccuracy.length > 0) {
       <div class="table-container">
-        <table class="accuracy-table" role="table" [attr.aria-label]="'Category accuracy statistics'">
+        <table class="accuracy-table" role="table" [attr.aria-label]="translate.t('dashboard.perf.category_table_aria')">
           <thead>
             <tr>
-              <th>Category</th>
-              <th>Exercises</th>
-              <th>Avg Score</th>
-              <th>Status</th>
+              <th>{{ translate.t('dashboard.perf.category') }}</th>
+              <th>{{ translate.t('dashboard.label.exercises') }}</th>
+              <th>{{ translate.t('dashboard.label.avg_score') }}</th>
+              <th>{{ translate.t('dashboard.perf.status') }}</th>
             </tr>
           </thead>
           <tbody>
             @for (cat of analytics().categoryAccuracy; track cat.category) {
               <tr [class]="getAccuracyClass(cat.avgScore)">
-                <td>{{ cat.categoryName }}</td>
+                <td>{{ getCategoryName(cat.category, cat.categoryName) }}</td>
                 <td>{{ cat.exerciseCount }}</td>
                 <td>{{ cat.avgScore }}%</td>
                 <td>
@@ -72,7 +72,7 @@
                     {{ getPerformanceLabel(cat.avgScore) }}
                   </span>
                   @if (cat.exerciseCount === 1) {
-                    <span class="limited-data-badge">Limited data</span>
+                    <span class="limited-data-badge">{{ translate.t('dashboard.perf.limited_data') }}</span>
                   }
                 </td>
               </tr>
@@ -81,39 +81,39 @@
         </table>
       </div>
     } @else {
-      <p class="empty-message">No category data available yet</p>
+      <p class="empty-message">{{ translate.t('dashboard.no_category_data') }}</p>
     }
   </div>
 
   <!-- Difficulty Comparison -->
   <div class="analysis-card">
-    <h3>Performance by Difficulty</h3>
+    <h3>{{ translate.t('dashboard.perf.by_difficulty') }}</h3>
     @if (analytics().difficultyComparison.length > 0) {
       <div class="comparison-grid">
         @for (diff of analytics().difficultyComparison; track diff.level) {
           <div class="difficulty-card" [class.recommended]="diff.readyToAdvance" [class.current]="diff.isCurrentLevel">
-            <h4>{{ diff.levelName }}</h4>
+            <h4>{{ getLevelName(diff.level, diff.levelName) }}</h4>
             <div class="stat">
-              <label>Average Score</label>
+              <label>{{ translate.t('dashboard.label.average_score') }}</label>
               <span class="value">{{ diff.avgScore }}%</span>
             </div>
             <div class="stat">
-              <label>Exercises Completed</label>
+              <label>{{ translate.t('dashboard.exercises_completed') }}</label>
               <span class="value">{{ diff.exerciseCount }}</span>
             </div>
             <div class="stat">
-              <label>Completion Rate</label>
+              <label>{{ translate.t('dashboard.perf.completion_rate') }}</label>
               <span class="value">{{ diff.completionRate }}%</span>
             </div>
             @if (diff.readyToAdvance) {
               <div class="advancement-notice">
                 <span class="icon">🎓</span>
-                <p>Ready for next level!</p>
+                <p>{{ translate.t('dashboard.perf.ready_next') }}</p>
               </div>
             }
             @if (diff.isCurrentLevel) {
               <div class="progress-indicator">
-                <label>Progress to advancement</label>
+                <label>{{ translate.t('dashboard.perf.progress_advancement') }}</label>
                 <div class="progress-bar">
                   <div class="progress-fill" [style.width.%]="diff.advancementProgress"></div>
                 </div>
@@ -124,7 +124,7 @@
         }
       </div>
     } @else {
-      <p class="empty-message">No difficulty data available yet</p>
+      <p class="empty-message">{{ translate.t('dashboard.no_difficulty_data') }}</p>
     }
   </div>
 </div>

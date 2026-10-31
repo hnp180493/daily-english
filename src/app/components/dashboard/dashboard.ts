@@ -1,9 +1,9 @@
-import { Component, ChangeDetectionStrategy, signal, computed, inject, effect, OnInit, OnDestroy } from '@angular/core';
+import { Component, ChangeDetectionStrategy, signal, computed, inject, effect, untracked, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, ActivatedRoute, Router } from '@angular/router';
-import { toSignal } from '@angular/core/rxjs-interop';
-import { Subject } from 'rxjs';
-import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs/operators';
+import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
+import { EMPTY, Subject } from 'rxjs';
+import { catchError, debounceTime, distinctUntilChanged, switchMap } from 'rxjs/operators';
 import { InternalAnalyticsService } from '../../services/internal-analytics.service';
 import { EnhancedAnalyticsService } from '../../services/enhanced-analytics.service';
 import { ProgressService } from '../../services/progress.service';
@@ -30,6 +30,7 @@ import { DashboardSkeletonComponent } from './dashboard-skeleton/dashboard-skele
 import { PronunciationStatsComponent } from './pronunciation-stats/pronunciation-stats';
 import { FeatureFlagService } from '../../services/feature-flag.service';
 import { TranslationService } from '../../services/translation.service';
+import { DASHBOARD_DICT } from './dashboard.dict';
 import { UserProgressHelper } from '../../models/exercise.model';
 
 @Component({
@@ -69,6 +70,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   protected translate = inject(TranslationService);
+  // Dashboard strings live in this lazy chunk; register them before any widget renders
+  private readonly registerStrings = this.translate.extend(DASHBOARD_DICT);
 
   readonly pronunciationAttempts = computed(() => this.userProgress()?.pronunciationAttempts ?? []);
   readonly showPronunciationStats = computed(() =>
@@ -87,7 +90,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   migrationComplete = signal(false);
 
   // Debounced time range changes
-  private timeRangeChange$ = new Subject<{ userId: string; timeRange: TimeRange }>();
+  private timeRangeChange$ = new Subject<{ userId: string; timeRange: TimeRange; refresh: number }>();
   
   enhancedAnalytics = signal<EnhancedAnalyticsData | null>(null);
 
@@ -136,27 +139,30 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.timeRangeChange$
       .pipe(
         debounceTime(300), // Debounce for 300ms
-        distinctUntilChanged((prev, curr) => 
-          prev.userId === curr.userId && prev.timeRange === curr.timeRange
+        distinctUntilChanged((prev, curr) =>
+          prev.userId === curr.userId && prev.timeRange === curr.timeRange && prev.refresh === curr.refresh
         ),
         switchMap(({ userId, timeRange }) => {
           this.isLoadingEnhanced.set(true);
           this.enhancedError.set(null);
-          return this.enhancedAnalyticsService.computeHistoryAnalytics(userId, timeRange);
-        })
+          // Handle errors per request: an error reaching subscribe() would end the stream,
+          // and later time-range changes would silently never load again.
+          return this.enhancedAnalyticsService.computeHistoryAnalytics(userId, timeRange).pipe(
+            catchError((error) => {
+              console.error('Failed to load enhanced analytics:', error);
+              this.isLoadingEnhanced.set(false);
+              this.isLoading.set(false);
+              this.enhancedError.set('dashboard.error.message'); // translation key, rendered via translate.t()
+              return EMPTY;
+            })
+          );
+        }),
+        takeUntilDestroyed()
       )
-      .subscribe({
-        next: (data) => {
-          this.isLoadingEnhanced.set(false);
-          this.isLoading.set(false);
-          this.enhancedAnalytics.set(data);
-        },
-        error: (error) => {
-          console.error('Failed to load enhanced analytics:', error);
-          this.isLoadingEnhanced.set(false);
-          this.isLoading.set(false);
-          this.enhancedError.set('Failed to load analytics. Please try again.');
-        }
+      .subscribe((data) => {
+        this.isLoadingEnhanced.set(false);
+        this.isLoading.set(false);
+        this.enhancedAnalytics.set(data);
       });
 
     // Watch for time range changes
@@ -165,11 +171,16 @@ export class DashboardComponent implements OnInit, OnDestroy {
       const timeRange = this.selectedTimeRange();
       
       if (user?.uid) {
-        this.timeRangeChange$.next({ userId: user.uid, timeRange });
+        this.timeRangeChange$.next({ userId: user.uid, timeRange, refresh: this.refreshCount });
       } else {
-        // Guest mode - enhanced analytics will be null, reload local analytics
-        this.enhancedAnalytics.set(null);
-        this.loadLocalAnalytics();
+        // Guest mode - enhanced analytics will be null, reload local analytics when progress changes.
+        // Only userProgress is a dependency: loadLocalAnalytics reads/writes localAnalytics, and
+        // tracking that would re-run this effect forever.
+        this.userProgress();
+        untracked(() => {
+          this.enhancedAnalytics.set(null);
+          this.loadLocalAnalytics();
+        });
       }
     });
   }
@@ -181,18 +192,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
     // Read tab from query params
     const tabParam = this.route.snapshot.queryParamMap.get('tab');
     if (tabParam && ['overview', 'performance', 'activity', 'insights'].includes(tabParam)) {
-      this.activeTab.set(tabParam as 'overview' | 'performance' | 'activity' | 'insights');
-    }
-    
-    // Initial load
-    const user = this.currentUser();
-    const timeRange = this.selectedTimeRange();
-    
-    if (user?.uid) {
-      this.timeRangeChange$.next({ userId: user.uid, timeRange });
-    } else {
-      // Guest mode - compute local analytics asynchronously
-      this.loadLocalAnalytics();
+      const tab = tabParam === 'activity' && !this.currentUser() ? 'overview' : tabParam;
+      this.activeTab.set(tab as 'overview' | 'performance' | 'activity' | 'insights');
     }
   }
 
@@ -201,30 +202,45 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.timeRangeChange$.complete();
   }
 
+  private localRequest = 0;
+  private refreshCount = 0;
+
   private async loadLocalAnalytics(): Promise<void> {
-    this.isLoading.set(true);
+    const request = ++this.localRequest;
+    // Re-runs on every progress change; rebuilding all widgets behind a skeleton each time flickered.
+    if (!this.localAnalytics()) this.isLoading.set(true);
     const progress = this.userProgress();
     const timeRange = this.selectedTimeRange();
-    
-    if (progress) {
-      const analytics = await this.analyticsService.computeAnalyticsAsync(progress, timeRange);
-      this.localAnalytics.set(analytics);
+
+    try {
+      if (progress) {
+        const analytics = await this.analyticsService.computeAnalyticsAsync(progress, timeRange);
+        if (request === this.localRequest) this.localAnalytics.set(analytics); // drop out-of-order results
+      }
+    } finally {
+      if (request === this.localRequest) this.isLoading.set(false);
     }
-    this.isLoading.set(false);
   }
 
   retryEnhancedAnalytics(): void {
     const user = this.currentUser();
     const timeRange = this.selectedTimeRange();
-    
+
     if (!user?.uid) return;
-    
-    this.timeRangeChange$.next({ userId: user.uid, timeRange });
+
+    this.enhancedAnalyticsService.invalidateCache();
+    this.timeRangeChange$.next({ userId: user.uid, timeRange, refresh: ++this.refreshCount });
   }
 
+  // Pronunciation and dictation have their own widgets, so they count as data too
   hasEnoughData = computed(() => {
     const progress = this.userProgress();
-    return progress && UserProgressHelper.getAttemptsCount(progress) >= 1;
+    if (!progress) return false;
+    return (
+      UserProgressHelper.getAttemptsCount(progress) >= 1 ||
+      (progress.pronunciationAttempts?.length ?? 0) > 0 ||
+      Object.keys(progress.dictationHistory ?? {}).length > 0
+    );
   });
 
   // Compute practice stats for guest mode from local data
@@ -232,7 +248,9 @@ export class DashboardComponent implements OnInit, OnDestroy {
     const progress = this.userProgress();
     if (!progress || this.currentUser()) return null;
 
-    const attempts = UserProgressHelper.getAllAttempts(progress);
+    const attempts = UserProgressHelper.getAllAttempts(progress)
+      .slice()
+      .sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());
     if (attempts.length === 0) return null;
 
     const totalExercisesCompleted = attempts.length;
@@ -243,8 +261,9 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
     // Calculate trend (compare recent vs overall)
     const recentAttempts = attempts.slice(-5);
-    const recentAverage = recentAttempts.reduce((sum, a) => sum + a.accuracyScore, 0) / recentAttempts.length;
-    const overallAverage = averageAccuracy;
+    // Rounded before comparing, otherwise "↑ 0% better than average" could appear
+    const recentAverage = Math.round(recentAttempts.reduce((sum, a) => sum + a.accuracyScore, 0) / recentAttempts.length);
+    const overallAverage = Math.round(averageAccuracy);
 
     return {
       totalExercisesCompleted,
@@ -262,7 +281,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   needsMigration = computed(() => {
     const progress = this.userProgress();
-    return progress && this.migrationUtility.needsMigration(progress);
+    // Guests can't be migrated (the save is a no-op without a user), the button would loop forever
+    return !!this.currentUser() && !!progress && this.migrationUtility.needsMigration(progress);
   });
 
   exportData(): void {

@@ -1,8 +1,9 @@
 import { Injectable, inject } from '@angular/core';
 import { Observable, of, forkJoin } from 'rxjs';
-import { map, catchError, retry, switchMap } from 'rxjs/operators';
+import { map, catchError, retry, switchMap, take, timeout } from 'rxjs/operators';
 import { ExerciseHistoryService } from './exercise-history.service';
 import { ExerciseService } from './exercise.service';
+import { ProgressService } from './progress.service';
 import { ExerciseHistoryRecord } from '../models/exercise-history.model';
 import { TimeRange, CATEGORY_NAMES, DIFFICULTY_NAMES } from '../models/analytics.model';
 import { ExerciseCategory, DifficultyLevel } from '../models/exercise.model';
@@ -35,6 +36,7 @@ interface EnrichedRecord extends ExerciseHistoryRecord {
 export class EnhancedAnalyticsService {
   private exerciseHistoryService = inject(ExerciseHistoryService);
   private exerciseService = inject(ExerciseService);
+  private progressService = inject(ProgressService);
 
   // Cache with 5-minute TTL
   private analyticsCache = new Map<string, {
@@ -63,31 +65,73 @@ export class EnhancedAnalyticsService {
     // Fetch history data with optimized limit based on time range
     const limit = this.getOptimalLimit(timeRange);
 
-    // Fetch history data and compute analytics
+    // Fetch history data and compute analytics. Retry first; if the tracking DB is still
+    // unreachable, fall back to local progress (and don't cache that partial result).
     return this.exerciseHistoryService.getRecentHistory(limit).pipe(
-      switchMap(records => {
-        // Filter records by date range
-        const filteredRecords = this.filterRecordsByDateRange(records, startDate, endDate);
-        
-        // Enrich records with exercise metadata
+      retry({ count: 2, delay: 1000 }),
+      map(records => ({ records, fromCloud: true })),
+      catchError(error => {
+        console.error('[EnhancedAnalytics] Failed to load history, using local progress:', error);
+        return of({ records: [] as ExerciseHistoryRecord[], fromCloud: false });
+      }),
+      switchMap(({ records, fromCloud }) => {
+        // The tracking table only gets rows from logged-in exercise completions; attempts made
+        // as a guest, before migration, or when a write failed live only in local progress.
+        const merged = this.mergeWithLocalAttempts(records);
+        const filteredRecords = this.filterRecordsByDateRange(merged, startDate, endDate);
+
         return this.enrichRecordsWithMetadata(filteredRecords).pipe(
           map(enrichedRecords => {
-            // Compute all analytics
             const analytics = this.computeAllAnalytics(enrichedRecords);
-            
-            // Cache the result
-            this.cacheAnalytics(userId, timeRange, analytics);
-            
+            if (fromCloud) this.cacheAnalytics(userId, timeRange, analytics);
             return analytics;
           })
         );
-      }),
-      catchError(error => {
-        console.error('[EnhancedAnalytics] Failed to compute analytics:', error);
-        return of(this.getEmptyAnalytics());
-      }),
-      retry({ count: 2, delay: 1000 })
+      })
     );
+  }
+
+  /**
+   * Add local exerciseHistory attempts that have no matching cloud record
+   * (same exercise within 10 minutes), newest first.
+   */
+  private mergeWithLocalAttempts(records: ExerciseHistoryRecord[]): ExerciseHistoryRecord[] {
+    const local = Object.values(this.progressService.getProgressSignal()().exerciseHistory ?? {});
+    const extra: ExerciseHistoryRecord[] = [];
+    for (const attempt of local) {
+      const at = new Date(attempt.timestamp);
+      if (isNaN(at.getTime())) continue;
+      const covered = records.some(
+        (r) => r.exerciseId === attempt.exerciseId && Math.abs(new Date(r.completedAt).getTime() - at.getTime()) < 10 * 60 * 1000
+      );
+      if (covered) continue;
+      extra.push({
+        id: 'local-' + attempt.exerciseId + '-' + at.getTime(),
+        userId: '',
+        exerciseId: attempt.exerciseId,
+        completedAt: at,
+        finalScore: attempt.accuracyScore,
+        timeSpentSeconds: 0,
+        hintsUsed: attempt.hintsUsed ?? 0,
+        sentenceAttempts: (attempt.sentenceAttempts ?? []).map((sa) => ({
+          sentenceIndex: sa.sentenceIndex,
+          originalText: '',
+          userTranslation: sa.userInput ?? '',
+          accuracyScore: sa.accuracyScore,
+          retryCount: sa.retryCount ?? 0,
+        })),
+        penaltyMetrics: {
+          baseScore: attempt.baseScore ?? attempt.accuracyScore,
+          totalIncorrectAttempts: attempt.totalIncorrectAttempts ?? 0,
+          totalRetries: attempt.totalRetries ?? 0,
+          totalPenalty: attempt.totalPenalty ?? 0,
+          finalScore: attempt.accuracyScore,
+        },
+        createdAt: at,
+      });
+    }
+    if (!extra.length) return records;
+    return [...records, ...extra].sort((a, b) => new Date(b.completedAt).getTime() - new Date(a.completedAt).getTime());
   }
 
   /**
@@ -158,6 +202,10 @@ export class EnhancedAnalyticsService {
     
     // Load exercises
     return this.exerciseService.getExercisesByIds(exerciseIds).pipe(
+      // getExercisesByIds waits for a non-empty list; if exercises.json failed to load it
+      // never emits, which left the dashboard on its skeleton forever.
+      take(1),
+      timeout(8000),
       map(exercises => {
         // Create metadata map
         const metadataMap = new Map(exercises.map(ex => [ex.id, { category: ex.category, level: ex.level }]));
@@ -369,8 +417,7 @@ export class EnhancedAnalyticsService {
           lastAttempt: new Date(record.completedAt)
         };
       })
-      .sort((a, b) => a.score - b.score)
-      .slice(0, 5); // Top 5 lowest scores
+      .sort((a, b) => a.score - b.score); // full list for the count; the widget lists the top 5
     
     return needsReview;
   }
@@ -385,12 +432,14 @@ export class EnhancedAnalyticsService {
     const errorStats = {
       lowAccuracy: 0,
       highRetries: 0,
+      totalSentences: 0,
       examples: [] as string[]
     };
 
     records.forEach(record => {
       if (record.sentenceAttempts && Array.isArray(record.sentenceAttempts)) {
         record.sentenceAttempts.forEach(attempt => {
+          errorStats.totalSentences++;
           // Low accuracy indicates errors
           if (attempt.accuracyScore < 70) {
             errorStats.lowAccuracy++;
@@ -415,7 +464,7 @@ export class EnhancedAnalyticsService {
         type: 'accuracy',
         description: 'Low Accuracy Translations',
         count: errorStats.lowAccuracy,
-        percentage: 100,
+        percentage: Math.round((errorStats.lowAccuracy / errorStats.totalSentences) * 100),
         examples: errorStats.examples.slice(0, 3),
         recommendation: 'Focus on understanding sentence structure and vocabulary. Review translations that scored below 70% and identify common patterns in your mistakes.'
       });
@@ -427,7 +476,7 @@ export class EnhancedAnalyticsService {
         type: 'retries',
         description: 'Sentences Requiring Multiple Attempts',
         count: errorStats.highRetries,
-        percentage: Math.round((errorStats.highRetries / (errorStats.lowAccuracy + errorStats.highRetries)) * 100),
+        percentage: Math.round((errorStats.highRetries / errorStats.totalSentences) * 100),
         examples: [],
         recommendation: 'These sentences required multiple attempts. Practice similar sentence structures and review grammar rules for complex sentences.'
       });
@@ -453,7 +502,7 @@ export class EnhancedAnalyticsService {
     const dailyMap = new Map<string, { totalScore: number; count: number }>();
 
     records.forEach(record => {
-      const dateStr = new Date(record.completedAt).toISOString().split('T')[0];
+      const dateStr = this.getLocalDateString(new Date(record.completedAt));
       const existing = dailyMap.get(dateStr) || { totalScore: 0, count: 0 };
       dailyMap.set(dateStr, {
         totalScore: existing.totalScore + record.finalScore,
@@ -532,15 +581,18 @@ export class EnhancedAnalyticsService {
     }
 
     // Pattern keywords for identification
+    // Matched as whole words against the learner's ENGLISH translation. The old substring match
+    // also ran on the Vietnamese source, so "a"/"an"/"by" hit nearly every sentence and every
+    // pattern ended up at the overall average.
     const patterns = [
-      { key: 'passive', name: 'Passive voice', keywords: ['was', 'were', 'been', 'being', 'by'] },
-      { key: 'past_perfect', name: 'Past perfect tense', keywords: ['had', 'have', 'has been'] },
-      { key: 'conditional', name: 'Conditional sentences', keywords: ['would', 'could', 'should', 'if'] },
-      { key: 'present_perfect', name: 'Present perfect tense', keywords: ['have', 'has', 'since', 'for'] },
-      { key: 'relative_clause', name: 'Relative clauses', keywords: ['which', 'who', 'whom', 'whose', 'that'] },
-      { key: 'modal', name: 'Modal verbs', keywords: ['must', 'might', 'may', 'can', 'could'] },
-      { key: 'gerund', name: 'Gerunds and infinitives', keywords: ['ing', 'to '] },
-      { key: 'article', name: 'Articles', keywords: ['the', 'a', 'an'] }
+      { key: 'passive', name: 'Passive voice', regex: /\b(?:is|are|was|were|be|been|being)\s+\w+(?:ed|en)\b/ },
+      { key: 'past_perfect', name: 'Past perfect tense', regex: /\bhad\s+\w+(?:ed|en)\b|\bhad been\b/ },
+      { key: 'conditional', name: 'Conditional sentences', regex: /\b(?:if|unless)\b/ },
+      { key: 'present_perfect', name: 'Present perfect tense', regex: /\b(?:have|has)\s+(?:been|\w+ed|\w+en)\b/ },
+      { key: 'relative_clause', name: 'Relative clauses', regex: /\b(?:which|who|whom|whose)\b/ },
+      { key: 'modal', name: 'Modal verbs', regex: /\b(?:must|might|may|can|could|should|would)\b/ },
+      { key: 'gerund', name: 'Gerunds and infinitives', regex: /\b(?:enjoy|avoid|finish|keep|stop|want|need|decide|hope|plan)\s+(?:\w+ing|to)\b/ },
+      { key: 'article', name: 'Articles', regex: /\b(?:a|an|the)\b/ }
     ];
 
     // Analyze sentence attempts
@@ -553,19 +605,16 @@ export class EnhancedAnalyticsService {
     }>();
 
     records.forEach(record => {
-      record.sentenceAttempts.forEach(attempt => {
-        // Skip if originalText or userTranslation is undefined
-        if (!attempt.originalText || !attempt.userTranslation) {
+      // Guard: one legacy row with null sentence_attempts used to throw and blank the whole dashboard
+      (record.sentenceAttempts ?? []).forEach(attempt => {
+        if (!attempt.userTranslation) {
           return;
         }
-        
-        const lowerOriginal = attempt.originalText.toLowerCase();
+
         const lowerTranslation = attempt.userTranslation.toLowerCase();
 
         patterns.forEach(pattern => {
-          const hasPattern = pattern.keywords.some(keyword => 
-            lowerOriginal.includes(keyword) || lowerTranslation.includes(keyword)
-          );
+          const hasPattern = pattern.regex.test(lowerTranslation);
 
           if (hasPattern) {
             const existing = patternStats.get(pattern.key) || {
@@ -582,7 +631,7 @@ export class EnhancedAnalyticsService {
 
             if (existing.examples.length < 3) {
               existing.examples.push({
-                original: attempt.originalText,
+                original: attempt.originalText || attempt.userTranslation,
                 userTranslation: attempt.userTranslation,
                 accuracyScore: attempt.accuracyScore
               });
@@ -728,14 +777,15 @@ export class EnhancedAnalyticsService {
     // Identify most productive period (requires >= 20 exercises)
     if (records.length >= 20) {
       periods.forEach(period => {
-        if (period.averageAccuracy > maxAccuracy && period.exerciseCount > 0) {
+        // One lucky exercise at 2am must not make "Night" the most productive time
+        if (period.averageAccuracy > maxAccuracy && period.exerciseCount >= Math.max(5, records.length * 0.1)) {
           maxAccuracy = period.averageAccuracy;
           mostProductivePeriod = period.name;
         }
       });
 
       const mostProductiveIndex = periods.findIndex(p => p.name === mostProductivePeriod);
-      if (mostProductiveIndex !== -1) {
+      if (mostProductiveIndex !== -1 && maxAccuracy > 0) {
         periods[mostProductiveIndex].isMostProductive = true;
       }
     }
@@ -769,19 +819,26 @@ export class EnhancedAnalyticsService {
       weeklyMap.set(weekKey, (weeklyMap.get(weekKey) || 0) + 1);
     });
 
-    // Calculate average exercises per week
-    const totalWeeks = weeklyMap.size;
-    const totalExercises = records.length;
-    const averageExercisesPerWeek = totalWeeks > 0 
-      ? Math.round((totalExercises / totalWeeks) * 10) / 10
-      : 0;
-
-    // Get current week count
     const currentWeekCount = weeklyMap.get(currentWeekKey) || 0;
 
-    // Calculate percentage difference
-    const percentageDifference = averageExercisesPerWeek > 0
-      ? Math.round(((currentWeekCount - averageExercisesPerWeek) / averageExercisesPerWeek) * 100)
+    // Average over ALL calendar weeks from the first record's week up to last week
+    // (dividing by active weeks only hid inactive weeks; the current, partial week is excluded).
+    const firstRecord = records.reduce(
+      (min, r) => (new Date(r.completedAt) < min ? new Date(r.completedAt) : min),
+      new Date(records[0].completedAt)
+    );
+    const firstWeekStart = this.getWeekStartLocal(firstRecord);
+    const pastWeeks = Math.round((currentWeekStart.getTime() - firstWeekStart.getTime()) / (7 * 24 * 60 * 60 * 1000));
+    const pastExercises = records.length - currentWeekCount;
+    const averageExercisesPerWeek = pastWeeks > 0
+      ? Math.round((pastExercises / pastWeeks) * 10) / 10
+      : currentWeekCount;
+
+    // Compare the current week's PACE (projected to 7 days) so Monday morning is not "-100%"
+    const daysElapsed = Math.max(1, Math.floor((now.getTime() - currentWeekStart.getTime()) / (24 * 60 * 60 * 1000)) + 1);
+    const projectedThisWeek = (currentWeekCount / daysElapsed) * 7;
+    const percentageDifference = pastWeeks > 0 && averageExercisesPerWeek > 0
+      ? Math.round(((projectedThisWeek - averageExercisesPerWeek) / averageExercisesPerWeek) * 100)
       : 0;
 
     // Get last 4 weeks breakdown
@@ -794,7 +851,7 @@ export class EnhancedAnalyticsService {
       const count = weeklyMap.get(weekKey) || 0;
 
       weeklyBreakdown.push({
-        weekLabel: `Week of ${weekStart.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`,
+        weekLabel: `${weekStart.getDate()}/${weekStart.getMonth() + 1}`,
         exerciseCount: count
       });
     }
@@ -1168,9 +1225,14 @@ export class EnhancedAnalyticsService {
     const totalScore = records.reduce((sum, r) => sum + r.finalScore, 0);
     const averageAccuracy = Math.round(totalScore / totalExercisesCompleted);
     
-    const totalTimeSpentSeconds = records.reduce((sum, r) => sum + r.timeSpentSeconds, 0);
+    const timed = records.filter(r => (r.timeSpentSeconds || 0) > 0);
+    const totalTimeSpentSeconds = timed.reduce((sum, r) => sum + r.timeSpentSeconds, 0);
     const totalTimeSpentMinutes = Math.round(totalTimeSpentSeconds / 60);
-    const averageTimePerExercise = Math.round(totalTimeSpentMinutes / totalExercisesCompleted);
+    // Fractional minutes over exercises that actually recorded time (whole-minute rounding showed
+    // "0s" for anything under 30s; untimed local attempts diluted the average)
+    const averageTimePerExercise = timed.length
+      ? Math.round((totalTimeSpentSeconds / 60 / timed.length) * 10) / 10
+      : 0;
     
     const totalHintsUsed = records.reduce((sum, r) => sum + r.hintsUsed, 0);
 

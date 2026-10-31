@@ -129,7 +129,12 @@
 
         <!-- ---------- Translation ---------- -->
         @case ('translate') {
-          <p class="step-label">🇻🇳→🇬🇧 {{ translate.t('today.step.translate') }}</p>
+          <p class="step-label">
+            🇻🇳→🇬🇧 {{ translate.t('today.step.translate') }}
+            @if (s.fromReview) {
+              <span class="from-reader">🔁 {{ translate.t('today.from_review') }}</span>
+            }
+          </p>
           <p class="sentence vi">{{ s.vi }}</p>
           <textarea
             class="answer"
@@ -191,6 +196,9 @@
           <div><strong>{{ sum.reviewed }}</strong><small>{{ translate.t('today.cards_reviewed') }}</small></div>
         }
         <div><strong>{{ sum.clozeCorrect }}/{{ sum.clozeTotal }}</strong><small>{{ translate.t('today.cloze_correct') }}</small></div>
+        @if (sum.reviewTotal) {
+          <div><strong>{{ sum.reviewFixed }}/{{ sum.reviewTotal }}</strong><small>{{ translate.t('today.review_fixed') }}</small></div>
+        }
         @if (sum.shadowAvg !== null) {
           <div><strong>{{ sum.shadowAvg }}</strong><small>{{ translate.t('today.speaking_score') }}</small></div>
         }
@@ -227,6 +235,9 @@
       <ul class="plan">
         @if (dueCount()) {
           <li>🧠 {{ translate.t('today.plan.review').replace('{n}', '' + (dueCount() > limits.REVIEW ? limits.REVIEW : dueCount())) }}</li>
+        }
+        @if (today.dueReviewCount()) {
+          <li>🔁 {{ translate.t('today.plan.old_mistakes').replace('{n}', '' + (today.dueReviewCount() > limits.REVIEW_SENTENCES ? limits.REVIEW_SENTENCES : today.dueReviewCount())) }}</li>
         }
         <li>✏️ {{ translate.t('today.plan.cloze').replace('{n}', '' + limits.CLOZE) }}</li>
         <li>🗣️ {{ translate.t('today.plan.shadow').replace('{n}', '' + limits.SHADOW) }}</li>

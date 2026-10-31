@@ -1,5 +1,5 @@
 import { Injectable, inject } from '@angular/core';
-import { Observable, of, forkJoin } from 'rxjs';
+import { Observable, of, forkJoin, throwError } from 'rxjs';
 import { map, catchError } from 'rxjs/operators';
 import { DatabaseService } from './database/database.service';
 import { AuthService } from './auth.service';
@@ -120,7 +120,7 @@ export class ExerciseHistoryService {
       }),
       catchError(error => {
         console.error('[ExerciseHistoryService] Failed to load recent history:', error);
-        return of([]);
+        return throwError(() => error);
       })
     );
   }
@@ -181,7 +181,7 @@ export class ExerciseHistoryService {
     }
 
     return this.databaseService.loadHistoryForDateRange(userId, startDate, endDate).pipe(
-      map(records => this.groupByDate(records)),
+      map(records => this.groupByDate(records, startDate, endDate)),
       catchError(error => {
         console.error('[ExerciseHistoryService] Failed to load activity timeline:', error);
         return of([]);
@@ -256,17 +256,26 @@ export class ExerciseHistoryService {
   /**
    * Group history records by date
    */
-  private groupByDate(records: ExerciseHistoryRecord[]): ActivityTimelineData[] {
+  private groupByDate(records: ExerciseHistoryRecord[], startDate: Date, endDate: Date): ActivityTimelineData[] {
+    const localKey = (d: Date) =>
+      `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
     const dateMap = new Map<string, number>();
 
     records.forEach(r => {
-      const dateStr = r.completedAt.toISOString().split('T')[0]; // YYYY-MM-DD
+      const dateStr = localKey(new Date(r.completedAt)); // local day, not UTC
       dateMap.set(dateStr, (dateMap.get(dateStr) || 0) + 1);
     });
 
-    return Array.from(dateMap.entries())
-      .map(([date, completionCount]) => ({ date, completionCount }))
-      .sort((a, b) => a.date.localeCompare(b.date));
+    // One entry per calendar day so inactive days show as gaps instead of disappearing
+    const days: ActivityTimelineData[] = [];
+    const cursor = new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate());
+    const last = new Date(endDate.getFullYear(), endDate.getMonth(), endDate.getDate());
+    while (cursor <= last && days.length < 400) {
+      const key = localKey(cursor);
+      days.push({ date: key, completionCount: dateMap.get(key) || 0 });
+      cursor.setDate(cursor.getDate() + 1);
+    }
+    return days;
   }
 
   /**

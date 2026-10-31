@@ -3,6 +3,8 @@ import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { BestPerformanceData } from '../../../models/enhanced-analytics.model';
 import { ExerciseService } from '../../../services/exercise.service';
+import { TranslationService } from '../../../services/translation.service';
+import { dateLocale, unitMin, unitSec } from '../dashboard-i18n';
 
 /**
  * Best Performances Component
@@ -19,6 +21,7 @@ export class BestPerformancesComponent {
   private router = inject(Router);
   private exerciseService = inject(ExerciseService);
   private cdr = inject(ChangeDetectorRef);
+  protected translate = inject(TranslationService);
   
   data = input.required<BestPerformanceData[]>();
   exerciseTitles = signal<Map<string, string>>(new Map());
@@ -74,7 +77,7 @@ export class BestPerformancesComponent {
    * Format date
    */
   formatDate(date: Date): string {
-    return date.toLocaleDateString('en-US', { 
+    return date.toLocaleDateString(dateLocale(this.translate), { 
       month: 'short', 
       day: 'numeric',
       year: 'numeric'
@@ -88,9 +91,9 @@ export class BestPerformancesComponent {
     const minutes = Math.floor(seconds / 60);
     const remainingSeconds = seconds % 60;
     if (minutes === 0) {
-      return `${remainingSeconds}s`;
+      return unitSec(this.translate, remainingSeconds);
     }
-    return `${minutes}m ${remainingSeconds}s`;
+    return `${unitMin(this.translate, minutes)} ${unitSec(this.translate, remainingSeconds)}`;
   }
 
   /**

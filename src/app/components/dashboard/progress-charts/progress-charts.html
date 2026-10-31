@@ -1,47 +1,47 @@
 <div class="progress-charts">
-  <h2>Progress Charts</h2>
+  <h2>{{ translate.t('dashboard.progress_charts') }}</h2>
 
   <div class="charts-grid">
     <!-- Score Trend Chart -->
     <div class="chart-card">
-      <h3>Score Trend</h3>
+      <h3>{{ translate.t('dashboard.score_trend') }}</h3>
       @if (analytics().scoreTrends.dates.length > 0) {
-        <div class="chart-container" role="img" [attr.aria-label]="'Score trend chart showing your progress over time'">
+        <div class="chart-container" role="img" [attr.aria-label]="translate.t('dashboard.charts.score_aria')">
           <canvas #scoreTrendCanvas></canvas>
         </div>
       } @else {
         <div class="empty-chart">
-          <p>No score data available yet</p>
+          <p>{{ translate.t('dashboard.charts.no_score_data') }}</p>
         </div>
       }
     </div>
 
     <!-- Category Distribution Chart -->
     <div class="chart-card">
-      <h3>Category Distribution</h3>
+      <h3>{{ translate.t('dashboard.category_distribution') }}</h3>
       @if (analytics().categoryDistribution.length > 0) {
-        <div class="chart-container" role="img" [attr.aria-label]="'Category distribution chart showing exercises by category'">
+        <div class="chart-container" role="img" [attr.aria-label]="translate.t('dashboard.charts.category_aria')">
           <canvas #categoryCanvas></canvas>
         </div>
-        <p class="chart-hint">Click on a bar to view exercises in that category</p>
+        <p class="chart-hint">{{ translate.t('dashboard.charts.category_hint') }}</p>
       } @else {
         <div class="empty-chart">
-          <p>No category data available yet</p>
+          <p>{{ translate.t('dashboard.no_category_data') }}</p>
         </div>
       }
     </div>
 
     <!-- Difficulty Breakdown Chart -->
     <div class="chart-card">
-      <h3>Difficulty Breakdown</h3>
+      <h3>{{ translate.t('dashboard.difficulty_breakdown') }}</h3>
       @if (analytics().difficultyBreakdown.length > 0) {
-        <div class="chart-container" role="img" [attr.aria-label]="'Difficulty breakdown chart showing exercises by difficulty level'">
+        <div class="chart-container" role="img" [attr.aria-label]="translate.t('dashboard.charts.difficulty_aria')">
           <canvas #difficultyCanvas></canvas>
         </div>
-        <p class="chart-hint">Click on a segment to view exercises at that difficulty</p>
+        <p class="chart-hint">{{ translate.t('dashboard.charts.difficulty_hint') }}</p>
       } @else {
         <div class="empty-chart">
-          <p>No difficulty data available yet</p>
+          <p>{{ translate.t('dashboard.no_difficulty_data') }}</p>
         </div>
       }
     </div>

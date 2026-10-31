@@ -1,5 +1,5 @@
 <div class="activity-timeline-widget">
-  <h3 class="widget-title">Practice Activity Timeline ({{ timeRange() }})</h3>
+  <h3 class="widget-title">{{ translate.t('dashboard.activity_timeline') }} ({{ translate.t('dashboard.time_' + timeRange()) }})</h3>
 
   @if (isLoading()) {
     <div class="loading-state">
@@ -7,8 +7,8 @@
     </div>
   } @else if (isEmpty()) {
     <div class="empty-state">
-      <p class="empty-message">No activity in this time range</p>
-      <p class="empty-hint">Complete exercises to see your activity timeline!</p>
+      <p class="empty-message">{{ translate.t('dashboard.no_activity_range') }}</p>
+      <p class="empty-hint">{{ translate.t('dashboard.complete_to_see') }}</p>
     </div>
   } @else {
     <div class="timeline-chart">
@@ -18,7 +18,7 @@
             class="timeline-bar"
             [class]="getBarColorClass(day.completionCount)"
             [style.height.%]="getBarHeight(day.completionCount)"
-            [title]="formatDate(day.date) + ': ' + day.completionCount + ' exercise' + (day.completionCount !== 1 ? 's' : '')">
+            [title]="formatDate(day.date) + ': ' + exercisesLabel(day.completionCount)">
           </div>
           <div class="timeline-label">{{ formatDate(day.date) }}</div>
           <div class="timeline-count">{{ day.completionCount }}</div>
@@ -29,15 +29,15 @@
     <div class="timeline-legend">
       <div class="legend-item">
         <div class="legend-color bar-low"></div>
-        <span>1-2 exercises</span>
+        <span>{{ translate.t('dashboard.timeline.legend_low') }}</span>
       </div>
       <div class="legend-item">
         <div class="legend-color bar-medium"></div>
-        <span>3-4 exercises</span>
+        <span>{{ translate.t('dashboard.timeline.legend_medium') }}</span>
       </div>
       <div class="legend-item">
         <div class="legend-color bar-high"></div>
-        <span>5+ exercises</span>
+        <span>{{ translate.t('dashboard.timeline.legend_high') }}</span>
       </div>
     </div>
   }

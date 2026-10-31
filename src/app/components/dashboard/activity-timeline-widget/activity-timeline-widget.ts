@@ -6,6 +6,8 @@ import { ExerciseHistoryService } from '../../../services/exercise-history.servi
 import { ProgressService } from '../../../services/progress.service';
 import { AuthService } from '../../../services/auth.service';
 import { UserProgressHelper } from '../../../models/exercise.model';
+import { TranslationService } from '../../../services/translation.service';
+import { dateLocale, tCount } from '../dashboard-i18n';
 
 export type TimeRange = '7d' | '30d' | '90d';
 
@@ -20,6 +22,7 @@ export class ActivityTimelineWidgetComponent {
   private exerciseHistoryService = inject(ExerciseHistoryService);
   private progressService = inject(ProgressService);
   private authService = inject(AuthService);
+  protected translate = inject(TranslationService);
 
   // Accept time range input from parent component
   timeRange = input<TimeRange>('7d');
@@ -76,7 +79,7 @@ export class ActivityTimelineWidgetComponent {
       attempts.forEach(attempt => {
         const attemptDate = new Date(attempt.timestamp);
         if (attemptDate >= startDate && attemptDate <= endDate) {
-          const dateStr = attemptDate.toISOString().split('T')[0];
+          const dateStr = `${attemptDate.getFullYear()}-${String(attemptDate.getMonth() + 1).padStart(2, '0')}-${String(attemptDate.getDate()).padStart(2, '0')}`;
           dateMap.set(dateStr, (dateMap.get(dateStr) || 0) + 1);
         }
       });
@@ -104,11 +107,17 @@ export class ActivityTimelineWidgetComponent {
    * Format date for display
    */
   formatDate(dateStr: string): string {
-    const date = new Date(dateStr);
-    return date.toLocaleDateString('en-US', { 
+    const [y, m, d] = dateStr.split('-').map(Number);
+    const date = new Date(y, (m || 1) - 1, d || 1);
+    return date.toLocaleDateString(dateLocale(this.translate), { 
       month: 'short', 
       day: 'numeric'
     });
+  }
+
+  /** '{n} exercise(s)' in the UI language */
+  exercisesLabel(count: number): string {
+    return tCount(this.translate, 'dashboard.n_exercises', count);
   }
 
   /**

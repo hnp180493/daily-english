@@ -1,6 +1,8 @@
-import { Component, ChangeDetectionStrategy, input, computed } from '@angular/core';
+import { Component, ChangeDetectionStrategy, input, computed, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { PracticeStatsData } from '../../../models/enhanced-analytics.model';
+import { TranslationService } from '../../../services/translation.service';
+import { tCount, unitHour, unitMin, unitSec } from '../dashboard-i18n';
 
 /**
  * Practice Stats Widget Component
@@ -15,6 +17,7 @@ import { PracticeStatsData } from '../../../models/enhanced-analytics.model';
 })
 export class PracticeStatsWidgetComponent {
   data = input.required<PracticeStatsData>();
+  protected translate = inject(TranslationService);
 
   /**
    * Check if there's no data
@@ -54,13 +57,14 @@ export class PracticeStatsWidgetComponent {
     if (!d.trend) return '';
     
     const diff = Math.abs(d.recentAverage - d.overallAverage);
+    // diff is a gap between two percentages, i.e. percentage POINTS
     if (d.trend === 'improving') {
-      return `${diff}% better than average`;
+      return tCount(this.translate, 'dashboard.stats.trend_better', diff);
     }
     if (d.trend === 'declining') {
-      return `${diff}% below average`;
+      return tCount(this.translate, 'dashboard.stats.trend_below', diff);
     }
-    return 'Maintaining steady performance';
+    return this.translate.t('dashboard.stats.trend_stable');
   });
 
   /**
@@ -68,14 +72,14 @@ export class PracticeStatsWidgetComponent {
    */
   formatTotalTime(minutes: number): string {
     if (minutes < 60) {
-      return `${minutes}m`;
+      return unitMin(this.translate, minutes);
     }
     const hours = Math.floor(minutes / 60);
     const remainingMinutes = minutes % 60;
     if (remainingMinutes === 0) {
-      return `${hours}h`;
+      return unitHour(this.translate, hours);
     }
-    return `${hours}h ${remainingMinutes}m`;
+    return `${unitHour(this.translate, hours)} ${unitMin(this.translate, remainingMinutes)}`;
   }
 
   /**
@@ -83,8 +87,8 @@ export class PracticeStatsWidgetComponent {
    */
   formatAverageTime(minutes: number): string {
     if (minutes < 1) {
-      return `${Math.round(minutes * 60)}s`;
+      return unitSec(this.translate, Math.round(minutes * 60));
     }
-    return `${Math.round(minutes)}m`;
+    return unitMin(this.translate, Math.round(minutes));
   }
 }

@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { MostPracticedData } from '../../../models/enhanced-analytics.model';
 import { ExerciseService } from '../../../services/exercise.service';
+import { TranslationService } from '../../../services/translation.service';
 
 /**
  * Most Practiced Component
@@ -19,6 +20,7 @@ export class MostPracticedComponent {
   private router = inject(Router);
   private exerciseService = inject(ExerciseService);
   private cdr = inject(ChangeDetectorRef);
+  protected translate = inject(TranslationService);
   
   data = input.required<MostPracticedData[]>();
   exerciseTitles = signal<Map<string, string>>(new Map());
@@ -80,9 +82,9 @@ export class MostPracticedComponent {
    * Get improvement text
    */
   getImprovementText(percentage: number): string {
-    if (percentage > 0) return 'Improved';
-    if (percentage < 0) return 'Declined';
-    return 'Same';
+    if (percentage > 0) return this.translate.t('dashboard.most.improved');
+    if (percentage < 0) return this.translate.t('dashboard.most.declined');
+    return this.translate.t('dashboard.most.same');
   }
 
   /**

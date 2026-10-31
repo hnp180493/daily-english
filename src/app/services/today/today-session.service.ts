@@ -7,9 +7,13 @@ import { ProgressService } from '../progress.service';
 import { StreakFreezeService } from '../streak-freeze.service';
 import { AIUnifiedService } from '../ai/ai-unified.service';
 import { ReaderService } from '../reader/reader.service';
+import { ReviewService } from '../review.service';
+import { splitEnglishSentences } from '../offline-grader';
 import { tokenize } from '../reader/reader.logic';
 import {
   ReaderSentence,
+  ReviewSentence,
+  TODAY_LIMITS,
   TodaySession,
   TodayStep,
   TranslationGrade,
@@ -38,6 +42,9 @@ export interface TodaySummary {
   shadowAvg: number | null;
   translateScore: number | null;
   cardsAdded: number;
+  /** Previously-wrong sentences answered well (>= 80) this session. */
+  reviewFixed?: number;
+  reviewTotal?: number;
 }
 
 interface PersistedState {
@@ -52,6 +59,8 @@ interface PersistedState {
 }
 
 const STORAGE_KEY = 'today-session-v1';
+/** Same splitter ExerciseStateService uses for the Vietnamese source text. */
+const SOURCE_SENTENCE_RE = /[^.!?]+[.!?]+(?=['"]?\s|$)/g;
 const LEVEL_KEY = 'today-level-v1';
 const MAX_HISTORY = 60;
 const MAX_RECENT_EXERCISES = 30;
@@ -79,6 +88,7 @@ export class TodaySessionService {
   private progress = inject(ProgressService);
   private ai = inject(AIUnifiedService);
   private reader = inject(ReaderService);
+  private review = inject(ReviewService);
   readonly freeze = inject(StreakFreezeService);
 
   private state = signal<PersistedState>(this.load());
@@ -140,6 +150,7 @@ export class TodaySessionService {
       dueCardIds: this.flashcards.dueFlashcards().map((c) => c.id),
       avoidExerciseIds: avoid,
       ...this.readerInput(),
+      reviewSentences: this.reviewInput(exercises),
     });
     if (!session) return false;
 
@@ -203,7 +214,11 @@ export class TodaySessionService {
     const reviews = resultsOf('review');
     const clozes = resultsOf('cloze');
     const shadows = resultsOf('shadow').map((x) => x.result?.score).filter((n): n is number => typeof n === 'number');
-    const translate = resultsOf('translate')[0];
+    const allTranslations = resultsOf('translate');
+    const translate = allTranslations.find((x) => x.step.kind === 'translate' && !x.step.fromReview);
+    const reviewed = allTranslations.filter((x) => x.step.kind === 'translate' && x.step.fromReview);
+    const reviewFixed = reviewed.filter((x) => (x.result?.score ?? 0) >= 80).length;
+    this.rescheduleReviews(reviewed);
 
     const clozeCorrect = clozes.filter((x) => x.result?.correct).length;
     const translateScore = translate?.result?.score ?? null;
@@ -217,7 +232,8 @@ export class TodaySessionService {
     if (cards.length) this.flashcards.addFlashcards(cards).subscribe();
     const cardsAdded = this.flashcards.allFlashcards().length - before;
 
-    const points = 5 + reviews.length + clozeCorrect * 2 + (shadowAvg !== null && shadowAvg >= 70 ? 3 : 0) +
+    const points = 5 + reviews.length + clozeCorrect * 2 + reviewFixed * 2 +
+      (shadowAvg !== null && shadowAvg >= 70 ? 3 : 0) +
       (translateScore !== null && translateScore >= 60 ? 3 : 0);
     const streak = this.progress.recordDailySession(points);
 
@@ -233,8 +249,73 @@ export class TodaySessionService {
         shadowAvg,
         translateScore,
         cardsAdded,
+        reviewFixed,
+        reviewTotal: reviewed.length,
       },
     });
+  }
+
+  /** How many previously-wrong sentences (from due reviews) the next session will include. */
+  readonly dueReviewCount = computed(() =>
+    Math.min(
+      TODAY_LIMITS.REVIEW_SENTENCES,
+      this.dueReviewItems().reduce((sum, i) => sum + this.wrongIndices(i.exerciseId).length, 0)
+    )
+  );
+
+  private dueReviewItems() {
+    const endOfToday = new Date();
+    endOfToday.setHours(23, 59, 59, 999);
+    return this.review
+      .getReviewQueueSignal()()
+      .filter((i) => new Date(i.nextReviewDate) <= endOfToday)
+      .sort((a, b) => new Date(a.nextReviewDate).getTime() - new Date(b.nextReviewDate).getTime());
+  }
+
+  /** Sentence indices the learner struggled with (same rule as Quick Review), worst first. */
+  private wrongIndices(exerciseId: string): number[] {
+    const attempts = this.progress.getProgressSignal()().exerciseHistory?.[exerciseId]?.sentenceAttempts ?? [];
+    return attempts
+      .filter((a) => (a.incorrectAttempts ?? 0) >= 1 || (a.retryCount ?? 0) >= 2 || a.accuracyScore < 90)
+      .sort((a, b) => (b.incorrectAttempts ?? 0) - (a.incorrectAttempts ?? 0) || a.accuracyScore - b.accuracyScore)
+      .map((a) => a.sentenceIndex);
+  }
+
+  /** Up to REVIEW_SENTENCES wrong sentences, one per due exercise first (most overdue first). */
+  private reviewInput(exercises: Exercise[]): ReviewSentence[] {
+    const candidates: ReviewSentence[][] = [];
+    for (const item of this.dueReviewItems()) {
+      const ex = item.exercise ?? exercises.find((e) => e.id === item.exerciseId);
+      if (!ex) continue;
+      const vi = (ex.sourceText ?? '').match(SOURCE_SENTENCE_RE)?.map((x) => x.trim()) ?? [];
+      const en = splitEnglishSentences(ex.englishText ?? '');
+      if (!vi.length || vi.length !== en.length) continue;
+      const sentences = this.wrongIndices(ex.id)
+        .filter((i) => vi[i] && en[i])
+        .map((i) => ({ exerciseId: ex.id, vi: vi[i], en: en[i] }));
+      if (sentences.length) candidates.push(sentences);
+    }
+    const picks: ReviewSentence[] = [];
+    for (let round = 0; picks.length < TODAY_LIMITS.REVIEW_SENTENCES; round++) {
+      const before = picks.length;
+      for (const list of candidates) {
+        if (list[round] && picks.length < TODAY_LIMITS.REVIEW_SENTENCES) picks.push(list[round]);
+      }
+      if (picks.length === before) break;
+    }
+    return picks;
+  }
+
+  /** Practising an exercise's old mistakes counts as reviewing it: feed the average into SM-2. */
+  private rescheduleReviews(reviewed: { step: TodayStep; result?: TodayStepResult }[]): void {
+    const byExercise = new Map<string, number[]>();
+    for (const { step, result } of reviewed) {
+      if (step.kind !== 'translate' || !step.fromReview || typeof result?.score !== 'number') continue;
+      byExercise.set(step.fromReview, [...(byExercise.get(step.fromReview) ?? []), result.score]);
+    }
+    for (const [exerciseId, scores] of byExercise) {
+      this.review.scheduleNextReview(exerciseId, scores.reduce((a, b) => a + b, 0) / scores.length);
+    }
   }
 
   /** Sentences from the 3 most recently opened Reader texts + words being learned. */

@@ -1,6 +1,8 @@
-import { Component, ChangeDetectionStrategy, input, computed } from '@angular/core';
+import { Component, ChangeDetectionStrategy, input, computed, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { DictationProgress } from '../../../models/dictation.model';
+import { TranslationService } from '../../../services/translation.service';
+import { dateLocale, tf } from '../dashboard-i18n';
 
 @Component({
   selector: 'app-dictation-stats-widget',
@@ -8,32 +10,32 @@ import { DictationProgress } from '../../../models/dictation.model';
   template: `
     <div class="widget dictation-stats-widget">
       <div class="widget-header">
-        <h3>🎧 Dictation Practice</h3>
+        <h3>{{ translate.t('dashboard.dictation.title') }}</h3>
       </div>
       <div class="widget-content">
         @if (totalSessions() > 0) {
           <div class="stats-grid">
             <div class="stat-item">
               <div class="stat-value">{{ totalSessions() }}</div>
-              <div class="stat-label">Sessions Completed</div>
+              <div class="stat-label">{{ translate.t('dashboard.dictation.sessions') }}</div>
             </div>
             <div class="stat-item">
               <div class="stat-value">{{ averageAccuracy() }}%</div>
-              <div class="stat-label">Average Accuracy</div>
+              <div class="stat-label">{{ translate.t('dashboard.avg_accuracy') }}</div>
             </div>
             <div class="stat-item">
               <div class="stat-value">{{ totalSentences() }}</div>
-              <div class="stat-label">Sentences Practiced</div>
+              <div class="stat-label">{{ translate.t('dashboard.dictation.sentences') }}</div>
             </div>
             <div class="stat-item">
               <div class="stat-value">{{ perfectSessions() }}</div>
-              <div class="stat-label">Perfect Sessions</div>
+              <div class="stat-label">{{ translate.t('dashboard.dictation.perfect') }}</div>
             </div>
           </div>
           
           @if (recentSessions().length > 0) {
             <div class="recent-sessions">
-              <h4>Recent Sessions</h4>
+              <h4>{{ translate.t('dashboard.dictation.recent') }}</h4>
               <div class="sessions-list">
                 @for (session of recentSessions(); track session.exerciseId) {
                   <div class="session-item">
@@ -44,7 +46,7 @@ import { DictationProgress } from '../../../models/dictation.model';
                       </span>
                     </div>
                     <div class="session-details">
-                      {{ session.sentenceAttempts.length }} sentences
+                      {{ translate.t('dashboard.dictation.n_sentences').replace('{n}', '' + session.sentenceAttempts.length) }}
                     </div>
                   </div>
                 }
@@ -53,8 +55,8 @@ import { DictationProgress } from '../../../models/dictation.model';
           }
         } @else {
           <div class="empty-state">
-            <p>No dictation practice sessions yet</p>
-            <p class="hint">Complete a translation exercise, then try dictation practice!</p>
+            <p>{{ translate.t('dashboard.dictation.empty') }}</p>
+            <p class="hint">{{ translate.t('dashboard.dictation.empty_hint') }}</p>
           </div>
         }
       </div>
@@ -184,6 +186,7 @@ import { DictationProgress } from '../../../models/dictation.model';
 })
 export class DictationStatsWidgetComponent {
   dictationHistory = input.required<DictationProgress>();
+  protected translate = inject(TranslationService);
   
   totalSessions = computed(() => {
     const history = this.dictationHistory();
@@ -229,10 +232,10 @@ export class DictationStatsWidgetComponent {
     const diff = now.getTime() - dateObj.getTime();
     const days = Math.floor(diff / (1000 * 60 * 60 * 24));
     
-    if (days === 0) return 'Today';
-    if (days === 1) return 'Yesterday';
-    if (days < 7) return `${days} days ago`;
+    if (days === 0) return this.translate.t('dashboard.time.today');
+    if (days === 1) return this.translate.t('dashboard.time.yesterday');
+    if (days < 7) return tf(this.translate, 'dashboard.time.days_ago', { n: days });
     
-    return dateObj.toLocaleDateString();
+    return dateObj.toLocaleDateString(dateLocale(this.translate));
   }
 }

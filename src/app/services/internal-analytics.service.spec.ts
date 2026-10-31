@@ -95,11 +95,11 @@ describe('InternalAnalyticsService', () => {
   });
 
   describe('computeScoreTrends', () => {
-    it('should compute score trends for 30d time range', () => {
-      const progress = createMockProgress();
+    it('should compute score trends for 30d time range, one point per local day', () => {
+      const progress = createMockProgress(); // 3 attempts, all today
       const result = service.computeScoreTrends(progress, '30d');
-      expect(result.dates.length).toBe(3);
-      expect(result.scores.length).toBe(3);
+      expect(result.dates.length).toBe(1);
+      expect(result.scores).toEqual([Math.round((85 + 90 + 78) / 3)]);
       expect(result.averageScore).toBeGreaterThan(0);
     });
 

@@ -3,6 +3,8 @@ import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { AnalyticsData } from '../../../models/analytics.model';
 import { ExerciseService } from '../../../services/exercise.service';
+import { TranslationService } from '../../../services/translation.service';
+import { categoryLabel, levelLabel } from '../dashboard-i18n';
 
 @Component({
   selector: 'app-performance-analysis',
@@ -14,6 +16,7 @@ import { ExerciseService } from '../../../services/exercise.service';
 export class PerformanceAnalysisComponent {
   private router = inject(Router);
   private exerciseService = inject(ExerciseService);
+  protected translate = inject(TranslationService);
   
   analytics = input.required<AnalyticsData>();
   exerciseTitles = signal<Map<string, string>>(new Map());
@@ -46,9 +49,17 @@ export class PerformanceAnalysisComponent {
   }
 
   getPerformanceLabel(avgScore: number): string {
-    if (avgScore >= 80) return 'Excellent';
-    if (avgScore >= 60) return 'Good';
-    return 'Needs Practice';
+    if (avgScore >= 80) return this.translate.t('dashboard.perf.excellent');
+    if (avgScore >= 60) return this.translate.t('dashboard.perf.good');
+    return this.translate.t('dashboard.perf.needs_practice');
+  }
+
+  getCategoryName(category: string, fallback: string): string {
+    return categoryLabel(this.translate, category, fallback);
+  }
+
+  getLevelName(level: string, fallback: string): string {
+    return levelLabel(this.translate, level, fallback);
   }
 
   goToExercise(exerciseId: string): void {
