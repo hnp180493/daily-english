@@ -33,6 +33,8 @@ import { ExerciseContext } from '../../models/ai.model';
 import { MarkdownPipe } from '../../pipes/markdown.pipe';
 import { MemoryBoostComponent } from '../memory-boost/memory-boost';
 import { QUIZ_CONSTANTS } from '../../models/memory-retention.model';
+import { offlineHint, referenceSentence, splitEnglishSentences } from '../../services/offline-grader';
+import { TranslationService } from '../../services/translation.service';
 
 @Component({
   selector: 'app-exercise-detail',
@@ -73,6 +75,7 @@ export class ExerciseDetailComponent implements OnInit, OnDestroy {
   private metricsService = inject(ExerciseMetricsService);
   private sessionLockService = inject(ExerciseSessionLockService);
   private featureFlagService = inject(FeatureFlagService);
+  protected translate = inject(TranslationService);
 
   private progressSignal = this.progressService.getProgressSignal();
 
@@ -102,6 +105,29 @@ export class ExerciseDetailComponent implements OnInit, OnDestroy {
   currentSentenceIndex = this.stateService.currentSentenceIndex;
   currentSentence = this.stateService.currentSentence;
   completedSentences = this.stateService.completedSentences;
+
+  // ---- Rounds: a 10–14 sentence exercise is played in rounds of 5 with a checkpoint between ----
+  readonly ROUND_SIZE = 5;
+  /** Number of sentences done when the checkpoint is showing, else null. */
+  roundCheckpoint = signal<number | null>(null);
+  roundLabel = computed(() => {
+    const total = this.sentences().length;
+    if (total <= this.ROUND_SIZE) return '';
+    const rounds = Math.ceil(total / this.ROUND_SIZE);
+    const current = Math.min(rounds, Math.floor(this.currentSentenceIndex() / this.ROUND_SIZE) + 1);
+    return this.translate.t('exercise.round_label').replace('{n}', String(current)).replace('{total}', String(rounds));
+  });
+  private lastIndexSeen: number | null = null;
+  private roundWatcher = effect(() => {
+    const idx = this.currentSentenceIndex();
+    const total = this.sentences().length;
+    const prev = this.lastIndexSeen;
+    this.lastIndexSeen = idx;
+    // Only on a forward step during this visit (not when resuming saved progress).
+    if (prev === null || idx !== prev + 1) return;
+    if (this.isReviewMode() || this.quickReviewMode()) return;
+    if (idx % this.ROUND_SIZE === 0 && idx < total) this.roundCheckpoint.set(idx);
+  });
 
   // Delegate to quick review service
   quickReviewMode = this.quickReviewService.quickReviewMode;
@@ -319,16 +345,31 @@ export class ExerciseDetailComponent implements OnInit, OnDestroy {
 
 
 
-  onSubmit(): void {
-    if (!this.configService.hasValidConfig()) {
-      this.showApiKeyPrompt.set(true);
-      return;
-    }
+  /** Reference English sentence for the current source sentence (null if the exercise isn't aligned). */
+  private currentReference(): string | null {
+    const ex = this.exercise();
+    if (!ex) return null;
+    return referenceSentence(ex.englishText, this.currentSentenceIndex(), this.sentences().length);
+  }
 
+  onSubmit(): void {
     const ex = this.exercise();
     if (!ex || !this.userInput().trim()) return;
 
-    this.submissionService.submitTranslation(ex, ex.id).subscribe({
+    // No AI provider: grade against the exercise's own reference sentence instead of blocking.
+    let submission$;
+    if (this.configService.hasValidConfig()) {
+      submission$ = this.submissionService.submitTranslation(ex, ex.id);
+    } else {
+      const reference = this.currentReference();
+      if (!reference) {
+        this.showApiKeyPrompt.set(true);
+        return;
+      }
+      submission$ = this.submissionService.submitOffline(ex.id, reference);
+    }
+
+    submission$.subscribe({
       next: (result) => {
         // Track submission
         this.analyticsService.trackExerciseSubmit(ex.id, result.accuracyScore >= 75);
@@ -420,7 +461,16 @@ export class ExerciseDetailComponent implements OnInit, OnDestroy {
 
   onHint(): void {
     if (!this.configService.hasValidConfig()) {
-      this.showApiKeyPrompt.set(true);
+      // No AI: progressive hints from the reference sentence (first letters → half → full).
+      const reference = this.currentReference();
+      const ex = this.exercise();
+      if (!reference || !ex) {
+        this.showApiKeyPrompt.set(true);
+        return;
+      }
+      if (!this.hasMoreHints()) return;
+      this.stateService.addHint(offlineHint(reference, this.hintsShown() + 1));
+      this.analyticsService.trackHintUsed(ex.id, 'reference_hint');
       return;
     }
 
@@ -441,10 +491,8 @@ export class ExerciseDetailComponent implements OnInit, OnDestroy {
       .map(s => s.translation)
       .join(' ');
 
-    // Extract corresponding English sentence
-    const sentenceRegex = /[^.!?]+[.!?]+/g;
-    const englishSentences = ex.englishText?.match(sentenceRegex) || [];
-    const currentEnglishSentence = englishSentences[currentIdx]?.trim() || '';
+    // Extract corresponding English sentence (abbreviation-aware, e.g. "Ms. Mai")
+    const currentEnglishSentence = splitEnglishSentences(ex.englishText ?? '')[currentIdx] ?? '';
 
     const tempExercise = {
       ...ex,
@@ -476,6 +524,17 @@ export class ExerciseDetailComponent implements OnInit, OnDestroy {
     });
   }
 
+  continueRound(): void {
+    this.roundCheckpoint.set(null);
+    this.focusInput();
+  }
+
+  /** Stop after a round; progress is saved so the learner resumes at the next sentence. */
+  pauseRound(): void {
+    this.roundCheckpoint.set(null);
+    this.onQuit();
+  }
+
   onQuit(): void {
     // If in quick review mode, exit to review mode instead of going back
     if (this.quickReviewMode()) {
@@ -502,6 +561,28 @@ export class ExerciseDetailComponent implements OnInit, OnDestroy {
       }
     );
   }
+
+  /**
+   * Offline grading only compares with one reference sentence, so a correct
+   * paraphrase can score low. Let the learner accept their own answer after
+   * seeing the model sentence (like self-grading in Anki) and move on.
+   */
+  onAcceptOwnAnswer(): void {
+    const ex = this.exercise();
+    const idx = this.currentSentenceIndex();
+    const answer = this.userInputAfterSubmit();
+    if (!ex || !answer) return;
+    this.stateService.markSentenceCompleted(idx, answer, 90, this.currentReference() ?? undefined);
+    this.submissionService.feedback.set(null);
+    this.onNextSentence();
+  }
+
+  /** Offline-graded sentence that didn't pass — offer "my answer is also correct". */
+  canAcceptOwnAnswer = computed(() => {
+    if (!this.submissionService.gradedOffline()) return false;
+    const current = this.sentences()[this.currentSentenceIndex()];
+    return !!current?.isCompleted && (current.accuracyScore ?? 0) < 90;
+  });
 
   onRetrySentence(): void {
     this.navigationService.retrySentence();

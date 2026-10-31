@@ -521,3 +521,39 @@
 .today-cta-arrow {
   font-size: 1.5rem;
 }
+
+// "Làm ngay" — one click into the next unfinished exercise
+.quick-start {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+  margin: 0 auto 2rem;
+  padding: 1rem 2rem;
+  border-radius: 1rem;
+  border: 1px solid rgba(167, 139, 250, 0.5);
+  background: rgba(167, 139, 250, 0.12);
+  color: #e2e8f0;
+  cursor: pointer;
+  transition: background 0.15s ease, transform 0.15s ease;
+
+  &:hover {
+    background: rgba(167, 139, 250, 0.22);
+    transform: translateY(-1px);
+  }
+
+  small {
+    color: #94a3b8;
+  }
+}
+
+.quick-start-label {
+  font-weight: 800;
+  color: #c4b5fd;
+  letter-spacing: 0.05em;
+}
+
+.quick-start-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+}

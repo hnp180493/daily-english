@@ -2,7 +2,8 @@ import { Component, ChangeDetectionStrategy, OnInit, inject, signal, computed, e
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { DifficultyLevel, ExerciseCategory } from '../../models/exercise.model';
+import { DifficultyLevel, Exercise, ExerciseCategory } from '../../models/exercise.model';
+import { ProgressService } from '../../services/progress.service';
 import { ExerciseService } from '../../services/exercise.service';
 import { CustomExerciseService } from '../../services/custom-exercise.service';
 import { CurriculumService } from '../../services/curriculum.service';
@@ -93,6 +94,25 @@ export class HomeComponent implements OnInit {
     return customExercises.some(exercise => exercise.level === level);
   });
 
+  // ---- "Làm ngay": one click into the next unfinished exercise ----
+  private progressService = inject(ProgressService);
+  private allExercises = toSignal(this.exerciseService.getAllExercises(), { initialValue: [] as Exercise[] });
+  /** Level used when the learner hasn't picked one: their saved/most practised level. */
+  private defaultLevel = signal<DifficultyLevel>(DifficultyLevel.BEGINNER);
+
+  /** First exercise at the level that hasn't been passed yet (best score < 90). */
+  nextExercise = computed<Exercise | null>(() => {
+    const level = this.selectedLevel() ?? this.defaultLevel();
+    const history = this.progressService.getProgressSignal()().exerciseHistory ?? {};
+    const atLevel = this.allExercises().filter((e) => e.level === level);
+    return atLevel.find((e) => (history[e.id]?.accuracyScore ?? 0) < 90) ?? atLevel[0] ?? null;
+  });
+
+  startNextExercise(): void {
+    const ex = this.nextExercise();
+    if (ex) this.router.navigate(['/exercise', this.exerciseService.getExerciseSlug(ex)]);
+  }
+
   // Display categories including custom if applicable
   displayCategories = computed(() => {
     const baseCategories = Object.values(ExerciseCategory);
@@ -111,6 +131,8 @@ export class HomeComponent implements OnInit {
   }
 
   async ngOnInit(): Promise<void> {
+    void this.todaySession.resolveLevel().then((level) => this.defaultLevel.set(level));
+
     // Wait for auth to initialize before checking
     await this.authService.waitForAuth();
     
@@ -320,6 +342,7 @@ export class HomeComponent implements OnInit {
       });
     } else {
       this.exerciseService.setCategory(category as ExerciseCategory);
+      this.navigateToExercises();
     }
   }
 

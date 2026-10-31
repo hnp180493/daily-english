@@ -155,6 +155,13 @@
 
     <section class="level-selection">
       <h2 class="section-title">{{ translate.t('home.sentence_writing') }}</h2>
+      @if (nextExercise(); as next) {
+        <button type="button" class="quick-start" (click)="startNextExercise()">
+          <span class="quick-start-label">▶ {{ translate.t('home.quick_start') }}</span>
+          <span class="quick-start-title">{{ next.title }}</span>
+          <small>{{ translate.t('level.' + next.level + '.name') }} · {{ translate.t('home.quick_start_hint') }}</small>
+        </button>
+      }
       <h3 class="section-subtitle">{{ translate.t('home.choose_level') }}</h3>
       <div class="level-cards">
         @for (level of levels; track level) {
@@ -181,12 +188,5 @@
     </section>
   }
 
-    @if (selectedLevel() && selectedCategory()) {
-      <button
-        class="start-btn"
-        (click)="navigateToExercises()">
-        {{ translate.t('home.start_practice') }}
-      </button>
-    }
   }
 </div>

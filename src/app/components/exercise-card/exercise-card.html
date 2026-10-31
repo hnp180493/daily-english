@@ -47,7 +47,7 @@
   <div class="card-body">
     <div class="badges">
       <span class="difficulty-badge">{{ difficultyLabel() }}</span>
-      <span class="category-badge">{{ exercise().category }}</span>
+      <span class="category-badge">{{ categoryLabel() }}</span>
     </div>
     
     <p class="exercise-description">{{ exercise().description }}</p>
@@ -55,7 +55,7 @@
     @if (bestScore() !== undefined) {
       <div class="progress-section">
         <div class="progress-header">
-          <span class="progress-label">Best Score</span>
+          <span class="progress-label">{{ translate.t('exercise_card.best_score') }}</span>
           <span class="progress-value">{{ bestScore() }}%</span>
         </div>
         <div class="progress-bar">

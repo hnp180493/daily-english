@@ -5,6 +5,20 @@ import { Exercise, ExerciseStatus } from '../../models/exercise.model';
 import { FavoriteService } from '../../services/favorite.service';
 import { ProgressService } from '../../services/progress.service';
 import { ExerciseService } from '../../services/exercise.service';
+import { TranslationService } from '../../services/translation.service';
+
+/** Exercise category value → translation key segment (category.<key>.name). */
+const CATEGORY_KEYS: Record<string, string> = {
+  'daily-life': 'daily_life',
+  'travel-transportation': 'travel',
+  'education-work': 'education_work',
+  'health-wellness': 'health',
+  'society-services': 'society',
+  'culture-arts': 'culture',
+  'science-environment': 'science',
+  'philosophy-beliefs': 'philosophy',
+  custom: 'custom',
+};
 
 @Component({
   selector: 'app-exercise-card',
@@ -18,6 +32,7 @@ export class ExerciseCardComponent {
   private progressService = inject(ProgressService);
   private exerciseService = inject(ExerciseService);
   private router = inject(Router);
+  protected translate = inject(TranslationService);
   
   exercise = input.required<Exercise>();
   status = input.required<ExerciseStatus>();
@@ -31,15 +46,15 @@ export class ExerciseCardComponent {
   statusLabel = computed(() => {
     const status = this.status();
     if (status.status === 'new') {
-      return 'New';
+      return this.translate.t('exercise_card.new');
     }
     if (status.bestScore && status.bestScore === 100) {
       if (status.perfectCompletions && status.perfectCompletions >= 2) {
-        return `Mastered (${status.perfectCompletions}×)`;
+        return `${this.translate.t('exercise_card.mastered')} (${status.perfectCompletions}×)`;
       }
-      return 'Completed';
+      return this.translate.t('exercise_card.completed');
     }
-    return `Attempt ${status.attemptCount}`;
+    return this.translate.t('exercise_card.attempt').replace('{n}', String(status.attemptCount));
   });
 
   isStatusNew = computed(() => this.status().status === 'new');
@@ -47,7 +62,6 @@ export class ExerciseCardComponent {
   isCompleted = computed(() => {
     const status = this.status();
     const completed = status.bestScore !== undefined && status.bestScore >= 90;
-    console.log('Exercise:', this.exercise().title, 'bestScore:', status.bestScore, 'isCompleted:', completed);
     return completed;
   });
 
@@ -61,16 +75,21 @@ export class ExerciseCardComponent {
   buttonLabel = computed(() => {
     const status = this.status();
     if (status.status === 'new') {
-      return 'Start Exercise';
+      return this.translate.t('exercise_card.start');
     }
     if (status.bestScore === 100) {
-      return 'Review';
+      return this.translate.t('exercise_card.review');
     }
-    return 'Continue';
+    return this.translate.t('exercise_card.continue');
   });
 
   difficultyLabel = computed(() => {
-    return this.exercise().level.charAt(0).toUpperCase() + this.exercise().level.slice(1);
+    return this.translate.t(`level.${this.exercise().level}.name`);
+  });
+
+  categoryLabel = computed(() => {
+    const key = CATEGORY_KEYS[this.exercise().category];
+    return key ? this.translate.t(`category.${key}.name`) : this.exercise().category;
   });
 
   onStart(): void {
