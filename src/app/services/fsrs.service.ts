@@ -130,8 +130,8 @@ export class FsrsService {
     if (nextStep < steps.length) {
       return this.toLearning(card, now, nextStep, lapses, stability, difficulty);
     }
-    // Graduate to review.
-    const factor = rating === 2 ? FSRS_CONSTANTS.HARD_FACTOR : 1.0;
+    // Graduate to review. Hard is a penalty, same as stabilityFactorByRating.
+    const factor = rating === 2 ? 1 / FSRS_CONSTANTS.HARD_FACTOR : 1.0;
     const interval = this.clampInterval(this.intervalFromStability(stability * (rating === 2 ? 0.8 : 1.0)));
     return this.toReview(card, now, rating, stability * factor, difficulty, interval, lapses);
   }

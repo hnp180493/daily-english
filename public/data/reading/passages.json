@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated": "2026-05-14",
+  "updated": "2026-10-31",
   "passages": [
     {
       "id": "reading-coffee-vietnam",
@@ -358,6 +358,771 @@
         "Which parts of your current or future job do you think AI could automate first?",
         "What is one skill you would like to develop that you think AI cannot easily replace?",
         "Should governments do more to help workers retrain? If so, what?"
+      ]
+    },
+    {
+      "id": "reading-street-food",
+      "slug": "street-food-in-vietnam",
+      "title": "Street Food: The Taste of Everyday Vietnam",
+      "topic": "Food & Culture",
+      "level": "beginner",
+      "estimatedMinutes": 3,
+      "wordCount": 320,
+      "passage": "Walk down almost any street in Vietnam in the early morning and you will smell something delicious. Women sell sticky rice from baskets, men fry bread on small stoves, and steam rises from huge pots of broth. For millions of people, breakfast does not happen at home. It happens on a tiny plastic stool at the side of the road.\n\nStreet food is popular for three simple reasons. First, it is cheap. A bowl of noodle soup or a banh mi often costs less than a cup of coffee in a modern cafe. Second, it is fast. Office workers and students can eat in ten minutes and still arrive on time. Third, and most important, it tastes good. Many sellers cook only one dish, and they have made it the same way for years, sometimes for decades.\n\nEach region has its own favorites. In Hanoi, people love pho and bun cha, grilled pork served with cold rice noodles and fresh herbs. In Hue, the most famous dish is bun bo, a spicy beef noodle soup. In Ho Chi Minh City, you can find com tam, or broken rice, served with grilled pork and a fried egg. Travelers often say that the best way to understand a city is to eat what the local people eat.\n\nStreet food is also changing. Some customers worry about hygiene, so many sellers now wear gloves and keep their food in clean, covered containers. Young people order street food through delivery apps, and some popular stalls have become famous on social media. A few even appear in international food guides.\n\nStill, the heart of street food stays the same. It is about sitting close to strangers, chatting with the seller, and enjoying a simple meal together. For many Vietnamese people living abroad, the thing they miss most is not a fancy restaurant. It is a hot bowl of soup on a busy street corner at seven in the morning.",
+      "vocabulary": [
+        { "word": "delicious", "partOfSpeech": "adj", "meaning": "ngon", "example": "This soup is really delicious." },
+        { "word": "broth", "partOfSpeech": "n", "meaning": "nước dùng, nước lèo", "example": "A good pho needs a clear, rich broth." },
+        { "word": "stool", "partOfSpeech": "n", "meaning": "ghế đẩu", "example": "We sat on small plastic stools outside the shop." },
+        { "word": "decade", "partOfSpeech": "n", "meaning": "thập kỷ (mười năm)", "example": "She has lived in Hanoi for two decades." },
+        { "word": "region", "partOfSpeech": "n", "meaning": "vùng, miền", "example": "Each region of Vietnam has its own accent." },
+        { "word": "herb", "partOfSpeech": "n", "meaning": "rau thơm, thảo mộc", "example": "Fresh herbs make the dish smell wonderful." },
+        { "word": "hygiene", "partOfSpeech": "n", "meaning": "vệ sinh", "example": "Good hygiene is important when you cook for others." },
+        { "word": "stall", "partOfSpeech": "n", "meaning": "quầy hàng, sạp hàng", "example": "There is a famous noodle stall near my office." }
+      ],
+      "quiz": [
+        {
+          "id": "q1",
+          "question": "According to the first paragraph, where do millions of Vietnamese people eat breakfast?",
+          "options": [
+            "At home with their families",
+            "In modern cafes and restaurants",
+            "On small plastic stools at the side of the road",
+            "At their office desks"
+          ],
+          "correctIndex": 2,
+          "explanation": "Paragraph 1 says breakfast does not happen at home for millions of people; it happens on a tiny plastic stool at the side of the road.",
+          "paragraphRef": 0
+        },
+        {
+          "id": "q2",
+          "question": "Which of these is NOT given as a reason why street food is popular?",
+          "options": [
+            "It is cheap",
+            "It is fast",
+            "It tastes good",
+            "It is healthier than home cooking"
+          ],
+          "correctIndex": 3,
+          "explanation": "Paragraph 2 gives three reasons: it is cheap, fast, and tastes good. Health is never mentioned as a reason.",
+          "paragraphRef": 1
+        },
+        {
+          "id": "q3",
+          "question": "What is bun cha?",
+          "options": [
+            "A spicy beef noodle soup from Hue",
+            "Grilled pork served with cold rice noodles and fresh herbs",
+            "Broken rice with a fried egg",
+            "Sticky rice sold from baskets"
+          ],
+          "correctIndex": 1,
+          "explanation": "Paragraph 3 describes bun cha, a Hanoi favorite, as grilled pork served with cold rice noodles and fresh herbs.",
+          "paragraphRef": 2
+        },
+        {
+          "id": "q4",
+          "question": "How are many sellers responding to customers who worry about hygiene?",
+          "options": [
+            "They are moving into indoor restaurants",
+            "They wear gloves and keep food in clean, covered containers",
+            "They only sell food through delivery apps",
+            "They have stopped selling meat"
+          ],
+          "correctIndex": 1,
+          "explanation": "Paragraph 4 says many sellers now wear gloves and keep their food in clean, covered containers.",
+          "paragraphRef": 3
+        },
+        {
+          "id": "q5",
+          "question": "What do many Vietnamese people living abroad miss most?",
+          "options": [
+            "Fancy restaurants in big cities",
+            "Cooking at home with their parents",
+            "A hot bowl of soup on a busy street corner in the morning",
+            "Famous stalls they saw on social media"
+          ],
+          "correctIndex": 2,
+          "explanation": "The last paragraph says they miss not a fancy restaurant but a hot bowl of soup on a busy street corner at seven in the morning.",
+          "paragraphRef": 4
+        }
+      ],
+      "discussion": [
+        "What is your favorite street food, and where do you usually eat it?",
+        "Do you think street food should be more strictly controlled for hygiene? Why or why not?",
+        "If a foreign friend visited your city, which dish would you take them to try first?"
+      ]
+    },
+    {
+      "id": "reading-tet-holiday",
+      "slug": "tet-more-than-a-holiday",
+      "title": "Tet: More Than a New Year Holiday",
+      "topic": "Culture & Traditions",
+      "level": "beginner",
+      "estimatedMinutes": 3,
+      "wordCount": 310,
+      "passage": "Tet, the Lunar New Year, is the most important holiday in Vietnam. It usually falls in late January or February. For about a week, offices close, streets become quiet, and millions of people travel back to their hometowns. Train and bus tickets often sell out weeks before the holiday.\n\nPreparation starts early. Families clean their houses from top to bottom, because people believe cleaning sweeps away the bad luck of the old year. They buy peach blossoms in the north or yellow apricot blossoms in the south to decorate their homes. Many families also make banh chung, a square cake of sticky rice, green beans, and pork, wrapped in green leaves and boiled for many hours.\n\nThe first days of the new year are full of customs. People visit relatives, wear new clothes, and say kind wishes such as \"good health\" and \"success.\" Children receive lucky money in small red envelopes from adults. Many people believe that the first visitor to enter a house after midnight decides the family's luck for the whole year, so some families carefully choose a kind, successful friend to be that person.\n\nToday, Tet is changing in some ways. Busy young people often buy banh chung instead of making it. Some families choose to travel to the beach or abroad during the holiday instead of staying at home. Lucky money can now be sent by bank transfer or e-wallet, which some older people find a little strange.\n\nHowever, the main meaning of Tet has not changed. It is a time to rest after a long year, to remember family members who have passed away, and to be together. For many workers who live far from home, the long trip back is tiring, but they say it is worth it. No matter where they are, they want to be home for Tet.",
+      "vocabulary": [
+        { "word": "hometown", "partOfSpeech": "n", "meaning": "quê nhà, quê hương", "example": "I go back to my hometown every summer." },
+        { "word": "preparation", "partOfSpeech": "n", "meaning": "sự chuẩn bị", "example": "Preparation for the wedding took three months." },
+        { "word": "sweep away", "partOfSpeech": "phr v", "meaning": "quét sạch, xua đi", "example": "The rain swept away the dust on the road." },
+        { "word": "blossom", "partOfSpeech": "n", "meaning": "hoa (của cây ăn quả)", "example": "Peach blossoms appear in Hanoi before Tet." },
+        { "word": "decorate", "partOfSpeech": "v", "meaning": "trang trí", "example": "We decorated the room with flowers and lights." },
+        { "word": "relative", "partOfSpeech": "n", "meaning": "họ hàng, người thân", "example": "All my relatives came to my grandmother’s birthday." },
+        { "word": "custom", "partOfSpeech": "n", "meaning": "phong tục, tập quán", "example": "Giving lucky money is a Tet custom." },
+        { "word": "envelope", "partOfSpeech": "n", "meaning": "phong bì", "example": "She put the money in a red envelope." }
+      ],
+      "quiz": [
+        {
+          "id": "q1",
+          "question": "When does Tet usually fall?",
+          "options": [
+            "In early December",
+            "In late January or February",
+            "In April",
+            "In the middle of summer"
+          ],
+          "correctIndex": 1,
+          "explanation": "Paragraph 1 says Tet usually falls in late January or February.",
+          "paragraphRef": 0
+        },
+        {
+          "id": "q2",
+          "question": "Why do families clean their houses before Tet?",
+          "options": [
+            "Because guests will check if the house is clean",
+            "Because the government asks them to",
+            "Because they believe cleaning sweeps away the bad luck of the old year",
+            "Because they are going to sell the house"
+          ],
+          "correctIndex": 2,
+          "explanation": "Paragraph 2 explains that people believe cleaning sweeps away the bad luck of the old year.",
+          "paragraphRef": 1
+        },
+        {
+          "id": "q3",
+          "question": "Why do some families carefully choose their first visitor of the new year?",
+          "options": [
+            "Because the first visitor must bring banh chung",
+            "Because they believe the first visitor decides the family’s luck for the year",
+            "Because only one visitor is allowed during Tet",
+            "Because the first visitor gives lucky money to everyone"
+          ],
+          "correctIndex": 1,
+          "explanation": "Paragraph 3 says many people believe the first visitor after midnight decides the family’s luck for the whole year.",
+          "paragraphRef": 2
+        },
+        {
+          "id": "q4",
+          "question": "Which of these is an example of how Tet is changing?",
+          "options": [
+            "Children no longer receive lucky money",
+            "People have stopped visiting relatives",
+            "Lucky money can now be sent by bank transfer or e-wallet",
+            "Offices stay open during the holiday"
+          ],
+          "correctIndex": 2,
+          "explanation": "Paragraph 4 mentions that lucky money can now be sent by bank transfer or e-wallet, along with buying banh chung and traveling during the holiday.",
+          "paragraphRef": 3
+        },
+        {
+          "id": "q5",
+          "question": "According to the last paragraph, what has NOT changed about Tet?",
+          "options": [
+            "Everyone still makes banh chung at home",
+            "Its main meaning: resting, remembering family, and being together",
+            "All families stay at home for the whole week",
+            "Train tickets are still cheap"
+          ],
+          "correctIndex": 1,
+          "explanation": "The last paragraph says the main meaning of Tet has not changed: a time to rest, remember family members who have passed away, and be together.",
+          "paragraphRef": 4
+        }
+      ],
+      "discussion": [
+        "What is your favorite Tet custom, and why?",
+        "Do you prefer celebrating Tet at home or traveling during the holiday?",
+        "Do you think sending lucky money by e-wallet changes the meaning of the tradition?"
+      ]
+    },
+    {
+      "id": "reading-saving-money",
+      "slug": "small-steps-to-save-money",
+      "title": "Small Steps to Save Money",
+      "topic": "Money & Daily Life",
+      "level": "beginner",
+      "estimatedMinutes": 3,
+      "wordCount": 290,
+      "passage": "Linh is a 22-year-old university student in Da Nang. Last year, she had a part-time job at a bookshop, but at the end of every month her wallet was empty. \"I didn't buy anything expensive,\" she says. \"I just didn't know where my money went.\" Many young people have the same problem.\n\nLinh decided to write down everything she spent for one month. The result surprised her. She spent almost a quarter of her income on milk tea and snacks. She also paid for two music and video subscriptions that she rarely used, and she often ordered food through apps late at night because she was too tired to cook.\n\nShe made a few simple changes. First, she made a budget. When she got her salary, she divided it into three parts: money for needs like rent and food, money for wants like coffee with friends, and money for savings. Second, she cancelled the subscriptions she did not use. Third, she started cooking simple meals on Sunday for the next few days.\n\nLinh did not stop having fun. She still meets her friends for milk tea, but now it is once a week, not every day. She also uses a savings app that automatically moves a small amount of money into a separate account. \"If I can't see the money, I don't spend it,\" she laughs.\n\nAfter six months, Linh had saved enough money to buy a second-hand laptop for her studies. More importantly, she felt calmer. She no longer worried at the end of each month. Her message to other students is simple: you don't need to earn a lot to save. You just need to know where your money goes and make small changes every day.",
+      "vocabulary": [
+        { "word": "part-time", "partOfSpeech": "adj", "meaning": "bán thời gian", "example": "Many students have part-time jobs in cafes." },
+        { "word": "income", "partOfSpeech": "n", "meaning": "thu nhập", "example": "His monthly income is not very high." },
+        { "word": "subscription", "partOfSpeech": "n", "meaning": "gói đăng ký (trả phí định kỳ)", "example": "I cancelled my music subscription last month." },
+        { "word": "rarely", "partOfSpeech": "adv", "meaning": "hiếm khi", "example": "She rarely eats breakfast at home." },
+        { "word": "budget", "partOfSpeech": "n", "meaning": "ngân sách, kế hoạch chi tiêu", "example": "We need to plan a budget for our trip." },
+        { "word": "salary", "partOfSpeech": "n", "meaning": "tiền lương", "example": "He gets his salary at the end of the month." },
+        { "word": "cancel", "partOfSpeech": "v", "meaning": "hủy bỏ", "example": "The flight was cancelled because of the storm." },
+        { "word": "second-hand", "partOfSpeech": "adj", "meaning": "đã qua sử dụng, cũ", "example": "I bought a second-hand bike for my son." }
+      ],
+      "quiz": [
+        {
+          "id": "q1",
+          "question": "What was Linh’s problem at the beginning?",
+          "options": [
+            "She bought a very expensive phone",
+            "She had no job",
+            "Her money was gone at the end of each month, but she did not know why",
+            "She had to pay high rent"
+          ],
+          "correctIndex": 2,
+          "explanation": "Paragraph 1 says her wallet was empty every month even though she did not buy anything expensive; she did not know where her money went.",
+          "paragraphRef": 0
+        },
+        {
+          "id": "q2",
+          "question": "What did Linh spend almost a quarter of her income on?",
+          "options": ["Rent", "Books", "Milk tea and snacks", "Transport"],
+          "correctIndex": 2,
+          "explanation": "Paragraph 2 says she spent almost a quarter of her income on milk tea and snacks.",
+          "paragraphRef": 1
+        },
+        {
+          "id": "q3",
+          "question": "How did Linh divide her salary?",
+          "options": [
+            "Into needs, wants, and savings",
+            "Into food, rent, and clothes",
+            "Into money for herself and money for her family",
+            "She gave it all to a bank"
+          ],
+          "correctIndex": 0,
+          "explanation": "Paragraph 3 explains she divided it into three parts: needs, wants, and savings.",
+          "paragraphRef": 2
+        },
+        {
+          "id": "q4",
+          "question": "How does the savings app help Linh?",
+          "options": [
+            "It gives her discounts on milk tea",
+            "It automatically moves money into a separate account, so she does not see it and spend it",
+            "It finds her a better part-time job",
+            "It cooks meals for her"
+          ],
+          "correctIndex": 1,
+          "explanation": "Paragraph 4 says the app automatically moves money into a separate account; she says if she can’t see the money, she doesn’t spend it.",
+          "paragraphRef": 3
+        },
+        {
+          "id": "q5",
+          "question": "What did Linh buy with her savings after six months?",
+          "options": ["A new phone", "A motorbike", "A second-hand laptop", "A plane ticket"],
+          "correctIndex": 2,
+          "explanation": "The last paragraph says she saved enough to buy a second-hand laptop for her studies.",
+          "paragraphRef": 4
+        }
+      ],
+      "discussion": [
+        "Do you know exactly where your money goes each month? How could you find out?",
+        "Which of Linh’s changes would be easiest for you to try? Which would be hardest?",
+        "Is it better to save a small amount regularly or a large amount occasionally? Why?"
+      ]
+    },
+    {
+      "id": "reading-livestream-shopping",
+      "slug": "livestream-shopping",
+      "title": "Selling Live: How Livestream Shopping Changed Online Retail",
+      "topic": "Business & Technology",
+      "level": "intermediate",
+      "estimatedMinutes": 4,
+      "wordCount": 350,
+      "passage": "On a weekday evening, thousands of people in Vietnam are watching the same thing on their phones: a young woman holding up a jar of face cream, talking quickly and laughing with viewers. Every few seconds, a new comment appears asking about the price or the size. Within an hour, she has sold several hundred jars. This is livestream shopping, and in just a few years it has become one of the fastest-growing ways to buy and sell goods.\n\nThe idea is simple. A seller broadcasts live video on a platform such as TikTok, Facebook, or Shopee, shows the products, and answers questions in real time. Viewers can tap a button to buy without leaving the stream. Unlike a traditional online store, where customers look at photos and read descriptions alone, a livestream feels social and personal. Buyers can ask the seller to try on a shirt or test a product in front of the camera.\n\nFor small businesses, the benefits are clear. A farmer selling dried mangoes or a family running a clothing shop no longer needs an expensive storefront on a busy street. All they need is a phone, good lighting, and the confidence to talk to strangers. Some sellers have built large audiences and now earn more than they ever did from a physical shop.\n\nHowever, the boom has also created problems. Because sales happen so fast, some sellers exaggerate the quality of their products or even sell fake goods. Customers who buy on impulse may regret it when the package arrives. Tax authorities have also struggled to keep track of income from thousands of individual sellers, and new rules now make platforms more responsible for reporting what their sellers earn.\n\nExperts believe livestream shopping is here to stay, but it will probably become more professional. Large brands are hiring trained hosts, and platforms are investing in tools to check product quality and handle complaints. For buyers, the best advice remains the same as with any kind of shopping: compare prices, read reviews, and never let the excitement of a countdown timer make the decision for you.",
+      "vocabulary": [
+        { "word": "broadcast", "partOfSpeech": "v", "meaning": "phát sóng, truyền hình trực tiếp", "example": "The match will be broadcast live tonight." },
+        { "word": "in real time", "partOfSpeech": "phrase", "meaning": "theo thời gian thực, ngay lập tức", "example": "The app shows traffic conditions in real time." },
+        { "word": "storefront", "partOfSpeech": "n", "meaning": "mặt tiền cửa hàng", "example": "Renting a storefront in the city center is very expensive." },
+        { "word": "audience", "partOfSpeech": "n", "meaning": "khán giả, lượng người xem", "example": "Her cooking channel has a large audience." },
+        { "word": "exaggerate", "partOfSpeech": "v", "meaning": "phóng đại, thổi phồng", "example": "Don’t exaggerate — the problem isn’t that serious." },
+        { "word": "on impulse", "partOfSpeech": "phrase", "meaning": "một cách bốc đồng, không suy nghĩ", "example": "I bought these shoes on impulse and never wore them." },
+        { "word": "authority", "partOfSpeech": "n", "meaning": "cơ quan chức năng, nhà chức trách", "example": "The local authorities closed the market for repairs." },
+        { "word": "complaint", "partOfSpeech": "n", "meaning": "lời phàn nàn, khiếu nại", "example": "The shop received many complaints about late delivery." }
+      ],
+      "quiz": [
+        {
+          "id": "q1",
+          "question": "What makes livestream shopping different from a traditional online store?",
+          "options": [
+            "Products are always cheaper",
+            "It feels social and personal because buyers can interact with the seller in real time",
+            "Customers must visit a physical shop to pay",
+            "It only sells clothes"
+          ],
+          "correctIndex": 1,
+          "explanation": "Paragraph 2 contrasts traditional stores, where customers look at photos alone, with livestreams, which feel social and personal and let buyers ask questions in real time.",
+          "paragraphRef": 1
+        },
+        {
+          "id": "q2",
+          "question": "Why is livestream selling useful for small businesses?",
+          "options": [
+            "The government pays them to sell online",
+            "They no longer need an expensive storefront; a phone, good lighting, and confidence are enough",
+            "They do not have to pay for products",
+            "Platforms find customers for them for free forever"
+          ],
+          "correctIndex": 1,
+          "explanation": "Paragraph 3 says a farmer or family shop no longer needs an expensive storefront; they only need a phone, good lighting, and confidence.",
+          "paragraphRef": 2
+        },
+        {
+          "id": "q3",
+          "question": "Which problem is NOT mentioned in paragraph 4?",
+          "options": [
+            "Some sellers exaggerate product quality",
+            "Some sellers sell fake goods",
+            "Customers may regret buying on impulse",
+            "Packages are often delivered late"
+          ],
+          "correctIndex": 3,
+          "explanation": "Paragraph 4 mentions exaggeration, fake goods, impulse buying, and tax difficulties, but says nothing about late delivery.",
+          "paragraphRef": 3
+        },
+        {
+          "id": "q4",
+          "question": "What have tax authorities found difficult?",
+          "options": [
+            "Understanding how livestreams work",
+            "Keeping track of income from thousands of individual sellers",
+            "Stopping people from watching livestreams",
+            "Collecting taxes from large brands"
+          ],
+          "correctIndex": 1,
+          "explanation": "Paragraph 4 states that tax authorities have struggled to keep track of income from thousands of individual sellers.",
+          "paragraphRef": 3
+        },
+        {
+          "id": "q5",
+          "question": "How do experts expect livestream shopping to change?",
+          "options": [
+            "It will disappear within a few years",
+            "It will be banned in most countries",
+            "It will become more professional, with trained hosts and better quality-checking tools",
+            "It will only be used by farmers"
+          ],
+          "correctIndex": 2,
+          "explanation": "Paragraph 5 says it will probably become more professional, with brands hiring trained hosts and platforms investing in quality and complaint tools.",
+          "paragraphRef": 4
+        }
+      ],
+      "discussion": [
+        "Have you ever bought something during a livestream? Were you happy with it?",
+        "Why do you think countdown timers and \"limited stock\" messages are so effective?",
+        "Should platforms be responsible when a seller sells fake goods? Why or why not?"
+      ]
+    },
+    {
+      "id": "reading-plastic-waste",
+      "slug": "living-with-less-plastic",
+      "title": "The Plastic in Our Daily Lives",
+      "topic": "Environment",
+      "level": "intermediate",
+      "estimatedMinutes": 3,
+      "wordCount": 320,
+      "passage": "Think about the last time you bought a drink from a street vendor. It probably came in a plastic cup with a plastic lid, a plastic straw, and a thin plastic bag to carry it. You used all of these for perhaps fifteen minutes. The plastic, however, could stay in the environment for hundreds of years.\n\nVietnam, like many fast-growing countries in Asia, uses a large amount of single-use plastic. As incomes have risen, people buy more packaged food, order more takeaway, and shop more online, and almost every one of these habits creates plastic waste. Much of this waste is never recycled. It ends up in landfills, is burned in the open air, or is carried by rivers into the sea, where it harms fish, turtles, and seabirds.\n\nThe problem is not only about animals. Over time, plastic breaks down into tiny pieces called microplastics. Scientists have found these particles in tap water, sea salt, and seafood. Researchers are still studying how microplastics affect human health, but many are concerned that they could carry harmful chemicals into our bodies.\n\nThere are signs of change. Several supermarkets have started wrapping vegetables in banana leaves instead of plastic film, an idea that attracted attention around the world. Some cafes offer a discount to customers who bring their own cups, and paper or rice straws are increasingly common. The government has also set targets to reduce single-use plastic bags and other plastic products in shops and tourist areas.\n\nIndividual actions may seem small, but they add up. Carrying a reusable bottle, saying \"no straw, please,\" or bringing a cloth bag to the market costs almost nothing. Real progress, however, also requires better recycling systems and companies that design packaging with the environment in mind. Plastic is cheap and convenient, and that is exactly why reducing it takes effort from everyone, not just from a few enthusiastic individuals.",
+      "vocabulary": [
+        { "word": "vendor", "partOfSpeech": "n", "meaning": "người bán hàng (thường là hàng rong)", "example": "A fruit vendor stands outside my school every afternoon." },
+        { "word": "single-use", "partOfSpeech": "adj", "meaning": "dùng một lần", "example": "Many cities want to ban single-use plastic bags." },
+        { "word": "landfill", "partOfSpeech": "n", "meaning": "bãi chôn lấp rác", "example": "Most of our rubbish goes to a landfill outside the city." },
+        { "word": "particle", "partOfSpeech": "n", "meaning": "hạt nhỏ, mảnh vụn", "example": "Tiny particles of dust were floating in the air." },
+        { "word": "concerned", "partOfSpeech": "adj", "meaning": "lo ngại, quan ngại", "example": "Parents are concerned about their children’s screen time." },
+        { "word": "reusable", "partOfSpeech": "adj", "meaning": "có thể tái sử dụng", "example": "I always carry a reusable water bottle." },
+        { "word": "convenient", "partOfSpeech": "adj", "meaning": "tiện lợi", "example": "Online shopping is fast and convenient." },
+        { "word": "enthusiastic", "partOfSpeech": "adj", "meaning": "nhiệt tình, hăng hái", "example": "The volunteers were very enthusiastic about the clean-up." }
+      ],
+      "quiz": [
+        {
+          "id": "q1",
+          "question": "What point does the writer make in the first paragraph?",
+          "options": [
+            "Street drinks are too expensive",
+            "Plastic items are used for a short time but can stay in the environment for centuries",
+            "Plastic cups are better than glass cups",
+            "Street vendors should stop selling drinks"
+          ],
+          "correctIndex": 1,
+          "explanation": "Paragraph 1 contrasts using plastic for about fifteen minutes with it staying in the environment for hundreds of years.",
+          "paragraphRef": 0
+        },
+        {
+          "id": "q2",
+          "question": "According to the passage, why has plastic use grown in Vietnam?",
+          "options": [
+            "Plastic has become more expensive",
+            "Rising incomes mean people buy more packaged food, order more takeaway, and shop online more",
+            "There are fewer recycling factories than before",
+            "Tourists bring plastic into the country"
+          ],
+          "correctIndex": 1,
+          "explanation": "Paragraph 2 links higher incomes to more packaged food, takeaway, and online shopping, all of which create plastic waste.",
+          "paragraphRef": 1
+        },
+        {
+          "id": "q3",
+          "question": "What does the passage say about microplastics and human health?",
+          "options": [
+            "They are proven to be completely safe",
+            "They only affect fish, not people",
+            "Their effects are still being studied, but many researchers are concerned",
+            "They have been removed from tap water"
+          ],
+          "correctIndex": 2,
+          "explanation": "Paragraph 3 says researchers are still studying the effects, but many are concerned they could carry harmful chemicals into our bodies.",
+          "paragraphRef": 2
+        },
+        {
+          "id": "q4",
+          "question": "Which idea attracted attention around the world?",
+          "options": [
+            "Burning plastic waste in the open air",
+            "Supermarkets wrapping vegetables in banana leaves instead of plastic film",
+            "Selling drinks without cups",
+            "Banning all takeaway food"
+          ],
+          "correctIndex": 1,
+          "explanation": "Paragraph 4 says supermarkets wrapping vegetables in banana leaves was an idea that attracted attention around the world.",
+          "paragraphRef": 3
+        },
+        {
+          "id": "q5",
+          "question": "What is the writer’s main conclusion?",
+          "options": [
+            "Individual actions are useless",
+            "Only the government can solve the problem",
+            "Individual actions help, but better recycling and greener packaging from companies are also needed",
+            "Plastic should be made more expensive than gold"
+          ],
+          "correctIndex": 2,
+          "explanation": "The last paragraph says individual actions add up, but real progress also requires better recycling systems and companies designing packaging with the environment in mind.",
+          "paragraphRef": 4
+        }
+      ],
+      "discussion": [
+        "How many single-use plastic items did you use yesterday? Which could you avoid?",
+        "Should shops charge customers for plastic bags? Why or why not?",
+        "Who has the biggest responsibility for reducing plastic waste: individuals, companies, or the government?"
+      ]
+    },
+    {
+      "id": "reading-attention-economy",
+      "slug": "the-attention-economy",
+      "title": "The Attention Economy: Why Short Videos Are So Hard to Stop Watching",
+      "topic": "Psychology & Technology",
+      "level": "advanced",
+      "estimatedMinutes": 4,
+      "wordCount": 400,
+      "passage": "Many people have had the same experience: you open an app to check one message, and forty minutes later you are still scrolling through short videos, unable to remember most of what you watched. It is tempting to blame a lack of self-control. Yet this behavior is less a personal failing than the predictable result of products deliberately engineered to capture as much of our attention as possible.\n\nThe business logic is straightforward. Most social media platforms are free to use, and they earn money by selling advertising. The longer users stay, the more ads they see and the more data the company collects about their preferences. In this model, often called the attention economy, the user's time and focus are effectively the product being sold.\n\nTo keep people watching, designers rely on well-understood psychological principles. The endless feed removes natural stopping points, so there is never a moment when the content simply ends. Recommendation algorithms learn within minutes which topics hold a particular user's interest. Most powerfully, the unpredictability of what comes next, a dull clip followed perhaps by a hilarious one, works much like a slot machine, encouraging users to keep swiping in search of the next reward.\n\nThe consequences are still debated. Some studies link heavy social media use, particularly among teenagers, to anxiety, poor sleep, and difficulty concentrating on demanding tasks such as reading a long text. Other researchers caution that the evidence is mixed and that correlation does not prove causation: anxious people may simply spend more time online. What few dispute is that time spent scrolling is time not spent on sleep, exercise, or face-to-face conversation.\n\nRegulators have begun to respond. Some countries now require platforms to offer young users screen-time limits, restrict notifications at night, or give people the option of seeing content in chronological order rather than through an algorithm. Critics argue that such measures place the burden on individuals rather than challenging the underlying business model.\n\nIn the meantime, people are developing their own strategies. Some turn off non-essential notifications or switch their phone screen to grayscale, which makes apps less visually appealing. Others set aside phone-free hours or delete the most absorbing apps entirely. None of these approaches is perfect, but they share a common insight: in a contest between one person's willpower and a team of engineers optimizing for engagement, it helps to change the environment rather than rely on discipline alone.",
+      "vocabulary": [
+        { "word": "deliberately", "partOfSpeech": "adv", "meaning": "một cách cố ý, có chủ đích", "example": "The question was deliberately difficult." },
+        { "word": "engineered", "partOfSpeech": "adj/v", "meaning": "được thiết kế, tạo ra một cách có tính toán", "example": "The game is engineered to make players come back every day." },
+        { "word": "straightforward", "partOfSpeech": "adj", "meaning": "đơn giản, dễ hiểu", "example": "The instructions were clear and straightforward." },
+        { "word": "unpredictability", "partOfSpeech": "n", "meaning": "tính khó đoán trước", "example": "The unpredictability of the weather makes planning hard." },
+        { "word": "consequence", "partOfSpeech": "n", "meaning": "hậu quả, kết quả", "example": "Lack of sleep can have serious consequences for your health." },
+        { "word": "causation", "partOfSpeech": "n", "meaning": "quan hệ nhân quả", "example": "Scientists must show causation, not just a connection." },
+        { "word": "burden", "partOfSpeech": "n", "meaning": "gánh nặng", "example": "The new rules put a heavy burden on small businesses." },
+        { "word": "optimize", "partOfSpeech": "v", "meaning": "tối ưu hóa", "example": "The company optimized its website to load faster." }
+      ],
+      "quiz": [
+        {
+          "id": "q1",
+          "question": "According to the first paragraph, why do people find it hard to stop scrolling?",
+          "options": [
+            "Mainly because they lack self-control",
+            "Because the products are deliberately designed to capture as much attention as possible",
+            "Because short videos are more educational than other content",
+            "Because their phones are too slow to close apps"
+          ],
+          "correctIndex": 1,
+          "explanation": "Paragraph 1 says the behavior is less a personal failing than the predictable result of products deliberately engineered to capture attention.",
+          "paragraphRef": 0
+        },
+        {
+          "id": "q2",
+          "question": "In the attention economy, what is effectively being sold?",
+          "options": [
+            "The apps themselves",
+            "The users’ time and focus",
+            "Phones and other devices",
+            "Video subscriptions"
+          ],
+          "correctIndex": 1,
+          "explanation": "Paragraph 2 states that in the attention economy the user’s time and focus are effectively the product being sold.",
+          "paragraphRef": 1
+        },
+        {
+          "id": "q3",
+          "question": "Why does the writer compare short-video feeds to a slot machine?",
+          "options": [
+            "Because users have to pay money for each video",
+            "Because the videos are about gambling",
+            "Because not knowing whether the next clip will be dull or great keeps users swiping for a reward",
+            "Because the videos are always exciting"
+          ],
+          "correctIndex": 2,
+          "explanation": "Paragraph 3 says the unpredictability of what comes next works like a slot machine, encouraging users to keep swiping in search of the next reward.",
+          "paragraphRef": 2
+        },
+        {
+          "id": "q4",
+          "question": "What does the phrase \"correlation does not prove causation\" suggest in paragraph 4?",
+          "options": [
+            "Social media definitely causes anxiety",
+            "It is possible that anxious people spend more time online, rather than social media causing anxiety",
+            "Teenagers do not use social media much",
+            "Research on social media is not allowed"
+          ],
+          "correctIndex": 1,
+          "explanation": "Paragraph 4 explains the caution with the example that anxious people may simply spend more time online, so the link may not be cause and effect.",
+          "paragraphRef": 3
+        },
+        {
+          "id": "q5",
+          "question": "What criticism of the new regulations is mentioned?",
+          "options": [
+            "They are too expensive for governments",
+            "They place the burden on individuals instead of challenging the business model",
+            "They ban social media completely",
+            "They only apply to adults"
+          ],
+          "correctIndex": 1,
+          "explanation": "Paragraph 5 says critics argue the measures place the burden on individuals rather than challenging the underlying business model.",
+          "paragraphRef": 4
+        },
+        {
+          "id": "q6",
+          "question": "What common insight do the personal strategies in the last paragraph share?",
+          "options": [
+            "Willpower alone is usually enough",
+            "Deleting all apps is the only solution",
+            "Changing your environment works better than relying on discipline alone",
+            "Engineers should stop working on social media"
+          ],
+          "correctIndex": 2,
+          "explanation": "The last paragraph concludes that, against engineers optimizing for engagement, it helps to change the environment rather than rely on discipline alone.",
+          "paragraphRef": 5
+        }
+      ],
+      "discussion": [
+        "How much time do you spend on short-video apps each day? Does that number surprise you?",
+        "Should governments regulate how social media apps are designed, or is it a personal responsibility?",
+        "Which strategy from the passage would you be most willing to try, and why?"
+      ]
+    },
+    {
+      "id": "reading-urban-transport",
+      "slug": "cities-beyond-the-motorbike",
+      "title": "Can Vietnam’s Cities Move Beyond the Motorbike?",
+      "topic": "Urban Life & Policy",
+      "level": "advanced",
+      "estimatedMinutes": 4,
+      "wordCount": 390,
+      "passage": "For visitors arriving in Hanoi or Ho Chi Minh City for the first time, the most striking sight is often the traffic: a seemingly endless river of motorbikes flowing through intersections, carrying everything from schoolchildren to refrigerators. With tens of millions of motorbikes registered nationwide, the two-wheeler is not merely a vehicle in Vietnam; it is the backbone of daily life.\n\nThe motorbike's dominance is easy to explain. It is affordable, far cheaper than a car, and perfectly suited to narrow alleys that cars cannot enter. It allows a single person to commute, run a small business, and transport a family. For decades, public transport in Vietnamese cities consisted mainly of buses that were slow and stuck in the same traffic as everyone else, so there was little reason to give up the freedom of two wheels.\n\nYet this model is reaching its limits. Rush-hour congestion costs the cities enormous amounts of lost time and productivity. Air pollution in Hanoi regularly reaches levels considered unhealthy, especially in winter, and vehicle exhaust is a major contributor. Meanwhile, the rapid growth in private cars is making the situation worse, since a single car occupies the road space of several motorbikes.\n\nCity authorities have responded with a mixture of investment and restriction. Both major cities have opened their first urban railway lines after years of delays, and further lines are planned. Hanoi has also announced plans to restrict gasoline-powered motorbikes in its central districts, encouraging a shift toward electric vehicles and public transport.\n\nSuch policies face real obstacles. Millions of people, including street vendors and delivery drivers, depend on motorbikes for their income, and restricting them without reliable alternatives could hurt the poorest residents most. Metro lines also work well only when people can reach the stations easily, which requires safe sidewalks, feeder buses, and shaded walkways, infrastructure that many neighborhoods still lack.\n\nThe experience of other Asian cities suggests that change is possible but gradual. Taipei, which also has a strong scooter culture, built an extensive metro network and combined it with reliable buses and more walkable streets, gradually persuading many residents to leave their scooters at home for daily commutes. For Vietnam, the challenge is to make public transport so convenient that people choose it willingly, rather than forcing them off their motorbikes before a genuine alternative exists.",
+      "vocabulary": [
+        { "word": "striking", "partOfSpeech": "adj", "meaning": "nổi bật, gây ấn tượng mạnh", "example": "The most striking thing about the city is its old architecture." },
+        { "word": "backbone", "partOfSpeech": "n", "meaning": "xương sống, trụ cột", "example": "Small businesses are the backbone of the local economy." },
+        { "word": "dominance", "partOfSpeech": "n", "meaning": "sự thống trị, ưu thế vượt trội", "example": "The company’s dominance of the market is slowly ending." },
+        { "word": "congestion", "partOfSpeech": "n", "meaning": "sự tắc nghẽn (giao thông)", "example": "Traffic congestion is worst between 5 and 7 p.m." },
+        { "word": "exhaust", "partOfSpeech": "n", "meaning": "khí thải (từ xe cộ)", "example": "Car exhaust is a major cause of air pollution." },
+        { "word": "restriction", "partOfSpeech": "n", "meaning": "sự hạn chế, quy định hạn chế", "example": "There are new restrictions on parking in the city center." },
+        { "word": "obstacle", "partOfSpeech": "n", "meaning": "trở ngại, chướng ngại", "example": "Language can be an obstacle when you move abroad." },
+        { "word": "feeder bus", "partOfSpeech": "n", "meaning": "xe buýt gom khách (nối đến ga tàu)", "example": "A feeder bus takes passengers from the village to the metro station." }
+      ],
+      "quiz": [
+        {
+          "id": "q1",
+          "question": "Why does the writer call the motorbike \"the backbone of daily life\" in Vietnam?",
+          "options": [
+            "Because it is the most expensive vehicle people own",
+            "Because tens of millions are registered and they carry people and goods everywhere",
+            "Because tourists prefer motorbikes",
+            "Because cars are banned in Vietnam"
+          ],
+          "correctIndex": 1,
+          "explanation": "Paragraph 1 describes motorbikes carrying everything from schoolchildren to refrigerators, with tens of millions registered nationwide.",
+          "paragraphRef": 0
+        },
+        {
+          "id": "q2",
+          "question": "Why did people have little reason to give up their motorbikes for decades?",
+          "options": [
+            "Public transport was mainly slow buses stuck in the same traffic",
+            "Motorbikes were free",
+            "There were no roads for buses",
+            "The government banned public transport"
+          ],
+          "correctIndex": 0,
+          "explanation": "Paragraph 2 explains that public transport consisted mainly of slow buses stuck in the same traffic, so there was little reason to give up two wheels.",
+          "paragraphRef": 1
+        },
+        {
+          "id": "q3",
+          "question": "According to paragraph 3, why is the growth in private cars making traffic worse?",
+          "options": [
+            "Cars are slower than motorbikes",
+            "A single car takes up the road space of several motorbikes",
+            "Car drivers do not follow traffic rules",
+            "Cars cannot enter narrow alleys"
+          ],
+          "correctIndex": 1,
+          "explanation": "Paragraph 3 says a single car occupies the road space of several motorbikes.",
+          "paragraphRef": 2
+        },
+        {
+          "id": "q4",
+          "question": "What has Hanoi announced, according to the passage?",
+          "options": [
+            "A complete ban on all vehicles in the city",
+            "Free motorbikes for delivery drivers",
+            "Plans to restrict gasoline-powered motorbikes in its central districts",
+            "The closure of its urban railway line"
+          ],
+          "correctIndex": 2,
+          "explanation": "Paragraph 4 states that Hanoi has announced plans to restrict gasoline-powered motorbikes in its central districts.",
+          "paragraphRef": 3
+        },
+        {
+          "id": "q5",
+          "question": "Why could restricting motorbikes hurt the poorest residents most?",
+          "options": [
+            "Because they cannot afford metro tickets at any price",
+            "Because many depend on motorbikes for their income and reliable alternatives do not yet exist",
+            "Because they live too close to the city center",
+            "Because they do not know how to use public transport"
+          ],
+          "correctIndex": 1,
+          "explanation": "Paragraph 5 says millions, including street vendors and delivery drivers, depend on motorbikes for income, and restricting them without reliable alternatives could hurt the poorest most.",
+          "paragraphRef": 4
+        },
+        {
+          "id": "q6",
+          "question": "What is the writer’s main conclusion?",
+          "options": [
+            "Vietnam should ban motorbikes immediately, as Taipei did",
+            "Nothing can be done about traffic in Vietnamese cities",
+            "Public transport must become convenient enough that people choose it willingly",
+            "Cars are a better solution than motorbikes"
+          ],
+          "correctIndex": 2,
+          "explanation": "The last paragraph says the challenge is to make public transport so convenient that people choose it willingly rather than being forced off their motorbikes.",
+          "paragraphRef": 5
+        }
+      ],
+      "discussion": [
+        "Would you give up your motorbike if there were a good metro line near your home? Why or why not?",
+        "Is restricting gasoline motorbikes a fair policy? Who benefits and who loses?",
+        "What would make public transport in your city more attractive to you?"
+      ]
+    },
+    {
+      "id": "reading-studying-abroad",
+      "slug": "brain-drain-or-brain-gain",
+      "title": "Brain Drain or Brain Gain? The Debate Over Studying Abroad",
+      "topic": "Education & Society",
+      "level": "advanced",
+      "estimatedMinutes": 4,
+      "wordCount": 390,
+      "passage": "Every year, tens of thousands of young Vietnamese leave the country to study at universities in Australia, Japan, South Korea, the United States, and Europe. Vietnam has become one of the largest sources of international students in the world. For many families, sending a child abroad represents years of savings and sacrifice, driven by the belief that a foreign degree opens doors that would otherwise remain closed.\n\nSupporters of studying abroad point to clear benefits. Students gain fluency in a foreign language, exposure to different teaching methods, and the kind of independence that comes from managing life in an unfamiliar country. Many universities abroad emphasize critical thinking and class discussion over memorization, which graduates say changes the way they approach problems.\n\nThe concern, often called \"brain drain,\" is that many of the most talented students never come back. Higher salaries, better research facilities, and, for some, a preference for a different lifestyle encourage graduates to build careers overseas. When a country invests in educating its brightest young people only to see them contribute to another economy, the loss can be significant, particularly in fields such as medicine, engineering, and scientific research.\n\nRecent thinking, however, suggests the picture is more complicated. Economists increasingly speak of \"brain circulation\" rather than a one-way drain. Vietnamese professionals working abroad send money home, invest in local start-ups, and connect Vietnamese companies with international partners. Some return after a decade with not only skills but also networks and capital that would have been impossible to acquire at home. Vietnam's growing technology sector owes a good deal to such returnees.\n\nWhether graduates come back often depends less on patriotism than on practical conditions. Returnees frequently mention obstacles such as lower pay, rigid workplace hierarchies, and difficulty getting foreign qualifications recognized. Conversely, a dynamic job market, competitive research funding, and a sense that their ideas will be taken seriously can make returning an attractive choice.\n\nFor students considering an overseas degree, the decision is ultimately personal and financial, and it deserves careful thought. A foreign diploma is no longer the guaranteed advantage it once was, as Vietnamese universities improve and employers increasingly value practical skills. Yet for those who go with clear goals, the experience can offer something that is difficult to measure: the ability to see their own country, and its possibilities, through fresh eyes.",
+      "vocabulary": [
+        { "word": "sacrifice", "partOfSpeech": "n", "meaning": "sự hy sinh", "example": "Her parents made many sacrifices so she could go to university." },
+        { "word": "fluency", "partOfSpeech": "n", "meaning": "sự trôi chảy, lưu loát", "example": "Living abroad greatly improved his fluency in English." },
+        { "word": "exposure", "partOfSpeech": "n", "meaning": "sự tiếp xúc, cơ hội làm quen", "example": "The internship gave her exposure to international business." },
+        { "word": "memorization", "partOfSpeech": "n", "meaning": "sự học thuộc lòng", "example": "Good learning involves more than memorization." },
+        { "word": "circulation", "partOfSpeech": "n", "meaning": "sự luân chuyển, lưu thông", "example": "The circulation of ideas between countries drives innovation." },
+        { "word": "returnee", "partOfSpeech": "n", "meaning": "người trở về (sau thời gian ở nước ngoài)", "example": "Many returnees start their own companies." },
+        { "word": "hierarchy", "partOfSpeech": "n", "meaning": "hệ thống thứ bậc, cấp bậc", "example": "Some companies have a very strict hierarchy." },
+        { "word": "conversely", "partOfSpeech": "adv", "meaning": "ngược lại", "example": "Prices rose in the city; conversely, they fell in rural areas." }
+      ],
+      "quiz": [
+        {
+          "id": "q1",
+          "question": "Why do many Vietnamese families send their children to study abroad?",
+          "options": [
+            "Because studying abroad is cheaper than studying at home",
+            "Because they believe a foreign degree opens doors that would otherwise stay closed",
+            "Because Vietnamese universities do not accept many students",
+            "Because the government requires it"
+          ],
+          "correctIndex": 1,
+          "explanation": "Paragraph 1 says families make sacrifices driven by the belief that a foreign degree opens doors that would otherwise remain closed.",
+          "paragraphRef": 0
+        },
+        {
+          "id": "q2",
+          "question": "According to paragraph 2, what do graduates say changes the way they approach problems?",
+          "options": [
+            "Living alone in a big city",
+            "An emphasis on critical thinking and class discussion over memorization",
+            "Studying only in a foreign language",
+            "Working part-time while studying"
+          ],
+          "correctIndex": 1,
+          "explanation": "Paragraph 2 says many universities abroad emphasize critical thinking and discussion over memorization, which graduates say changes how they approach problems.",
+          "paragraphRef": 1
+        },
+        {
+          "id": "q3",
+          "question": "Why can brain drain be a significant loss for a country?",
+          "options": [
+            "Because students spend too much money abroad",
+            "Because the country invests in its brightest people, who then contribute to another economy",
+            "Because foreign universities are not as good as local ones",
+            "Because returnees bring back bad habits"
+          ],
+          "correctIndex": 1,
+          "explanation": "Paragraph 3 says the loss comes when a country educates its brightest young people only to see them contribute to another economy, especially in medicine, engineering, and research.",
+          "paragraphRef": 2
+        },
+        {
+          "id": "q4",
+          "question": "What does the idea of \"brain circulation\" suggest?",
+          "options": [
+            "Talented people should never leave their home country",
+            "Professionals abroad can still benefit their home country through money, investment, connections, and eventually returning",
+            "Students should change universities frequently",
+            "Only engineers benefit from studying abroad"
+          ],
+          "correctIndex": 1,
+          "explanation": "Paragraph 4 explains that professionals abroad send money home, invest in start-ups, connect companies with partners, and sometimes return with skills, networks, and capital.",
+          "paragraphRef": 3
+        },
+        {
+          "id": "q5",
+          "question": "According to paragraph 5, what most influences whether graduates return?",
+          "options": [
+            "Their sense of patriotism",
+            "Practical conditions such as pay, workplace culture, and recognition of qualifications",
+            "The country where they studied",
+            "Their parents’ wishes"
+          ],
+          "correctIndex": 1,
+          "explanation": "Paragraph 5 says returning depends less on patriotism than on practical conditions like pay, rigid hierarchies, recognition of qualifications, and job market dynamism.",
+          "paragraphRef": 4
+        },
+        {
+          "id": "q6",
+          "question": "Why is a foreign diploma no longer a guaranteed advantage?",
+          "options": [
+            "Because foreign universities have become easier",
+            "Because Vietnamese universities are improving and employers increasingly value practical skills",
+            "Because employers do not trust foreign degrees at all",
+            "Because studying abroad has become too expensive"
+          ],
+          "correctIndex": 1,
+          "explanation": "The last paragraph gives two reasons: Vietnamese universities are improving and employers increasingly value practical skills.",
+          "paragraphRef": 5
+        }
+      ],
+      "discussion": [
+        "Would you like to study or work abroad? What would make you decide to come back?",
+        "Is brain drain a serious problem for Vietnam, or is \"brain circulation\" a more accurate description?",
+        "What could Vietnamese companies and universities do to attract talented returnees?"
       ]
     }
   ]

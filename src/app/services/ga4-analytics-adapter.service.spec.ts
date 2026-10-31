@@ -6,14 +6,40 @@ import { Ga4Config } from '../models/analytics-provider.model';
 describe('Ga4AnalyticsAdapter', () => {
   let adapter: Ga4AnalyticsAdapter;
   let eventQueue: EventQueueManager;
+  let originalGtag: any;
+  let gtagSpy: jasmine.Spy;
 
   beforeEach(() => {
+    // Start from a clean privacy state (opt-out persists in localStorage across specs)
+    localStorage.removeItem('analytics_opt_out');
+    originalGtag = (window as any).gtag;
+    gtagSpy = jasmine.createSpy('gtag');
+    (window as any).gtag = gtagSpy;
+
     TestBed.configureTestingModule({
       providers: [Ga4AnalyticsAdapter, EventQueueManager]
     });
     adapter = TestBed.inject(Ga4AnalyticsAdapter);
     eventQueue = TestBed.inject(EventQueueManager);
   });
+
+  afterEach(() => {
+    (window as any).gtag = originalGtag;
+    localStorage.removeItem('analytics_opt_out');
+  });
+
+  /** "Not initialized" is only logged in debug mode; enable it quietly. */
+  function enableDebugQuietly(): void {
+    const logSpy = spyOn(console, 'log');
+    adapter.setDebugMode(true);
+    logSpy.and.callThrough();
+    logSpy.calls.reset();
+  }
+
+  function expectNotInitializedWarning(): void {
+    expect(gtagSpy).not.toHaveBeenCalled();
+    expect(console.warn).toHaveBeenCalledWith('[GA4] Not initialized - cannot track');
+  }
 
   it('should be created', () => {
     expect(adapter).toBeTruthy();
@@ -66,10 +92,16 @@ describe('Ga4AnalyticsAdapter', () => {
 
     it('should not track when not initialized', () => {
       adapter.setEnabled(true);
+      adapter.trackPageView('/test', 'Test Page');
+      expect(gtagSpy).not.toHaveBeenCalled();
+    });
+
+    it('should warn in debug mode when trackPageView is called before initialization', () => {
+      adapter.setEnabled(true);
+      enableDebugQuietly();
       spyOn(console, 'warn');
       adapter.trackPageView('/test', 'Test Page');
-      // Should warn about not being initialized
-      expect(console.warn).toHaveBeenCalled();
+      expectNotInitializedWarning();
     });
   });
 
@@ -84,10 +116,16 @@ describe('Ga4AnalyticsAdapter', () => {
 
     it('should not track when not initialized', () => {
       adapter.setEnabled(true);
+      adapter.trackEvent('test_event', { param: 'value' });
+      expect(gtagSpy).not.toHaveBeenCalled();
+    });
+
+    it('should warn in debug mode when trackEvent is called before initialization', () => {
+      adapter.setEnabled(true);
+      enableDebugQuietly();
       spyOn(console, 'warn');
       adapter.trackEvent('test_event', { param: 'value' });
-      // Should warn about not being initialized
-      expect(console.warn).toHaveBeenCalled();
+      expectNotInitializedWarning();
     });
   });
 
@@ -102,10 +140,16 @@ describe('Ga4AnalyticsAdapter', () => {
 
     it('should not set property when not initialized', () => {
       adapter.setEnabled(true);
+      adapter.setUserProperty('test_property', 'value');
+      expect(gtagSpy).not.toHaveBeenCalled();
+    });
+
+    it('should warn in debug mode when setUserProperty is called before initialization', () => {
+      adapter.setEnabled(true);
+      enableDebugQuietly();
       spyOn(console, 'warn');
       adapter.setUserProperty('test_property', 'value');
-      // Should warn about not being initialized
-      expect(console.warn).toHaveBeenCalled();
+      expectNotInitializedWarning();
     });
   });
 
@@ -120,10 +164,16 @@ describe('Ga4AnalyticsAdapter', () => {
 
     it('should not set properties when not initialized', () => {
       adapter.setEnabled(true);
+      adapter.setUserProperties({ prop1: 'value1', prop2: 'value2' });
+      expect(gtagSpy).not.toHaveBeenCalled();
+    });
+
+    it('should warn in debug mode when setUserProperties is called before initialization', () => {
+      adapter.setEnabled(true);
+      enableDebugQuietly();
       spyOn(console, 'warn');
       adapter.setUserProperties({ prop1: 'value1', prop2: 'value2' });
-      // Should warn about not being initialized
-      expect(console.warn).toHaveBeenCalled();
+      expectNotInitializedWarning();
     });
   });
 
@@ -138,10 +188,16 @@ describe('Ga4AnalyticsAdapter', () => {
 
     it('should not set user ID when not initialized', () => {
       adapter.setEnabled(true);
+      adapter.setUserId('user123');
+      expect(gtagSpy).not.toHaveBeenCalled();
+    });
+
+    it('should warn in debug mode when setUserId is called before initialization', () => {
+      adapter.setEnabled(true);
+      enableDebugQuietly();
       spyOn(console, 'warn');
       adapter.setUserId('user123');
-      // Should warn about not being initialized
-      expect(console.warn).toHaveBeenCalled();
+      expectNotInitializedWarning();
     });
   });
 });

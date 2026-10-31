@@ -13,6 +13,9 @@ describe('AnalyticsService - Page View Tracking (Property Test)', () => {
   let privacyService: PrivacyService;
 
   beforeEach(() => {
+    // Start from a clean privacy state (opt-out persists in localStorage across specs)
+    localStorage.removeItem('analytics_opt_out');
+
     mockProvider = jasmine.createSpyObj<IAnalyticsProvider>('MockProvider', [
       'initialize',
       'trackPageView',

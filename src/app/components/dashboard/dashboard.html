@@ -1,6 +1,7 @@
 <div class="dashboard-container" role="main" aria-label="Learning Dashboard">
   <header class="dashboard-header">
     <h1 id="dashboard-title">{{ translate.t('dashboard.title') }}</h1>
+    <p class="print-only">{{ translate.t('dashboard.print_title') }} · {{ printDate }}</p>
     <div class="dashboard-actions" role="toolbar" aria-label="Dashboard actions">
       @if (needsMigration() && !migrationComplete()) {
         <button 

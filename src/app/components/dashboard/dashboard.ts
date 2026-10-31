@@ -355,8 +355,12 @@ export class DashboardComponent implements OnInit, OnDestroy {
     URL.revokeObjectURL(url);
   }
 
+  protected printDate = '';
+
   printReport(): void {
-    window.print();
+    this.printDate = new Date().toLocaleDateString(this.translate.language() === 'en' ? 'en-US' : 'vi-VN');
+    // Let the date render before the print dialog snapshots the page.
+    setTimeout(() => window.print());
   }
 
   setTimeRange(range: TimeRange): void {

@@ -7,19 +7,32 @@
     </div>
     
     <nav class="nav-links">
-      <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" class="nav-link">{{ translate.t('header.nav.writing') }}</a>
+      <a routerLink="/today" routerLinkActive="active" class="nav-link nav-link-today">☀️ {{ translate.t('header.menu.today') }}</a>
+      <a routerLink="/reader" routerLinkActive="active" class="nav-link nav-link-main">📖 {{ translate.t('header.menu.reader') }}</a>
+      <a routerLink="/review-queue" routerLinkActive="active" class="nav-link review-link" [title]="translate.t('header.tooltip.review')">
+        {{ translate.t('header.nav.review') }}
+        @if (dueReviewCount() > 0) {
+          <span class="review-badge" [class.urgent]="urgentReviewCount() > 0">
+            {{ dueReviewCount() }}
+          </span>
+        }
+      </a>
+      <!-- Everything else lives under "More" so the main nav stays a 3-choice decision -->
       <div class="nav-dropdown">
-        <button class="nav-link dropdown-trigger" 
+        <button class="nav-link dropdown-trigger"
                 [class.active]="isLearningMenuActive()"
-                (mouseenter)="onMenuMouseEnter()" 
+                (mouseenter)="onMenuMouseEnter()"
                 (mouseleave)="onMenuMouseLeave()">
-          {{ translate.t('header.nav.learning') }}
+          {{ translate.t('header.nav.more') }}
           <span class="dropdown-arrow">▼</span>
         </button>
         @if (showLearningMenu()) {
           <div class="dropdown-menu"
-               (mouseenter)="onMenuMouseEnter()" 
+               (mouseenter)="onMenuMouseEnter()"
                (mouseleave)="onMenuMouseLeave()">
+            <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" class="dropdown-item">
+              ✍️ {{ translate.t('header.menu.sentence_writing') }}
+            </a>
             @if (isAuthenticated()) {
               <a routerLink="/learning-path" routerLinkActive="active" class="dropdown-item">
                 🎯 {{ translate.t('header.menu.learning_path') }}
@@ -59,14 +72,6 @@
           </div>
         }
       </div>
-      <a routerLink="/review-queue" routerLinkActive="active" class="nav-link review-link" [title]="translate.t('header.tooltip.review')">
-        {{ translate.t('header.nav.review') }}
-        @if (dueReviewCount() > 0) {
-          <span class="review-badge" [class.urgent]="urgentReviewCount() > 0">
-            {{ dueReviewCount() }}
-          </span>
-        }
-      </a>
       <!-- <a class="nav-link">SPEAKING <span class="beta-badge">BETA</span></a>
       <a class="nav-link">VOCABULARY</a>
       <a class="nav-link">RANK</a> -->

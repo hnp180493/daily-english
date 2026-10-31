@@ -2,6 +2,24 @@
   @if (isLoading()) {
     <app-loading-spinner [message]="translate.t('common.loading')" />
   } @else {
+    <!-- Primary action: one button, no decisions -->
+    <a routerLink="/today" class="today-cta" [class.done]="todaySession.doneToday() && !todaySession.isActive()">
+      <span class="today-cta-icon">{{ todaySession.doneToday() && !todaySession.isActive() ? '✅' : '☀️' }}</span>
+      <span class="today-cta-text">
+        <strong>{{ translate.t('today.cta_title') }}</strong>
+        <small>
+          {{
+            todaySession.isActive()
+              ? translate.t('today.cta_resume')
+              : todaySession.doneToday()
+                ? translate.t('today.cta_done')
+                : translate.t('today.cta_sub')
+          }}
+        </small>
+      </span>
+      <span class="today-cta-arrow">→</span>
+    </a>
+
     <!-- Learning Path Widgets (only for authenticated users) -->
     @if (isAuthenticated()) {
       <section class="learning-path-widgets">

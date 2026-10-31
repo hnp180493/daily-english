@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "updated": "2026-05-14",
+  "updated": "2026-10-31",
   "lessons": [
     {
       "id": "lesson-verb-tenses-overview",
@@ -1430,6 +1430,1046 @@
         { "vietnamese": "Người phụ nữ đang ngồi đó là cô tôi.", "english": "The woman who is sitting there is my aunt." },
         { "vietnamese": "Bộ phim tôi xem hôm qua rất hay.", "english": "The movie (that) I watched yesterday was great." },
         { "vietnamese": "Đây là thành phố tôi lớn lên.", "english": "This is the city where I grew up." }
+      ]
+    },
+    {
+      "id": "lesson-question-formation",
+      "slug": "question-formation",
+      "title": "Asking Questions",
+      "description": "Yes/no questions, Wh- questions, and the auxiliary verb that Vietnamese doesn't need but English always does.",
+      "rule": "Put an auxiliary (do/does/did, be, have, can…) before the subject. The Wh- word goes first.",
+      "examples": [
+        "Do you like coffee?",
+        "Where does she work?",
+        "Did they call you?",
+        "What are you doing?"
+      ],
+      "relatedErrorPattern": "question",
+      "level": "beginner",
+      "category": "structure",
+      "estimatedMinutes": 6,
+      "errorPatternKeys": ["question", "questions", "question-formation", "sentence structure"],
+      "tldr": {
+        "rule": "(Wh- word) + auxiliary + subject + main verb. No auxiliary, no question.",
+        "example": "Where do you live? What time does the shop open?",
+        "exampleVietnamese": "Bạn sống ở đâu? Cửa hàng mở cửa lúc mấy giờ?"
+      },
+      "scenarios": [
+        {
+          "context": "☕ Ordering at a café",
+          "why": "Polite requests put 'Can/Could' before the subject.",
+          "english": "Could I have an iced milk coffee, please?",
+          "vietnamese": "Cho tôi một ly cà phê sữa đá nhé?"
+        },
+        {
+          "context": "🧭 Asking for directions",
+          "why": "Wh- word + does + subject + base verb.",
+          "english": "Excuse me, where does this bus go?",
+          "vietnamese": "Xin lỗi, xe buýt này đi đâu vậy?"
+        },
+        {
+          "context": "💼 Chatting before a job interview",
+          "why": "Past questions use 'did' + base verb.",
+          "english": "How did you hear about this position?",
+          "vietnamese": "Bạn biết đến vị trí này bằng cách nào?"
+        },
+        {
+          "context": "📱 Making weekend plans",
+          "why": "With 'be', just swap the subject and the verb.",
+          "english": "Are you free this weekend?",
+          "vietnamese": "Cuối tuần này bạn rảnh không?"
+        }
+      ],
+      "quickChecks": [
+        {
+          "question": "___ she speak Japanese?",
+          "options": ["Is", "Do", "Does", "Has"],
+          "correctIndex": 2,
+          "explanation": "Main verb 'speak', subject 'she', present tense → 'Does'."
+        },
+        {
+          "question": "Where ___ you go last night?",
+          "options": ["do", "did", "were", "have"],
+          "correctIndex": 1,
+          "explanation": "'Last night' is past; main verb 'go' → 'did' + base form."
+        },
+        {
+          "question": "What ___ you doing right now?",
+          "options": ["do", "does", "are", "did"],
+          "correctIndex": 2,
+          "explanation": "'Doing' is present continuous → the auxiliary is 'are'."
+        },
+        {
+          "question": "Which question is correct?",
+          "options": ["Why you are late?", "Why are you late?", "Why you late?", "Why late are you?"],
+          "correctIndex": 1,
+          "explanation": "Wh- word + be + subject: 'Why are you late?'"
+        }
+      ],
+      "sections": [
+        {
+          "heading": "Yes/No questions — move the auxiliary to the front",
+          "body": "If the sentence already has be, can, will, or have (perfect tense), move it before the subject. If there is no auxiliary, add do/does/did.",
+          "bullets": [
+            "She is tired. → Is she tired?",
+            "You can swim. → Can you swim?",
+            "They live here. → Do they live here?",
+            "He works late. → Does he work late? (the -s moves to 'does')"
+          ],
+          "examples": [
+            { "english": "Have you finished your homework?", "vietnamese": "Bạn làm xong bài tập chưa?" },
+            { "english": "Did you sleep well?", "vietnamese": "Bạn ngủ có ngon không?", "note": "After 'did', the main verb is the base form: sleep, NOT slept." }
+          ]
+        },
+        {
+          "heading": "Wh- questions — remember QASI",
+          "body": "Question word + Auxiliary + Subject + Infinitive (base verb).",
+          "bullets": [
+            "What / Where / When / Why / Who / How + auxiliary + subject + verb",
+            "How much / How many / How long / How often follow the same order"
+          ],
+          "examples": [
+            { "english": "What time do you usually get up?", "vietnamese": "Bạn thường dậy lúc mấy giờ?" },
+            { "english": "How long have you lived in Da Nang?", "vietnamese": "Bạn sống ở Đà Nẵng được bao lâu rồi?" }
+          ]
+        },
+        {
+          "heading": "Subject questions — no do/does/did",
+          "body": "When who or what is the SUBJECT (the one doing the action), keep normal word order and don't add an auxiliary.",
+          "examples": [
+            { "english": "Who called you?", "note": "Who = the caller (subject) → no 'did'." },
+            { "english": "Who did you call?", "note": "Who = the person you called (object) → 'did' is needed." },
+            { "english": "What happened?", "vietnamese": "Chuyện gì đã xảy ra vậy?" }
+          ]
+        }
+      ],
+      "vietnameseTips": [
+        "Tiếng Việt tạo câu hỏi bằng cách thêm 'không', 'chưa', 'à' vào cuối câu ('Bạn thích cà phê không?'). Tiếng Anh phải đưa trợ động từ lên trước chủ ngữ: 'Do you like coffee?'.",
+        "Từ để hỏi trong tiếng Việt thường đứng cuối câu ('Bạn sống ở đâu?'), còn tiếng Anh luôn đưa từ để hỏi lên đầu: 'Where do you live?'.",
+        "Đã dùng do/does/did thì động từ chính phải về nguyên thể: 'Does she like…?' chứ không phải 'Does she likes…?'."
+      ],
+      "commonMistakes": [
+        { "wrong": "You like coffee?", "right": "Do you like coffee?", "explanation": "Câu hỏi cần trợ động từ 'do' đứng trước chủ ngữ." },
+        { "wrong": "Where you live?", "right": "Where do you live?", "explanation": "Sau từ để hỏi phải có trợ động từ + chủ ngữ." },
+        { "wrong": "Did she went to school?", "right": "Did she go to school?", "explanation": "'Did' đã mang thì quá khứ → động từ chính dùng nguyên thể." }
+      ],
+      "practice": [
+        { "vietnamese": "Bạn làm việc ở đâu?", "english": "Where do you work?" },
+        { "vietnamese": "Hôm qua anh ấy có gọi cho bạn không?", "english": "Did he call you yesterday?", "hint": "Past → did + base verb." },
+        { "vietnamese": "Ai đã làm vỡ cái cốc?", "english": "Who broke the glass?", "hint": "'Who' là chủ ngữ → không dùng 'did'." }
+      ]
+    },
+    {
+      "id": "lesson-future-forms",
+      "slug": "future-forms",
+      "title": "Future Forms: will, going to, present continuous",
+      "description": "Three everyday ways to talk about the future — and how to choose between a quick decision, a plan, and a fixed arrangement.",
+      "rule": "Will = decided now or a prediction from opinion. Going to = plan already made or visible evidence. Present continuous = fixed arrangement.",
+      "examples": [
+        "I'm thirsty. I'll get some water.",
+        "I'm going to learn Korean next year.",
+        "Look at those clouds — it's going to rain.",
+        "I'm meeting my boss at 3 p.m. tomorrow."
+      ],
+      "relatedErrorPattern": "future",
+      "level": "beginner",
+      "category": "grammar",
+      "estimatedMinutes": 6,
+      "errorPatternKeys": ["future", "future-forms", "going-to", "verb tense"],
+      "tldr": {
+        "rule": "Decide now → will. Already planned → going to. Booked with a time → present continuous.",
+        "example": "The phone's ringing — I'll get it! I'm going to visit Hue in May.",
+        "exampleVietnamese": "Điện thoại reo kìa — để tôi nghe! Tháng Năm tôi định đi Huế."
+      },
+      "scenarios": [
+        {
+          "context": "📞 Offering help",
+          "why": "An offer decided at the moment of speaking → will.",
+          "english": "Don't worry, I'll send you the file now.",
+          "vietnamese": "Đừng lo, tôi gửi file cho bạn ngay."
+        },
+        {
+          "context": "🎯 Sharing your goals",
+          "why": "An intention you already have → going to.",
+          "english": "I'm going to take the IELTS test in December.",
+          "vietnamese": "Tôi định thi IELTS vào tháng Mười Hai."
+        },
+        {
+          "context": "📅 Confirming an appointment",
+          "why": "Arranged with other people at a fixed time → present continuous.",
+          "english": "We're having dinner with my parents on Saturday.",
+          "vietnamese": "Thứ Bảy này chúng tôi ăn tối với bố mẹ tôi."
+        },
+        {
+          "context": "🛵 Warning someone",
+          "why": "You can see the signs right now → going to.",
+          "english": "Slow down! You're going to hit that motorbike.",
+          "vietnamese": "Chạy chậm lại! Bạn sắp đâm vào chiếc xe máy kia rồi."
+        }
+      ],
+      "quickChecks": [
+        {
+          "question": "A: We've run out of milk. B: OK, I ___ buy some.",
+          "options": ["am going to", "will", "am buying", "buy"],
+          "correctIndex": 1,
+          "explanation": "B decides at the moment of speaking → 'will'."
+        },
+        {
+          "question": "She has already bought a ticket. She ___ fly to Seoul next week.",
+          "options": ["will", "is going to", "flies", "fly"],
+          "correctIndex": 1,
+          "explanation": "The plan was made before (ticket bought) → 'is going to'."
+        },
+        {
+          "question": "I ___ my dentist at 10 a.m. tomorrow — it's booked.",
+          "options": ["see", "will seeing", "am seeing", "saw"],
+          "correctIndex": 2,
+          "explanation": "Fixed arrangement with a time → present continuous."
+        },
+        {
+          "question": "I think Vietnam ___ win the match.",
+          "options": ["will", "is winning", "wins", "going to"],
+          "correctIndex": 0,
+          "explanation": "A prediction based on opinion ('I think') → 'will'."
+        }
+      ],
+      "sections": [
+        {
+          "heading": "Will — instant decisions, offers, promises, opinions",
+          "body": "Use will + base verb when you decide at the moment of speaking, make an offer or promise, or predict from your opinion.",
+          "bullets": [
+            "Common with: I think, probably, I'm sure, maybe",
+            "Negative: won't (= will not)"
+          ],
+          "examples": [
+            { "english": "I'll call you back in five minutes.", "vietnamese": "Năm phút nữa tôi gọi lại cho bạn." },
+            { "english": "I'm sure you won't fail.", "vietnamese": "Tôi chắc là bạn sẽ không trượt đâu." }
+          ]
+        },
+        {
+          "heading": "Be going to — plans and visible evidence",
+          "body": "Use am/is/are going to + base verb for intentions decided before speaking, or predictions based on what you can see now.",
+          "bullets": [
+            "Form: am/is/are + going to + base verb",
+            "In fast speech 'going to' sounds like 'gonna' — don't write 'gonna' in formal writing"
+          ],
+          "examples": [
+            { "english": "We're going to move to a bigger apartment.", "vietnamese": "Chúng tôi định chuyển đến một căn hộ rộng hơn." },
+            { "english": "The sky is very dark. It's going to storm.", "note": "Evidence you can see now." }
+          ]
+        },
+        {
+          "heading": "Present continuous — fixed arrangements",
+          "body": "Use am/is/are + V-ing for future plans already arranged with other people, usually with a time or place.",
+          "examples": [
+            { "english": "I'm flying to Phu Quoc on Friday.", "vietnamese": "Thứ Sáu tôi bay đi Phú Quốc.", "note": "Ticket booked, time fixed." },
+            { "english": "What are you doing tonight?", "vietnamese": "Tối nay bạn làm gì?" }
+          ]
+        }
+      ],
+      "vietnameseTips": [
+        "Mẹo nhớ: quyết định ngay lúc nói → 'will'; 'định làm gì' (đã tính từ trước) → 'going to'; đã hẹn giờ, đặt chỗ → hiện tại tiếp diễn.",
+        "Đừng dịch máy móc mọi chữ 'sẽ' thành 'will'. 'Tuần sau tôi sẽ đi Đà Lạt' (đã đặt vé) nên nói 'I'm going to Da Lat next week.'",
+        "Sau 'will' và 'going to' luôn là động từ nguyên thể: 'will go', 'going to go' — không phải 'will going' hay 'going to went'."
+      ],
+      "commonMistakes": [
+        { "wrong": "I will to call you.", "right": "I will call you.", "explanation": "Sau 'will' không có 'to'." },
+        { "wrong": "She going to study abroad.", "right": "She is going to study abroad.", "explanation": "Thiếu 'be' (am/is/are) trước 'going to'." },
+        { "wrong": "A: This bag is so heavy. B: I'm going to help you.", "right": "A: This bag is so heavy. B: I'll help you.", "explanation": "Lời đề nghị giúp đỡ quyết định ngay lúc nói → dùng 'will'." }
+      ],
+      "practice": [
+        { "vietnamese": "Tôi định học thạc sĩ ở Úc.", "english": "I'm going to do a master's degree in Australia.", "hint": "Plan made before → going to." },
+        { "vietnamese": "Để tôi mở cửa cho.", "english": "I'll open the door for you.", "hint": "Offer decided now → will." },
+        { "vietnamese": "Tối mai chúng tôi gặp khách hàng lúc 7 giờ.", "english": "We're meeting a client at 7 tomorrow evening.", "hint": "Fixed arrangement → present continuous." }
+      ]
+    },
+    {
+      "id": "lesson-quantifiers",
+      "slug": "quantifiers-much-many-few-little",
+      "title": "Quantifiers: much, many, a few, a little",
+      "description": "Choose the right 'how much' word by asking one question first: can I count it?",
+      "rule": "Many / a few / few + plural countable nouns. Much / a little / little + uncountable nouns. A lot of, some, and any work with both.",
+      "examples": [
+        "How many students are in your class?",
+        "I don't have much time.",
+        "I have a few friends in Hanoi.",
+        "Can I have a little sugar?"
+      ],
+      "relatedErrorPattern": "quantifier",
+      "level": "beginner",
+      "category": "grammar",
+      "estimatedMinutes": 5,
+      "errorPatternKeys": ["quantifier", "quantifiers", "much-many", "number agreement"],
+      "tldr": {
+        "rule": "Countable → many / a few. Uncountable → much / a little. Not sure? 'A lot of' fits both.",
+        "example": "There are many motorbikes but not much space.",
+        "exampleVietnamese": "Có rất nhiều xe máy nhưng không có nhiều chỗ trống."
+      },
+      "scenarios": [
+        {
+          "context": "🛒 Shopping at the market",
+          "why": "How many → countable items; how much → uncountable amounts or prices.",
+          "english": "How many mangoes do you want, and how much rice?",
+          "vietnamese": "Bạn muốn mấy quả xoài, và bao nhiêu gạo?"
+        },
+        {
+          "context": "🍜 Ordering food",
+          "why": "A small amount of something uncountable → a little.",
+          "english": "Just a little chili, please.",
+          "vietnamese": "Cho tôi ít ớt thôi nhé."
+        },
+        {
+          "context": "💬 Talking about your new job",
+          "why": "A small positive number of countable things → a few.",
+          "english": "I've made a few friends at work already.",
+          "vietnamese": "Tôi đã có được vài người bạn ở chỗ làm rồi."
+        },
+        {
+          "context": "⏰ Saying you're busy",
+          "why": "Negative sentence + uncountable noun → not much.",
+          "english": "Sorry, I don't have much time today.",
+          "vietnamese": "Xin lỗi, hôm nay tôi không có nhiều thời gian."
+        }
+      ],
+      "quickChecks": [
+        {
+          "question": "There aren't ___ people here today.",
+          "options": ["much", "many", "little", "a little"],
+          "correctIndex": 1,
+          "explanation": "'People' is plural and countable → 'many'."
+        },
+        {
+          "question": "We need ___ information before we decide.",
+          "options": ["many", "a few", "some", "few"],
+          "correctIndex": 2,
+          "explanation": "'Information' is uncountable; 'some' works with uncountable nouns."
+        },
+        {
+          "question": "I have ___ money left, so I can buy you a coffee.",
+          "options": ["little", "a little", "few", "a few"],
+          "correctIndex": 1,
+          "explanation": "Positive meaning (enough for coffee) + uncountable → 'a little'."
+        },
+        {
+          "question": "Very ___ students passed the test, so the teacher was disappointed.",
+          "options": ["few", "a few", "little", "much"],
+          "correctIndex": 0,
+          "explanation": "Countable + negative meaning (almost none) → 'few'."
+        }
+      ],
+      "sections": [
+        {
+          "heading": "Countable vs uncountable — the first question",
+          "body": "Countable nouns have singular and plural forms (one book, two books). Uncountable nouns have no plural and no a/an (water, advice, furniture, homework).",
+          "bullets": [
+            "Countable only: many, a few, few, a number of",
+            "Uncountable only: much, a little, little, a great deal of",
+            "Both: a lot of / lots of, some, any, no, enough"
+          ],
+          "examples": [
+            { "english": "How many cups of coffee do you drink a day?", "note": "You count the cups, not the coffee." },
+            { "english": "There's a lot of traffic and a lot of cars.", "vietnamese": "Đường rất đông và có rất nhiều ô tô.", "note": "'A lot of' works with both." }
+          ]
+        },
+        {
+          "heading": "Much / many in positive sentences",
+          "body": "In everyday English, much and many sound most natural in questions and negatives. In positive sentences, 'a lot of' is more common.",
+          "examples": [
+            { "english": "Do you have much homework? — Yes, I have a lot of homework.", "vietnamese": "Bạn có nhiều bài tập không? — Có, nhiều lắm." },
+            { "english": "She doesn't eat much meat.", "vietnamese": "Cô ấy không ăn nhiều thịt." }
+          ]
+        },
+        {
+          "heading": "A few vs few, a little vs little",
+          "body": "With 'a', the meaning is positive (some, enough). Without 'a', the meaning is negative (almost none, not enough).",
+          "bullets": [
+            "a few / a little = some, enough to be useful",
+            "few / little = almost none, not enough"
+          ],
+          "examples": [
+            { "english": "I have a few ideas. Let's discuss them.", "note": "Positive: I have some ideas." },
+            { "english": "He had few ideas, so the meeting was short.", "note": "Negative: almost no ideas." },
+            { "english": "There's little hope of finding the wallet now.", "vietnamese": "Giờ thì hầu như không còn hy vọng tìm lại được cái ví." }
+          ]
+        }
+      ],
+      "vietnameseTips": [
+        "Tiếng Việt chỉ có 'nhiều' và 'ít' cho mọi danh từ, nên hãy tự hỏi 'có đếm được không?' trước khi chọn many/much hay a few/a little.",
+        "Nhiều danh từ tiếng Việt đếm được nhưng tiếng Anh lại không đếm được: advice, information, homework, luggage, furniture, news. Chúng đi với 'much', 'a little' và không thêm -s.",
+        "Mẹo: có 'a' là nghĩa tích cực ('vẫn còn một ít'), không có 'a' là nghĩa tiêu cực ('chẳng còn bao nhiêu')."
+      ],
+      "commonMistakes": [
+        { "wrong": "There are much people in the park.", "right": "There are many people in the park.", "explanation": "'People' là danh từ số nhiều đếm được → many (hoặc a lot of)." },
+        { "wrong": "Can you give me some advices?", "right": "Can you give me some advice?", "explanation": "'Advice' không đếm được → không thêm -s." },
+        { "wrong": "I have little friends, so I'm never lonely.", "right": "I have a few friends, so I'm never lonely.", "explanation": "Danh từ đếm được + nghĩa tích cực → 'a few'. 'Little' dùng cho danh từ không đếm được." }
+      ],
+      "practice": [
+        { "vietnamese": "Bạn có bao nhiêu anh chị em?", "english": "How many brothers and sisters do you have?" },
+        { "vietnamese": "Tôi không uống nhiều cà phê.", "english": "I don't drink much coffee." },
+        { "vietnamese": "Chúng ta còn một chút thời gian, uống trà nhé.", "english": "We have a little time left, so let's have some tea.", "hint": "Positive + uncountable → a little." }
+      ]
+    },
+    {
+      "id": "lesson-present-perfect-vs-past-simple",
+      "slug": "present-perfect-vs-past-simple",
+      "title": "Present Perfect vs Past Simple",
+      "description": "Both talk about the past — the difference is whether the time is finished and stated, or still connected to now.",
+      "rule": "Past simple = finished time (yesterday, in 2019, ago). Present perfect = no specific time, or a period that continues to now.",
+      "examples": [
+        "I visited Japan in 2022.",
+        "I have visited Japan twice.",
+        "She has worked here since March.",
+        "She worked there for two years, then left."
+      ],
+      "relatedErrorPattern": "present-perfect",
+      "level": "intermediate",
+      "category": "grammar",
+      "estimatedMinutes": 7,
+      "errorPatternKeys": ["present-perfect", "present perfect", "past simple", "verb tense"],
+      "tldr": {
+        "rule": "Can you name a finished time? Past simple. No finished time, or still true? Present perfect.",
+        "example": "I've lost my keys! I think I dropped them on the bus.",
+        "exampleVietnamese": "Tôi làm mất chìa khóa rồi! Chắc tôi đánh rơi trên xe buýt."
+      },
+      "scenarios": [
+        {
+          "context": "💼 Job interview",
+          "why": "Experience up to now with no time given → present perfect.",
+          "english": "I have managed a team of five people.",
+          "vietnamese": "Tôi từng quản lý một nhóm năm người."
+        },
+        {
+          "context": "📸 Telling a travel story",
+          "why": "A specific, finished trip with details → past simple.",
+          "english": "Last summer we went to Ha Giang and rode motorbikes for three days.",
+          "vietnamese": "Hè năm ngoái chúng tôi đi Hà Giang và chạy xe máy suốt ba ngày."
+        },
+        {
+          "context": "📰 Sharing good news",
+          "why": "News with a present result → present perfect; the details → past simple.",
+          "english": "Guess what? I've got the job! They called me an hour ago.",
+          "vietnamese": "Đoán xem? Tôi được nhận rồi! Họ gọi cho tôi một tiếng trước."
+        },
+        {
+          "context": "🏠 Saying how long",
+          "why": "Started in the past and still true → present perfect + for/since.",
+          "english": "We've lived in this apartment since 2021.",
+          "vietnamese": "Chúng tôi sống ở căn hộ này từ năm 2021."
+        }
+      ],
+      "quickChecks": [
+        {
+          "question": "I ___ that film last weekend.",
+          "options": ["have seen", "saw", "see", "have saw"],
+          "correctIndex": 1,
+          "explanation": "'Last weekend' is a finished time → past simple."
+        },
+        {
+          "question": "___ you ever ___ durian?",
+          "options": ["Did / try", "Have / tried", "Do / try", "Have / try"],
+          "correctIndex": 1,
+          "explanation": "'Ever' asks about life experience up to now → present perfect."
+        },
+        {
+          "question": "My father ___ for this company for 20 years. He retired in 2015.",
+          "options": ["has worked", "worked", "works", "has been working"],
+          "correctIndex": 1,
+          "explanation": "The period is finished (he retired) → past simple."
+        },
+        {
+          "question": "She ___ here since 2020, and she still loves it.",
+          "options": ["lived", "lives", "has lived", "is living"],
+          "correctIndex": 2,
+          "explanation": "'Since' + still true now → present perfect."
+        }
+      ],
+      "sections": [
+        {
+          "heading": "Past simple — finished time",
+          "body": "Use past simple when the action is complete and the time is finished — either stated or clear from the context.",
+          "bullets": [
+            "Signals: yesterday, last week/year, ago, in 2019, when I was a child",
+            "Questions starting with 'When…?' → past simple"
+          ],
+          "examples": [
+            { "english": "I met my best friend when I was ten.", "vietnamese": "Tôi gặp bạn thân năm tôi mười tuổi." },
+            { "english": "When did you arrive?", "note": "NOT 'When have you arrived?'" }
+          ]
+        },
+        {
+          "heading": "Present perfect — connected to now",
+          "body": "Use have/has + past participle when the time is not stated, the time period is still open, or the result matters now.",
+          "bullets": [
+            "Life experience: ever, never, before, twice",
+            "Unfinished period: today, this week, so far, recently",
+            "Still true: for + length of time, since + starting point",
+            "News and results: just, already, yet"
+          ],
+          "examples": [
+            { "english": "I've never eaten balut.", "vietnamese": "Tôi chưa bao giờ ăn trứng vịt lộn." },
+            { "english": "Have you finished the report yet?", "vietnamese": "Bạn làm xong báo cáo chưa?" }
+          ]
+        },
+        {
+          "heading": "The switch: from news to details",
+          "body": "Native speakers often introduce news with the present perfect, then switch to the past simple for the details.",
+          "examples": [
+            { "english": "I've broken my phone. I dropped it in the kitchen this morning.", "note": "News (no time) → details (finished time)." },
+            { "english": "Have you been to Hoi An? — Yes, I went there last year.", "vietnamese": "Bạn đến Hội An chưa? — Rồi, tôi đi năm ngoái." }
+          ]
+        },
+        {
+          "heading": "For vs since",
+          "body": "Both are common with the present perfect, but they answer different questions.",
+          "bullets": [
+            "for + a length of time: for three years, for a long time",
+            "since + a starting point: since 2020, since Monday, since I was a child"
+          ],
+          "examples": [
+            { "english": "I've studied English for six years / since 2019.", "vietnamese": "Tôi đã học tiếng Anh được sáu năm / từ năm 2019." }
+          ]
+        }
+      ],
+      "vietnameseTips": [
+        "Chữ 'đã' trong tiếng Việt có thể ứng với cả quá khứ đơn lẫn hiện tại hoàn thành, nên đừng dựa vào 'đã'. Hãy nhìn trạng từ thời gian: có mốc thời gian đã kết thúc → quá khứ đơn.",
+        "'Chưa bao giờ', 'từng', '…chưa?' thường ứng với hiện tại hoàn thành: 'Bạn ăn sáng chưa?' → 'Have you had breakfast yet?'.",
+        "Câu hỏi bắt đầu bằng 'When' gần như luôn dùng quá khứ đơn: 'When did you start?'."
+      ],
+      "commonMistakes": [
+        { "wrong": "I have finished university in 2020.", "right": "I finished university in 2020.", "explanation": "'In 2020' là mốc thời gian đã kết thúc → quá khứ đơn." },
+        { "wrong": "I live here since 2018.", "right": "I have lived here since 2018.", "explanation": "Bắt đầu trong quá khứ và vẫn còn đúng → hiện tại hoàn thành với 'since'." },
+        { "wrong": "When have you met him?", "right": "When did you meet him?", "explanation": "'When' hỏi về một thời điểm cụ thể → quá khứ đơn." }
+      ],
+      "practice": [
+        { "vietnamese": "Tôi đã làm việc ở đây được ba năm.", "english": "I have worked here for three years.", "hint": "Still working → present perfect + for." },
+        { "vietnamese": "Tôi gặp anh ấy hai ngày trước.", "english": "I met him two days ago.", "hint": "'Ago' → past simple." },
+        { "vietnamese": "Bạn đã bao giờ đi máy bay chưa?", "english": "Have you ever been on a plane?" }
+      ]
+    },
+    {
+      "id": "lesson-gerunds-infinitives",
+      "slug": "gerunds-and-infinitives",
+      "title": "Gerund or Infinitive? (doing vs to do)",
+      "description": "Some verbs are followed by -ing, others by to + verb, and a few change meaning. Learn the most useful groups.",
+      "rule": "enjoy, avoid, finish, mind, suggest + V-ing. want, decide, hope, plan, agree + to V. After a preposition, always V-ing.",
+      "examples": [
+        "I enjoy cooking.",
+        "She decided to quit her job.",
+        "I'm interested in learning Korean.",
+        "He stopped smoking last year."
+      ],
+      "relatedErrorPattern": "gerund",
+      "level": "intermediate",
+      "category": "grammar",
+      "estimatedMinutes": 7,
+      "errorPatternKeys": ["gerund", "infinitive", "verb-pattern", "word choice"],
+      "tldr": {
+        "rule": "Wanting and planning verbs take 'to do'. Enjoy, finish, avoid, and all prepositions take '-ing'.",
+        "example": "I want to learn the guitar, and I'm looking forward to starting lessons.",
+        "exampleVietnamese": "Tôi muốn học đàn guitar và rất mong được bắt đầu học."
+      },
+      "scenarios": [
+        {
+          "context": "🏸 Talking about hobbies",
+          "why": "enjoy / don't mind / can't stand → V-ing.",
+          "english": "I really enjoy playing badminton after work.",
+          "vietnamese": "Tôi rất thích chơi cầu lông sau giờ làm."
+        },
+        {
+          "context": "🎯 Describing career plans",
+          "why": "want / plan / hope / decide → to + base verb.",
+          "english": "I'm planning to apply for a scholarship.",
+          "vietnamese": "Tôi đang dự định nộp hồ sơ xin học bổng."
+        },
+        {
+          "context": "✉️ Ending a work email",
+          "why": "In 'look forward to', 'to' is a preposition → V-ing.",
+          "english": "I look forward to hearing from you.",
+          "vietnamese": "Tôi mong sớm nhận được phản hồi từ anh/chị."
+        },
+        {
+          "context": "🤝 Making a suggestion",
+          "why": "suggest → V-ing (or 'suggest that…'), never 'suggest to do'.",
+          "english": "I suggest leaving earlier to avoid the traffic.",
+          "vietnamese": "Tôi đề nghị đi sớm hơn để tránh kẹt xe."
+        }
+      ],
+      "quickChecks": [
+        {
+          "question": "Would you mind ___ the window?",
+          "options": ["to open", "opening", "open", "opened"],
+          "correctIndex": 1,
+          "explanation": "'Mind' is always followed by V-ing."
+        },
+        {
+          "question": "They agreed ___ the price.",
+          "options": ["lowering", "to lower", "lower", "lowered"],
+          "correctIndex": 1,
+          "explanation": "'Agree' + to + base verb."
+        },
+        {
+          "question": "She is good at ___ presentations.",
+          "options": ["give", "to give", "giving", "gave"],
+          "correctIndex": 2,
+          "explanation": "After a preposition ('at') → V-ing."
+        },
+        {
+          "question": "On the way to work, I stopped ___ a coffee.",
+          "options": ["to buy", "buying", "buy", "bought"],
+          "correctIndex": 0,
+          "explanation": "'Stop to do' = pause in order to do something (dừng lại để mua)."
+        }
+      ],
+      "sections": [
+        {
+          "heading": "Verbs + V-ing",
+          "body": "These verbs are followed by the -ing form.",
+          "bullets": [
+            "enjoy, finish, avoid, mind, keep, practise, suggest, consider, miss, can't stand",
+            "Fixed expressions: It's worth…, I can't help…, There's no point (in)…"
+          ],
+          "examples": [
+            { "english": "Have you finished writing the report?", "vietnamese": "Bạn viết xong báo cáo chưa?" },
+            { "english": "You should avoid eating late at night.", "vietnamese": "Bạn nên tránh ăn khuya." }
+          ]
+        },
+        {
+          "heading": "Verbs + to + base verb",
+          "body": "These verbs are usually about wishes, plans, decisions, and attempts. They are followed by to + base verb.",
+          "bullets": [
+            "want, need, decide, plan, hope, expect, agree, refuse, promise, manage, afford, learn",
+            "Verb + person + to V: ask / tell / want / advise someone to do something"
+          ],
+          "examples": [
+            { "english": "We can't afford to buy a car yet.", "vietnamese": "Chúng tôi chưa đủ tiền mua ô tô." },
+            { "english": "My manager asked me to prepare the slides.", "vietnamese": "Quản lý nhờ tôi chuẩn bị slide." }
+          ]
+        },
+        {
+          "heading": "After prepositions → always V-ing",
+          "body": "If a preposition (in, on, at, of, about, for, without, before, after) comes before a verb, the verb takes -ing.",
+          "examples": [
+            { "english": "Thank you for helping me.", "vietnamese": "Cảm ơn bạn đã giúp tôi." },
+            { "english": "She left without saying goodbye.", "note": "'Without' is a preposition → saying." },
+            { "english": "I'm used to working late.", "note": "Here 'to' is a preposition, so the verb takes -ing." }
+          ]
+        },
+        {
+          "heading": "Verbs that change meaning",
+          "body": "A few verbs can take both forms, but the meaning changes.",
+          "bullets": [
+            "stop doing = quit an activity; stop to do = pause in order to do something else",
+            "remember doing = recall a past action; remember to do = not forget a task",
+            "try doing = experiment to see what happens; try to do = make an effort"
+          ],
+          "examples": [
+            { "english": "Remember to lock the door.", "note": "A task for later — don't forget." },
+            { "english": "I remember locking the door.", "note": "A memory of a past action." }
+          ]
+        }
+      ],
+      "vietnameseTips": [
+        "Tiếng Việt đặt hai động từ cạnh nhau rất tự nhiên ('thích nấu ăn', 'muốn đi'), nên người Việt hay quên chọn dạng. Hãy học theo cụm: 'enjoy doing', 'want to do'.",
+        "Nhóm 'mong muốn, dự định, quyết định' (want, plan, decide, hope) thường đi với 'to V' vì hướng về tương lai. Nhóm 'thích thú, né tránh, hoàn thành' (enjoy, avoid, finish) đi với 'V-ing'.",
+        "'Look forward to', 'be used to', 'object to' có 'to' là giới từ → theo sau là V-ing: 'I look forward to meeting you', không phải 'to meet you'."
+      ],
+      "commonMistakes": [
+        { "wrong": "I enjoy to listen to music.", "right": "I enjoy listening to music.", "explanation": "'Enjoy' luôn đi với V-ing." },
+        { "wrong": "He suggested to go out for dinner.", "right": "He suggested going out for dinner.", "explanation": "'Suggest' + V-ing (hoặc 'suggest that we go…'), không dùng 'to V'." },
+        { "wrong": "I look forward to meet you.", "right": "I look forward to meeting you.", "explanation": "'To' trong 'look forward to' là giới từ → V-ing." }
+      ],
+      "practice": [
+        { "vietnamese": "Tôi quyết định học thêm một ngoại ngữ.", "english": "I decided to learn another foreign language." },
+        { "vietnamese": "Bạn có phiền đợi vài phút không?", "english": "Do you mind waiting a few minutes?", "hint": "mind + V-ing." },
+        { "vietnamese": "Cô ấy giỏi giải quyết vấn đề.", "english": "She is good at solving problems.", "hint": "Preposition 'at' → V-ing." }
+      ]
+    },
+    {
+      "id": "lesson-used-to",
+      "slug": "used-to-vs-be-used-to",
+      "title": "Used to vs Be / Get Used to",
+      "description": "'I used to work' and 'I'm used to working' look almost the same but mean very different things.",
+      "rule": "used to + base verb = a past habit or state that is no longer true. be/get used to + V-ing/noun = be/become familiar with something.",
+      "examples": [
+        "I used to live in Can Tho.",
+        "I'm used to living in a big city now.",
+        "It took me months to get used to the cold weather.",
+        "Did you use to play football?"
+      ],
+      "relatedErrorPattern": "used-to",
+      "level": "intermediate",
+      "category": "grammar",
+      "estimatedMinutes": 6,
+      "errorPatternKeys": ["used-to", "used to", "habit", "verb tense"],
+      "tldr": {
+        "rule": "used to + verb = 'trước đây thường'. be used to + V-ing = 'đã quen với'.",
+        "example": "I used to hate coffee, but now I'm used to drinking it every morning.",
+        "exampleVietnamese": "Trước đây tôi ghét cà phê, nhưng giờ tôi đã quen uống nó mỗi sáng."
+      },
+      "scenarios": [
+        {
+          "context": "🧒 Talking about childhood",
+          "why": "Past habits that are no longer true → used to + base verb.",
+          "english": "I used to swim in the river near my grandparents' house.",
+          "vietnamese": "Hồi nhỏ tôi hay bơi ở con sông gần nhà ông bà."
+        },
+        {
+          "context": "🌏 Living abroad",
+          "why": "Becoming familiar with something new → get used to + V-ing.",
+          "english": "I'm still getting used to driving on the left.",
+          "vietnamese": "Tôi vẫn đang tập quen với việc lái xe bên trái."
+        },
+        {
+          "context": "🏢 Starting a new job",
+          "why": "Already familiar → be used to + V-ing.",
+          "english": "Don't worry, I'm used to working under pressure.",
+          "vietnamese": "Đừng lo, tôi quen làm việc dưới áp lực rồi."
+        },
+        {
+          "context": "💬 Catching up with an old friend",
+          "why": "Questions about past habits: Did you use to…?",
+          "english": "Did you use to have long hair in high school?",
+          "vietnamese": "Hồi cấp ba bạn để tóc dài phải không?"
+        }
+      ],
+      "quickChecks": [
+        {
+          "question": "When I was a child, I ___ afraid of the dark.",
+          "options": ["was used to be", "used to be", "am used to being", "use to be"],
+          "correctIndex": 1,
+          "explanation": "A past state that is no longer true → used to + base verb."
+        },
+        {
+          "question": "She has lived in Hanoi for years, so she ___ the noise.",
+          "options": ["used to", "is used to", "use to", "used"],
+          "correctIndex": 1,
+          "explanation": "Familiar with something now → be used to + noun."
+        },
+        {
+          "question": "It took me a while to get used to ___ up at 5 a.m.",
+          "options": ["get", "got", "getting", "gets"],
+          "correctIndex": 2,
+          "explanation": "In 'get used to', 'to' is a preposition → V-ing."
+        },
+        {
+          "question": "___ you use to live near here?",
+          "options": ["Do", "Did", "Were", "Are"],
+          "correctIndex": 1,
+          "explanation": "Questions: Did + subject + use to (no -d)."
+        }
+      ],
+      "sections": [
+        {
+          "heading": "Used to + base verb — past habits and states",
+          "body": "Use used to for things that happened regularly or were true in the past but are not true now. It only exists in the past.",
+          "bullets": [
+            "Positive: used to + base verb",
+            "Negative: didn't use to + base verb",
+            "Question: Did + subject + use to + base verb?",
+            "For present habits, use 'usually' + present simple, NOT 'use to'"
+          ],
+          "examples": [
+            { "english": "We used to go to the beach every summer.", "vietnamese": "Hồi trước mùa hè nào chúng tôi cũng đi biển." },
+            { "english": "He didn't use to like vegetables.", "note": "After 'did/didn't', write 'use to' (no -d)." }
+          ]
+        },
+        {
+          "heading": "Be used to + V-ing / noun — already familiar",
+          "body": "Be used to means something is normal for you; it no longer feels strange or difficult. 'To' is a preposition here, so a noun or V-ing follows.",
+          "examples": [
+            { "english": "I'm used to the heat in Saigon.", "vietnamese": "Tôi đã quen với cái nóng ở Sài Gòn." },
+            { "english": "She isn't used to speaking in public.", "vietnamese": "Cô ấy chưa quen nói trước đám đông." }
+          ]
+        },
+        {
+          "heading": "Get used to — the process of becoming familiar",
+          "body": "Get used to describes the change from strange to normal. Unlike 'used to + verb', it can be used in any tense.",
+          "examples": [
+            { "english": "You'll get used to the new software quickly.", "vietnamese": "Bạn sẽ nhanh quen với phần mềm mới thôi." },
+            { "english": "I'm getting used to cooking for myself.", "note": "A process happening now." }
+          ]
+        }
+      ],
+      "vietnameseTips": [
+        "Mẹo dịch: 'used to + V' = 'trước đây thường/hay…' (giờ không còn nữa). 'be used to + V-ing' = 'đã quen với…'. 'get used to' = 'dần quen với…'.",
+        "Không có 'use to' ở thì hiện tại. Muốn nói 'Tôi thường dậy sớm', hãy dùng 'I usually get up early', không phải 'I use to get up early'.",
+        "Trong câu phủ định và câu hỏi với 'did', bỏ -d: 'didn't use to', 'Did you use to…?'."
+      ],
+      "commonMistakes": [
+        { "wrong": "I use to play games every night.", "right": "I usually play games every night. / I used to play games every night.", "explanation": "'Use to' không dùng cho thói quen hiện tại. Hiện tại → usually; quá khứ → used to." },
+        { "wrong": "I'm used to wake up early.", "right": "I'm used to waking up early.", "explanation": "Sau 'be used to' là V-ing hoặc danh từ." },
+        { "wrong": "Did you used to live here?", "right": "Did you use to live here?", "explanation": "Sau 'did', động từ trở về nguyên thể → 'use to'." }
+      ],
+      "practice": [
+        { "vietnamese": "Trước đây tôi hay đi làm bằng xe buýt.", "english": "I used to go to work by bus." },
+        { "vietnamese": "Tôi chưa quen ăn đồ cay.", "english": "I'm not used to eating spicy food.", "hint": "be used to + V-ing." },
+        { "vietnamese": "Bạn sẽ dần quen với thời tiết ở đây.", "english": "You'll get used to the weather here." }
+      ]
+    },
+    {
+      "id": "lesson-reported-speech",
+      "slug": "reported-speech",
+      "title": "Reported Speech",
+      "description": "Tell someone what another person said — shift tenses, pronouns, and time words correctly, and report questions without question word order.",
+      "rule": "After a past reporting verb (said, told, asked), move the tense one step back and change pronouns and time/place words to fit the new situation.",
+      "examples": [
+        "\"I'm tired.\" → She said (that) she was tired.",
+        "\"We will call you.\" → They said they would call me.",
+        "\"Where do you live?\" → He asked me where I lived.",
+        "\"Don't be late.\" → My boss told me not to be late."
+      ],
+      "relatedErrorPattern": "reported-speech",
+      "level": "advanced",
+      "category": "structure",
+      "estimatedMinutes": 8,
+      "errorPatternKeys": ["reported-speech", "reported speech", "backshift", "verb tense", "pronoun"],
+      "tldr": {
+        "rule": "Reporting in the past? Step the tense back: am → was, will → would, did → had done.",
+        "example": "\"I can help you.\" → He said he could help me.",
+        "exampleVietnamese": "\"Tôi giúp bạn được.\" → Anh ấy nói là anh ấy có thể giúp tôi."
+      },
+      "scenarios": [
+        {
+          "context": "💼 Passing on a message at work",
+          "why": "Reporting instructions → tell + person + (not) to + V.",
+          "english": "The manager told us to finish the report by Friday.",
+          "vietnamese": "Quản lý bảo chúng tôi hoàn thành báo cáo trước thứ Sáu."
+        },
+        {
+          "context": "📞 Relaying a phone call",
+          "why": "A statement reported later → backshift the tense.",
+          "english": "Your mum called. She said she was coming over tonight.",
+          "vietnamese": "Mẹ bạn gọi đấy. Bác nói tối nay bác sẽ qua."
+        },
+        {
+          "context": "🩺 Explaining the doctor's advice",
+          "why": "Advice → advise / tell someone to do something.",
+          "english": "The doctor advised me to drink more water.",
+          "vietnamese": "Bác sĩ khuyên tôi uống nhiều nước hơn."
+        },
+        {
+          "context": "🧑‍💼 Describing a job interview",
+          "why": "Reported questions use statement word order.",
+          "english": "They asked me why I wanted to leave my last job.",
+          "vietnamese": "Họ hỏi tôi vì sao tôi muốn nghỉ công việc trước."
+        }
+      ],
+      "quickChecks": [
+        {
+          "question": "\"I am working from home.\" → She said she ___ from home.",
+          "options": ["is working", "was working", "has worked", "works"],
+          "correctIndex": 1,
+          "explanation": "Present continuous steps back to past continuous."
+        },
+        {
+          "question": "\"Have you finished?\" → He asked me if I ___.",
+          "options": ["have finished", "finished", "had finished", "was finished"],
+          "correctIndex": 2,
+          "explanation": "Present perfect steps back to past perfect."
+        },
+        {
+          "question": "Which sentence is correct?",
+          "options": ["She asked me where did I work.", "She asked me where I worked.", "She asked me where do I work.", "She asked me where I worked?"],
+          "correctIndex": 1,
+          "explanation": "Reported questions use statement word order and no question mark."
+        },
+        {
+          "question": "\"Don't touch the screen.\" → The guide told us ___ the screen.",
+          "options": ["don't touch", "not touch", "not to touch", "to not touching"],
+          "correctIndex": 2,
+          "explanation": "Negative command → tell someone + not to + base verb."
+        }
+      ],
+      "sections": [
+        {
+          "heading": "Backshift — one step back in time",
+          "body": "When the reporting verb is in the past (said, told, explained), the original tense usually moves one step back.",
+          "bullets": [
+            "present simple → past simple: \"I like it.\" → she said she liked it",
+            "present continuous → past continuous",
+            "present perfect / past simple → past perfect",
+            "will → would, can → could, may → might, must → had to (or must)"
+          ],
+          "examples": [
+            { "english": "\"I've lost my passport.\" → He said he had lost his passport.", "vietnamese": "Anh ấy nói là anh ấy đã làm mất hộ chiếu." },
+            { "english": "\"I can't come.\" → She said she couldn't come.", "vietnamese": "Cô ấy nói là cô ấy không đến được." }
+          ]
+        },
+        {
+          "heading": "Pronouns, time and place words",
+          "body": "Change any words that depend on who is speaking, and when and where.",
+          "bullets": [
+            "I / we → he / she / they; my → his / her",
+            "now → then; today → that day; tomorrow → the next day / the following day",
+            "yesterday → the day before / the previous day; here → there; this → that"
+          ],
+          "examples": [
+            { "english": "\"I'll see you tomorrow.\" → She said she would see me the next day.", "note": "If you report it on the same day, 'tomorrow' can stay." }
+          ]
+        },
+        {
+          "heading": "Reporting questions and commands",
+          "body": "Reported questions use statement word order (subject before verb) and no question mark. Use if/whether for yes/no questions. Commands and requests use tell/ask + person + (not) to + base verb.",
+          "examples": [
+            { "english": "\"Are you free?\" → He asked if I was free.", "vietnamese": "Anh ấy hỏi tôi có rảnh không." },
+            { "english": "\"What time does the train leave?\" → I asked what time the train left.", "note": "No 'does'; normal word order." },
+            { "english": "\"Please sit down.\" → She asked us to sit down." }
+          ]
+        },
+        {
+          "heading": "When you don't need to backshift",
+          "body": "If the information is still true, or the reporting verb is in the present, you can keep the original tense.",
+          "examples": [
+            { "english": "He said (that) the earth goes around the sun.", "note": "A general truth — no backshift needed." },
+            { "english": "Lan says she is running late.", "note": "Present reporting verb → no change." }
+          ]
+        }
+      ],
+      "vietnameseTips": [
+        "Tiếng Việt chỉ cần thêm 'nói là…', 'bảo là…' mà không đổi động từ. Tiếng Anh thì phải lùi thì: 'Cô ấy nói cô ấy mệt' → 'She said she was tired'.",
+        "'Say' không đi thẳng với người nghe: nói 'She said (to me) that…' hoặc 'She told me that…', không nói 'She said me…'.",
+        "Câu hỏi gián tiếp không đảo ngữ: 'He asked where I lived', không phải 'He asked where did I live'. Mẹo: sau 'asked' cứ viết như câu kể bình thường."
+      ],
+      "commonMistakes": [
+        { "wrong": "She said me that she was busy.", "right": "She told me that she was busy.", "explanation": "'Tell' + người nghe; 'say' không có tân ngữ chỉ người đi liền sau." },
+        { "wrong": "He asked me what was my name.", "right": "He asked me what my name was.", "explanation": "Câu hỏi gián tiếp dùng trật tự câu kể: chủ ngữ đứng trước động từ." },
+        { "wrong": "My mother told me don't go out late.", "right": "My mother told me not to go out late.", "explanation": "Mệnh lệnh phủ định gián tiếp → told + người + not to + V." }
+      ],
+      "practice": [
+        { "vietnamese": "Anh ấy nói rằng anh ấy sẽ đến muộn.", "english": "He said (that) he would be late.", "hint": "will → would." },
+        { "vietnamese": "Cô ấy hỏi tôi đã từng đến Đà Lạt chưa.", "english": "She asked me if I had ever been to Da Lat.", "hint": "Yes/no question → if/whether + past perfect." },
+        { "vietnamese": "Giáo viên bảo chúng tôi đừng dùng điện thoại trong lớp.", "english": "The teacher told us not to use our phones in class." }
+      ]
+    },
+    {
+      "id": "lesson-linking-words",
+      "slug": "linking-words-contrast-cause-result",
+      "title": "Linking Words: Contrast, Cause & Result",
+      "description": "Although, despite, however, because of, therefore — each needs a different grammar pattern. Get them right and your writing instantly sounds more mature.",
+      "rule": "Conjunctions (although, because, so) join two clauses. Prepositions (despite, because of) take a noun or V-ing. Adverbs (however, therefore) start a new sentence and take a comma.",
+      "examples": [
+        "Although it was raining, we went out.",
+        "Despite the rain, we went out.",
+        "It was raining. However, we went out.",
+        "The flight was delayed because of the storm, so we missed the meeting."
+      ],
+      "relatedErrorPattern": "linking",
+      "level": "advanced",
+      "category": "structure",
+      "estimatedMinutes": 8,
+      "errorPatternKeys": ["linking", "conjunction", "connector", "sentence structure"],
+      "tldr": {
+        "rule": "Although/because + clause. Despite/because of + noun. However/therefore + comma, new sentence.",
+        "example": "Despite being tired, she finished the report. Therefore, the team met the deadline.",
+        "exampleVietnamese": "Dù mệt, cô ấy vẫn hoàn thành báo cáo. Vì vậy, cả nhóm kịp hạn chót."
+      },
+      "scenarios": [
+        {
+          "context": "📝 IELTS and academic essays",
+          "why": "Clear signposting earns marks for coherence and cohesion.",
+          "english": "However, this view ignores the cost to taxpayers.",
+          "vietnamese": "Tuy nhiên, quan điểm này bỏ qua chi phí mà người đóng thuế phải gánh."
+        },
+        {
+          "context": "📧 Explaining a delay to a customer",
+          "why": "Cause → result with 'due to' and 'as a result'.",
+          "english": "Due to a system error, your order was delayed. As a result, we have refunded the shipping fee.",
+          "vietnamese": "Do lỗi hệ thống, đơn hàng của quý khách bị chậm. Vì vậy, chúng tôi đã hoàn lại phí vận chuyển."
+        },
+        {
+          "context": "🗣 Giving a balanced opinion",
+          "why": "Conceding a point with 'although' shows nuance.",
+          "english": "Although remote work is convenient, it can feel lonely.",
+          "vietnamese": "Mặc dù làm việc từ xa tiện lợi, nó có thể khiến người ta thấy cô đơn."
+        },
+        {
+          "context": "📊 Presenting results in a meeting",
+          "why": "Formal result linkers sound professional.",
+          "english": "Sales rose by 20%; therefore, we plan to hire two more staff.",
+          "vietnamese": "Doanh số tăng 20%; do đó, chúng tôi dự định tuyển thêm hai nhân viên."
+        }
+      ],
+      "quickChecks": [
+        {
+          "question": "___ the traffic, I arrived on time.",
+          "options": ["Although", "Despite", "However", "Because"],
+          "correctIndex": 1,
+          "explanation": "'The traffic' is a noun phrase → 'despite' ('although' needs a clause)."
+        },
+        {
+          "question": "He studied hard. ___, he failed the test.",
+          "options": ["Although", "Despite", "However", "Because of"],
+          "correctIndex": 2,
+          "explanation": "A new sentence showing contrast → 'However,' with a comma."
+        },
+        {
+          "question": "The match was cancelled ___ heavy rain.",
+          "options": ["because", "because of", "so", "therefore"],
+          "correctIndex": 1,
+          "explanation": "'Heavy rain' is a noun phrase → 'because of'."
+        },
+        {
+          "question": "Which sentence is correct?",
+          "options": ["Although she was ill, but she came.", "Although she was ill, she came.", "Despite she was ill, she came.", "She was ill, however she came."],
+          "correctIndex": 1,
+          "explanation": "Never use 'although' and 'but' together — one linker per contrast."
+        }
+      ],
+      "sections": [
+        {
+          "heading": "Three grammar types of linkers",
+          "body": "Linkers with the same meaning can follow different grammar patterns. Learn the pattern, not just the meaning.",
+          "bullets": [
+            "Conjunction + clause: although, even though, while, because, since, as, so",
+            "Preposition + noun / V-ing: despite, in spite of, because of, due to, owing to",
+            "Sentence adverb + comma: however, nevertheless, therefore, as a result, consequently"
+          ],
+          "examples": [
+            { "english": "Even though he's rich, he lives simply.", "vietnamese": "Dù giàu có, anh ấy sống rất giản dị." },
+            { "english": "In spite of having little money, they live happily.", "note": "Preposition + V-ing." }
+          ]
+        },
+        {
+          "heading": "Contrast: although vs despite vs however",
+          "body": "All three show contrast, but each fits a different structure.",
+          "bullets": [
+            "To use a full clause after despite, add 'the fact that': Despite the fact that it was expensive, …"
+          ],
+          "examples": [
+            { "english": "Although the hotel was expensive, the service was poor.", "note": "Although + subject + verb." },
+            { "english": "Despite the high price, the service was poor.", "note": "Despite + noun phrase." },
+            { "english": "The hotel was expensive. However, the service was poor.", "note": "However starts a new sentence (or follows a semicolon) and takes a comma." }
+          ]
+        },
+        {
+          "heading": "Cause and result",
+          "body": "Cause linkers explain why something happened; result linkers explain what happened next.",
+          "bullets": [
+            "Cause + clause: because, since, as",
+            "Cause + noun: because of, due to, owing to",
+            "Result + clause: so (usually after a comma)",
+            "Result + new sentence: therefore, as a result, consequently"
+          ],
+          "examples": [
+            { "english": "As it was late, we took a taxi.", "vietnamese": "Vì đã muộn nên chúng tôi đi taxi." },
+            { "english": "Prices have risen sharply. As a result, many families are spending less.", "vietnamese": "Giá cả tăng mạnh. Kết quả là nhiều gia đình chi tiêu ít hơn." }
+          ]
+        }
+      ],
+      "vietnameseTips": [
+        "Tiếng Việt quen dùng cặp 'tuy… nhưng…', 'vì… nên…'. Tiếng Anh chỉ dùng MỘT từ nối: 'Although it rained, we went out' hoặc 'It rained, but we went out' — không dùng cả 'although' lẫn 'but', cũng không dùng 'because… so…'.",
+        "'Despite' và 'because of' đi với danh từ hoặc V-ing, không đi với mệnh đề. Muốn dùng mệnh đề thì đổi sang 'although' / 'because', hoặc thêm 'the fact that'.",
+        "'However' không nối hai mệnh đề bằng dấu phẩy như 'but'. Hãy viết: 'It was cheap. However, it broke quickly.' hoặc dùng dấu chấm phẩy: 'It was cheap; however, it broke quickly.'"
+      ],
+      "commonMistakes": [
+        { "wrong": "Because it was raining, so we stayed home.", "right": "Because it was raining, we stayed home. / It was raining, so we stayed home.", "explanation": "Không dùng 'because' và 'so' trong cùng một câu." },
+        { "wrong": "Despite it was expensive, I bought it.", "right": "Despite the high price, I bought it. / Although it was expensive, I bought it.", "explanation": "'Despite' + danh từ/V-ing; nếu là mệnh đề thì dùng 'although'." },
+        { "wrong": "The app is useful, however it is slow.", "right": "The app is useful. However, it is slow.", "explanation": "'However' bắt đầu câu mới hoặc đứng sau dấu chấm phẩy, và cần dấu phẩy phía sau." }
+      ],
+      "practice": [
+        { "vietnamese": "Mặc dù rất mệt, anh ấy vẫn đi tập thể dục.", "english": "Although he was very tired, he still went to the gym.", "hint": "Although + clause (no 'but')." },
+        { "vietnamese": "Chuyến bay bị hủy vì thời tiết xấu.", "english": "The flight was cancelled because of bad weather.", "hint": "because of + noun." },
+        { "vietnamese": "Giá thuê nhà tăng. Do đó, nhiều sinh viên phải ở ghép.", "english": "Rent has increased. Therefore, many students have to share rooms." }
       ]
     }
   ]

@@ -117,14 +117,16 @@ jobs:
             }
           };
           EOF
+          # environment.ts is gitignored; the dev/test builds still import it
+          cp src/environments/environment.prod.ts src/environments/environment.ts
           echo "✅ Created environment.prod.ts"
-          cat src/environments/environment.prod.ts
 
+      - name: Run unit tests
+        run: npm run test:ci
+
+      # postbuild already runs generate:static
       - name: Build Angular app
         run: npm run build
-
-      - name: Generate static pages for SEO
-        run: npm run generate:static
 
       - name: Copy CNAME and 404.html to dist
         run: |

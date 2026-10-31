@@ -6,6 +6,7 @@ import { Exercise } from '../../models/exercise.model';
 import { PronunciationContext, PronunciationFeedback } from '../../models/pronunciation.model';
 import { WritingFeedback, WritingPrompt } from '../../models/writing.model';
 import { AIProviderFactory } from './ai-provider.factory';
+import { AIMessage } from './base-ai-provider';
 import { ConfigService } from '../config.service';
 import { AnalyticsService } from '../analytics.service';
 import { PromptService } from './prompt.service';
@@ -129,6 +130,29 @@ export class AIUnifiedService implements AIProvider {
     const provider = this.getActiveProvider();
     const config = this.getConfig();
     return provider.isConfigured(config) ? new Observable(obs => { obs.next(true); obs.complete(); }) : new Observable(obs => { obs.next(false); obs.complete(); });
+  }
+
+  /** Synchronous check used to decide whether to offer AI-powered extras. */
+  isConfigured(): boolean {
+    try {
+      return this.getActiveProvider().isConfigured(this.getConfig());
+    } catch {
+      return false;
+    }
+  }
+
+  /**
+   * Free-form completion for small utility tasks (e.g. word meaning in context).
+   * Every provider supports `generateText`, so this works regardless of the active one.
+   */
+  complete(messages: AIMessage[], options: { temperature?: number; maxTokens?: number } = {}): Observable<string> {
+    const config = this.getConfig();
+    const providerType = (config as any)?.provider || environment.aiProvider;
+    this.analyticsService.trackAiRequest(providerType, 'default', 'complete');
+    return this.getActiveProvider().generateText(
+      { messages, temperature: options.temperature ?? 0.2, maxTokens: options.maxTokens ?? 300 },
+      config
+    );
   }
 
   supportsAudioInput(): boolean {

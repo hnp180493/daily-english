@@ -682,3 +682,10 @@
     margin-left: auto;
   }
 }
+
+// Primary daily session link stands out from the rest of the nav
+.nav-link.nav-link-today {
+  color: #f9a8d4;
+  font-weight: 700;
+  white-space: nowrap;
+}

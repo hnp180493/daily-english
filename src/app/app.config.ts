@@ -9,7 +9,7 @@ import {
 import { provideRouter, withPreloading, withInMemoryScrolling, RouteReuseStrategy } from '@angular/router';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { provideClientHydration } from '@angular/platform-browser';
-import { provideAnimations } from '@angular/platform-browser/animations';
+import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { provideServiceWorker } from '@angular/service-worker';
 
 import { routes } from './app.routes';
@@ -101,7 +101,8 @@ export const appConfig: ApplicationConfig = {
     ),
     provideHttpClient(withInterceptors([cacheInterceptor])),
     provideClientHydration(),
-    provideAnimations(),
+    // Animation engine is code-split and loaded after bootstrap (~60 kB off the initial bundle)
+    provideAnimationsAsync(),
     SelectivePreloadStrategy,
     {
       provide: RouteReuseStrategy,

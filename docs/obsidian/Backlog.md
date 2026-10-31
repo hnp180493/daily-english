@@ -23,15 +23,25 @@ Mọi feature nào cần server-side logic (custom moderation, push notification
 
 ---
 
+## ☀️ Học hôm nay (core loop, lấy cảm hứng Duolingo/Anki/Clozemaster/Glossika)
+
+- [x] **Học hôm nay** ✅ 2026-10-31 — route `/today`, CTA đầu trang chủ + link đầu header. Một nút, ~10 phút, app tự ghép: thẻ FSRS đến hạn (≤8) → 4 câu cloze (gợi ý nghĩa tiếng Việt) → 2 câu shadowing (TTS + Web Speech chấm từng từ) → 1 câu tự dịch. Câu sai/được chọn tự thành flashcard (sentence mining) để mai ôn. Hoàn thành = tính streak + điểm. **Streak freeze**: bắt đầu với 1, +1 mỗi 7 ngày liên tiếp (tối đa 2), nghỉ đúng 1 ngày vẫn giữ chuỗi. Logic thuần ở [today-session.builder.ts](../../src/app/services/today/today-session.builder.ts) (có test).
+- [x] **Reader kiểu LingQ** ✅ 2026-10-31 — `/reader` (thư viện: dán text ≤12k ký tự, bài của bạn kèm % từ đã biết, 12 bài mẫu từ Reading) + `/reader/:id` (xanh = mới, vàng = đang học, tên riêng tự bỏ qua). Bấm từ → panel: nghĩa theo ngữ cảnh qua AI provider của user (nếu có, cache 300 từ) hoặc tự gõ + link Google Dịch, câu gốc, 🔊 từ/câu. Lưu (`S`) → thẻ FSRS (từ + nghĩa + câu gốc) → tự vào Học hôm nay. "Đọc xong" đánh dấu các từ xanh còn lại là đã biết. Đọc cả bài có highlight câu đang đọc. Bài + từ vựng sync Supabase. Logic ở [reader.logic.ts](../../src/app/services/reader/reader.logic.ts) (có test).
+- [ ] **Reader — lưu cụm từ** (bôi đen nhiều từ), và nhập text từ file/URL (URL cần CORS proxy → chỉ hỗ trợ paste).
+- [ ] **Roleplay nói kiểu Speak** — tình huống công việc, AI đóng vai, Web Speech nhận giọng, gợi ý câu tự nhiên hơn sau mỗi lượt.
+- [x] **Học hôm nay — AI chấm câu tự dịch** ✅ 2026-10-31 — có AI provider thì chấm theo nghĩa + ngữ pháp (câu khác câu mẫu nhưng đúng vẫn 90–100), trả câu của bạn đã sửa + nhận xét tiếng Việt; không có AI / lỗi thì quay về điểm độ trùng từ và nói rõ.
+- [x] **Học hôm nay — lấy câu từ Reader** ✅ 2026-10-31 — 2 câu điền từ + 1 câu nói theo lấy từ 3 bài đọc gần nhất (gắn nhãn "Từ bài bạn đọc"); câu chứa từ đang học được ưu tiên và chính từ đó bị đục lỗ.
+- [x] **Gọn header** ✅ 2026-10-31 — 4 mục: Học hôm nay · Đọc · Ôn tập · Thêm ▼ (Luyện dịch câu và mọi thứ khác nằm trong "Thêm").
+
 ## 🚀 Quick Wins (1–3 ngày/mục)
 
 > Leverage code có sẵn, ít rủi ro, value cao. Tất cả 100% client-side.
 
-- [ ] **Share Achievement Image** — sinh ảnh PNG để share Facebook/Zalo khi unlock huy hiệu. Dùng [`html2canvas`](../../package.json) đã có trong deps. Liên kết [[Achievements]].
+- [x] **Share Achievement Image** ✅ 2026-10-31 ([AchievementShareService](../../src/app/services/achievement-share.service.ts)) — sinh ảnh PNG để share Facebook/Zalo khi unlock huy hiệu. Dùng [`html2canvas`](../../package.json) đã có trong deps. Liên kết [[Achievements]].
 - [ ] **Dark Mode toggle** chính thức — hiện theme là reward, cần switch ngay trong header (persist localStorage).
-- [ ] **Keyboard Shortcuts cheatsheet** — modal hiện tất cả phím tắt từ `exercise-keyboard.service.ts`. Trigger qua `?` hoặc `Ctrl+/`.
-- [ ] **Print-friendly progress report** — CSS print stylesheet cho [[Dashboard-Analytics]], có thể in/PDF.
-- [ ] **Streak warning local notification** — Notification API + setTimeout/setInterval (hoặc Service Worker scheduled) cảnh báo khi gần mất streak. **Lưu ý:** chỉ local — không có server push, nên chỉ hoạt động khi tab/PWA đang chạy hoặc Service Worker còn active. Liên kết [[Daily-Challenge]], [[Notifications]].
+- [x] **Keyboard Shortcuts cheatsheet** ✅ 2026-10-31 ([keyboard-shortcuts-modal](../../src/app/components/keyboard-shortcuts-modal/keyboard-shortcuts-modal.ts)) — modal hiện tất cả phím tắt từ `exercise-keyboard.service.ts`. Trigger qua `?` hoặc `Ctrl+/`.
+- [x] **Print-friendly progress report** ✅ 2026-10-31 (global `@media print` trong styles.scss) — CSS print stylesheet cho [[Dashboard-Analytics]], có thể in/PDF.
+- [x] **Streak warning local notification** ✅ 2026-10-31 (NotificationService.scheduleNotifications gọi từ App, chỉ báo khi có streak và chưa học hôm nay) — Notification API + setTimeout/setInterval (hoặc Service Worker scheduled) cảnh báo khi gần mất streak. **Lưu ý:** chỉ local — không có server push, nên chỉ hoạt động khi tab/PWA đang chạy hoặc Service Worker còn active. Liên kết [[Daily-Challenge]], [[Notifications]].
 
 ---
 
@@ -81,8 +91,6 @@ Mọi feature nào cần server-side logic (custom moderation, push notification
 2. `protected translate = inject(TranslationService)` trong constructor field block
 3. HTML: thay literal Vietnamese bằng `{{ translate.t('key') }}` hoặc `[attr.something]="translate.t('key')"`
 4. Dictionary mới: thêm vào cả `vi:` và `en:` block trong `translation.service.ts`
-- [ ] **i18n — Achievement model strings** (`achievement.model.ts` có hardcoded English `name`/`description` cho 60+ achievement) — quyết định: giữ English tất cả, hoặc dịch sang Vietnamese qua dictionary key `achievement.<id>.name`. **Effort:** 1 ngày.
-- [ ] **i18n — Route SEO data** (`app.routes.ts` có title/description/keywords hardcoded Vietnamese trong `route.data.seo`). Cần Router event listener gọi `SeoService.updateTags` với keys translated. **Effort:** 0.5 ngày.
 
 ---
 

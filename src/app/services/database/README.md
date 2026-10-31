@@ -8,7 +8,7 @@ Thư mục này chứa abstraction layer cho tất cả các database operations
 database/
 ├── database.interface.ts       # Interface định nghĩa các operations
 ├── database.service.ts         # Service chính (facade pattern)
-├── firebase-database.service.ts # Firebase implementation
+├── supabase-database.service.ts # Supabase implementation
 └── README.md                   # Tài liệu này
 ```
 
@@ -26,10 +26,10 @@ database/
 - Tự động lấy userId từ AuthService
 - Cung cấp cả phương thức thủ công (với userId) và tự động (Auto suffix)
 
-### 3. Firebase Implementation (`firebase-database.service.ts`)
+### 3. Supabase Implementation (`supabase-database.service.ts`)
 - Implement IDatabase interface
-- Xử lý tất cả Firebase-specific logic
-- Chuyển đổi Firestore timestamps sang JavaScript Date
+- Xử lý tất cả Supabase-specific logic (Postgres + RLS)
+- Firebase implementation cũ đã bị xoá sau khi migrate sang Supabase
 
 ## Cách sử dụng
 

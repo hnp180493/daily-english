@@ -18,7 +18,7 @@ Tài liệu tổng hợp cho dự án Daily English.
 - [STREAK_FEATURE.md](./STREAK_FEATURE.md) - Tính năng streak học tập
 
 #### Advanced Features
-- [SMART_REVIEW_IMPLEMENTATION_SUMMARY.md](./SMART_REVIEW_IMPLEMENTATION_SUMMARY.md) - Hệ thống ôn tập thông minh
+- [SMART_REVIEW_IMPLEMENTATION_SUMMARY.md](./archive/SMART_REVIEW_IMPLEMENTATION_SUMMARY.md) - Hệ thống ôn tập thông minh
 - [ACHIEVEMENT_OPTIMIZATION.md](./ACHIEVEMENT_OPTIMIZATION.md) - Tối ưu hệ thống thành tựu
 - [NOTIFICATION_GUIDE.md](./NOTIFICATION_GUIDE.md) - Hướng dẫn hệ thống thông báo
 
@@ -32,14 +32,14 @@ Tài liệu tổng hợp cho dự án Daily English.
 
 #### Performance & Optimization
 - [PERFORMANCE_OPTIMIZATION.md](./PERFORMANCE_OPTIMIZATION.md) - Tối ưu hiệu suất
-- [OPTIMIZATION_SUMMARY.md](./OPTIMIZATION_SUMMARY.md) - Tổng kết tối ưu
+- [OPTIMIZATION_SUMMARY.md](./archive/OPTIMIZATION_SUMMARY.md) - Tổng kết tối ưu
 - [NAVIGATION_OPTIMIZATION.md](./NAVIGATION_OPTIMIZATION.md) - Tối ưu navigation
 - [LOADING-FEATURE.md](./LOADING-FEATURE.md) - Tối ưu loading states
 
 #### Bug Fixes & Improvements
-- [FIX-SUMMARY.md](./FIX-SUMMARY.md) - Tổng kết các bug fixes
-- [RELOAD_FIX.md](./RELOAD_FIX.md) - Fix lỗi reload
-- [MIGRATION_EXAMPLE.md](./MIGRATION_EXAMPLE.md) - Ví dụ migration
+- [FIX-SUMMARY.md](./archive/FIX-SUMMARY.md) - Tổng kết các bug fixes
+- [RELOAD_FIX.md](./archive/RELOAD_FIX.md) - Fix lỗi reload
+- [MIGRATION_EXAMPLE.md](./archive/MIGRATION_EXAMPLE.md) - Ví dụ migration
 
 ### 🔐 Setup & Configuration
 
@@ -48,28 +48,28 @@ Tài liệu tổng hợp cho dự án Daily English.
 - [GITHUB_SECRETS_SETUP.md](./GITHUB_SECRETS_SETUP.md) - Setup GitHub Secrets
 
 #### Infrastructure
-- [FIREBASE_SETUP.md](./FIREBASE_SETUP.md) - Setup Firebase
+- [FIREBASE_SETUP.md](./archive/FIREBASE_SETUP.md) - Setup Firebase
 - [HTTPS-SETUP-GUIDE.md](./HTTPS-SETUP-GUIDE.md) - Setup HTTPS
 - [TAILWIND_SETUP.md](./TAILWIND_SETUP.md) - Setup Tailwind CSS
 
 #### AI Integration
 - [OPENROUTER-GUIDE.md](./OPENROUTER-GUIDE.md) - Hướng dẫn OpenRouter
-- [OPENROUTER-IMPLEMENTATION-SUMMARY.md](./OPENROUTER-IMPLEMENTATION-SUMMARY.md) - Implementation OpenRouter
+- [OPENROUTER-IMPLEMENTATION-SUMMARY.md](./archive/OPENROUTER-IMPLEMENTATION-SUMMARY.md) - Implementation OpenRouter
 
 ### 📈 SEO & Marketing
 
 #### SEO Documentation
 - [SEO-GUIDE.md](./SEO-GUIDE.md) - Hướng dẫn SEO tổng quan
-- [SEO_CHECKLIST.md](./SEO_CHECKLIST.md) - Checklist SEO
-- [SEO-UPDATE.md](./SEO-UPDATE.md) - Cập nhật SEO mới nhất
-- [SEO-IMPLEMENTATION-SUMMARY.md](./SEO-IMPLEMENTATION-SUMMARY.md) - Tổng kết implementation SEO
+- [SEO_CHECKLIST.md](./archive/SEO_CHECKLIST.md) - Checklist SEO
+- [SEO-UPDATE.md](./archive/SEO-UPDATE.md) - Cập nhật SEO mới nhất
+- [SEO-IMPLEMENTATION-SUMMARY.md](./archive/SEO-IMPLEMENTATION-SUMMARY.md) - Tổng kết implementation SEO
 
 #### Vietnamese SEO
 - [VIETNAMESE-SEO-GUIDE.md](./VIETNAMESE-SEO-GUIDE.md) - Hướng dẫn SEO tiếng Việt
 - [VIETNAMESE-SEO-CONFIGURATION.md](./VIETNAMESE-SEO-CONFIGURATION.md) - Cấu hình SEO tiếng Việt
 - [VIETNAMESE-SEO-TESTING.md](./VIETNAMESE-SEO-TESTING.md) - Testing SEO tiếng Việt
 - [VIETNAMESE-SEO-VALIDATION.md](./VIETNAMESE-SEO-VALIDATION.md) - Validation SEO tiếng Việt
-- [VIETNAMESE-SEO-COMPLETION-REPORT.md](./VIETNAMESE-SEO-COMPLETION-REPORT.md) - Báo cáo hoàn thành
+- [VIETNAMESE-SEO-COMPLETION-REPORT.md](./archive/VIETNAMESE-SEO-COMPLETION-REPORT.md) - Báo cáo hoàn thành
 
 #### Search Engine Integration
 - [GOOGLE-INDEXING-CHECKLIST.md](./GOOGLE-INDEXING-CHECKLIST.md) - Checklist Google indexing
@@ -77,11 +77,11 @@ Tài liệu tổng hợp cho dự án Daily English.
 - [VERIFICATION-SETUP-GUIDE.md](./VERIFICATION-SETUP-GUIDE.md) - Setup verification
 
 ### 📋 Planning & Roadmap
-- [FEATURE_ROADMAP.md](./FEATURE_ROADMAP.md) - Lộ trình phát triển tính năng
-- [IMPLEMENTATION-SUMMARY.md](./IMPLEMENTATION-SUMMARY.md) - Tổng kết implementation
+- [obsidian/Backlog.md](./obsidian/Backlog.md) - Backlog hiện tại (nguồn chính)
+- [FEATURE_ROADMAP.md](./FEATURE_ROADMAP.md) - Lộ trình phát triển tính năng (cũ)
 
-### 📝 Other
-- [Readme1.md](./Readme1.md) - README phụ
+### 🗄️ Archive
+- [archive/](./archive/README.md) - Báo cáo task cũ, fix trùng lặp, hướng dẫn Firebase (đã migrate sang Supabase)
 
 ## 🗂️ Cấu trúc thư mục
 

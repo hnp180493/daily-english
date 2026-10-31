@@ -413,6 +413,40 @@ export const routes: Routes = [
     },
   },
   {
+    path: 'reader',
+    loadComponent: () => import('./components/reader/reader-library').then((m) => m.ReaderLibraryComponent),
+    data: {
+      seo: {
+        title: 'Đọc & học từ - Daily English',
+        description: 'Dán bất kỳ đoạn tiếng Anh nào, tô từ mới, tra nghĩa theo ngữ cảnh và lưu thành thẻ ghi nhớ',
+        noindex: true,
+      } as RouteSeoData,
+    },
+  },
+  {
+    path: 'reader/:id',
+    loadComponent: () => import('./components/reader/reader-view').then((m) => m.ReaderViewComponent),
+    data: {
+      seo: {
+        title: 'Đọc & học từ - Daily English',
+        description: 'Đọc và lưu từ mới vào thẻ ghi nhớ',
+        noindex: true,
+      } as RouteSeoData,
+    },
+  },
+  {
+    path: 'today',
+    loadComponent: () => import('./components/today/today').then((m) => m.TodayComponent),
+    data: {
+      preload: 'high',
+      seo: {
+        title: 'Học hôm nay - Daily English',
+        description: '10 phút mỗi ngày: ôn thẻ, điền từ, nghe và nói theo, tự dịch một câu',
+        noindex: true,
+      } as RouteSeoData,
+    },
+  },
+  {
     path: 'flashcards',
     loadComponent: () =>
       import('./components/flashcard-deck/flashcard-deck').then((m) => m.FlashcardDeckComponent),

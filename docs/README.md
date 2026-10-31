@@ -21,7 +21,7 @@ Tài liệu hướng dẫn cho Daily English Practice Platform.
 | File | Mô tả |
 |------|-------|
 | [SEO-GUIDE.md](SEO-GUIDE.md) | Hướng dẫn SEO optimization |
-| [SEO-IMPLEMENTATION-SUMMARY.md](SEO-IMPLEMENTATION-SUMMARY.md) | Tóm tắt SEO implementation |
+| [SEO-IMPLEMENTATION-SUMMARY.md](archive/SEO-IMPLEMENTATION-SUMMARY.md) | Tóm tắt SEO implementation |
 
 ## 🛠️ Quick References
 
@@ -60,7 +60,7 @@ Các file quick reference ở root folder:
 ### Khi optimize SEO
 
 1. Đọc [SEO-GUIDE.md](SEO-GUIDE.md)
-2. Xem [SEO-IMPLEMENTATION-SUMMARY.md](SEO-IMPLEMENTATION-SUMMARY.md)
+2. Xem [SEO-IMPLEMENTATION-SUMMARY.md](archive/SEO-IMPLEMENTATION-SUMMARY.md)
 
 ## 🆘 Cần trợ giúp?
 

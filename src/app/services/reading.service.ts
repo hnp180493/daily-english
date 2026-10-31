@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable, firstValueFrom, of } from 'rxjs';
 import { catchError, map, shareReplay } from 'rxjs/operators';
 import { READING_CONSTANTS, ReadingPassage, ReadingProgress, ReadingQuizAnswer } from '../models/reading.model';
+import { SkillSyncService, mergeRecords } from './skill-sync.service';
 
 interface PassagesFile {
   version: number;
@@ -13,6 +14,7 @@ interface PassagesFile {
 @Injectable({ providedIn: 'root' })
 export class ReadingService {
   private http = inject(HttpClient);
+  private sync = inject(SkillSyncService);
   private cache$: Observable<ReadingPassage[]> | null = null;
 
   readonly passages = signal<ReadingPassage[]>([]);
@@ -20,6 +22,19 @@ export class ReadingService {
 
   constructor() {
     this.loadProgress();
+    this.sync.register<Record<string, ReadingProgress>>({
+      key: READING_CONSTANTS.STORAGE_KEY,
+      read: () => this.progressByPassage(),
+      write: (_uid, value) => {
+        const revived = reviveProgress(value);
+        this.progressByPassage.set(revived);
+        this.saveProgress(revived, false);
+      },
+      merge: (local, remote) =>
+        mergeRecords(local, remote, (a, b) =>
+          new Date(a.completedAt ?? 0) >= new Date(b.completedAt ?? 0) ? a : b
+        ),
+    });
   }
 
   getAllPassages(): Observable<ReadingPassage[]> {
@@ -71,28 +86,34 @@ export class ReadingService {
     return this.progressByPassage()[passageId];
   }
 
-  private saveProgress(progress: Record<string, ReadingProgress>): void {
+  private saveProgress(progress: Record<string, ReadingProgress>, notifySync = true): void {
     try {
       localStorage.setItem(READING_CONSTANTS.STORAGE_KEY, JSON.stringify(progress));
     } catch (err) {
       console.warn('[ReadingService] Could not persist reading progress', err);
     }
+    if (notifySync) this.sync.markChanged(READING_CONSTANTS.STORAGE_KEY);
   }
 
   private loadProgress(): void {
     try {
       const raw = localStorage.getItem(READING_CONSTANTS.STORAGE_KEY);
       if (!raw) return;
-      const parsed = JSON.parse(raw) as Record<string, ReadingProgress>;
-      // Revive Date fields
-      for (const key of Object.keys(parsed)) {
-        const p = parsed[key];
-        if (p.startedAt) p.startedAt = new Date(p.startedAt);
-        if (p.completedAt) p.completedAt = new Date(p.completedAt);
-      }
-      this.progressByPassage.set(parsed);
+      this.progressByPassage.set(reviveProgress(JSON.parse(raw)));
     } catch (err) {
       console.warn('[ReadingService] Could not load reading progress', err);
     }
   }
+}
+
+function reviveProgress(raw: Record<string, ReadingProgress>): Record<string, ReadingProgress> {
+  const out: Record<string, ReadingProgress> = {};
+  for (const [key, p] of Object.entries(raw ?? {})) {
+    out[key] = {
+      ...p,
+      startedAt: p.startedAt ? new Date(p.startedAt) : p.startedAt,
+      completedAt: p.completedAt ? new Date(p.completedAt) : p.completedAt,
+    };
+  }
+  return out;
 }

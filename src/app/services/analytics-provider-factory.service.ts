@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, Injector, inject, runInInjectionContext } from '@angular/core';
 import { IAnalyticsProvider, AnalyticsProviderConfig } from '../models/analytics-provider.model';
 import { Ga4AnalyticsAdapter } from './ga4-analytics-adapter.service';
 
@@ -17,13 +17,16 @@ import { Ga4AnalyticsAdapter } from './ga4-analytics-adapter.service';
   providedIn: 'root'
 })
 export class AnalyticsProviderFactory {
+  private injector = inject(Injector);
+
   /**
    * Create an analytics provider based on configuration
    */
   createProvider(config: AnalyticsProviderConfig): IAnalyticsProvider | null {
     switch (config.type) {
       case 'ga4':
-        return new Ga4AnalyticsAdapter();
+        // The adapter uses field inject(); this may run after an await, so give it a context.
+        return runInInjectionContext(this.injector, () => new Ga4AnalyticsAdapter());
       
       // Easy to add more providers:
       // case 'mixpanel':

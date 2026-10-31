@@ -412,7 +412,7 @@ export class AuthService {
    */
   private mergeGuestFlashcards(): void {
     try {
-      const guestData = localStorage.getItem('flashcards');
+      const guestData = localStorage.getItem('flashcards_guest') ?? localStorage.getItem('flashcards');
       if (!guestData) {
         console.log('[Auth] No guest flashcards to merge');
         return;

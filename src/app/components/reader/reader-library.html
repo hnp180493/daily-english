@@ -1,0 +1,79 @@
+<div class="reader">
+  <header class="reader-head">
+    <div>
+      <h1>📖 {{ translate.t('reader.title') }}</h1>
+      <p class="muted">{{ translate.t('reader.subtitle') }}</p>
+    </div>
+    <div class="vocab-counters">
+      <div><strong>{{ reader.knownCount() }}</strong><small>{{ translate.t('reader.known_words') }}</small></div>
+      <div class="learning"><strong>{{ reader.learningCount() }}</strong><small>{{ translate.t('reader.learning_words') }}</small></div>
+    </div>
+  </header>
+
+  <!-- Paste a new text -->
+  <section class="panel">
+    <h2>{{ translate.t('reader.paste_title') }}</h2>
+    <input
+      class="field"
+      type="text"
+      [value]="title()"
+      (input)="title.set($any($event.target).value)"
+      [placeholder]="translate.t('reader.title_placeholder')"
+      maxlength="120"
+    />
+    <textarea
+      class="field"
+      rows="6"
+      [value]="content()"
+      (input)="content.set($any($event.target).value)"
+      [placeholder]="translate.t('reader.paste_placeholder')"
+      [attr.maxlength]="maxChars"
+    ></textarea>
+    <div class="row-between">
+      <small class="muted">{{ content().length }}/{{ maxChars }}</small>
+      <button type="button" class="btn-primary" [disabled]="!content().trim()" (click)="open()">
+        {{ translate.t('reader.open') }} →
+      </button>
+    </div>
+  </section>
+
+  <!-- Your texts -->
+  @if (items().length) {
+    <section>
+      <h2>{{ translate.t('reader.your_texts') }}</h2>
+      <ul class="text-list">
+        @for (item of items(); track item.text.id) {
+          <li class="text-item">
+            <a class="text-link" [routerLink]="['/reader', item.text.id]">
+              <span class="text-title">{{ item.text.title }}</span>
+              <span class="known-bar" [attr.title]="statsLabel(item.stats)">
+                <span class="known-fill" [style.width.%]="item.stats.knownPct"></span>
+              </span>
+              <small class="muted">{{ statsLabel(item.stats) }}</small>
+            </a>
+            <button type="button" class="icon-btn" (click)="remove(item.text, $event)" [attr.aria-label]="translate.t('reader.delete')">🗑</button>
+          </li>
+        }
+      </ul>
+    </section>
+  }
+
+  <!-- Built-in sample passages -->
+  @if (samples().length) {
+    <section>
+      <h2>{{ translate.t('reader.samples') }}</h2>
+      <div class="sample-grid">
+        @for (p of samples(); track p.id) {
+          <button type="button" class="sample" (click)="openSample(p)">
+            <span class="badge" [attr.data-level]="p.level">{{ translate.t('today.level.' + p.level) }}</span>
+            <strong>{{ p.title }}</strong>
+            <small class="muted">{{ p.topic }} · {{ p.wordCount }} {{ translate.t('reader.words') }}</small>
+            @if (sampleOpened(p)) {
+              <small class="opened">✓ {{ translate.t('reader.opened') }}</small>
+            }
+          </button>
+        }
+      </div>
+    </section>
+  }
+</div>

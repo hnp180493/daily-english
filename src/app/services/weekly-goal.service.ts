@@ -1,4 +1,4 @@
-import { Injectable, inject, effect } from '@angular/core';
+import { Injectable, Injector, inject, effect } from '@angular/core';
 import { DatabaseService } from './database/database.service';
 import { ProgressService } from './progress.service';
 import { AuthService } from './auth.service';
@@ -16,6 +16,7 @@ export class WeeklyGoalService {
   private databaseService = inject(DatabaseService);
   private progressService = inject(ProgressService);
   private authService = inject(AuthService);
+  private injector = inject(Injector);
   private isUpdating = false;
   private lastProgressTimestamp: Date | null = null;
   private isInitialized = false;
@@ -63,7 +64,7 @@ export class WeeklyGoalService {
             this.lastProgressTimestamp = null;
           });
       }
-    });
+    }, { injector: this.injector }); // past an await: pass the injection context explicitly
   }
 
   /**

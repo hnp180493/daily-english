@@ -1,0 +1,119 @@
+<div class="reader reader-view">
+  @if (text(); as t) {
+    <header class="view-head">
+      <a routerLink="/reader" class="back">← {{ translate.t('reader.title') }}</a>
+      <h1>{{ t.title }}</h1>
+      <div class="stats-bar">
+        <span class="legend new">{{ stats().newCount }} {{ translate.t('reader.status.new') }}</span>
+        <span class="legend learning">{{ stats().learningCount }} {{ translate.t('reader.status.learning') }}</span>
+        <span class="legend known">{{ stats().knownPct }}% {{ translate.t('reader.status.known') }}</span>
+        <button type="button" class="btn-secondary small-btn" (click)="toggleReading()">
+          {{ playingSentence() === null ? '▶ ' + translate.t('reader.read_aloud') : '⏹ ' + translate.t('today.stop') }}
+        </button>
+      </div>
+      <p class="muted small">{{ translate.t('reader.how_to') }}</p>
+    </header>
+
+    <div class="view-body" [class.with-panel]="!!selected()">
+      <article class="text">
+        @for (paragraph of doc().paragraphs; track $index) {
+          <p>
+            @for (token of paragraph; track $index) {
+              @if (token.word) {
+                <span
+                  class="w"
+                  role="button"
+                  tabindex="0"
+                  [attr.data-status]="statusOf(token)"
+                  [class.selected]="selected()?.word === token.word"
+                  [class.speaking]="playingSentence() === token.sentence"
+                  (click)="select(token)"
+                  (keydown.enter)="select(token)"
+                  >{{ token.text }}</span
+                >
+              } @else {
+                <span [class.speaking]="playingSentence() === token.sentence">{{ token.text }}</span>
+              }
+            }
+          </p>
+        }
+
+        <footer class="finish">
+          @if (finished() === null) {
+            <button type="button" class="btn-primary" (click)="finish()">
+              ✓ {{ translate.t('reader.finish').replace('{n}', '' + stats().newCount) }}
+            </button>
+            <p class="muted small">{{ translate.t('reader.finish_hint') }}</p>
+          } @else {
+            <div class="finished-card">
+              <h2>🎉 {{ translate.t('reader.finished_title') }}</h2>
+              <p>
+                {{ translate.t('reader.finished_known').replace('{n}', '' + finished()) }}
+                @if (savedCount()) {
+                  · {{ translate.t('reader.finished_saved').replace('{n}', '' + savedCount()) }}
+                }
+              </p>
+              <p class="muted">{{ translate.t('reader.known_total').replace('{n}', '' + reader.knownCount()) }}</p>
+              <div class="row-gap">
+                <a routerLink="/today" class="btn-primary">☀️ {{ translate.t('reader.go_today') }}</a>
+                <a routerLink="/reader" class="btn-secondary">{{ translate.t('reader.another_text') }}</a>
+              </div>
+            </div>
+          }
+        </footer>
+      </article>
+
+      @if (selected(); as sel) {
+        <aside class="word-panel" role="dialog" [attr.aria-label]="sel.word">
+          <div class="panel-top">
+            <h2>{{ sel.surface }}</h2>
+            <button type="button" class="icon-btn" (click)="speak(sel.surface)" [attr.aria-label]="translate.t('today.listen')">🔊</button>
+            <button type="button" class="icon-btn close" (click)="close()" aria-label="Close">✕</button>
+          </div>
+
+          <label class="small muted" for="meaning">{{ translate.t('reader.meaning') }}</label>
+          <input
+            id="meaning"
+            class="field"
+            type="text"
+            [value]="meaning()"
+            (input)="meaning.set($any($event.target).value)"
+            [placeholder]="looking() ? translate.t('reader.looking_up') : translate.t('reader.meaning_placeholder')"
+          />
+          @if (looking()) {
+            <p class="muted small">⏳ {{ translate.t('reader.looking_up') }}</p>
+          }
+          @if (note()) {
+            <p class="note">💡 {{ note() }}</p>
+          }
+          @if (lookupError()) {
+            <p class="muted small">{{ translate.t('reader.lookup_failed') }}</p>
+          }
+          @if (!canLookup) {
+            <p class="muted small">{{ translate.t('reader.no_ai') }}</p>
+          }
+          <a class="small link" [href]="googleTranslateUrl(sel.word)" target="_blank" rel="noopener">{{ translate.t('reader.google') }} ↗</a>
+
+          <div class="context">
+            @let h = highlight(sel.sentence, sel.surface);
+            <p>{{ h.before }}<mark>{{ h.match }}</mark>{{ h.after }}</p>
+            <button type="button" class="icon-btn" (click)="speak(sel.sentence)" [attr.aria-label]="translate.t('reader.read_sentence')">🔊</button>
+          </div>
+
+          <div class="panel-actions">
+            <button type="button" class="btn-save" (click)="save()">💾 {{ translate.t('reader.save') }} <kbd>S</kbd></button>
+            <button type="button" class="btn-secondary" (click)="setStatus('known')">✓ {{ translate.t('reader.mark_known') }} <kbd>K</kbd></button>
+            @if (reader.status(sel.word) !== 'new') {
+              <button type="button" class="btn-link" (click)="setStatus('new')">{{ translate.t('reader.reset') }}</button>
+            }
+          </div>
+        </aside>
+      }
+    </div>
+  } @else {
+    <div class="panel center">
+      <p>{{ translate.t('reader.not_found') }}</p>
+      <a routerLink="/reader" class="btn-primary">← {{ translate.t('reader.title') }}</a>
+    </div>
+  }
+</div>

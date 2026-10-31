@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { AchievementService } from '../../services/achievement.service';
 import { PointsAnimationService } from '../../services/points-animation.service';
 import { TranslationService } from '../../services/translation.service';
+import { AchievementShareService } from '../../services/achievement-share.service';
 import { Achievement, AchievementType, RarityLevel, AchievementProgress } from '../../models/achievement.model';
 import { AchievementCard } from './achievement-card/achievement-card';
 import { AchievementDetailModal } from './achievement-detail-modal/achievement-detail-modal';
@@ -19,6 +20,7 @@ export class Achievements {
   private achievementService = inject(AchievementService);
   private pointsAnimationService = inject(PointsAnimationService);
   protected translate = inject(TranslationService);
+  private achievementShare = inject(AchievementShareService);
 
   // Filter signals
   selectedType = signal<AchievementType | 'all'>('all');
@@ -96,50 +98,9 @@ export class Achievements {
     return achievement.progress;
   }
 
-  async shareAchievement(achievement: Achievement): Promise<void> {
-    // Check if Web Share API is available
-    if (navigator.share) {
-      try {
-        await navigator.share({
-          title: `Achievement Unlocked: ${achievement.name}`,
-          text: `I just unlocked the "${achievement.name}" achievement in English Practice! ${achievement.description}`,
-          url: window.location.origin + '/achievements'
-        });
-      } catch (error) {
-        console.error('Error sharing:', error);
-        this.fallbackShare(achievement);
-      }
-    } else {
-      this.fallbackShare(achievement);
-    }
-  }
-
-  private fallbackShare(achievement: Achievement): void {
-    // Copy link to clipboard as fallback
-    const shareText = `I just unlocked the "${achievement.name}" achievement in English Practice! ${achievement.description}\n\n${window.location.origin}/achievements`;
-    
-    if (navigator.clipboard) {
-      navigator.clipboard.writeText(shareText).then(() => {
-        alert('Achievement link copied to clipboard!');
-      }).catch(err => {
-        console.error('Failed to copy:', err);
-      });
-    } else {
-      // Fallback for older browsers
-      const textArea = document.createElement('textarea');
-      textArea.value = shareText;
-      textArea.style.position = 'fixed';
-      textArea.style.left = '-999999px';
-      document.body.appendChild(textArea);
-      textArea.select();
-      try {
-        document.execCommand('copy');
-        alert('Achievement link copied to clipboard!');
-      } catch (err) {
-        console.error('Failed to copy:', err);
-      }
-      document.body.removeChild(textArea);
-    }
+  /** Shares a PNG badge card (Web Share with files, or download fallback). */
+  shareAchievement(achievement: Achievement): Promise<void> {
+    return this.achievementShare.share(achievement);
   }
 
   exportAchievements(): void {

@@ -95,6 +95,13 @@ describe('VietnameseSeoService', () => {
     httpMock = TestBed.inject(HttpTestingController);
   });
 
+  /** Start loading, flush the pending config request, then await completion. */
+  async function loadConfig(): Promise<void> {
+    const loadPromise = service.loadConfiguration();
+    httpMock.expectOne('/assets/vietnamese-seo-config.json').flush(mockConfig);
+    await loadPromise;
+  }
+
   afterEach(() => {
     httpMock.verify();
   });
@@ -114,15 +121,15 @@ describe('VietnameseSeoService', () => {
     });
 
     it('should not reload configuration if already loaded', async () => {
-      await service.loadConfiguration();
-      const req = httpMock.expectOne('/assets/vietnamese-seo-config.json');
-      req.flush(mockConfig);
+      await loadConfig();
 
       await service.loadConfiguration();
       httpMock.expectNone('/assets/vietnamese-seo-config.json');
+      expect(service.isConfigurationLoaded()).toBe(true);
     });
 
     it('should handle configuration loading error', async () => {
+      spyOn(console, 'error');
       const loadPromise = service.loadConfiguration();
 
       const req = httpMock.expectOne('/assets/vietnamese-seo-config.json');
@@ -135,9 +142,7 @@ describe('VietnameseSeoService', () => {
 
   describe('Keyword Generation', () => {
     beforeEach(async () => {
-      await service.loadConfiguration();
-      const req = httpMock.expectOne('/assets/vietnamese-seo-config.json');
-      req.flush(mockConfig);
+      await loadConfig();
     });
 
     it('should generate keywords for category and level', () => {
@@ -157,7 +162,9 @@ describe('VietnameseSeoService', () => {
     });
 
     it('should return empty array if configuration not loaded', () => {
-      const newService = TestBed.inject(VietnameseSeoService);
+      spyOn(console, 'warn');
+      // TestBed.inject would return the already-loaded root singleton; build a fresh instance
+      const newService = TestBed.runInInjectionContext(() => new VietnameseSeoService());
       const keywords = newService.generateVietnameseKeywords('translation', 'beginner');
 
       expect(keywords).toEqual([]);
@@ -166,9 +173,7 @@ describe('VietnameseSeoService', () => {
 
   describe('Title Generation', () => {
     beforeEach(async () => {
-      await service.loadConfiguration();
-      const req = httpMock.expectOne('/assets/vietnamese-seo-config.json');
-      req.flush(mockConfig);
+      await loadConfig();
     });
 
     it('should generate Vietnamese title for exercise', () => {
@@ -208,9 +213,7 @@ describe('VietnameseSeoService', () => {
 
   describe('Description Generation', () => {
     beforeEach(async () => {
-      await service.loadConfiguration();
-      const req = httpMock.expectOne('/assets/vietnamese-seo-config.json');
-      req.flush(mockConfig);
+      await loadConfig();
     });
 
     it('should generate Vietnamese description for exercise', () => {
@@ -243,9 +246,7 @@ describe('VietnameseSeoService', () => {
 
   describe('Vietnamese Diacritics Validation', () => {
     beforeEach(async () => {
-      await service.loadConfiguration();
-      const req = httpMock.expectOne('/assets/vietnamese-seo-config.json');
-      req.flush(mockConfig);
+      await loadConfig();
     });
 
     it('should validate Vietnamese diacritics in title', () => {
@@ -255,7 +256,8 @@ describe('VietnameseSeoService', () => {
         title: 'Test',
         description: 'Test',
         vietnameseTitle: 'Học tiếng Anh',
-        vietnameseDescription: 'Mô tả tiếng Việt',
+        // >= 50 chars so the separate "description too short" warning is not triggered
+        vietnameseDescription: 'Mô tả tiếng Việt đầy đủ dấu cho bài tập luyện dịch câu tiếng Anh',
       });
 
       expect(console.warn).not.toHaveBeenCalled();
@@ -271,7 +273,7 @@ describe('VietnameseSeoService', () => {
         vietnameseDescription: 'Mo ta tieng Viet',
       });
 
-      expect(console.warn).toHaveBeenCalled();
+      expect(console.warn).toHaveBeenCalledWith(jasmine.stringContaining('missing diacritics'));
     });
   });
 
@@ -330,9 +332,7 @@ describe('VietnameseSeoService', () => {
 
   describe('Zalo Tags', () => {
     beforeEach(async () => {
-      await service.loadConfiguration();
-      const req = httpMock.expectOne('/assets/vietnamese-seo-config.json');
-      req.flush(mockConfig);
+      await loadConfig();
     });
 
     it('should set Zalo meta tags', () => {

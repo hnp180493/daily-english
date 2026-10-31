@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated": "2026-05-14",
+  "updated": "2026-10-31",
   "prompts": [
     {
       "id": "writing-favorite-place",
@@ -171,6 +171,215 @@
         "Distinguish between using AI as a tutor vs. as a substitute for thinking.",
         "Use hedging language: 'might', 'tends to', 'in many cases'.",
         "Show awareness of the trade-offs rather than a one-sided view."
+      ]
+    },
+    {
+      "id": "writing-introduce-yourself-team",
+      "slug": "introduce-yourself-to-new-team",
+      "title": "Introduce yourself to your new team",
+      "prompt": "You have just joined a new class, club, or company. Write a short message to the group introducing yourself. Say who you are, what you do, what you enjoy, and what you hope to do together with them.",
+      "guidingQuestions": [
+        "What is your name, where are you from, and what is your role?",
+        "What are two or three things you enjoy doing in your free time?",
+        "What do you hope to learn or achieve with this group?"
+      ],
+      "level": "beginner",
+      "type": "descriptive",
+      "wordCountTarget": { "min": 80, "max": 130 },
+      "estimatedMinutes": 15,
+      "hints": [
+        "Start with a friendly greeting: 'Hi everyone,' or 'Hello team,'.",
+        "Use 'I'm', 'I work as…', 'I'm interested in…', 'I enjoy + V-ing'.",
+        "Finish with a warm closing: 'I look forward to working with you all.'"
+      ],
+      "sampleOutline": [
+        "Greeting and your name.",
+        "Who you are: your job, studies, or role in the group.",
+        "Your interests and hobbies.",
+        "What you hope for, plus a friendly closing line."
+      ]
+    },
+    {
+      "id": "writing-weekend-trip",
+      "slug": "a-recent-weekend-trip",
+      "title": "Write about a recent weekend trip",
+      "prompt": "Write about a short trip or a day out you took recently. Say where you went, who you went with, what you did, and whether you would go there again.",
+      "guidingQuestions": [
+        "Where did you go and how did you get there?",
+        "Who went with you and what did you do together?",
+        "What was the best or worst part of the trip?",
+        "Would you recommend this place to a friend? Why or why not?"
+      ],
+      "level": "beginner",
+      "type": "narrative",
+      "wordCountTarget": { "min": 100, "max": 160 },
+      "estimatedMinutes": 20,
+      "hints": [
+        "Use simple past tense: went, ate, saw, took, had.",
+        "Remember: 'didn't + base verb' for negatives (I didn't see, NOT I didn't saw).",
+        "Order events with: first, then, after lunch, in the evening, finally."
+      ],
+      "sampleOutline": [
+        "Paragraph 1: Where, when, and with whom.",
+        "Paragraph 2: What you did, in time order.",
+        "Paragraph 3: How you felt and whether you would go again."
+      ]
+    },
+    {
+      "id": "writing-city-or-countryside",
+      "slug": "city-or-countryside",
+      "title": "Is it better to live in the city or the countryside?",
+      "prompt": "Some people prefer to live in a big city, while others prefer a quiet life in the countryside. Which do you prefer? Give two or three reasons for your choice.",
+      "guidingQuestions": [
+        "Where do you live now, and do you like it?",
+        "What are the good points of the place you prefer?",
+        "Is there anything you would miss about the other place?"
+      ],
+      "level": "beginner",
+      "type": "opinion",
+      "wordCountTarget": { "min": 120, "max": 180 },
+      "estimatedMinutes": 20,
+      "hints": [
+        "State your choice in the first sentence: 'I prefer living in…'.",
+        "Use comparatives: busier, quieter, more convenient, cheaper.",
+        "Give one short example for each reason."
+      ],
+      "sampleOutline": [
+        "Introduction: say which one you prefer.",
+        "Reason 1 with an example.",
+        "Reason 2 with an example.",
+        "Conclusion: repeat your choice in different words."
+      ]
+    },
+    {
+      "id": "writing-learning-english-challenges",
+      "slug": "my-english-learning-challenges",
+      "title": "What is difficult for you when learning English?",
+      "prompt": "Write about the biggest difficulty you have when learning English, for example speaking, listening, grammar, or vocabulary. Explain why it is difficult for you and what you can do to improve.",
+      "guidingQuestions": [
+        "Which skill is the hardest for you, and when do you notice the problem?",
+        "Why do you think it is difficult? (time, confidence, practice, differences from Vietnamese)",
+        "What are two or three practical things you can do every week to get better?"
+      ],
+      "level": "beginner",
+      "type": "problem-solution",
+      "wordCountTarget": { "min": 120, "max": 180 },
+      "estimatedMinutes": 20,
+      "hints": [
+        "Describe the problem with a real situation, e.g. 'When foreigners speak fast, I…'.",
+        "Use 'should', 'can', 'try to + verb' to give solutions.",
+        "Make your solutions specific: how often, how long, which app or method."
+      ],
+      "sampleOutline": [
+        "Paragraph 1: Name your biggest difficulty and give an example.",
+        "Paragraph 2: Explain the reasons.",
+        "Paragraph 3: List your plan to improve."
+      ]
+    },
+    {
+      "id": "writing-complaint-email",
+      "slug": "complaint-email-online-order",
+      "title": "Write a complaint email about an online order",
+      "prompt": "You ordered a pair of headphones from an online shop, but you received the wrong colour and one side does not work. Write an email to the shop's customer service. Explain the problem, say how it has affected you, and tell them what you would like them to do.",
+      "guidingQuestions": [
+        "What did you order, when, and what is your order number?",
+        "What exactly is wrong with the item you received?",
+        "What solution do you want — a replacement, a refund, or something else — and by when?"
+      ],
+      "level": "intermediate",
+      "type": "problem-solution",
+      "wordCountTarget": { "min": 150, "max": 220 },
+      "estimatedMinutes": 25,
+      "hints": [
+        "Use a polite but firm tone: 'I am writing to complain about…', 'I would appreciate it if…'.",
+        "Give clear facts (dates, order number) instead of emotional language.",
+        "End with a clear request and a deadline, then a formal closing such as 'Yours faithfully' or 'Kind regards'."
+      ],
+      "sampleOutline": [
+        "Opening: reason for writing and order details.",
+        "Paragraph 2: describe the problems clearly.",
+        "Paragraph 3: explain the inconvenience it caused.",
+        "Paragraph 4: state the solution you expect and close politely."
+      ]
+    },
+    {
+      "id": "writing-university-for-everyone",
+      "slug": "should-everyone-go-to-university",
+      "title": "Should every young person go to university?",
+      "prompt": "In many countries, including Vietnam, families strongly encourage children to go to university. Some people argue that vocational training or starting work early can be a better choice for many young people. Do you agree that university is not the right path for everyone? Support your argument with reasons and examples.",
+      "guidingQuestions": [
+        "Why do so many families see university as the only good option?",
+        "What can vocational training or early work offer that university cannot?",
+        "Which kinds of careers clearly need a degree, and which do not?"
+      ],
+      "level": "intermediate",
+      "type": "argumentative",
+      "wordCountTarget": { "min": 220, "max": 300 },
+      "estimatedMinutes": 30,
+      "hints": [
+        "Make your position clear in the introduction and keep it consistent.",
+        "Include one paragraph that answers the opposite view, then explain why you still disagree.",
+        "Use contrast linkers correctly: 'although + clause', 'despite + noun/V-ing', 'however,'."
+      ],
+      "sampleOutline": [
+        "Introduction: background and your position.",
+        "Body 1: first main reason with an example (e.g. skilled trades, tech bootcamps).",
+        "Body 2: second main reason (cost, time, job market).",
+        "Body 3: the opposing view and your response.",
+        "Conclusion: summarise your argument."
+      ]
+    },
+    {
+      "id": "writing-mass-tourism",
+      "slug": "mass-tourism-local-communities",
+      "title": "Does tourism help or harm local communities?",
+      "prompt": "Popular destinations such as Hoi An, Ha Long Bay, and Sa Pa receive millions of visitors every year. Some people believe tourism brings jobs and investment that local communities need. Others argue that mass tourism damages the environment, raises living costs, and changes local culture. Discuss both views and give your own opinion.",
+      "guidingQuestions": [
+        "What economic benefits does tourism bring, and who actually receives them?",
+        "What environmental and cultural costs have you seen or read about?",
+        "What policies could keep the benefits while reducing the harm?"
+      ],
+      "level": "advanced",
+      "type": "discussion",
+      "wordCountTarget": { "min": 280, "max": 380 },
+      "estimatedMinutes": 40,
+      "hints": [
+        "Give each view a fair, well-developed paragraph before presenting your opinion.",
+        "Use precise vocabulary: overtourism, carrying capacity, revenue, gentrification, heritage site.",
+        "Support claims with concrete examples rather than general statements."
+      ],
+      "sampleOutline": [
+        "Introduction: paraphrase the issue and outline your position.",
+        "Body 1: the case for tourism (employment, infrastructure, cultural exchange).",
+        "Body 2: the case against (pollution, rising prices, loss of authenticity).",
+        "Body 3: your view, with a realistic middle-ground solution.",
+        "Conclusion: restate your position concisely."
+      ]
+    },
+    {
+      "id": "writing-difficult-decision",
+      "slug": "a-difficult-decision",
+      "title": "A difficult decision that changed you",
+      "prompt": "Write about a time when you had to make a difficult decision, such as choosing a university major, changing jobs, or moving away from home. Describe the situation, the options you considered, what you finally decided, and how the decision has shaped who you are today.",
+      "guidingQuestions": [
+        "What was the situation, and why was the decision so hard?",
+        "What options did you have, and who or what influenced you?",
+        "Looking back, do you think you made the right choice? What did you learn?"
+      ],
+      "level": "advanced",
+      "type": "narrative",
+      "wordCountTarget": { "min": 280, "max": 380 },
+      "estimatedMinutes": 40,
+      "hints": [
+        "Mix narrative tenses: past simple for events, past continuous for background, past perfect for earlier events.",
+        "Show your thoughts and feelings at the time, not just the facts.",
+        "Finish with a thoughtful reflection; try structures like 'Had I chosen differently, I would…'."
+      ],
+      "sampleOutline": [
+        "Opening: set the scene and hint at the dilemma.",
+        "Body 1: the options and the pressures on you.",
+        "Body 2: the moment you decided and what happened next.",
+        "Conclusion: reflection on the long-term impact."
       ]
     }
   ]

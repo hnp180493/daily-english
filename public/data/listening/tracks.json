@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated": "2026-05-14",
+  "updated": "2026-10-31",
   "tracks": [
     {
       "id": "listening-airport-announcement",
@@ -305,6 +305,724 @@
           ],
           "correctIndex": 1,
           "explanation": "'Take care, and keep your changes small.'"
+        }
+      ]
+    },
+    {
+      "id": "listening-phone-doctor-appointment",
+      "slug": "phone-call-doctor-appointment",
+      "title": "Phone Call: Booking a Doctor's Appointment",
+      "description": "A patient calls a clinic to book an appointment with a doctor.",
+      "level": "beginner",
+      "style": "dialogue",
+      "estimatedMinutes": 2,
+      "segments": [
+        { "speaker": "Receptionist", "text": "Good morning, Sunrise Family Clinic. How can I help you?" },
+        { "speaker": "Patient", "text": "Hello. I'd like to make an appointment with a doctor, please." },
+        { "speaker": "Receptionist", "text": "Of course. Can I have your name, please?" },
+        { "speaker": "Patient", "text": "My name is Linh Tran." },
+        { "speaker": "Receptionist", "text": "Thank you, Ms. Tran. What seems to be the problem?" },
+        { "speaker": "Patient", "text": "I have a sore throat and a slight fever. It started two days ago." },
+        { "speaker": "Receptionist", "text": "I'm sorry to hear that. Doctor Wilson is free tomorrow morning at ten o'clock. Is that okay?" },
+        { "speaker": "Patient", "text": "Tomorrow is fine, but could I come a little later? I have a class at ten." },
+        { "speaker": "Receptionist", "text": "Let me check. Yes, we also have an appointment at eleven thirty." },
+        { "speaker": "Patient", "text": "Eleven thirty is perfect. Thank you." },
+        { "speaker": "Receptionist", "text": "You're welcome. Please arrive ten minutes early and bring your health insurance card." },
+        { "speaker": "Patient", "text": "I will. See you tomorrow." }
+      ],
+      "vocabulary": [
+        { "word": "appointment", "partOfSpeech": "n", "meaning": "cuộc hẹn (khám bệnh, gặp mặt)", "example": "I have a dentist appointment on Monday." },
+        { "word": "sore throat", "partOfSpeech": "n", "meaning": "đau họng", "example": "Drink warm water if you have a sore throat." },
+        { "word": "fever", "partOfSpeech": "n", "meaning": "sốt", "example": "The child has a high fever." },
+        { "word": "slight", "partOfSpeech": "adj", "meaning": "nhẹ, không đáng kể", "example": "There is a slight problem with the booking." },
+        { "word": "arrive", "partOfSpeech": "v", "meaning": "đến nơi", "example": "Please arrive before nine o'clock." },
+        { "word": "health insurance card", "partOfSpeech": "n", "meaning": "thẻ bảo hiểm y tế", "example": "Don't forget your health insurance card." }
+      ],
+      "quiz": [
+        {
+          "id": "q1",
+          "question": "Why is Linh calling the clinic?",
+          "options": [
+            "To cancel an appointment",
+            "To make an appointment with a doctor",
+            "To ask about the price of medicine",
+            "To get her test results"
+          ],
+          "correctIndex": 1,
+          "explanation": "She says 'I'd like to make an appointment with a doctor, please.'"
+        },
+        {
+          "id": "q2",
+          "question": "What are Linh's symptoms?",
+          "options": [
+            "A headache and a cough",
+            "A stomachache",
+            "A sore throat and a slight fever",
+            "Back pain and a fever"
+          ],
+          "correctIndex": 2,
+          "explanation": "'I have a sore throat and a slight fever.'"
+        },
+        {
+          "id": "q3",
+          "question": "Why can't Linh come at ten o'clock?",
+          "options": [
+            "She has to work",
+            "The doctor is busy",
+            "The clinic is closed",
+            "She has a class at ten"
+          ],
+          "correctIndex": 3,
+          "explanation": "'Could I come a little later? I have a class at ten.'"
+        },
+        {
+          "id": "q4",
+          "question": "What time is Linh's appointment in the end?",
+          "options": ["10:00", "10:30", "11:00", "11:30"],
+          "correctIndex": 3,
+          "explanation": "The receptionist offers 'eleven thirty' and Linh says 'Eleven thirty is perfect.'"
+        },
+        {
+          "id": "q5",
+          "question": "What should Linh bring to the clinic?",
+          "options": [
+            "Her passport",
+            "Her health insurance card",
+            "A letter from her school",
+            "Nothing"
+          ],
+          "correctIndex": 1,
+          "explanation": "'Please arrive ten minutes early and bring your health insurance card.'"
+        }
+      ]
+    },
+    {
+      "id": "listening-my-daily-routine",
+      "slug": "my-daily-routine",
+      "title": "A Day in My Life: Minh's Daily Routine",
+      "description": "A university student talks about a typical weekday.",
+      "level": "beginner",
+      "style": "monologue",
+      "estimatedMinutes": 2,
+      "segments": [
+        { "text": "Hi everyone. My name is Minh, and I am a second-year student in Da Nang." },
+        { "text": "Today I want to tell you about a normal day in my life." },
+        { "text": "I usually wake up at six o'clock in the morning." },
+        { "text": "First, I drink a glass of water and go for a short run near the beach." },
+        { "text": "After that, I take a shower and eat breakfast with my family." },
+        { "text": "My favorite breakfast is a bowl of noodle soup." },
+        { "text": "I ride my motorbike to school, and it takes about twenty minutes." },
+        { "text": "My classes start at half past seven and finish at noon." },
+        { "text": "In the afternoon, I work part-time at a bookshop for three hours." },
+        { "text": "In the evening, I cook dinner with my sister and then study English for one hour." },
+        { "text": "I go to bed at around eleven o'clock." },
+        { "text": "On weekends, I sleep late and meet my friends for coffee." }
+      ],
+      "vocabulary": [
+        { "word": "usually", "partOfSpeech": "adv", "meaning": "thường thường", "example": "I usually walk to work." },
+        { "word": "routine", "partOfSpeech": "n", "meaning": "thói quen hằng ngày, nếp sinh hoạt", "example": "Exercise is part of my morning routine." },
+        { "word": "take a shower", "partOfSpeech": "phr", "meaning": "tắm (vòi sen)", "example": "He takes a shower after running." },
+        { "word": "part-time", "partOfSpeech": "adj", "meaning": "bán thời gian", "example": "She has a part-time job at a café." },
+        { "word": "sleep late", "partOfSpeech": "phr", "meaning": "ngủ dậy muộn", "example": "I like to sleep late on Sundays." }
+      ],
+      "quiz": [
+        {
+          "id": "q1",
+          "question": "Where does Minh study?",
+          "options": ["Hanoi", "Hue", "Da Nang", "Can Tho"],
+          "correctIndex": 2,
+          "explanation": "'I am a second-year student in Da Nang.'"
+        },
+        {
+          "id": "q2",
+          "question": "What does Minh do right after drinking a glass of water?",
+          "options": [
+            "He eats breakfast",
+            "He goes for a short run near the beach",
+            "He takes a shower",
+            "He rides to school"
+          ],
+          "correctIndex": 1,
+          "explanation": "'First, I drink a glass of water and go for a short run near the beach.'"
+        },
+        {
+          "id": "q3",
+          "question": "How does Minh get to school?",
+          "options": ["By bus", "On foot", "By bicycle", "By motorbike"],
+          "correctIndex": 3,
+          "explanation": "'I ride my motorbike to school, and it takes about twenty minutes.'"
+        },
+        {
+          "id": "q4",
+          "question": "What does Minh do in the afternoon?",
+          "options": [
+            "He works part-time at a bookshop",
+            "He studies in the library",
+            "He plays football",
+            "He sleeps"
+          ],
+          "correctIndex": 0,
+          "explanation": "'In the afternoon, I work part-time at a bookshop for three hours.'"
+        },
+        {
+          "id": "q5",
+          "question": "How long does Minh study English in the evening?",
+          "options": ["Thirty minutes", "One hour", "Two hours", "Three hours"],
+          "correctIndex": 1,
+          "explanation": "'I cook dinner with my sister and then study English for one hour.'"
+        }
+      ]
+    },
+    {
+      "id": "listening-hotel-check-in",
+      "slug": "hotel-check-in-dialogue",
+      "title": "Checking In at a Hotel",
+      "description": "A guest checks in at a hotel, fixes a booking mistake, and asks about services.",
+      "level": "intermediate",
+      "style": "dialogue",
+      "estimatedMinutes": 2,
+      "segments": [
+        { "speaker": "Receptionist", "text": "Good evening, and welcome to the Riverside Hotel. Do you have a reservation?" },
+        { "speaker": "Guest", "text": "Yes, I do. It's under the name David Park." },
+        { "speaker": "Receptionist", "text": "Let me see. Yes, Mr. Park, a double room for three nights, checking out on Friday. Is that correct?" },
+        { "speaker": "Guest", "text": "Actually, I booked a twin room. I'm traveling with a colleague." },
+        { "speaker": "Receptionist", "text": "I apologize for the mix-up. Give me a moment. All right, I've changed it to a twin room on the eighth floor, with a view of the river." },
+        { "speaker": "Guest", "text": "That's great, thank you. Is breakfast included?" },
+        { "speaker": "Receptionist", "text": "Yes, breakfast is served in the restaurant on the ground floor from six thirty to ten every morning." },
+        { "speaker": "Guest", "text": "And what's the Wi-Fi password?" },
+        { "speaker": "Receptionist", "text": "It's printed on the back of your key card. The connection is free throughout the building." },
+        { "speaker": "Guest", "text": "One more thing. We have an early meeting on Thursday. Could we get a wake-up call at a quarter to six?" },
+        { "speaker": "Receptionist", "text": "Certainly. I'll arrange that for you. Here are your key cards. The elevators are just behind you on the left." },
+        { "speaker": "Guest", "text": "Thanks very much." },
+        { "speaker": "Receptionist", "text": "My pleasure. Enjoy your stay." }
+      ],
+      "vocabulary": [
+        { "word": "reservation", "partOfSpeech": "n", "meaning": "sự đặt chỗ trước", "example": "I made a reservation for two nights." },
+        { "word": "twin room", "partOfSpeech": "n", "meaning": "phòng có hai giường đơn", "example": "We'd like a twin room, please." },
+        { "word": "colleague", "partOfSpeech": "n", "meaning": "đồng nghiệp", "example": "I'm having lunch with a colleague." },
+        { "word": "mix-up", "partOfSpeech": "n", "meaning": "sự nhầm lẫn", "example": "Sorry, there was a mix-up with your order." },
+        { "word": "included", "partOfSpeech": "adj", "meaning": "được bao gồm", "example": "Is tax included in the price?" },
+        { "word": "wake-up call", "partOfSpeech": "n", "meaning": "cuộc gọi báo thức (của khách sạn)", "example": "I asked for a wake-up call at six." },
+        { "word": "check out", "partOfSpeech": "phr v", "meaning": "trả phòng", "example": "We need to check out before noon." }
+      ],
+      "quiz": [
+        {
+          "id": "q1",
+          "question": "What was wrong with the reservation?",
+          "options": [
+            "The guest's name was spelled wrongly",
+            "The dates were wrong",
+            "It was a double room instead of a twin room",
+            "There was no reservation at all"
+          ],
+          "correctIndex": 2,
+          "explanation": "The receptionist says 'a double room', but the guest says 'Actually, I booked a twin room.'"
+        },
+        {
+          "id": "q2",
+          "question": "Which floor is the new room on?",
+          "options": ["The sixth floor", "The eighth floor", "The tenth floor", "The eighteenth floor"],
+          "correctIndex": 1,
+          "explanation": "'I've changed it to a twin room on the eighth floor, with a view of the river.'"
+        },
+        {
+          "id": "q3",
+          "question": "When is breakfast served?",
+          "options": [
+            "From 6:00 to 9:00",
+            "From 6:30 to 10:00",
+            "From 7:00 to 10:30",
+            "From 7:30 to 11:00"
+          ],
+          "correctIndex": 1,
+          "explanation": "'Breakfast is served in the restaurant on the ground floor from six thirty to ten every morning.'"
+        },
+        {
+          "id": "q4",
+          "question": "Where can the guest find the Wi-Fi password?",
+          "options": [
+            "On the back of the key card",
+            "On a sign in the lobby",
+            "In a welcome email",
+            "On the TV screen in the room"
+          ],
+          "correctIndex": 0,
+          "explanation": "'It's printed on the back of your key card.'"
+        },
+        {
+          "id": "q5",
+          "question": "Why does the guest ask for a wake-up call?",
+          "options": [
+            "He has an early flight",
+            "He wants to go jogging",
+            "He wants to have breakfast early",
+            "He has an early meeting on Thursday"
+          ],
+          "correctIndex": 3,
+          "explanation": "'We have an early meeting on Thursday. Could we get a wake-up call at a quarter to six?'"
+        }
+      ]
+    },
+    {
+      "id": "listening-interview-street-food",
+      "slug": "interview-street-food-vendor",
+      "title": "Interview: Life as a Street Food Vendor",
+      "description": "A radio host talks to a woman who has sold banh mi on the same street corner for twenty years.",
+      "level": "intermediate",
+      "style": "interview",
+      "estimatedMinutes": 3,
+      "segments": [
+        { "speaker": "Host", "text": "Welcome to City Voices. Today I'm on a busy corner in District Three with Mrs. Hoa, who has been selling banh mi here for twenty years. Good morning, Mrs. Hoa." },
+        { "speaker": "Mrs. Hoa", "text": "Good morning. Thank you for coming." },
+        { "speaker": "Host", "text": "What does a typical day look like for you?" },
+        { "speaker": "Mrs. Hoa", "text": "I get up at four in the morning to buy fresh bread from a bakery nearby. Then I prepare the meat, the pickled vegetables, and the sauce at home." },
+        { "speaker": "Host", "text": "And when do you open?" },
+        { "speaker": "Mrs. Hoa", "text": "I start selling at six. The busiest time is between six thirty and eight, when people are going to work and students are going to school." },
+        { "speaker": "Host", "text": "How many sandwiches do you sell in a day?" },
+        { "speaker": "Mrs. Hoa", "text": "On a normal day, about two hundred. On weekends, sometimes more than three hundred." },
+        { "speaker": "Host", "text": "That's impressive. Has the business changed over the years?" },
+        { "speaker": "Mrs. Hoa", "text": "Quite a lot. Ten years ago, all my customers paid in cash. Now more than half of them pay by scanning a code on their phones. Some even order through delivery apps." },
+        { "speaker": "Host", "text": "What's the hardest part of the job?" },
+        { "speaker": "Mrs. Hoa", "text": "The weather, definitely. When it rains heavily, very few people stop. But I have many regular customers, and they always come back." },
+        { "speaker": "Host", "text": "Finally, what's the secret to a good banh mi?" },
+        { "speaker": "Mrs. Hoa", "text": "The bread must be crispy, and the sauce must be made by hand every day. You can't take shortcuts." },
+        { "speaker": "Host", "text": "Thank you, Mrs. Hoa. That was City Voices, and now, back to the studio." }
+      ],
+      "vocabulary": [
+        { "word": "vendor", "partOfSpeech": "n", "meaning": "người bán hàng (rong, quầy nhỏ)", "example": "The fruit vendor opens early every day." },
+        { "word": "typical", "partOfSpeech": "adj", "meaning": "điển hình, thông thường", "example": "A typical lunch here costs fifty thousand dong." },
+        { "word": "pickled", "partOfSpeech": "adj", "meaning": "ngâm chua, muối chua", "example": "I love pickled carrots in my sandwich." },
+        { "word": "cash", "partOfSpeech": "n", "meaning": "tiền mặt", "example": "Do you accept cash or only cards?" },
+        { "word": "regular customer", "partOfSpeech": "n", "meaning": "khách quen", "example": "She knows all her regular customers by name." },
+        { "word": "crispy", "partOfSpeech": "adj", "meaning": "giòn", "example": "The bread is crispy on the outside." },
+        { "word": "take shortcuts", "partOfSpeech": "phr", "meaning": "làm tắt, đi đường tắt", "example": "Good cooks never take shortcuts." }
+      ],
+      "quiz": [
+        {
+          "id": "q1",
+          "question": "How long has Mrs. Hoa been selling banh mi on this corner?",
+          "options": ["Ten years", "Twelve years", "Twenty years", "Thirty years"],
+          "correctIndex": 2,
+          "explanation": "The host says she 'has been selling banh mi here for twenty years.'"
+        },
+        {
+          "id": "q2",
+          "question": "When is her busiest time?",
+          "options": [
+            "Between four and six in the morning",
+            "Between six thirty and eight in the morning",
+            "Around lunchtime",
+            "In the evening"
+          ],
+          "correctIndex": 1,
+          "explanation": "'The busiest time is between six thirty and eight, when people are going to work and students are going to school.'"
+        },
+        {
+          "id": "q3",
+          "question": "How many sandwiches does she sell on a normal day?",
+          "options": ["About one hundred", "About two hundred", "More than three hundred", "About five hundred"],
+          "correctIndex": 1,
+          "explanation": "'On a normal day, about two hundred.' More than three hundred is only on some weekends."
+        },
+        {
+          "id": "q4",
+          "question": "How has the way customers pay changed?",
+          "options": [
+            "Everyone now pays in cash",
+            "She only accepts credit cards",
+            "More than half of customers pay by scanning a code on their phones",
+            "Customers now pay once a month"
+          ],
+          "correctIndex": 2,
+          "explanation": "'Now more than half of them pay by scanning a code on their phones.'"
+        },
+        {
+          "id": "q5",
+          "question": "What does Mrs. Hoa say is the hardest part of her job?",
+          "options": [
+            "Getting up early",
+            "The weather, especially heavy rain",
+            "Competition from other sellers",
+            "The rising price of bread"
+          ],
+          "correctIndex": 1,
+          "explanation": "'The weather, definitely. When it rains heavily, very few people stop.'"
+        }
+      ]
+    },
+    {
+      "id": "listening-museum-tour-instructions",
+      "slug": "museum-tour-instructions",
+      "title": "Museum Tour: Instructions for Visitors",
+      "description": "A tour guide explains the plan and the rules before a group museum visit.",
+      "level": "intermediate",
+      "style": "announcement",
+      "estimatedMinutes": 2,
+      "segments": [
+        { "text": "Good morning, everyone, and welcome to the National Museum of History." },
+        { "text": "My name is Lan, and I will be your guide for today's tour." },
+        { "text": "Before we begin, I'd like to go over a few important points." },
+        { "text": "The tour will last about ninety minutes, and we will visit three main galleries." },
+        { "text": "We will start with ancient bronze objects on the ground floor, then move upstairs to see royal costumes, and finish in the modern history gallery." },
+        { "text": "Please stay with the group at all times, because the building is large and it is easy to get lost." },
+        { "text": "You are welcome to take photos, but please turn off your flash, as bright light can damage the older items." },
+        { "text": "Food and drinks are not allowed inside the galleries." },
+        { "text": "If you have a large backpack, please leave it at the cloakroom next to the main entrance." },
+        { "text": "There will be a fifteen-minute break after the second gallery, and restrooms are located near the staircase on each floor." },
+        { "text": "At the end of the tour, you are free to visit the gift shop or explore the garden on your own." },
+        { "text": "If you have any questions, feel free to ask me at any time. Now, please follow me." }
+      ],
+      "vocabulary": [
+        { "word": "gallery", "partOfSpeech": "n", "meaning": "phòng trưng bày", "example": "The paintings are in the second gallery." },
+        { "word": "ancient", "partOfSpeech": "adj", "meaning": "cổ xưa", "example": "They found ancient coins in the river." },
+        { "word": "bronze", "partOfSpeech": "n", "meaning": "đồng (hợp kim đồng thiếc)", "example": "The drum is made of bronze." },
+        { "word": "costume", "partOfSpeech": "n", "meaning": "trang phục (truyền thống, biểu diễn)", "example": "The museum shows royal costumes from the past." },
+        { "word": "damage", "partOfSpeech": "v", "meaning": "làm hư hại", "example": "Strong sunlight can damage old paper." },
+        { "word": "cloakroom", "partOfSpeech": "n", "meaning": "phòng gửi đồ", "example": "You can leave your coat in the cloakroom." },
+        { "word": "on your own", "partOfSpeech": "phr", "meaning": "tự mình, một mình", "example": "You can explore the old town on your own." }
+      ],
+      "quiz": [
+        {
+          "id": "q1",
+          "question": "How long will the tour last?",
+          "options": ["About 45 minutes", "About 60 minutes", "About 90 minutes", "About two hours"],
+          "correctIndex": 2,
+          "explanation": "'The tour will last about ninety minutes.'"
+        },
+        {
+          "id": "q2",
+          "question": "What will the group see first?",
+          "options": [
+            "Royal costumes",
+            "Ancient bronze objects",
+            "The modern history gallery",
+            "The garden"
+          ],
+          "correctIndex": 1,
+          "explanation": "'We will start with ancient bronze objects on the ground floor.'"
+        },
+        {
+          "id": "q3",
+          "question": "What is the rule about taking photos?",
+          "options": [
+            "Photos are not allowed anywhere",
+            "Photos are allowed only in the garden",
+            "Visitors must pay to take photos",
+            "Photos are allowed, but without flash"
+          ],
+          "correctIndex": 3,
+          "explanation": "'You are welcome to take photos, but please turn off your flash.'"
+        },
+        {
+          "id": "q4",
+          "question": "Where should visitors leave large backpacks?",
+          "options": [
+            "At the cloakroom next to the main entrance",
+            "On the tour bus",
+            "In the gift shop",
+            "With the guide"
+          ],
+          "correctIndex": 0,
+          "explanation": "'Please leave it at the cloakroom next to the main entrance.'"
+        },
+        {
+          "id": "q5",
+          "question": "When is the break?",
+          "options": [
+            "Before the tour starts",
+            "After the first gallery",
+            "After the second gallery",
+            "At the end of the tour"
+          ],
+          "correctIndex": 2,
+          "explanation": "'There will be a fifteen-minute break after the second gallery.'"
+        }
+      ]
+    },
+    {
+      "id": "listening-news-urban-flooding",
+      "slug": "news-urban-flooding",
+      "title": "News Report: Cities Rethink Flood Defenses",
+      "description": "An evening news report on how Ho Chi Minh City is adapting to more frequent flooding.",
+      "level": "advanced",
+      "style": "news",
+      "estimatedMinutes": 3,
+      "segments": [
+        { "text": "This is the evening report, and we begin with the environment." },
+        { "text": "Ho Chi Minh City has experienced another week of severe flooding, as heavy rain combined with high tides left dozens of streets under water." },
+        { "text": "Commuters were stranded for hours, and several schools in low-lying districts were forced to close temporarily." },
+        { "text": "City authorities acknowledge that traditional solutions, such as raising roads and building concrete drainage channels, are no longer sufficient on their own." },
+        { "text": "Instead, planners are turning to what is often called the sponge city approach." },
+        { "text": "The idea is to let the city absorb rainwater naturally, through parks, wetlands, and permeable pavements, rather than simply pushing it into overloaded drains." },
+        { "text": "A pilot project in the east of the city has already turned an abandoned plot of land into a public park that can hold up to fifty thousand cubic meters of water during a storm." },
+        { "text": "Supporters argue that this kind of green infrastructure is cheaper to maintain in the long run and also improves residents' quality of life." },
+        { "text": "Critics, however, point out that land in central districts is extremely expensive, which makes large-scale projects difficult to finance." },
+        { "text": "Climate scientists warn that rising sea levels will make the problem worse over the coming decades, and that cities which delay action will face far higher costs later." },
+        { "text": "We will have more on this story, including interviews with local residents, later in the program." }
+      ],
+      "vocabulary": [
+        { "word": "tide", "partOfSpeech": "n", "meaning": "thủy triều", "example": "The water rises during high tide." },
+        { "word": "stranded", "partOfSpeech": "adj", "meaning": "bị mắc kẹt", "example": "Hundreds of travelers were stranded at the station." },
+        { "word": "low-lying", "partOfSpeech": "adj", "meaning": "trũng, thấp (địa hình)", "example": "Low-lying areas flood first." },
+        { "word": "sufficient", "partOfSpeech": "adj", "meaning": "đủ, đầy đủ", "example": "The budget is not sufficient for the project." },
+        { "word": "absorb", "partOfSpeech": "v", "meaning": "hấp thụ, thấm hút", "example": "Trees absorb a lot of rainwater." },
+        { "word": "permeable", "partOfSpeech": "adj", "meaning": "thấm nước được", "example": "Permeable pavements let water drain into the ground." },
+        { "word": "pilot project", "partOfSpeech": "n", "meaning": "dự án thí điểm", "example": "The pilot project will run for six months." },
+        { "word": "finance", "partOfSpeech": "v", "meaning": "cấp vốn, tài trợ", "example": "The bank agreed to finance the new bridge." }
+      ],
+      "quiz": [
+        {
+          "id": "q1",
+          "question": "What caused the latest flooding in Ho Chi Minh City?",
+          "options": [
+            "A broken dam upstream",
+            "Heavy rain combined with high tides",
+            "A typhoon hitting the coast directly",
+            "Water released from a reservoir"
+          ],
+          "correctIndex": 1,
+          "explanation": "'Heavy rain combined with high tides left dozens of streets under water.'"
+        },
+        {
+          "id": "q2",
+          "question": "What do city authorities say about traditional solutions like raising roads?",
+          "options": [
+            "They work perfectly and should continue",
+            "They have been completely abandoned",
+            "They are no longer sufficient on their own",
+            "They are too cheap to be effective"
+          ],
+          "correctIndex": 2,
+          "explanation": "'Traditional solutions ... are no longer sufficient on their own.'"
+        },
+        {
+          "id": "q3",
+          "question": "What is the main idea of the sponge city approach?",
+          "options": [
+            "Building higher sea walls around the city",
+            "Moving residents away from flood zones",
+            "Pumping water into the sea more quickly",
+            "Letting the city absorb rainwater naturally through parks, wetlands, and permeable surfaces"
+          ],
+          "correctIndex": 3,
+          "explanation": "'The idea is to let the city absorb rainwater naturally, through parks, wetlands, and permeable pavements.'"
+        },
+        {
+          "id": "q4",
+          "question": "How much water can the pilot park hold during a storm?",
+          "options": [
+            "Up to 5,000 cubic meters",
+            "Up to 15,000 cubic meters",
+            "Up to 50,000 cubic meters",
+            "Up to 500,000 cubic meters"
+          ],
+          "correctIndex": 2,
+          "explanation": "'A public park that can hold up to fifty thousand cubic meters of water during a storm.'"
+        },
+        {
+          "id": "q5",
+          "question": "What is the main criticism of the sponge city approach?",
+          "options": [
+            "Land in central districts is very expensive, so big projects are hard to finance",
+            "Residents do not like parks",
+            "Green spaces cannot absorb water",
+            "It makes rising sea levels worse"
+          ],
+          "correctIndex": 0,
+          "explanation": "'Critics, however, point out that land in central districts is extremely expensive, which makes large-scale projects difficult to finance.'"
+        }
+      ]
+    },
+    {
+      "id": "listening-interview-remote-work",
+      "slug": "interview-hidden-costs-remote-work",
+      "title": "Interview: The Hidden Costs of Remote Work",
+      "description": "A podcast host interviews a workplace researcher about how remote work affects learning and careers.",
+      "level": "advanced",
+      "style": "interview",
+      "estimatedMinutes": 4,
+      "segments": [
+        { "speaker": "Host", "text": "Joining me today is Doctor Sarah Nguyen, who studies workplace behavior at a university in Singapore. Sarah, thanks for being here." },
+        { "speaker": "Sarah", "text": "It's a pleasure." },
+        { "speaker": "Host", "text": "Remote work became normal for millions of people almost overnight. Several years on, what has your research found?" },
+        { "speaker": "Sarah", "text": "The picture is more complicated than either side expected. Most employees report that they are more productive at home, particularly on tasks that require deep concentration." },
+        { "speaker": "Host", "text": "So where's the catch?" },
+        { "speaker": "Sarah", "text": "The catch is in what we call informal learning. Junior staff, in particular, learn a great deal simply by overhearing how experienced colleagues handle problems. When everyone works remotely, that kind of knowledge transfer largely disappears." },
+        { "speaker": "Host", "text": "Does that affect people's careers?" },
+        { "speaker": "Sarah", "text": "In our data, yes. Employees who were fully remote received noticeably less feedback and were promoted more slowly than colleagues who spent at least some time in the office, even when their performance was rated similarly." },
+        { "speaker": "Host", "text": "That's striking. Is the answer simply to bring everyone back?" },
+        { "speaker": "Sarah", "text": "Not at all. Forcing people back five days a week tends to increase staff turnover, because workers now value flexibility very highly." },
+        { "speaker": "Sarah", "text": "The organizations doing best are deliberate about it. They decide which activities genuinely benefit from being together, such as mentoring, planning, and brainstorming, and schedule those for shared office days." },
+        { "speaker": "Host", "text": "And the rest of the week?" },
+        { "speaker": "Sarah", "text": "The rest is protected for focused individual work at home. The key insight is that the location should follow the task, not the other way around." },
+        { "speaker": "Host", "text": "Doctor Sarah Nguyen, thank you very much." }
+      ],
+      "vocabulary": [
+        { "word": "productive", "partOfSpeech": "adj", "meaning": "năng suất, hiệu quả", "example": "I'm most productive early in the morning." },
+        { "word": "catch", "partOfSpeech": "n", "meaning": "điểm bất lợi ẩn giấu, cái bẫy", "example": "The price is low, but what's the catch?" },
+        { "word": "informal", "partOfSpeech": "adj", "meaning": "không chính thức", "example": "We had an informal chat over coffee." },
+        { "word": "overhear", "partOfSpeech": "v", "meaning": "vô tình nghe được", "example": "I overheard them talking about the new project." },
+        { "word": "promote", "partOfSpeech": "v", "meaning": "thăng chức", "example": "She was promoted to team leader last year." },
+        { "word": "turnover", "partOfSpeech": "n", "meaning": "tỷ lệ nhân viên nghỉ việc", "example": "High staff turnover is expensive for companies." },
+        { "word": "deliberate", "partOfSpeech": "adj", "meaning": "có chủ đích, có cân nhắc", "example": "It was a deliberate decision, not an accident." },
+        { "word": "mentoring", "partOfSpeech": "n", "meaning": "sự kèm cặp, hướng dẫn (người mới)", "example": "Mentoring helps new employees learn faster." }
+      ],
+      "quiz": [
+        {
+          "id": "q1",
+          "question": "What do most employees report about working from home?",
+          "options": [
+            "They feel less productive",
+            "They are more productive, especially on tasks needing deep concentration",
+            "They all want to return to the office",
+            "There is no difference at all"
+          ],
+          "correctIndex": 1,
+          "explanation": "'Most employees report that they are more productive at home, particularly on tasks that require deep concentration.'"
+        },
+        {
+          "id": "q2",
+          "question": "According to Sarah, what largely disappears when everyone works remotely?",
+          "options": [
+            "Formal training courses",
+            "Team meetings",
+            "Informal learning from overhearing experienced colleagues",
+            "Written feedback from managers"
+          ],
+          "correctIndex": 2,
+          "explanation": "'Junior staff ... learn a great deal simply by overhearing how experienced colleagues handle problems. When everyone works remotely, that kind of knowledge transfer largely disappears.'"
+        },
+        {
+          "id": "q3",
+          "question": "What did Sarah's data show about fully remote employees?",
+          "options": [
+            "They got more feedback and faster promotions",
+            "Their performance was rated much lower",
+            "They left their jobs more often",
+            "They got less feedback and were promoted more slowly, even with similar performance"
+          ],
+          "correctIndex": 3,
+          "explanation": "'Employees who were fully remote received noticeably less feedback and were promoted more slowly ... even when their performance was rated similarly.'"
+        },
+        {
+          "id": "q4",
+          "question": "Why is forcing people back to the office five days a week a problem?",
+          "options": [
+            "It tends to increase staff turnover because workers value flexibility",
+            "Offices are too expensive to rent",
+            "Managers prefer remote work",
+            "It reduces informal learning"
+          ],
+          "correctIndex": 0,
+          "explanation": "'Forcing people back five days a week tends to increase staff turnover, because workers now value flexibility very highly.'"
+        },
+        {
+          "id": "q5",
+          "question": "What is the key insight Sarah shares at the end?",
+          "options": [
+            "Everyone should work from home full-time",
+            "The location should follow the task",
+            "Office days should be used for individual work",
+            "Junior staff should never work remotely"
+          ],
+          "correctIndex": 1,
+          "explanation": "'The key insight is that the location should follow the task, not the other way around.'"
+        }
+      ]
+    },
+    {
+      "id": "listening-lecture-sleep-memory",
+      "slug": "lecture-sleep-and-memory",
+      "title": "Lecture: How Sleep Shapes Memory",
+      "description": "An excerpt from a university lecture on the role of sleep in learning.",
+      "level": "advanced",
+      "style": "monologue",
+      "estimatedMinutes": 3,
+      "segments": [
+        { "text": "Good afternoon. Last week we looked at how memories are formed." },
+        { "text": "Today I want to turn to a question that students rarely ask, but should: what happens to those memories while you sleep?" },
+        { "text": "For a long time, sleep was thought of as a passive state, a period when the brain simply switched off." },
+        { "text": "We now know that this is far from the truth." },
+        { "text": "During sleep, and especially during the deep stage known as slow-wave sleep, the brain actively replays information it encountered during the day." },
+        { "text": "In experiments with both animals and humans, researchers have observed patterns of brain activity from the learning period being repeated, at high speed, during the night." },
+        { "text": "This replay appears to strengthen important connections and move memories from short-term storage into long-term storage." },
+        { "text": "Dreaming sleep, also called rapid eye movement sleep, seems to play a different role." },
+        { "text": "Rather than preserving facts, it may help us connect new information with what we already know, and even find creative solutions to problems." },
+        { "text": "The practical implications for students are significant." },
+        { "text": "Staying up all night before an exam may give you a few extra hours of reading, but it deprives your brain of the very process that locks that material in place." },
+        { "text": "In study after study, people who slept after learning a list of words remembered considerably more the next day than those who stayed awake for the same length of time." },
+        { "text": "So if you take one message from today, let it be this: sleep is not time taken away from studying. It is part of studying." },
+        { "text": "Next week, we will examine how stress interferes with this process." }
+      ],
+      "vocabulary": [
+        { "word": "passive", "partOfSpeech": "adj", "meaning": "thụ động", "example": "Watching TV is a passive activity." },
+        { "word": "replay", "partOfSpeech": "v", "meaning": "phát lại, tái hiện lại", "example": "He replayed the conversation in his head." },
+        { "word": "strengthen", "partOfSpeech": "v", "meaning": "củng cố, làm mạnh thêm", "example": "Practice strengthens your skills." },
+        { "word": "preserve", "partOfSpeech": "v", "meaning": "lưu giữ, bảo tồn", "example": "The museum preserves old documents." },
+        { "word": "implication", "partOfSpeech": "n", "meaning": "hệ quả, hàm ý", "example": "The new law has serious implications for small businesses." },
+        { "word": "deprive", "partOfSpeech": "v", "meaning": "tước đi, lấy mất", "example": "Noise deprived him of sleep." },
+        { "word": "interfere", "partOfSpeech": "v", "meaning": "cản trở, gây ảnh hưởng xấu", "example": "Phones can interfere with your concentration." }
+      ],
+      "quiz": [
+        {
+          "id": "q1",
+          "question": "How was sleep viewed for a long time?",
+          "options": [
+            "As an active learning process",
+            "As a passive state when the brain simply switched off",
+            "As harmful to memory",
+            "As necessary only for children"
+          ],
+          "correctIndex": 1,
+          "explanation": "'For a long time, sleep was thought of as a passive state, a period when the brain simply switched off.'"
+        },
+        {
+          "id": "q2",
+          "question": "What happens in the brain during slow-wave sleep?",
+          "options": [
+            "The brain rests completely",
+            "We have our most vivid dreams",
+            "The brain actively replays information from the day",
+            "New memories are erased"
+          ],
+          "correctIndex": 2,
+          "explanation": "'During ... slow-wave sleep, the brain actively replays information it encountered during the day.'"
+        },
+        {
+          "id": "q3",
+          "question": "What role might rapid eye movement sleep play?",
+          "options": [
+            "Helping us connect new information with what we already know",
+            "Repairing muscles after exercise",
+            "Deleting unimportant facts",
+            "Controlling our breathing"
+          ],
+          "correctIndex": 0,
+          "explanation": "'It may help us connect new information with what we already know, and even find creative solutions to problems.'"
+        },
+        {
+          "id": "q4",
+          "question": "What did studies find about people who slept after learning a list of words?",
+          "options": [
+            "They forgot more words than those who stayed awake",
+            "They remembered about the same number of words",
+            "They could only remember the first few words",
+            "They remembered considerably more the next day"
+          ],
+          "correctIndex": 3,
+          "explanation": "'People who slept after learning a list of words remembered considerably more the next day than those who stayed awake.'"
+        },
+        {
+          "id": "q5",
+          "question": "What is the lecturer's main message?",
+          "options": [
+            "Students should study all night before exams",
+            "Sleep is part of studying, not time taken away from it",
+            "Dreams are more important than deep sleep",
+            "Stress improves memory"
+          ],
+          "correctIndex": 1,
+          "explanation": "'Sleep is not time taken away from studying. It is part of studying.'"
         }
       ]
     }

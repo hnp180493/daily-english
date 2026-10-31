@@ -16,6 +16,7 @@ import { StorageAdapterFactory } from './storage/storage-adapter-factory.service
 import { LocalStorageProvider } from './storage/local-storage-provider.service';
 import { GuestAnalyticsService } from './guest-analytics.service';
 import { AnalyticsService } from './analytics.service';
+import { StreakFreezeService } from './streak-freeze.service';
 
 @Injectable({
   providedIn: 'root'
@@ -27,6 +28,7 @@ export class ProgressService {
   private localStorageProvider = inject(LocalStorageProvider);
   private guestAnalytics = inject(GuestAnalyticsService);
   private analyticsService = inject(AnalyticsService);
+  private streakFreeze = inject(StreakFreezeService);
   private progress$ = new BehaviorSubject<UserProgress>(this.getDefaultProgress());
   private unsubscribe: UnsubscribeFunction | null = null;
   
@@ -403,6 +405,12 @@ export class ProgressService {
       console.log('→ Returning current streak:', progress.currentStreak);
       return progress.currentStreak;
     }
+
+    // One missed day is still alive if a streak freeze is available (spent on next activity)
+    const dayBeforeYesterday = this.getDateString(this.subtractDays(new Date(), 2));
+    if (progress.lastStreakDate === dayBeforeYesterday && this.streakFreeze.count() > 0) {
+      return progress.currentStreak;
+    }
     
     // Streak is broken
     console.log('→ Streak broken, returning 0');
@@ -446,12 +454,21 @@ export class ProgressService {
       };
     }
     
-    // New day - check if it's consecutive
-    if (progress.lastStreakDate === yesterday) {
+    // New day - consecutive, or exactly one missed day bridged by a streak freeze
+    const isConsecutive = progress.lastStreakDate === yesterday;
+    const dayBeforeYesterday = this.getDateString(this.subtractDays(new Date(), 2));
+    const bridged =
+      !isConsecutive &&
+      progress.lastStreakDate === dayBeforeYesterday &&
+      progress.currentStreak > 0 &&
+      this.streakFreeze.consume();
+
+    if (isConsecutive || bridged) {
       // Consecutive day - increase streak
       const newStreak = progress.currentStreak + 1;
-      console.log('→ Consecutive day, increasing streak to:', newStreak);
-      
+      console.log(bridged ? '→ Missed a day, streak freeze used:' : '→ Consecutive day, increasing streak to:', newStreak);
+      this.streakFreeze.onStreakReached(newStreak);
+
       // Track streak milestone if it's a significant number
       if (newStreak % 7 === 0 || newStreak === 3 || newStreak === 5 || newStreak === 10 || newStreak === 30) {
         const milestoneType = newStreak >= 30 ? 'monthly' : newStreak >= 7 ? 'weekly' : 'daily';
@@ -726,5 +743,37 @@ export class ProgressService {
       next: () => console.log('[ProgressService] Bonus points saved'),
       error: (error) => console.error('[ProgressService] Failed to save bonus points:', error)
     });
+  }
+
+  /**
+   * Record a completed "Học hôm nay" session: counts as today's activity for the
+   * streak and awards points. Returns the streak after the update.
+   */
+  recordDailySession(points: number): number {
+    const current = this.progress$.value;
+    const oldLevel = this.calculateLevel(current.totalPoints);
+    const streakUpdate = this.updateStreak(current);
+
+    const updated: UserProgress = {
+      ...current,
+      totalPoints: current.totalPoints + points,
+      lastActivityDate: new Date(),
+      currentStreak: streakUpdate.currentStreak,
+      lastStreakDate: streakUpdate.lastStreakDate,
+      longestStreak: streakUpdate.longestStreak || current.longestStreak || 0
+    };
+
+    const newLevel = this.calculateLevel(updated.totalPoints);
+    if (newLevel > oldLevel) {
+      this.analyticsService.trackLevelUp(oldLevel, newLevel, updated.totalPoints);
+    }
+
+    this.progress$.next(updated);
+    this.progressSignal.set(updated);
+
+    this.storageFactory.getAdapter().saveProgress(updated).subscribe({
+      error: (error) => console.error('[ProgressService] Failed to save daily session:', error)
+    });
+    return updated.currentStreak;
   }
 }

@@ -62,6 +62,11 @@ export class AnalyticsService {
    * Track a page view
    */
   trackPageView(path: string, title: string): void {
+    // Enforce opt-out here, not only inside each provider
+    if (!this.privacyService.isAnalyticsEnabled()) {
+      return;
+    }
+
     if (this.debugMode) {
       console.log('[Analytics] trackPageView:', { path, title });
     }
@@ -481,6 +486,10 @@ export class AnalyticsService {
    * Set a single user property
    */
   setUserProperty(propertyName: string, value: string | number): void {
+    if (!this.privacyService.isAnalyticsEnabled()) {
+      return;
+    }
+
     this.providers.forEach(provider => {
       if (provider.isEnabled()) {
         provider.setUserProperty(propertyName, value);
@@ -492,6 +501,10 @@ export class AnalyticsService {
    * Set multiple user properties
    */
   setUserProperties(properties: Record<string, string | number>): void {
+    if (!this.privacyService.isAnalyticsEnabled()) {
+      return;
+    }
+
     this.providers.forEach(provider => {
       if (provider.isEnabled()) {
         provider.setUserProperties(properties);
@@ -503,6 +516,11 @@ export class AnalyticsService {
    * Set user ID
    */
   setUserId(userId: string | null): void {
+    // Clearing the ID (logout) is always allowed; identifying a user is not when opted out
+    if (userId !== null && !this.privacyService.isAnalyticsEnabled()) {
+      return;
+    }
+
     this.providers.forEach(provider => {
       if (provider.isEnabled()) {
         provider.setUserId(userId);

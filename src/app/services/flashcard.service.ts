@@ -1,4 +1,4 @@
-import { Injectable, inject, signal, computed, effect } from '@angular/core';
+import { Injectable, Injector, inject, signal, computed, effect } from '@angular/core';
 import { Observable, of, from } from 'rxjs';
 import { map, tap, catchError, switchMap } from 'rxjs/operators';
 import {
@@ -13,6 +13,9 @@ import {
 } from '../models/memory-retention.model';
 import { AuthService } from './auth.service';
 import { FsrsService } from './fsrs.service';
+import { SkillSyncService } from './skill-sync.service';
+
+const SYNC_KEY = 'flashcards-v1';
 
 /**
  * FlashcardService manages flashcard operations with spaced repetition algorithm.
@@ -26,6 +29,8 @@ import { FsrsService } from './fsrs.service';
 export class FlashcardService {
   private authService = inject(AuthService);
   private fsrs = inject(FsrsService);
+  private sync = inject(SkillSyncService);
+  private injector = inject(Injector);
 
   // Private signal for flashcard state
   private flashcardsSignal = signal<Flashcard[]>([]);
@@ -74,6 +79,18 @@ export class FlashcardService {
   constructor() {
     // Initialize and watch for auth changes
     this.initializeService();
+    // Reads/writes the per-user localStorage key directly so a sync that lands
+    // before loadFlashcards() switches keys never mixes in guest cards.
+    this.sync.register<Flashcard[]>({
+      key: SYNC_KEY,
+      read: (uid) => this.readRawCards(`${this.STORAGE_KEY_PREFIX}_${uid}`),
+      write: (uid, cards) => {
+        const key = `${this.STORAGE_KEY_PREFIX}_${uid}`;
+        localStorage.setItem(key, JSON.stringify(cards ?? []));
+        if (this.getStorageKey() === key) this.loadFlashcards();
+      },
+      merge: (local, remote) => mergeCards(remote ?? [], local ?? []),
+    });
   }
 
   /**
@@ -87,14 +104,18 @@ export class FlashcardService {
     this.loadFlashcards();
     this.isInitialized.set(true);
     
-    // Watch for auth changes to reload flashcards
-    effect(() => {
-      const user = this.authService.currentUser();
-      if (this.isInitialized()) {
-        console.log('[FlashcardService] Auth changed, reloading flashcards for user:', user?.email || 'guest');
-        this.loadFlashcards();
-      }
-    });
+    // Watch for auth changes to reload flashcards.
+    // We're past an await, so the injection context must be passed explicitly.
+    effect(
+      () => {
+        const user = this.authService.currentUser();
+        if (this.isInitialized()) {
+          console.log('[FlashcardService] Auth changed, reloading flashcards for user:', user?.email || 'guest');
+          this.loadFlashcards();
+        }
+      },
+      { injector: this.injector }
+    );
   }
 
   /**
@@ -557,9 +578,7 @@ export class FlashcardService {
    */
   private persist(): Observable<void> {
     const cards = this.flashcardsSignal();
-    // Always save to localStorage for now
-    // Supabase sync will be handled by StorageAdapterFactory when needed
-    return this.saveToLocalStorage(cards);
+    return this.saveToLocalStorage(cards).pipe(tap(() => this.sync.markChanged(SYNC_KEY)));
   }
 
   /**
@@ -571,14 +590,27 @@ export class FlashcardService {
     const pendingMerge = typeof localStorage !== 'undefined' && 
                          localStorage.getItem('flashcards_pending_merge') === 'true';
     
-    if (pendingMerge) {
-      console.log('[FlashcardService] Pending merge detected, loading local flashcards');
-      // Clear the flag
+    const userKey = this.getStorageKey();
+    const guestKey = `${this.STORAGE_KEY_PREFIX}_guest`;
+    if (pendingMerge && userKey !== guestKey) {
+      // Guest just signed in: fold their guest cards into the account.
+      const merged = mergeCards(this.readRawCards(userKey), this.readRawCards(guestKey));
+      localStorage.setItem(userKey, JSON.stringify(merged));
+      localStorage.removeItem(guestKey);
       localStorage.removeItem('flashcards_pending_merge');
+      this.sync.markChanged(SYNC_KEY);
     }
-    
-    // Always load from localStorage for now
+
     return this.loadFromLocalStorage();
+  }
+
+  private readRawCards(key: string): Flashcard[] {
+    try {
+      const parsed = JSON.parse(localStorage.getItem(key) || '[]');
+      return Array.isArray(parsed) ? parsed : [];
+    } catch {
+      return [];
+    }
   }
 
   /**
@@ -637,23 +669,25 @@ export class FlashcardService {
     });
   }
 
-  /**
-   * Save flashcards to Supabase.
-   * Note: This will be fully implemented in Task 14 (storage persistence)
-   */
-  private saveToSupabase(cards: Flashcard[]): Observable<void> {
-    // TODO: Implement Supabase storage in Task 14
-    // For now, also save to localStorage as backup
-    return this.saveToLocalStorage(cards);
-  }
+}
 
-  /**
-   * Load flashcards from Supabase.
-   * Note: This will be fully implemented in Task 14 (storage persistence)
-   */
-  private loadFromSupabase(): Observable<Flashcard[]> {
-    // TODO: Implement Supabase storage in Task 14
-    // For now, load from localStorage
-    return this.loadFromLocalStorage();
+/**
+ * Union two card lists, deduplicating by id and by front+exercise.
+ * On conflict keep the card reviewed most recently (more FSRS history).
+ */
+export function mergeCards(base: Flashcard[], incoming: Flashcard[]): Flashcard[] {
+  const lastTouched = (c: Flashcard) =>
+    Math.max(
+      c.lastReviewDate ? new Date(c.lastReviewDate).getTime() : 0,
+      new Date(c.createdAt).getTime() || 0
+    );
+  const out = new Map<string, Flashcard>();
+  const idToKey = new Map<string, string>();
+  for (const card of [...base, ...incoming]) {
+    const key = idToKey.get(card.id) ?? `${card.front}|${card.exerciseId}`;
+    const existing = out.get(key);
+    if (!existing || lastTouched(card) > lastTouched(existing)) out.set(key, card);
+    idToKey.set(card.id, key);
   }
+  return Array.from(out.values());
 }

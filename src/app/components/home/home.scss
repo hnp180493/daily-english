@@ -472,3 +472,52 @@
     grid-template-columns: 1fr;
   }
 }
+
+// Primary "Học hôm nay" call to action
+.today-cta {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  max-width: 720px;
+  margin: 0 auto 2.5rem;
+  padding: 1.25rem 1.5rem;
+  border-radius: 1.25rem;
+  background: linear-gradient(135deg, #8b5cf6, #ec4899);
+  color: #fff;
+  text-decoration: none;
+  box-shadow: 0 12px 40px rgba(139, 92, 246, 0.35);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 16px 48px rgba(139, 92, 246, 0.45);
+  }
+
+  &.done {
+    background: #1a1f3a;
+    border: 1px solid rgba(52, 211, 153, 0.4);
+    box-shadow: none;
+  }
+}
+
+.today-cta-icon {
+  font-size: 2.25rem;
+}
+
+.today-cta-text {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+
+  strong {
+    font-size: 1.35rem;
+  }
+
+  small {
+    opacity: 0.85;
+  }
+}
+
+.today-cta-arrow {
+  font-size: 1.5rem;
+}

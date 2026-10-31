@@ -190,18 +190,13 @@ export class HeaderComponent implements OnInit {
     console.log('[Header] Navigate to review queue');
   }
   
+  /** True when the current page lives under the "More" menu. */
   isLearningMenuActive(): boolean {
-    const url = this.router.url;
-    const isLearningPath = url.includes('/learning-path');
-    const isFlashcards = url.includes('/flashcards');
-    
-    // For authenticated users, include learning-path in active check
-    if (this.isAuthenticated()) {
-      return isLearningPath || isFlashcards || url.includes('/dashboard') || url.includes('/exercises/custom') || url.includes('/guide');
-    }
-    
-    // For guest users, exclude learning-path
-    return isFlashcards || url.includes('/dashboard') || url.includes('/exercises/custom') || url.includes('/guide');
+    const path = this.router.url.split(/[?#]/)[0];
+    if (path === '/') return true; // sentence writing (home) moved into "More"
+    const sections = ['/flashcards', '/dashboard', '/exercises', '/guide', '/grammar-lessons', '/reading', '/writing', '/listening'];
+    if (this.isAuthenticated()) sections.push('/learning-path');
+    return sections.some((s) => path.startsWith(s));
   }
   
   onMenuMouseEnter(): void {

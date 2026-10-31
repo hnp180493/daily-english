@@ -1,0 +1,258 @@
+<div class="today">
+  @if (today.isActive() && step(); as s) {
+    <!-- ===================== SESSION ===================== -->
+    <div class="today-topbar">
+      <button type="button" class="icon-btn" (click)="quit()" [attr.aria-label]="translate.t('today.quit')">✕</button>
+      <div class="progress" role="progressbar" [attr.aria-valuenow]="progressPct()" aria-valuemin="0" aria-valuemax="100">
+        <div class="progress-fill" [style.width.%]="progressPct()"></div>
+      </div>
+      <span class="progress-count">{{ today.index() + 1 }}/{{ today.totalSteps() }}</span>
+    </div>
+
+    <section class="step-card" [attr.data-kind]="s.kind">
+      @switch (s.kind) {
+        <!-- ---------- Flashcard review ---------- -->
+        @case ('review') {
+          <p class="step-label">🧠 {{ translate.t('today.step.review') }}</p>
+          @if (card(); as c) {
+            <div class="flashcard" [class.revealed]="revealed()">
+              <p class="flashcard-front">{{ c.front }}</p>
+              @if (revealed()) {
+                <p class="flashcard-back">{{ c.back }}</p>
+                @if (c.example && c.example !== c.front) {
+                  <p class="flashcard-example">{{ c.example }}</p>
+                }
+              }
+            </div>
+            @if (!revealed()) {
+              <button type="button" class="btn-primary wide" (click)="reveal()">
+                {{ translate.t('today.reveal') }} <kbd>Space</kbd>
+              </button>
+            } @else {
+              <div class="rating-row">
+                @for (r of ratings; track r) {
+                  <button type="button" class="rating-btn" [attr.data-rating]="r" (click)="rate(r)">
+                    <span>{{ translate.t('today.rating.' + r) }}</span>
+                    <small>{{ intervalLabel(intervals()?.[r]) }}</small>
+                    <kbd>{{ r }}</kbd>
+                  </button>
+                }
+              </div>
+            }
+          } @else {
+            <p class="muted">{{ translate.t('today.card_missing') }}</p>
+            <button type="button" class="btn-primary wide" (click)="continue()">{{ translate.t('today.next') }}</button>
+          }
+        }
+
+        <!-- ---------- Fill in the blank ---------- -->
+        @case ('cloze') {
+          <p class="step-label">
+            ✏️ {{ translate.t('today.step.cloze') }}
+            @if (s.fromReader) {
+              <span class="from-reader">📖 {{ translate.t('today.from_reader') }}</span>
+            }
+          </p>
+          <p class="sentence">{{ s.sentence }}</p>
+          @if (s.vi) {
+            <p class="vi-hint">{{ s.vi }}</p>
+          }
+          <div class="options">
+            @for (option of s.options; track option; let i = $index) {
+              <button type="button" class="option" [attr.data-state]="optionState(option)" [disabled]="!!picked()" (click)="pick(option)">
+                <kbd>{{ i + 1 }}</kbd> {{ option }}
+              </button>
+            }
+          </div>
+          @if (picked()) {
+            <div class="feedback" [class.good]="picked() === s.answer" [class.low]="picked() !== s.answer">
+              {{ picked() === s.answer ? translate.t('today.correct') : translate.t('today.wrong_saved') }}
+            </div>
+            <button type="button" class="btn-primary wide" (click)="continue()">
+              {{ translate.t('today.next') }} <kbd>Enter</kbd>
+            </button>
+          }
+        }
+
+        <!-- ---------- Shadowing ---------- -->
+        @case ('shadow') {
+          <p class="step-label">
+            🗣️ {{ translate.t('today.step.shadow') }}
+            @if (s.fromReader) {
+              <span class="from-reader">📖 {{ translate.t('today.from_reader') }}</span>
+            }
+          </p>
+          <p class="instruction">{{ translate.t('today.shadow_instruction') }}</p>
+          @if (shadowWords().length) {
+            <p class="sentence">
+              @for (w of shadowWords(); track $index) {
+                <span [class.word-ok]="w.ok" [class.word-bad]="!w.ok" [attr.title]="w.issue || null">{{ w.word }} </span>
+              }
+            </p>
+          } @else {
+            <p class="sentence">{{ s.sentence }}</p>
+          }
+          @if (s.vi) {
+            <p class="vi-hint">{{ s.vi }}</p>
+          }
+          <div class="shadow-actions">
+            <button type="button" class="btn-secondary" (click)="listen(s.sentence)">🔊 {{ translate.t('today.listen') }}</button>
+            <button type="button" class="btn-secondary" (click)="listen(s.sentence, true)">🐢 {{ translate.t('today.listen_slow') }}</button>
+            @if (speechSupported) {
+              <button type="button" class="btn-record" [class.recording]="speech.state() === 'listening'" (click)="toggleRecording()">
+                {{ speech.state() === 'listening' ? '⏹ ' + translate.t('today.stop') : '🎙 ' + translate.t('today.record') }}
+              </button>
+            }
+          </div>
+          @if (speech.state() === 'listening' && speech.interimTranscript()) {
+            <p class="interim">“{{ speech.interimTranscript() }}”</p>
+          }
+          @if (speech.errorMessage()) {
+            <p class="feedback low">{{ speech.errorMessage() }}</p>
+          }
+          @if (shadowScore() !== null) {
+            <div [class]="'feedback ' + scoreClass(shadowScore())">
+              <strong>{{ shadowScore() }}/100</strong>
+              @if (shadowTranscript()) {
+                <span class="muted"> · “{{ shadowTranscript() }}”</span>
+              }
+            </div>
+          }
+          @if (!speechSupported) {
+            <p class="muted small">{{ translate.t('today.no_speech') }}</p>
+          }
+          <button type="button" class="btn-primary wide" (click)="continue()">
+            {{ shadowScore() !== null || !speechSupported ? translate.t('today.next') : translate.t('today.skip_speaking') }}
+            <kbd>Enter</kbd>
+          </button>
+        }
+
+        <!-- ---------- Translation ---------- -->
+        @case ('translate') {
+          <p class="step-label">🇻🇳→🇬🇧 {{ translate.t('today.step.translate') }}</p>
+          <p class="sentence vi">{{ s.vi }}</p>
+          <textarea
+            class="answer"
+            rows="3"
+            [value]="answerText()"
+            (input)="answerText.set($any($event.target).value)"
+            (keydown.enter)="$event.preventDefault(); continue()"
+            [readOnly]="translateScore() !== null || grading()"
+            [placeholder]="translate.t('today.translate_placeholder')"
+          ></textarea>
+          @if (grading()) {
+            <p class="feedback">⏳ {{ translate.t('today.ai_grading') }}</p>
+          }
+          @if (translateScore() !== null) {
+            <div [class]="'feedback ' + scoreClass(translateScore())">
+              <strong>{{ translateScore() }}/100</strong>
+              @if (gradedByAI()) {
+                <span class="muted small"> · {{ translate.t('today.graded_by_ai') }}</span>
+              }
+              @if (aiFeedback()) {
+                <p class="model-answer">💬 {{ aiFeedback() }}</p>
+              }
+              @if (aiCorrected()) {
+                <p class="model-answer">{{ translate.t('today.your_corrected') }}: <em>{{ aiCorrected() }}</em></p>
+              }
+              <p class="model-answer">{{ translate.t('today.model_answer') }}: <em>{{ s.en }}</em></p>
+              @if (!gradedByAI()) {
+                <p class="muted small">{{ canGradeWithAI ? translate.t('today.ai_failed') : translate.t('today.ai_hint') }}</p>
+              }
+            </div>
+            <label class="save-toggle">
+              <input type="checkbox" [checked]="saveCard()" (change)="saveCard.set($any($event.target).checked)" />
+              {{ translate.t('today.save_card') }}
+            </label>
+          }
+          <button type="button" class="btn-primary wide" [disabled]="!answerText().trim() || grading()" (click)="continue()">
+            {{ translateScore() === null ? translate.t('today.check') : translate.t('today.finish') }} <kbd>Enter</kbd>
+          </button>
+        }
+      }
+    </section>
+  } @else if (today.doneToday() && today.summary(); as sum) {
+    <!-- ===================== DONE ===================== -->
+    <section class="done">
+      <div class="done-flame">🔥</div>
+      <h1>{{ translate.t('today.done_title') }}</h1>
+      <p class="streak-big">{{ sum.streak }} {{ translate.t('today.days_streak') }}</p>
+      <div class="week">
+        @for (d of week(); track d.key) {
+          <div class="day" [class.done]="d.done" [class.today]="d.isToday">
+            <span class="dot">{{ d.done ? '✓' : '' }}</span>
+            <small>{{ d.label }}</small>
+          </div>
+        }
+      </div>
+      <div class="stats">
+        <div><strong>+{{ sum.points }}</strong><small>{{ translate.t('today.points') }}</small></div>
+        @if (sum.reviewed) {
+          <div><strong>{{ sum.reviewed }}</strong><small>{{ translate.t('today.cards_reviewed') }}</small></div>
+        }
+        <div><strong>{{ sum.clozeCorrect }}/{{ sum.clozeTotal }}</strong><small>{{ translate.t('today.cloze_correct') }}</small></div>
+        @if (sum.shadowAvg !== null) {
+          <div><strong>{{ sum.shadowAvg }}</strong><small>{{ translate.t('today.speaking_score') }}</small></div>
+        }
+      </div>
+      @if (sum.cardsAdded) {
+        <p class="muted">📌 {{ translate.t('today.cards_added').replace('{n}', '' + sum.cardsAdded) }}</p>
+      }
+      <p class="muted small">❄️ {{ translate.t('today.freezes').replace('{n}', '' + today.freeze.count()) }}</p>
+      <div class="done-actions">
+        <a routerLink="/" class="btn-secondary">{{ translate.t('today.back_home') }}</a>
+        <a routerLink="/reader" class="btn-secondary">📖 {{ translate.t('today.read_something') }}</a>
+        <button type="button" class="btn-primary" [disabled]="loading()" (click)="start()">{{ translate.t('today.more') }}</button>
+      </div>
+    </section>
+  } @else {
+    <!-- ===================== INTRO ===================== -->
+    <section class="intro">
+      <div class="intro-head">
+        <h1>☀️ {{ translate.t('today.title') }}</h1>
+        <div class="streak-chip" [attr.title]="translate.t('today.freezes').replace('{n}', '' + today.freeze.count())">
+          🔥 {{ streak() }} · ❄️ {{ today.freeze.count() }}
+        </div>
+      </div>
+      <p class="intro-sub">{{ translate.t('today.subtitle') }}</p>
+
+      <div class="week">
+        @for (d of week(); track d.key) {
+          <div class="day" [class.done]="d.done" [class.today]="d.isToday">
+            <span class="dot">{{ d.done ? '✓' : '' }}</span>
+            <small>{{ d.label }}</small>
+          </div>
+        }
+      </div>
+
+      <ul class="plan">
+        @if (dueCount()) {
+          <li>🧠 {{ translate.t('today.plan.review').replace('{n}', '' + (dueCount() > limits.REVIEW ? limits.REVIEW : dueCount())) }}</li>
+        }
+        <li>✏️ {{ translate.t('today.plan.cloze').replace('{n}', '' + limits.CLOZE) }}</li>
+        <li>🗣️ {{ translate.t('today.plan.shadow').replace('{n}', '' + limits.SHADOW) }}</li>
+        <li>🇻🇳→🇬🇧 {{ translate.t('today.plan.translate') }}</li>
+      </ul>
+
+      <div class="levels" role="radiogroup" [attr.aria-label]="translate.t('today.level')">
+        @for (l of levels; track l) {
+          <button type="button" role="radio" class="level-chip" [class.active]="level() === l" [attr.aria-checked]="level() === l" (click)="chooseLevel(l)">
+            {{ translate.t('today.level.' + l) }}
+          </button>
+        }
+      </div>
+
+      @if (error()) {
+        <p class="feedback low">{{ error() }}</p>
+      }
+
+      <button type="button" class="btn-primary start" [disabled]="loading()" (click)="start()">
+        {{ loading() ? translate.t('common.loading') : (today.doneToday() ? translate.t('today.more') : translate.t('today.start')) }}
+      </button>
+      <p class="muted small center">⏱ ~{{ estimatedSteps() }} {{ translate.t('today.steps_minutes') }}</p>
+      <p class="muted small center">
+        <a routerLink="/reader" class="reader-link">📖 {{ translate.t('today.reader_hint') }}</a>
+      </p>
+    </section>
+  }
+</div>

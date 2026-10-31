@@ -222,3 +222,68 @@ $tablet: 1023px;
   margin: 2rem auto;
   box-shadow: 0 0 20px rgba(167, 139, 250, 0.3);
 }
+
+/* ===================================================================
+   Print stylesheet — used by "Print report" on the dashboard (and any
+   page printed from the browser). Light paper-friendly palette, no chrome.
+   =================================================================== */
+@media print {
+  @page {
+    margin: 12mm;
+  }
+
+  html,
+  body {
+    background: #fff !important;
+    color: #111 !important;
+  }
+
+  app-header,
+  app-footer,
+  app-toast-container,
+  app-keyboard-shortcuts-modal,
+  .skip-to-content,
+  nav[role='tablist'],
+  button {
+    display: none !important;
+  }
+
+  * {
+    box-shadow: none !important;
+    text-shadow: none !important;
+    animation: none !important;
+    transition: none !important;
+  }
+
+  .main-content {
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  /* Keep cards and charts whole instead of splitting across pages */
+  section,
+  article,
+  canvas,
+  [class*='card'],
+  [class*='widget'] {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  canvas {
+    max-width: 100% !important;
+  }
+
+  a {
+    color: inherit !important;
+    text-decoration: none !important;
+  }
+
+  .print-only {
+    display: block !important;
+  }
+}
+
+.print-only {
+  display: none;
+}

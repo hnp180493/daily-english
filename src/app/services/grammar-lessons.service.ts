@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable, firstValueFrom, of } from 'rxjs';
 import { catchError, map, shareReplay } from 'rxjs/operators';
 import { ErrorPattern, GrammarLesson, WeakPoint } from '../models/review.model';
+import { SkillSyncService } from './skill-sync.service';
 
 interface LessonsFile {
   version: number;
@@ -15,6 +16,7 @@ const LEARNED_STORAGE_KEY = 'grammar-lessons-learned-v1';
 @Injectable({ providedIn: 'root' })
 export class GrammarLessonsService {
   private http = inject(HttpClient);
+  private sync = inject(SkillSyncService);
   private cache$: Observable<GrammarLesson[]> | null = null;
 
   readonly lessons = signal<GrammarLesson[]>([]);
@@ -26,6 +28,15 @@ export class GrammarLessonsService {
 
   constructor() {
     this.loadLearned();
+    // Lessons can be unmarked, so the set syncs newest-wins (no union merge).
+    this.sync.register<string[]>({
+      key: LEARNED_STORAGE_KEY,
+      read: () => Array.from(this.learnedIds()),
+      write: (_uid, ids) => {
+        this.learnedIds.set(new Set((ids ?? []).filter((x) => typeof x === 'string')));
+        this.saveLearned(false);
+      },
+    });
   }
 
   getAllLessons(): Observable<GrammarLesson[]> {
@@ -74,7 +85,7 @@ export class GrammarLessonsService {
   }
 
   // -----------------------------
-  // Learned tracking (local-only)
+  // Learned tracking (localStorage + cloud sync)
   // -----------------------------
 
   isLearned(lessonId: string): boolean {
@@ -120,7 +131,7 @@ export class GrammarLessonsService {
     }
   }
 
-  private saveLearned(): void {
+  private saveLearned(notifySync = true): void {
     if (typeof localStorage === 'undefined') return;
     try {
       const ids = Array.from(this.learnedIds());
@@ -128,6 +139,7 @@ export class GrammarLessonsService {
     } catch (err) {
       console.warn('[GrammarLessonsService] Failed to persist learned set', err);
     }
+    if (notifySync) this.sync.markChanged(LEARNED_STORAGE_KEY);
   }
 
   private matchPattern(lessons: GrammarLesson[], ...searchTerms: string[]): GrammarLesson[] {

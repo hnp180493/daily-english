@@ -1,6 +1,10 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { Observable, from, of } from 'rxjs';
 import { map, switchMap, tap } from 'rxjs/operators';
+import { TranslationService } from './translation.service';
+
+/** Supplied by the caller so this service doesn't depend on ProgressService. */
+export type StreakStatusFn = () => { streak: number; practicedToday: boolean };
 
 export interface NotificationPreferences {
   enabled: boolean;
@@ -16,8 +20,12 @@ const STORAGE_KEY = 'notification_preferences';
   providedIn: 'root',
 })
 export class NotificationService {
+  private translate = inject(TranslationService);
   private notificationPermission: NotificationPermission = 'default';
   private preferences: NotificationPreferences | null = null;
+  private streakStatus?: StreakStatusFn;
+  private dailyTimer?: ReturnType<typeof setTimeout>;
+  private urgentTimer?: ReturnType<typeof setTimeout>;
 
   constructor() {
     this.checkNotificationSupport();
@@ -46,6 +54,7 @@ export class NotificationService {
 
           this.savePreferencesToLocalStorage(prefs);
           this.preferences = prefs;
+          this.scheduleNotifications(this.streakStatus);
           return of(true);
         }
 
@@ -65,6 +74,7 @@ export class NotificationService {
 
     this.savePreferencesToLocalStorage(prefs);
     this.preferences = prefs;
+    this.clearTimers();
     return of(undefined);
   }
 
@@ -80,6 +90,7 @@ export class NotificationService {
 
     this.savePreferencesToLocalStorage(updatedPrefs);
     this.preferences = updatedPrefs;
+    this.scheduleNotifications(this.streakStatus);
     return of(undefined);
   }
 
@@ -231,8 +242,11 @@ export class NotificationService {
     setTimeout(() => notification.close(), 10000);
   }
 
-  // Schedule notifications (simplified version - in production, use Service Workers)
-  scheduleNotifications(): void {
+  // Schedule notifications (setTimeout based — only fires while the tab/PWA is open).
+  // Safe to call repeatedly: existing timers are replaced.
+  scheduleNotifications(streakStatus?: StreakStatusFn): void {
+    if (streakStatus) this.streakStatus = streakStatus;
+    this.clearTimers();
     if (!this.preferences?.enabled) {
       return;
     }
@@ -242,6 +256,12 @@ export class NotificationService {
 
     // Schedule urgent reminder (2 hours before midnight)
     this.scheduleUrgentReminder();
+  }
+
+  private clearTimers(): void {
+    if (this.dailyTimer) clearTimeout(this.dailyTimer);
+    if (this.urgentTimer) clearTimeout(this.urgentTimer);
+    this.dailyTimer = this.urgentTimer = undefined;
   }
 
   private scheduleDailyReminder(): void {
@@ -260,7 +280,7 @@ export class NotificationService {
 
     const delay = scheduledTime.getTime() - now.getTime();
 
-    setTimeout(() => {
+    this.dailyTimer = setTimeout(() => {
       this.sendDailyChallengeReminder();
       // Reschedule for next day
       this.scheduleDailyReminder();
@@ -282,13 +302,26 @@ export class NotificationService {
 
     const delay = urgentTime.getTime() - now.getTime();
 
-    setTimeout(() => {
-      // Check if challenge is completed before sending
-      // This would need to be integrated with daily challenge service
-      this.sendUrgentReminder(0);
+    this.urgentTimer = setTimeout(() => {
+      // Only warn when there is a streak to lose and today isn't done yet.
+      const status = this.streakStatus?.();
+      if (status && status.streak > 0 && !status.practicedToday) {
+        this.sendStreakWarning(status.streak);
+      }
       // Reschedule for next day
       this.scheduleUrgentReminder();
     }, delay);
+  }
+
+  sendStreakWarning(streak: number): void {
+    if (!this.canSendNotification() || !this.preferences?.streakReminder) {
+      return;
+    }
+    this.showNotification(
+      this.translate.t('streak_warning.title').replace('{days}', String(streak)),
+      this.translate.t('streak_warning.body'),
+      '/exercises'
+    );
   }
 
   // Methods for achievement notifications

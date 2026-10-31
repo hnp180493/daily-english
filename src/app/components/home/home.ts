@@ -13,6 +13,7 @@ import { LevelCardComponent } from '../level-card/level-card';
 import { CategoryCardComponent } from '../category-card/category-card';
 import { LoadingSpinnerComponent } from '../loading-spinner/loading-spinner';
 import { TranslationService } from '../../services/translation.service';
+import { TodaySessionService } from '../../services/today/today-session.service';
 
 @Component({
   selector: 'app-home',
@@ -30,6 +31,7 @@ export class HomeComponent implements OnInit {
   private authService = inject(AuthService);
   private router = inject(Router);
   protected translate = inject(TranslationService);
+  protected todaySession = inject(TodaySessionService);
   
   isLoading = signal(true);
   isAuthenticated = computed(() => this.authService.isAuthenticated());

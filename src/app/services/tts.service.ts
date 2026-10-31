@@ -255,7 +255,10 @@ export class TTSService {
     };
 
     this.currentUtterance.onerror = (event) => {
-      console.error('Speech synthesis error:', event);
+      // stop()/a new speak() cancels the current utterance — expected, not an error
+      if (event.error !== 'interrupted' && event.error !== 'canceled') {
+        console.error('Speech synthesis error:', event);
+      }
       this.isPlaying.set(false);
       this.isPaused.set(false);
       this.currentSentenceIndex.set(null);
